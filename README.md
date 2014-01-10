@@ -8,3 +8,8 @@ The purpose of the Connie component is to offer the following services to other 
 - Defining strong typed path and expressions 
 - Executing strong typed path and expressions 
 
+This repository is split into two projects:
+- flexoutils contains utilities used all over Openflexo infrastructure
+- flexoconnie contains Connie component itself
+
+
