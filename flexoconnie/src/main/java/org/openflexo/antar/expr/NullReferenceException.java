@@ -19,7 +19,6 @@
  */
 package org.openflexo.antar.expr;
 
-import org.openflexo.localization.FlexoLocalization;
 
 /**
  * This exception is thrown when an operator is invoked with ambiguous semantic, in a null operand context
@@ -32,7 +31,7 @@ public class NullReferenceException extends TransformException {
 
 	private Operator concernedOperator;
 
-	private String message;
+	private final String message;
 
 	public NullReferenceException() {
 		super();
@@ -58,16 +57,18 @@ public class NullReferenceException extends TransformException {
 	@Override
 	public String getLocalizedMessage() {
 		if (concernedOperator != null) {
-			return FlexoLocalization.localizedForKeyWithParams("NullReferenceException_on_operator_($0)",
-					concernedOperator.getLocalizedName());
+			return "NullReferenceException on operator " + concernedOperator.getLocalizedName();
+			// return FlexoLocalization.localizedForKeyWithParams("NullReferenceException_on_operator_($0)",
+			// concernedOperator.getLocalizedName());
 		} else {
 			return getMessage();
 		}
 	}
 
 	public String getHTMLLocalizedMessage() {
-		return FlexoLocalization.localizedForKeyWithParams("<html>NullReferenceException_on_operator_($0)</html>",
-				concernedOperator.getLocalizedName());
+		return "<html>" + getLocalizedMessage() + "</html>";
+		// return FlexoLocalization.localizedForKeyWithParams("<html>NullReferenceException_on_operator_($0)</html>",
+		// concernedOperator.getLocalizedName());
 	}
 
 }

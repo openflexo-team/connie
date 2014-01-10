@@ -25,8 +25,6 @@ import java.util.Comparator;
 import java.util.Observable;
 import java.util.logging.Logger;
 
-import org.openflexo.localization.FlexoLocalization;
-
 /**
  * Represents the specification of a DataBinding
  * 
@@ -150,7 +148,7 @@ public class BindingDefinition extends Observable {
 
 	public String getTypeStringRepresentation() {
 		if (getType() == null) {
-			return FlexoLocalization.localizedForKey("no_type");
+			return "no_type";
 		} else {
 			return TypeUtils.simpleRepresentation(getType());
 		}

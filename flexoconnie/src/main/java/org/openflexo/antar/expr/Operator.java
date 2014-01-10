@@ -19,7 +19,6 @@
  */
 package org.openflexo.antar.expr;
 
-import org.openflexo.localization.FlexoLocalization;
 
 public abstract class Operator {
 
@@ -28,7 +27,8 @@ public abstract class Operator {
 	public abstract String getName();
 
 	public String getLocalizedName() {
-		return FlexoLocalization.localizedForKey(getName());
+		// return FlexoLocalization.localizedForKey(getName());
+		return getName();
 	}
 
 }

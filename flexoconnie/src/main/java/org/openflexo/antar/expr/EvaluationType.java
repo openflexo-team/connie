@@ -22,7 +22,6 @@ package org.openflexo.antar.expr;
 import java.lang.reflect.Type;
 import java.util.Date;
 
-import org.openflexo.localization.FlexoLocalization;
 import org.openflexo.toolbox.Duration;
 
 public enum EvaluationType {
@@ -33,7 +32,7 @@ public enum EvaluationType {
 	}
 
 	public String getLocalizedName() {
-		return FlexoLocalization.localizedForKey(getName());
+		return getName(); // FlexoLocalization.localizedForKey(getName());
 	}
 
 	public boolean isLiteral() {

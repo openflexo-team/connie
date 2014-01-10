@@ -19,7 +19,6 @@
  */
 package org.openflexo.antar.expr;
 
-import org.openflexo.localization.FlexoLocalization;
 
 /**
  * This exception is thrown when an operator is invoked in a type mismatch context
@@ -78,30 +77,17 @@ public class TypeMismatchException extends TransformException {
 	@Override
 	public String getLocalizedMessage() {
 		if (concernedOperator instanceof BinaryOperator) {
-			return FlexoLocalization.localizedForKeyWithParams(
-					"type_mismatch_on_operator_($0)_supplied_types_are_($1)_and_($2)_while_expected_types_are_($3)",
-					concernedOperator.getLocalizedName(), leftSuppliedType.getLocalizedName(), rightSuppliedType.getLocalizedName(),
-					typesAsString(expectedTypes));
+			return "type_mismatch_on_operator_(" + concernedOperator.getLocalizedName() + ")_supplied_types_are_("
+					+ leftSuppliedType.getLocalizedName() + ")_and_(" + rightSuppliedType.getLocalizedName()
+					+ ")_while_expected_types_are_(" + typesAsString(expectedTypes) + ")";
 		} else {
-			return FlexoLocalization.localizedForKeyWithParams(
-					"type_mismatch_on_operator_($0)_supplied_type_is_($1)_while_expected_types_are_($2)",
-					concernedOperator.getLocalizedName(), suppliedType.getLocalizedName(), typesAsString(expectedTypes));
+			return "type_mismatch_on_operator_(" + concernedOperator.getLocalizedName() + ")_supplied_type_is_("
+					+ suppliedType.getLocalizedName() + ")_while_expected_types_are_(" + typesAsString(expectedTypes) + ")";
 		}
 	}
 
 	public String getHTMLLocalizedMessage() {
-		if (concernedOperator instanceof BinaryOperator) {
-			return FlexoLocalization.localizedForKeyWithParams(
-					"<html>type_mismatch_on_operator_($0)<br>supplied_types_are_($1)_and_($2)<br>while_expected_types_are_($3)</html>",
-					concernedOperator.getLocalizedName(), leftSuppliedType.getLocalizedName(), rightSuppliedType.getLocalizedName(),
-					typesAsString(expectedTypes));
-		} else if (suppliedType != null && concernedOperator != null) {
-			return FlexoLocalization.localizedForKeyWithParams(
-					"<html>type_mismatch_on_operator_($0)<br>supplied_type_is_($1)<br>while_expected_types_are_($2)</html>",
-					concernedOperator.getLocalizedName(), suppliedType.getLocalizedName(), typesAsString(expectedTypes));
-		} else {
-			return "<html>" + getMessage() + "</html>";
-		}
+		return "<html>" + getLocalizedMessage() + "</html>";
 	}
 
 	private String typesAsString(EvaluationType... types) {
