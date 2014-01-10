@@ -20,5 +20,5 @@
 package org.openflexo.antar;
 
 public interface AlgorithmicUnit {
-
+	//
 }
