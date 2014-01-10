@@ -19,7 +19,6 @@
  */
 package org.openflexo.diff.merge;
 
-import org.openflexo.localization.FlexoLocalization;
 
 public class DefaultAutomaticMergeResolvingModel extends AutomaticMergeResolvingModel {
 	public DefaultAutomaticMergeResolvingModel() {
@@ -50,7 +49,8 @@ public class DefaultAutomaticMergeResolvingModel extends AutomaticMergeResolving
 
 	@Override
 	protected String localizedForKey(String key) {
-		return FlexoLocalization.localizedForKey(key);
+		// return FlexoLocalization.localizedForKey(key);
+		return key;
 	}
 
 }

@@ -48,7 +48,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
-import org.openflexo.localization.FlexoLocalization;
 import org.openflexo.search.EndOfDocumentHasBeenReachedException;
 import org.openflexo.search.ResultNotFoundException;
 import org.openflexo.search.TextQuery;
@@ -57,7 +56,9 @@ import org.openflexo.search.TextQueryResult;
 import org.openflexo.search.TextQueryResult.Direction;
 import org.openflexo.search.TextQueryResult.Result;
 
-public class TextSearchPanel extends JPanel implements CaretListener {
+public abstract class TextSearchPanel extends JPanel implements CaretListener {
+
+	public abstract String localizedForKey(String key);
 
 	public class FindReplaceFieldPanel extends JPanel implements ActionListener {
 
@@ -74,7 +75,7 @@ public class TextSearchPanel extends JPanel implements CaretListener {
 			gbc.weighty = 0;
 			gbc.insets = new Insets(5, 5, 5, 5);
 			JLabel find = new JLabel();
-			find.setText(FlexoLocalization.localizedForKey("find"));
+			find.setText(localizedForKey("find"));
 			add(find, gbc);
 			findField = new JComboBox(new DefaultComboBoxModel(new Vector<String>()));
 			findField.setEditable(true);
@@ -115,7 +116,7 @@ public class TextSearchPanel extends JPanel implements CaretListener {
 			gbc.insets = new Insets(5, 5, 5, 5);
 			add(findField, gbc);
 			JLabel replace = new JLabel();
-			replace.setText(FlexoLocalization.localizedForKey("replace_with"));
+			replace.setText(localizedForKey("replace_with"));
 			gbc.fill = GridBagConstraints.NONE;
 			gbc.weightx = 0;
 			gbc.gridx = 0;
@@ -187,17 +188,17 @@ public class TextSearchPanel extends JPanel implements CaretListener {
 
 		public DirectionPanel() {
 			super(new GridBagLayout());
-			setBorder(BorderFactory.createTitledBorder(FlexoLocalization.localizedForKey("direction")));
+			setBorder(BorderFactory.createTitledBorder(localizedForKey("direction")));
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.gridx = 0;
 			gbc.gridy = 0;
 			gbc.weightx = 1;
 			gbc.weighty = 0;
-			forward = new JRadioButton(FlexoLocalization.localizedForKey("forward"));
+			forward = new JRadioButton(localizedForKey("forward"));
 			forward.setSelected(true);
 			forward.addActionListener(this);
-			backward = new JRadioButton(FlexoLocalization.localizedForKey("backward"));
+			backward = new JRadioButton(localizedForKey("backward"));
 			backward.addActionListener(this);
 			add(forward, gbc);
 			gbc.gridy = 1;
@@ -219,16 +220,16 @@ public class TextSearchPanel extends JPanel implements CaretListener {
 
 		public ScopePanel() {
 			super(new GridBagLayout());
-			setBorder(BorderFactory.createTitledBorder(FlexoLocalization.localizedForKey("scope")));
+			setBorder(BorderFactory.createTitledBorder(localizedForKey("scope")));
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.gridx = 0;
 			gbc.gridy = 0;
 			gbc.weightx = 1;
 			gbc.weighty = 0;
-			all = new JRadioButton(FlexoLocalization.localizedForKey("all"));
+			all = new JRadioButton(localizedForKey("all"));
 			all.setSelected(true);
-			selectedText = new JRadioButton(FlexoLocalization.localizedForKey("selected_text"));
+			selectedText = new JRadioButton(localizedForKey("selected_text"));
 			all.addActionListener(this);
 			selectedText.addActionListener(this);
 			add(all, gbc);
@@ -254,12 +255,12 @@ public class TextSearchPanel extends JPanel implements CaretListener {
 
 		public OptionPanel() {
 			super(new GridBagLayout());
-			setBorder(BorderFactory.createTitledBorder(FlexoLocalization.localizedForKey("options")));
-			caseSensitive = new JCheckBox(FlexoLocalization.localizedForKey("case_sensitive"));
-			wrapSearch = new JCheckBox(FlexoLocalization.localizedForKey("wrap_search"));
+			setBorder(BorderFactory.createTitledBorder(localizedForKey("options")));
+			caseSensitive = new JCheckBox(localizedForKey("case_sensitive"));
+			wrapSearch = new JCheckBox(localizedForKey("wrap_search"));
 			wrapSearch.setSelected(true);
-			wholeWord = new JCheckBox(FlexoLocalization.localizedForKey("whole_word"));
-			regularExpression = new JCheckBox(FlexoLocalization.localizedForKey("regular_expression"));
+			wholeWord = new JCheckBox(localizedForKey("whole_word"));
+			regularExpression = new JCheckBox(localizedForKey("regular_expression"));
 			caseSensitive.addActionListener(this);
 			wrapSearch.addActionListener(this);
 			wholeWord.addActionListener(this);
@@ -313,7 +314,7 @@ public class TextSearchPanel extends JPanel implements CaretListener {
 			gbc.gridheight = 1;
 			statusText = new JLabel();
 			add(statusText, gbc);
-			find = new JButton(FlexoLocalization.localizedForKey("find"));
+			find = new JButton(localizedForKey("find"));
 			find.addActionListener(this);
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.weightx = 0;
@@ -323,20 +324,20 @@ public class TextSearchPanel extends JPanel implements CaretListener {
 			gbc.gridx = 1;
 			gbc.gridy = 0;
 			add(find, gbc);
-			replace = new JButton(FlexoLocalization.localizedForKey("replace"));
+			replace = new JButton(localizedForKey("replace"));
 			replace.addActionListener(this);
 			gbc.gridy = 1;
 			add(replace, gbc);
-			replaceFind = new JButton(FlexoLocalization.localizedForKey("replace/find"));
+			replaceFind = new JButton(localizedForKey("replace/find"));
 			replaceFind.addActionListener(this);
 			gbc.gridx = 2;
 			gbc.gridy = 0;
 			add(replaceFind, gbc);
-			replaceAll = new JButton(FlexoLocalization.localizedForKey("replace_all"));
+			replaceAll = new JButton(localizedForKey("replace_all"));
 			replaceAll.addActionListener(this);
 			gbc.gridy = 1;
 			add(replaceAll, gbc);
-			close = new JButton(FlexoLocalization.localizedForKey("close"));
+			close = new JButton(localizedForKey("close"));
 			close.addActionListener(this);
 			gbc.insets = new Insets(5, 0, 0, 0);
 			gbc.gridy = 2;
@@ -498,9 +499,9 @@ public class TextSearchPanel extends JPanel implements CaretListener {
 			Result r = resultNavigator.getNextResult();
 			textComponent.select(r.startOffset, r.endOffset);
 		} catch (EndOfDocumentHasBeenReachedException e) {
-			bottomPanel.setStatusText(FlexoLocalization.localizedForKey("end_of_document_has_been_reached"));
+			bottomPanel.setStatusText(localizedForKey("end_of_document_has_been_reached"));
 		} catch (ResultNotFoundException e) {
-			bottomPanel.setStatusText(FlexoLocalization.localizedForKey("no_result_found"));
+			bottomPanel.setStatusText(localizedForKey("no_result_found"));
 		} finally {
 			textComponent.addCaretListener(this);
 		}

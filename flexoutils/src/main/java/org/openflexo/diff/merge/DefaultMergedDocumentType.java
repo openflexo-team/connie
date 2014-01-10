@@ -22,7 +22,6 @@ package org.openflexo.diff.merge;
 import java.util.logging.Logger;
 
 import org.openflexo.diff.DelimitingMethod;
-import org.openflexo.localization.FlexoLocalization;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.toolbox.FileFormat;
 import org.openflexo.toolbox.FileFormat.TextFileFormat;
@@ -152,7 +151,8 @@ public class DefaultMergedDocumentType implements MergedDocumentType {
 			new DefaultAutomaticMergeResolvingModel() {
 				@Override
 				protected String localizedForKey(String key) {
-					return FlexoLocalization.localizedForKey(key);
+					return key;
+					// return FlexoLocalization.localizedForKey(key);
 				}
 			});
 

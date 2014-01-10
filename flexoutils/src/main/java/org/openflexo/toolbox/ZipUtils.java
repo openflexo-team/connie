@@ -37,7 +37,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.openflexo.localization.FlexoLocalization;
 
 public class ZipUtils {
 
@@ -82,7 +81,7 @@ public class ZipUtils {
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
 			if (progress != null) {
-				progress.setSecondaryProgress(FlexoLocalization.localizedForKey("unzipping") + " " + entry.getName());
+				progress.setSecondaryProgress("unzipping" + " " + entry.getName());
 			}
 			if (entry.getName().startsWith("__MACOSX")) {
 				continue;
@@ -284,8 +283,7 @@ public class ZipUtils {
 		byte[] readBuffer = new byte[4096];
 		int bytesIn = 0;
 		if (progress != null) {
-			progress.setSecondaryProgress(FlexoLocalization.localizedForKey("zipping_file") + " "
-					+ fileToZip.getAbsolutePath().substring(pathPrefixSize));
+			progress.setSecondaryProgress("zipping_file" + " " + fileToZip.getAbsolutePath().substring(pathPrefixSize));
 		}
 		FileInputStream fis = new FileInputStream(fileToZip);
 		try {
