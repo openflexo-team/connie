@@ -17,7 +17,7 @@
 	</scm>
 	<modules>
 		<module>flexoutils</module>
-		<module>flexoconnie</module>
+		<module>connie-core</module>
     </modules>
 	<build>
 		<resources>
@@ -146,7 +146,7 @@
 			</dependency>	
 			<dependency>
 				<groupId>org.openflexo</groupId>
-				<artifactId>flexoconnie</artifactId>
+				<artifactId>connie-core</artifactId>
 				<version>1.0-SNAPSHOT</version>
 			</dependency>	
 			

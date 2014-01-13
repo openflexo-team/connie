@@ -8,7 +8,7 @@
 		<artifactId>connie</artifactId>
         <version>1.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>flexoconnie</artifactId>
+	<artifactId>connie-core</artifactId>
 	<name>Connie-core</name>
 	<build>
 		<plugins>
