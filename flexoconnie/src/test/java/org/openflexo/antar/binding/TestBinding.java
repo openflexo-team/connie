@@ -259,46 +259,55 @@ public class TestBinding extends TestCase {
 
 	public void test1() {
 		System.out.println("*********** test1");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString", String.class, "this is a test");
 	}
 
 	public void test2() {
 		System.out.println("*********** test2");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString.substring(5,7)", String.class, "is");
 	}
 
 	public void test3() {
 		System.out.println("*********** test3");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString.substring(anInt+3,anInt+7)", String.class, "test");
 	}
 
 	public void test4() {
 		System.out.println("*********** test4");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString.length", Integer.class, 14);
 	}
 
 	public void test5() {
 		System.out.println("*********** test5");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString.length+aList.size()", Integer.class, 18);
 	}
 
 	public void test6() {
 		System.out.println("*********** test6");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString.length > aList.size()", Boolean.class, true);
 	}
 
 	public void test7() {
 		System.out.println("*********** test7");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString.length > aList.size()", Boolean.TYPE, true);
 	}
 
 	public void test8() {
 		System.out.println("*********** test8");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString == null", Boolean.TYPE, false);
 	}
 
 	public void test9() {
 		System.out.println("*********** test9");
+		TestBindingContext.aString = "this is a test";
 		genericTest("aString == ''", Boolean.TYPE, false);
 	}
 
