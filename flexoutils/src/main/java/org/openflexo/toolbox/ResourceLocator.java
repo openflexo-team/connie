@@ -20,11 +20,11 @@
 package org.openflexo.toolbox;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,8 +47,8 @@ public class ResourceLocator {
 
 	static File locateFile(String relativePathName, boolean lenient) {
 		// logger.info("locateFile: "+relativePathName);
-		for (Enumeration<File> e = getDirectoriesSearchOrder().elements(); e.hasMoreElements();) {
-			File nextTry = new File(e.nextElement(), relativePathName);
+		for (File f : getDirectoriesSearchOrder()) {
+			File nextTry = new File(f, relativePathName);
 			if (nextTry.exists()) {
 				if (logger.isLoggable(Level.FINER)) {
 					logger.finer("Found " + nextTry.getAbsolutePath());
@@ -72,8 +72,7 @@ public class ResourceLocator {
 	}
 
 	static String retrieveRelativePath(FileResource fileResource) {
-		for (Enumeration<File> e = getDirectoriesSearchOrder().elements(); e.hasMoreElements();) {
-			File f = e.nextElement();
+		for (File f : getDirectoriesSearchOrder()) {
 			if (fileResource.getAbsolutePath().startsWith(f.getAbsolutePath())) {
 				return fileResource.getAbsolutePath().substring(f.getAbsolutePath().length() + 1).replace('\\', '/');
 			}
@@ -96,7 +95,7 @@ public class ResourceLocator {
 		// return cleanAbsolutePath(dirtyPath);
 	}
 
-	private static Vector<File> directoriesSearchOrder = null;
+	private static List<File> directoriesSearchOrder = null;
 
 	private static File preferredResourcePath;
 
@@ -124,29 +123,103 @@ public class ResourceLocator {
 		getDirectoriesSearchOrder();
 	}
 
-	public static void addProjectDirectory(File projectDirectory) {
+	/*public static void addProjectDirectory(File projectDirectory) {
 		init();
 		if (projectDirectory.exists()) {
 			addProjectResourceDirs(directoriesSearchOrder, projectDirectory);
 		}
+	}*/
+
+	/**
+	 * Find directory where .git directory is defined.<br>
+	 * Start search from working directory
+	 * 
+	 * @return
+	 */
+	private static File getGitRoot() {
+		File workingDirectory = new File(System.getProperty("user.dir"));
+		System.out.println("********** workingDirectory = " + workingDirectory);
+		File current = workingDirectory;
+		while (current != null) {
+			System.out.println("Current: " + current);
+			File GIT_DIR = new File(current, ".git");
+			if (GIT_DIR.exists()) {
+				System.out.println("Found .git");
+				return current;
+			}
+			current = current.getParentFile();
+		}
+		return null;
 	}
 
-	private static Vector<File> getDirectoriesSearchOrder() {
+	/**
+	 * Find all directories matching src/main/resources or src/test/resources or src/dev/resources pattern, from a diven root directory
+	 * 
+	 * @param root
+	 * @return
+	 */
+	private static void appendAllResourcesDirectories(File root, List<File> returned) {
+		appendAllResourcesDirectories(root, "src", returned);
+	}
+
+	private static void appendAllResourcesDirectories(File root, final String searchedToken, List<File> returned) {
+		for (File f : root.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.equals(searchedToken);
+			}
+		})) {
+			if (searchedToken.equals("src")) {
+				appendAllResourcesDirectories(f, "main", returned);
+				appendAllResourcesDirectories(f, "test", returned);
+				appendAllResourcesDirectories(f, "dev", returned);
+			} else if (searchedToken.equals("main") || searchedToken.equals("test") || searchedToken.equals("dev")) {
+				appendAllResourcesDirectories(f, "resources", returned);
+			} else if (searchedToken.equals("resources")) {
+				System.out.println("Found " + f);
+				returned.add(f);
+			}
+		}
+		for (File d : root.listFiles()) {
+			if (d.isDirectory() && (new File(d, "pom.xml").exists())) {
+				appendAllResourcesDirectories(d, returned);
+			}
+		}
+	}
+
+	private static List<File> getDirectoriesSearchOrder() {
 		if (directoriesSearchOrder == null) {
 			synchronized (ResourceLocator.class) {
 				if (directoriesSearchOrder == null) {
 					if (logger.isLoggable(Level.INFO)) {
 						logger.info("Initializing directories search order");
 					}
-					directoriesSearchOrder = new Vector<File>();
+					directoriesSearchOrder = new ArrayList<File>();
 					if (preferredResourcePath != null) {
 						if (logger.isLoggable(Level.INFO)) {
 							logger.info("Adding directory " + preferredResourcePath.getAbsolutePath());
 						}
 						directoriesSearchOrder.add(preferredResourcePath);
 					}
-					File workingDirectory = new File(System.getProperty("user.dir"));
+					File gitRoot = getGitRoot();
+					if (gitRoot != null && gitRoot.exists()) {
+						System.out.println("Found gitRoot=" + gitRoot);
+						appendAllResourcesDirectories(gitRoot, directoriesSearchOrder);
+					}
+
+					/*File workingDirectory = new File(System.getProperty("user.dir"));
 					File flexoDesktopDirectory = findProjectDirectoryWithName(workingDirectory, "openflexo");
+					System.out.println("********** workingDirectory = " + workingDirectory);
+					File current = workingDirectory;
+					while (current != null) {
+						System.out.println("Current: " + current);
+						File GIT_DIR = new File(current, ".git");
+						if (GIT_DIR.exists()) {
+							System.out.println("Found .git");
+						}
+						current = current.getParentFile();
+					}
 					if (flexoDesktopDirectory != null) {
 						findAllFlexoProjects(flexoDesktopDirectory, directoriesSearchOrder);
 						File technologyadaptersintegrationDirectory = new File(flexoDesktopDirectory.getParentFile(),
@@ -155,14 +228,14 @@ public class ResourceLocator {
 							findAllFlexoProjects(technologyadaptersintegrationDirectory, directoriesSearchOrder);
 						}
 					}
-					directoriesSearchOrder.add(workingDirectory);
+					directoriesSearchOrder.add(workingDirectory);*/
 				}
 			}
 		}
 		return directoriesSearchOrder;
 	}
 
-	public static File findProjectDirectoryWithName(File currentDir, String projectName) {
+	/*public static File findProjectDirectoryWithName(File currentDir, String projectName) {
 		if (currentDir != null) {
 			File attempt = new File(currentDir, projectName);
 			if (attempt.exists()) {
@@ -205,9 +278,6 @@ public class ResourceLocator {
 		if (logger.isLoggable(Level.FINE)) {
 			logger.fine("Adding directory " + file3.getAbsolutePath());
 		}
-		/*if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Adding directory " + file4.getAbsolutePath());
-		}*/
 		if (file1.exists()) {
 			files.add(file1);
 		}
@@ -217,10 +287,7 @@ public class ResourceLocator {
 		if (file3.exists()) {
 			files.add(file3);
 		}
-		/*if (file4.exists()) {
-			files.add(file4);
-		}*/
-	}
+	}*/
 
 	public static File getUserDirectory() {
 		return userDirectory;
