@@ -258,6 +258,7 @@ public class TestBinding extends TestCase {
 	}
 
 	public void test1() {
+		System.out.println("*********** TestBinding, evaluating aString");
 		genericTest("aString", String.class, "this is a test");
 	}
 
