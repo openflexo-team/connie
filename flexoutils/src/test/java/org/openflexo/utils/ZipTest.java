@@ -27,6 +27,7 @@ import java.util.zip.ZipFile;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.openflexo.toolbox.FileUtils;
 import org.openflexo.toolbox.ZipUtils;
 
@@ -67,6 +68,7 @@ public class ZipTest extends TestCase {
 		super.tearDown();
 	}
 
+	@Test
 	public void testZipUnzip() throws Exception {
 		File archive = File.createTempFile("ZipTestFile", ".zip");
 		System.err.println("Zip archive: " + archive.getAbsolutePath());
@@ -94,6 +96,7 @@ public class ZipTest extends TestCase {
 		archive.delete();
 	}
 
+	@Test
 	public void testZipUnzipFiltered() throws Exception {
 		File archive = File.createTempFile("ZipTestFile", ".zip");
 		System.err.println("Zip archive: " + archive.getAbsolutePath());
@@ -123,6 +126,7 @@ public class ZipTest extends TestCase {
 		archive.delete();
 	}
 
+	@Test
 	public void testZipUnzipFiltered2() throws Exception {
 		File archive = File.createTempFile("ZipTestFile", ".zip");
 		System.err.println("Zip archive: " + archive.getAbsolutePath());

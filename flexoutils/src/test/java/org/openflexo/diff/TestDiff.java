@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.openflexo.diff.ComputeDiff.AdditionChange;
 import org.openflexo.diff.ComputeDiff.DiffChange;
 import org.openflexo.diff.ComputeDiff.DiffReport;
@@ -35,6 +36,7 @@ import org.openflexo.toolbox.FileUtils;
 
 public class TestDiff extends TestCase {
 
+	@Test
 	public void test() {
 		DiffSource source = new DiffSource("\t\t1\t\t\n\t\t\n\n4\n5\n", DelimitingMethod.DEFAULT);
 		assertEquals(5, source.getTextTokens().length);
@@ -44,6 +46,7 @@ public class TestDiff extends TestCase {
 		}
 	}
 
+	@Test
 	public void test0() throws IOException {
 		File file1 = new FileResource("TestDiff/TestJava0-v1.java");
 		File file2 = new FileResource("TestDiff/TestJava0-v2.java");
@@ -55,6 +58,7 @@ public class TestDiff extends TestCase {
 		assertEquals(report.getChanges().size(), 0);
 	}
 
+	@Test
 	public void test1() throws IOException {
 		File file1 = new FileResource("TestDiff/TestJava1-v1.java");
 		File file2 = new FileResource("TestDiff/TestJava1-v2.java");
@@ -71,6 +75,7 @@ public class TestDiff extends TestCase {
 		assertChange(report.getChanges().get(4), RemovalChange.class, 59, 59, 62, 61);
 	}
 
+	@Test
 	public void test2() throws IOException {
 		File file1 = new FileResource("TestDiff/TestJava2-v1.java");
 		File file2 = new FileResource("TestDiff/TestJava2-v2.java");
@@ -86,6 +91,7 @@ public class TestDiff extends TestCase {
 		assertChange(report.getChanges().get(3), RemovalChange.class, 64, 68, 73, 72);
 	}
 
+	@Test
 	public void test3() throws IOException {
 		File file1 = new FileResource("TestDiff/TestJava3-v1.java");
 		File file2 = new FileResource("TestDiff/TestJava3-v2.java");

@@ -24,11 +24,13 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.openflexo.toolbox.FileUtils;
 import org.openflexo.toolbox.FileUtils.CopyStrategy;
 
 public class FileUtilTest extends TestCase {
 
+	@Test
 	public void testInvalidFileName() throws Exception {
 		// First we check that invalid file names are indeed refused
 		String[] invalidNames = new String[] { "Coucou /Blabla", "Je suis: le meilleur", "<GnaGna>", "<", ">", "|", "?", "*", "ééé" };
@@ -58,6 +60,7 @@ public class FileUtilTest extends TestCase {
 		assertFalse(FileUtils.isStringValidForFileName(sb.toString()));
 	}
 
+	@Test
 	public void testFileNameFixing() {
 		String s256 = "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
 				+ "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
@@ -66,6 +69,7 @@ public class FileUtilTest extends TestCase {
 		assertEquals(valid, FileUtils.getValidFileName(invalid));
 	}
 
+	@Test
 	public void testFileNameCleanUp() throws Exception {
 		String test1 = "ùneImageéèàç?;,ù%$ô.jpg";
 		String test2 = "éèàç?.;,ù%$ô";
@@ -73,6 +77,7 @@ public class FileUtilTest extends TestCase {
 		assertTrue(FileUtils.removeNonASCIIAndPonctuationAndBadFileNameChars(test2).matches("[\\-\\w.]*"));
 	}
 
+	@Test
 	public void testCopyStrategy() throws Exception {
 		File tempDirectory = FileUtils.createTempDirectory("TestFileUtils", null);
 		File destTempDirectory = FileUtils.createTempDirectory("TestFileUtilsDestination", null);
@@ -108,6 +113,7 @@ public class FileUtilTest extends TestCase {
 		FileUtils.deleteDir(destTempDirectory);
 	}
 
+	@Test
 	public void testLowerCaseExtension() {
 		assertEquals("coucou", FileUtils.lowerCaseExtension("coucou"));
 		assertEquals(null, FileUtils.lowerCaseExtension(null));
