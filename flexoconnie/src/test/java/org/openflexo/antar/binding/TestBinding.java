@@ -258,48 +258,58 @@ public class TestBinding extends TestCase {
 	}
 
 	public void test1() {
-		System.out.println("*********** TestBinding, evaluating aString");
+		System.out.println("*********** test1");
 		genericTest("aString", String.class, "this is a test");
 	}
 
 	public void test2() {
+		System.out.println("*********** test2");
 		genericTest("aString.substring(5,7)", String.class, "is");
 	}
 
 	public void test3() {
+		System.out.println("*********** test3");
 		genericTest("aString.substring(anInt+3,anInt+7)", String.class, "test");
 	}
 
 	public void test4() {
+		System.out.println("*********** test4");
 		genericTest("aString.length", Integer.class, 14);
 	}
 
 	public void test5() {
+		System.out.println("*********** test5");
 		genericTest("aString.length+aList.size()", Integer.class, 18);
 	}
 
 	public void test6() {
+		System.out.println("*********** test6");
 		genericTest("aString.length > aList.size()", Boolean.class, true);
 	}
 
 	public void test7() {
+		System.out.println("*********** test7");
 		genericTest("aString.length > aList.size()", Boolean.TYPE, true);
 	}
 
 	public void test8() {
+		System.out.println("*********** test8");
 		genericTest("aString == null", Boolean.TYPE, false);
 	}
 
 	public void test9() {
+		System.out.println("*********** test9");
 		genericTest("aString == ''", Boolean.TYPE, false);
 	}
 
 	public void test10() {
+		System.out.println("*********** test1O");
 		TestBindingContext.aString = "";
 		genericTest("aString == ''", Boolean.TYPE, true);
 	}
 
 	public void test11() {
+		System.out.println("*********** test11");
 		TestBindingContext.aString = "foo";
 		genericTest("aString+((aString != 'foo' ? ('=' + aString) : ''))", String.class, "foo");
 		TestBindingContext.aString = "foo2";
@@ -307,18 +317,22 @@ public class TestBinding extends TestCase {
 	}
 
 	public void test12() {
+		System.out.println("*********** test12");
 		genericTest("anInt > 2 ? 'anInt > 2' : 'anInt<=2' ", String.class, "anInt > 2");
 	}
 
 	public void test13() {
+		System.out.println("*********** test13");
 		genericTest("aString != null", Boolean.TYPE, true);
 	}
 
 	public void test14() {
+		System.out.println("*********** test14");
 		genericTest("1", Integer.TYPE, 1);
 	}
 
 	public void test15() {
+		System.out.println("*********** test15");
 		TestBindingContext.aString = "foo";
 		genericTest("aString.length", Integer.TYPE, 3);
 	}
