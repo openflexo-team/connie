@@ -205,7 +205,8 @@ public class ResourceLocator {
 					File gitRoot = getGitRoot();
 					if (gitRoot != null && gitRoot.exists()) {
 						System.out.println("Found gitRoot=" + gitRoot);
-						appendAllResourcesDirectories(gitRoot, directoriesSearchOrder);
+						// We gets one level further to handle multiple repositories
+						appendAllResourcesDirectories(gitRoot.getParentFile(), directoriesSearchOrder);
 					}
 
 					/*File workingDirectory = new File(System.getProperty("user.dir"));
