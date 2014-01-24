@@ -138,13 +138,13 @@ public class ResourceLocator {
 	 */
 	private static File getGitRoot() {
 		File workingDirectory = new File(System.getProperty("user.dir"));
-		System.out.println("********** workingDirectory = " + workingDirectory);
+		// System.out.println("********** workingDirectory = " + workingDirectory);
 		File current = workingDirectory;
 		while (current != null) {
-			System.out.println("Current: " + current);
+			// System.out.println("Current: " + current);
 			File GIT_DIR = new File(current, ".git");
 			if (GIT_DIR.exists()) {
-				System.out.println("Found .git");
+				// System.out.println("Found .git");
 				return current;
 			}
 			current = current.getParentFile();
@@ -177,7 +177,7 @@ public class ResourceLocator {
 			} else if (searchedToken.equals("main") || searchedToken.equals("test") || searchedToken.equals("dev")) {
 				appendAllResourcesDirectories(f, "resources", returned);
 			} else if (searchedToken.equals("resources")) {
-				System.out.println("Found " + f);
+				// System.out.println("Found " + f);
 				returned.add(f);
 			}
 		}
@@ -197,14 +197,14 @@ public class ResourceLocator {
 					}
 					directoriesSearchOrder = new ArrayList<File>();
 					if (preferredResourcePath != null) {
-						if (logger.isLoggable(Level.INFO)) {
+						/*if (logger.isLoggable(Level.INFO)) {
 							logger.info("Adding directory " + preferredResourcePath.getAbsolutePath());
-						}
+						}*/
 						directoriesSearchOrder.add(preferredResourcePath);
 					}
 					File gitRoot = getGitRoot();
 					if (gitRoot != null && gitRoot.exists()) {
-						System.out.println("Found gitRoot=" + gitRoot);
+						// System.out.println("Found gitRoot=" + gitRoot);
 						// We gets one level further to handle multiple repositories
 						appendAllResourcesDirectories(gitRoot.getParentFile(), directoriesSearchOrder);
 					}
