@@ -24,6 +24,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +48,8 @@ public class ResourceLocator {
 	}
 
 	static File locateFile(String relativePathName, boolean lenient) {
-		// logger.info("locateFile: "+relativePathName);
+		final File workingDirectory = new File(System.getProperty("user.dir"));
+		List<File> found = new ArrayList<File>();
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
 			if (nextTry.exists()) {
@@ -55,7 +58,7 @@ public class ResourceLocator {
 				}
 				try {
 					if (nextTry.getCanonicalFile().getName().equals(nextTry.getName()) || lenient) {
-						return nextTry;
+						found.add(nextTry);
 					}
 				} catch (IOException e1) {
 				}
@@ -65,6 +68,27 @@ public class ResourceLocator {
 				}
 			}
 		}
+		if (found.size() == 1) {
+			return found.get(0);
+		}
+
+		// In this case, the response is ambigous
+		if (found.size() > 1) {
+			// We try to privilegiate files that are closer to working dir
+			Collections.sort(found, new Comparator<File>() {
+				@Override
+				public int compare(File o1, File o2) {
+					return FileUtils.distance(workingDirectory, o1) - FileUtils.distance(workingDirectory, o2);
+				}
+
+			});
+			/*System.out.println("Ambigous files: ");
+			for (File f : found) {
+				System.out.println("> Found: distance=" + FileUtils.distance(workingDirectory, f) + " " + f);
+			}*/
+			return found.get(0);
+		}
+
 		if (logger.isLoggable(Level.WARNING)) {
 			logger.warning("Could not locate resource " + relativePathName);
 		}

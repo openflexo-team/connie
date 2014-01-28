@@ -622,6 +622,16 @@ public class FileUtils {
 		return false;
 	}
 
+	public static int distance(File directory, File file) {
+		if (file.equals(directory)) {
+			return 0;
+		}
+		if (file.getParentFile() != null) {
+			return distance(directory, file.getParentFile()) + 1;
+		}
+		return 1000;
+	}
+
 	/**
 	 *
 	 */
