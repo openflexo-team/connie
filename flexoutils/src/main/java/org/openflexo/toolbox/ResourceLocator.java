@@ -58,7 +58,7 @@ public class ResourceLocator {
 
 	private static File locateFile(String relativePathName, boolean lenient) {
 		final File workingDirectory = new File(System.getProperty("user.dir"));
-		System.out.println("Searching " + relativePathName + " in " + workingDirectory);
+		// System.out.println("Searching " + relativePathName + " in " + workingDirectory);
 		List<File> found = new ArrayList<File>();
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
@@ -93,10 +93,10 @@ public class ResourceLocator {
 				}
 
 			});
-			System.out.println("Ambigous files: ");
+			/*System.out.println("Ambigous files: ");
 			for (File f : found) {
 				System.out.println("> Found: distance=" + FileUtils.distance(workingDirectory, f) + " " + f);
-			}
+			}*/
 			return found.get(0);
 		}
 
