@@ -39,7 +39,16 @@ public class ResourceLocator {
 
 	private static final Logger logger = Logger.getLogger(ResourceLocator.class.getPackage().getName());
 
-	static File locateFile(String relativePathName) {
+	/**
+	 * Locate and returns file identified by relativePathName<br>
+	 * If many files match supplied relativePathName, then return the one which is most narrow of current dir, relative to the distance
+	 * between files as defined in {@link FileUtils}.<br>
+	 * Please use locateAllFiles(String) to get the list of all files matching supplied relativePathName
+	 * 
+	 * @param relativePathName
+	 * @return
+	 */
+	public static File locateFile(String relativePathName) {
 		File locateFile = locateFile(relativePathName, false);
 		if (locateFile != null && locateFile.exists()) {
 			return locateFile;
@@ -47,8 +56,9 @@ public class ResourceLocator {
 		return locateFile(relativePathName, true);
 	}
 
-	static File locateFile(String relativePathName, boolean lenient) {
+	private static File locateFile(String relativePathName, boolean lenient) {
 		final File workingDirectory = new File(System.getProperty("user.dir"));
+		System.out.println("Searching " + relativePathName + " in " + workingDirectory);
 		List<File> found = new ArrayList<File>();
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
@@ -69,6 +79,7 @@ public class ResourceLocator {
 			}
 		}
 		if (found.size() == 1) {
+			// System.out.println("Returning " + found.get(0));
 			return found.get(0);
 		}
 
@@ -82,10 +93,10 @@ public class ResourceLocator {
 				}
 
 			});
-			/*System.out.println("Ambigous files: ");
+			System.out.println("Ambigous files: ");
 			for (File f : found) {
 				System.out.println("> Found: distance=" + FileUtils.distance(workingDirectory, f) + " " + f);
-			}*/
+			}
 			return found.get(0);
 		}
 
@@ -93,6 +104,39 @@ public class ResourceLocator {
 			logger.warning("Could not locate resource " + relativePathName);
 		}
 		return new File(userDirectory, relativePathName);
+	}
+
+	/**
+	 * Locate and returns the list of all files matching supplied relativePathName
+	 * 
+	 * @param relativePathName
+	 * @return
+	 */
+	public static List<File> locateAllFiles(String relativePathName) {
+		return locateAllFiles(relativePathName, true);
+	}
+
+	private static List<File> locateAllFiles(String relativePathName, boolean lenient) {
+		final File workingDirectory = new File(System.getProperty("user.dir"));
+		System.out.println("Searching " + relativePathName + " in " + workingDirectory);
+		List<File> found = new ArrayList<File>();
+		for (File f : getDirectoriesSearchOrder()) {
+			File nextTry = new File(f, relativePathName);
+			if (nextTry.exists()) {
+				if (logger.isLoggable(Level.FINER)) {
+					logger.finer("Found " + nextTry.getAbsolutePath());
+				}
+				try {
+					if (nextTry.getCanonicalFile().getName().equals(nextTry.getName()) || lenient) {
+						found.add(nextTry);
+					}
+				} catch (IOException e1) {
+				}
+			}
+		}
+
+		return found;
+
 	}
 
 	static String retrieveRelativePath(FileResource fileResource) {

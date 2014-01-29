@@ -167,6 +167,7 @@ public class FileUtils {
 				copyContentDirToDir(curFile, new File(dest, curFile.getName()), strategy, fileFilter);
 			} else if (curFile.isFile() && fileFilter.accept(curFile)) {
 				File destFile = new File(dest, curFile.getName());
+				System.out.println("Copying " + curFile + " to " + destFile);
 				if (destFile.exists()) {
 					switch (strategy) {
 					case IGNORE_EXISTING:
@@ -465,19 +466,6 @@ public class FileUtils {
 		}
 	}
 
-	public static void main(String[] args) {
-		File file = new File("C:\\Documents and Settings\\gpolet.DENALI\\Desktop\\Workers Remittances-19-02-09.prj");
-		Vector<File> files = listFilesRecursively(file, new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith("~");
-			}
-		});
-		for (File file2 : files) {
-			System.err.println(file2.getAbsolutePath());
-		}
-	}
-
 	public static boolean isStringValidForFileName(String s) {
 		return s != null && !UNACCEPTABLE_CHARS_PATTERN.matcher(s).find() && s.matches(VALID_FILE_NAME_REGEXP) && s.length() < 256;
 	}
@@ -622,12 +610,31 @@ public class FileUtils {
 		return false;
 	}
 
-	public static int distance(File directory, File file) {
-		if (file.equals(directory)) {
+	public static int distance(File f1, File f2) {
+		return Math.min(distance(f1, f2, false), distance(f2, f1, false));
+	}
+
+	private static int distance(File f1, File f2, boolean computeInverse) {
+		if (f2.equals(f1)) {
 			return 0;
 		}
-		if (file.getParentFile() != null) {
-			return distance(directory, file.getParentFile()) + 1;
+		/*if (computeInverse) {
+			int inverseDistance = distance(f2, f1, false);
+			if (inverseDistance < 1000) {
+				return inverseDistance;
+			}
+		}*/
+		if (f2.getParentFile() != null) {
+			int d1 = distance(f1, f2.getParentFile());
+			if (d1 < 1000) {
+				return d1 + 1;
+			}
+		}
+		if (f1.getParentFile() != null) {
+			int d2 = distance(f2, f1.getParentFile());
+			if (d2 < 1000) {
+				return d2 + 1;
+			}
 		}
 		return 1000;
 	}

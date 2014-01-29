@@ -11,29 +11,29 @@ import org.junit.runners.model.InitializationError;
 
 public class OrderedRunner extends BlockJUnit4ClassRunner {
 
-    public OrderedRunner(Class klass) throws InitializationError {
-        super(klass);
-    }
+	public OrderedRunner(Class klass) throws InitializationError {
+		super(klass);
+	}
 
-    @Override
-    protected List computeTestMethods() {
-        List list = super.computeTestMethods();
-        List copy = new ArrayList(list);
-        Collections.sort(copy, new Comparator<FrameworkMethod>() {
-            public int compare(FrameworkMethod o1, FrameworkMethod o2) {
-                return getTestOrder(o1)-getTestOrder(o2);
-            }
-        });
-        return copy;
-    }
-    
-    protected int getTestOrder(FrameworkMethod fm) {
-    	TestOrder to = fm.getMethod().getAnnotation(TestOrder.class);
-    	System.out.println("for method "+fm.getMethod()+" to="+to);
-    	if (to != null) {
-    		return to.value();
-    	}
-    	return -1;
-    }
-    
+	@Override
+	protected List computeTestMethods() {
+		List list = super.computeTestMethods();
+		List copy = new ArrayList(list);
+		Collections.sort(copy, new Comparator<FrameworkMethod>() {
+			@Override
+			public int compare(FrameworkMethod o1, FrameworkMethod o2) {
+				return getTestOrder(o1) - getTestOrder(o2);
+			}
+		});
+		return copy;
+	}
+
+	protected int getTestOrder(FrameworkMethod fm) {
+		TestOrder to = fm.getMethod().getAnnotation(TestOrder.class);
+		if (to != null) {
+			return to.value();
+		}
+		return -1;
+	}
+
 }
