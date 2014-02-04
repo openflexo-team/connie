@@ -216,4 +216,7 @@ public abstract class Expression {
 	public int hashCode() {
 		return (getClass().getName() + "@[" + toString() + "]").hashCode();
 	}
+
+	public abstract boolean isSettable();
+
 }

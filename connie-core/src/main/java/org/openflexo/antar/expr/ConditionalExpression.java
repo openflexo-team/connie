@@ -39,6 +39,11 @@ public class ConditionalExpression extends Expression {
 		return Math.max(Math.max(thenExpression.getDepth(), elseExpression.getDepth()), condition.getDepth()) + 1;
 	}
 
+	@Override
+	public boolean isSettable() {
+		return false;
+	}
+
 	/*@Override
 	public Expression evaluate(EvaluationContext context) throws TypeMismatchException {
 		_checkSemanticallyAcceptable();

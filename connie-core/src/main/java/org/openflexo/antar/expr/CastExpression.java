@@ -25,7 +25,7 @@ import org.openflexo.antar.binding.TypeUtils;
 
 public class CastExpression extends Expression {
 
-	private TypeReference castType;
+	private final TypeReference castType;
 	private Expression argument;
 
 	public CastExpression(TypeReference castType, Expression argument) {
@@ -89,5 +89,10 @@ public class CastExpression extends Expression {
 			return castType.equals(e.getCastType()) && getArgument().equals(e.getArgument());
 		}
 		return super.equals(obj);
+	}
+
+	@Override
+	public boolean isSettable() {
+		return getArgument().isSettable();
 	}
 }

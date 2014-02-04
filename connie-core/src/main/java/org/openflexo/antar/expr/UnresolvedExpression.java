@@ -59,4 +59,9 @@ public class UnresolvedExpression extends Expression {
 		return null;
 	}
 
+	@Override
+	public boolean isSettable() {
+		return false;
+	}
+
 }

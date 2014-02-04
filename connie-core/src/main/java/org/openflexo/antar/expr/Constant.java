@@ -94,6 +94,11 @@ public abstract class Constant<V> extends Expression {
 		return getEvaluationType().getType();
 	}
 
+	@Override
+	public boolean isSettable() {
+		return false;
+	}
+
 	public static abstract class BooleanConstant extends Constant<Boolean> {
 		public static BooleanConstant get(boolean value) {
 			if (value) {

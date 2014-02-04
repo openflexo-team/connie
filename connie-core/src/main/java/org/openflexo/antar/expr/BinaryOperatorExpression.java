@@ -161,4 +161,8 @@ public class BinaryOperatorExpression extends Expression {
 		return super.equals(obj);
 	}
 
+	@Override
+	public boolean isSettable() {
+		return false;
+	}
 }
