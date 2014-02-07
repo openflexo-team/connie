@@ -618,22 +618,18 @@ public class FileUtils {
 		if (f2.equals(f1)) {
 			return 0;
 		}
-		/*if (computeInverse) {
-			int inverseDistance = distance(f2, f1, false);
-			if (inverseDistance < 1000) {
-				return inverseDistance;
-			}
-		}*/
 		if (f2.getParentFile() != null) {
 			int d1 = distance(f1, f2.getParentFile());
 			if (d1 < 1000) {
 				return d1 + 1;
 			}
 		}
-		if (f1.getParentFile() != null) {
-			int d2 = distance(f2, f1.getParentFile());
-			if (d2 < 1000) {
-				return d2 + 1;
+		if (computeInverse) {
+			if (f1.getParentFile() != null) {
+				int d2 = distance(f2, f1.getParentFile());
+				if (d2 < 1000) {
+					return d2 + 1;
+				}
 			}
 		}
 		return 1000;

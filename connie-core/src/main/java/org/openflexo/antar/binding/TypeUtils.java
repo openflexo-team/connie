@@ -27,9 +27,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -864,52 +863,173 @@ public class TypeUtils {
 	 * @param storedObjectForClasses
 	 * @return
 	 */
-	public static <T> T objectForClass(Class<?> aClass, Hashtable<Class<?>, T> storedObjectForClasses) {
+	public static <T> T objectForClass(Class<?> aClass, Map<Class<?>, T> storedObjectForClasses) {
+		return objectForClass(aClass, storedObjectForClasses, true);
+	}
+
+	/**
+	 * Utility method used to lookup an object associated with a given class<br>
+	 * Lookup is performed using inheritance properties declared for supplied class, using inherited classes and interfaces<br>
+	 * The object for the most specialized class is returned
+	 * 
+	 * @param aClass
+	 * @param storedObjectForClasses
+	 * @param storeResultInMap
+	 *            if set to true, use the map to store the result for future use (caching)
+	 * @return
+	 */
+	public static <T> T objectForClass(Class<?> aClass, Map<Class<?>, T> storedObjectForClasses, boolean storeResultInMap) {
 		if (aClass == null) {
 			return null;
 		}
+
 		T returned = storedObjectForClasses.get(aClass);
 		if (returned != null) {
 			return returned;
 		} else {
+
+			// We first check for exact lookup
+
+			Map<Class<?>, T> matchingClasses = new HashMap<Class<?>, T>();
+
+			// First on super class
 			Class<?> superclass = aClass.getSuperclass();
 			if (superclass != null) {
 				returned = storedObjectForClasses.get(superclass);
 				if (returned != null) {
-					return returned;
-				} else {
-					for (Class<?> superInterface : aClass.getInterfaces()) {
-						returned = storedObjectForClasses.get(superInterface);
-						if (returned != null) {
-							return returned;
-						}
+					matchingClasses.put(superclass, returned);
+				}
+			}
+
+			// Then on interfaces
+			for (Class<?> superInterface : aClass.getInterfaces()) {
+				returned = storedObjectForClasses.get(superInterface);
+				if (returned != null) {
+					matchingClasses.put(superInterface, returned);
+				}
+			}
+
+			// If only one class match, nice, we return the value
+			if (matchingClasses.size() == 1) {
+				returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
+				if (storeResultInMap) {
+					storedObjectForClasses.put(aClass, returned);
+				}
+				return returned;
+			}
+
+			if (matchingClasses.size() > 1) {
+
+				// Ambigous, return first result
+				returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
+				if (storeResultInMap) {
+					storedObjectForClasses.put(aClass, returned);
+				}
+				return returned;
+			}
+
+			// No matching classes
+			// Now, we run recursively
+
+			// First on super class
+			if (superclass != null) {
+				returned = objectForClass(superclass, storedObjectForClasses, storeResultInMap);
+				if (returned != null) {
+					matchingClasses.put(superclass, returned);
+				}
+			}
+
+			// Then on interfaces
+			for (Class<?> superInterface : aClass.getInterfaces()) {
+				returned = objectForClass(superInterface, storedObjectForClasses, storeResultInMap);
+				if (returned != null) {
+					matchingClasses.put(superInterface, returned);
+				}
+			}
+
+			// If only one class match, nice, we return the value
+			if (matchingClasses.size() == 1) {
+
+				returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
+				if (storeResultInMap) {
+					storedObjectForClasses.put(aClass, returned);
+				}
+				return returned;
+
+			}
+
+			if (matchingClasses.size() > 1) {
+
+				// Ambigous, return most specialized
+
+				Class mostSpecialized = null;
+				int bestDistance = 1001;
+				for (Class c : matchingClasses.keySet()) {
+					if (distance(aClass, c) < bestDistance) {
+						mostSpecialized = c;
+						bestDistance = distance(aClass, c);
 					}
-					returned = objectForClass(superclass, storedObjectForClasses);
-					if (returned != null) {
-						storedObjectForClasses.put(aClass, returned);
-						return returned;
-					} else {
-						for (Class<?> superInterface : aClass.getInterfaces()) {
-							returned = objectForClass(superInterface, storedObjectForClasses);
-							if (returned != null) {
-								storedObjectForClasses.put(aClass, returned);
-								return returned;
-							}
-						}
-					}
+				}
+
+				returned = matchingClasses.get(mostSpecialized);
+				if (storeResultInMap) {
+					storedObjectForClasses.put(aClass, returned);
+				}
+
+				return returned;
+
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return distance between two classes
+	 * 
+	 * @param c1
+	 * @param c2
+	 * @return
+	 */
+	private static int distance(Class c1, Class c2) {
+		if (c2.equals(c1)) {
+			return 0;
+		}
+
+		if (c1.isAssignableFrom(c2)) {
+
+			if (c2.getSuperclass() != null) {
+				int d1 = distance(c1, c2.getSuperclass());
+				if (d1 < 1000) {
+					return d1 + 1;
+				}
+			}
+			for (Class superInterface : c2.getInterfaces()) {
+				int d1 = distance(c1, superInterface);
+				if (d1 < 1000) {
+					return d1 + 1;
 				}
 			}
 		}
-		List<Class<?>> matchingClasses = new ArrayList<Class<?>>();
-		for (Class<?> cl : storedObjectForClasses.keySet()) {
-			if (cl.isAssignableFrom(aClass)) {
-				matchingClasses.add(cl);
+
+		if (c2.isAssignableFrom(c1)) {
+
+			if (c1.getSuperclass() != null) {
+				int d2 = distance(c2, c1.getSuperclass());
+				if (d2 < 1000) {
+					return d2 + 1;
+				}
+			}
+
+			for (Class superInterface : c1.getInterfaces()) {
+				int d2 = distance(c2, superInterface);
+				if (d2 < 1000) {
+					return d2 + 1;
+				}
 			}
 		}
-		if (matchingClasses.size() > 0) {
-			return storedObjectForClasses.get(TypeUtils.getMostSpecializedClass(matchingClasses));
-		}
-		return null;
+
+		return 1000;
 	}
 
 	/**
