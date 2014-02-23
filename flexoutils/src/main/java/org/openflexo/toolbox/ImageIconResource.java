@@ -20,6 +20,8 @@
 package org.openflexo.toolbox;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 
@@ -28,6 +30,7 @@ import javax.swing.ImageIcon;
  */
 public class ImageIconResource extends ImageIcon {
 	private File resourceFile;
+
 
 	public ImageIconResource(String relativePathName) {
 		super(ResourceLocator.locateFile(relativePathName).getAbsolutePath());

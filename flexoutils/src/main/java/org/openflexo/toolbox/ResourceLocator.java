@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,11 +51,33 @@ public class ResourceLocator {
 	 * @return
 	 */
 	public static File locateFile(String relativePathName) {
-		File locateFile = locateFile(relativePathName, false);
-		if (locateFile != null && locateFile.exists()) {
+
+		File locateFile = null;
+		URL fileLocation = null;
+
+		try {
+			fileLocation = ResourceLocator.class.getResource("/"+relativePathName);
+		}
+		catch (Exception e)  {
+			logger.warning("Did Not find Resource in classpath " + relativePathName + " got: " + fileLocation);
+		}
+
+		if (fileLocation != null){
+			try {
+				locateFile = new File(fileLocation.toURI());
+			} catch (URISyntaxException e) {
+				locateFile = null;
+			}
+
 			return locateFile;
 		}
-		return locateFile(relativePathName, true);
+		else {
+			locateFile = locateFile(relativePathName, false);
+			if (locateFile != null && locateFile.exists()) {
+				return locateFile;
+			}
+			return locateFile(relativePathName, true);
+		}
 	}
 
 	private static File locateFile(String relativePathName, boolean lenient) {
