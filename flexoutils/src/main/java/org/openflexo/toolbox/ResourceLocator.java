@@ -1,5 +1,6 @@
 /*
  * (c) Copyright 2010-2011 AgileBirds
+ * (c) Copyright 2013-2014 Openflexo
  *
  * This file is part of OpenFlexo.
  *
@@ -23,11 +24,13 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +43,8 @@ import java.util.logging.Logger;
 public class ResourceLocator {
 
 	private static final Logger logger = Logger.getLogger(ResourceLocator.class.getPackage().getName());
+	private static final ClassLoader cl = ResourceLocator.class.getClassLoader().getSystemClassLoader();
+
 
 	/**
 	 * Locate and returns file identified by relativePathName<br>
@@ -50,13 +55,14 @@ public class ResourceLocator {
 	 * @param relativePathName
 	 * @return
 	 */
+
 	public static File locateFile(String relativePathName) {
 
 		File locateFile = null;
 		URL fileLocation = null;
 
 		try {
-			fileLocation = ResourceLocator.class.getResource("/"+relativePathName);
+			fileLocation = cl.getResource(relativePathName);
 		}
 		catch (Exception e)  {
 			logger.warning("Did Not find Resource in classpath " + relativePathName + " got: " + fileLocation);
@@ -64,20 +70,29 @@ public class ResourceLocator {
 
 		if (fileLocation != null){
 			try {
-				locateFile = new File(fileLocation.toURI());
+				if (fileLocation.getProtocol().equalsIgnoreCase("file")){
+					locateFile = new File(fileLocation.toURI());
+				}
+				else {
+					logger.warning("XTOF TODO (API from File to InputStream?): resource found in jar or somethingElse " + relativePathName + " got: " + fileLocation);
+					locateFile = null;
+				}
 			} catch (URISyntaxException e) {
 				locateFile = null;
+			}catch (Exception e) {
+				locateFile = null;		
+				logger.warning("Did Not find Resource in classpath " + relativePathName + " got: " + fileLocation);
+				e.printStackTrace();
 			}
-
-			return locateFile;
 		}
-		else {
+		if (locateFile == null) {
 			locateFile = locateFile(relativePathName, false);
 			if (locateFile != null && locateFile.exists()) {
 				return locateFile;
 			}
 			return locateFile(relativePathName, true);
 		}
+		return locateFile;
 	}
 
 	private static File locateFile(String relativePathName, boolean lenient) {
