@@ -142,7 +142,7 @@ public class ResourceLocator {
 
 	private static List<File> locateAllFiles(String relativePathName, boolean lenient) {
 		final File workingDirectory = new File(System.getProperty("user.dir"));
-		System.out.println("Searching " + relativePathName + " in " + workingDirectory);
+		// System.out.println("Searching " + relativePathName + " in " + workingDirectory);
 		List<File> found = new ArrayList<File>();
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
