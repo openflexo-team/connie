@@ -452,6 +452,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return null;
 	}
 
+	@Override
 	public boolean isSettable() {
 		if (getLastBindingPathElement() instanceof SettableBindingPathElement) {
 			return ((SettableBindingPathElement) getLastBindingPathElement()).isSettable();
@@ -877,6 +878,17 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @return
 	 */
 	public List<TargetObject> getTargetObjects(BindingEvaluationContext context) {
+
+		boolean debug = false;
+
+		/*if (toString().equals("data.rootObject")) {
+			debug = true;
+		}*/
+
+		if (debug) {
+			logger.info("Computing getTargetObjects() for " + toString() + " with BindingEvaluationContext=" + context);
+		}
+
 		if (!isValid()) {
 			return null;
 		}
@@ -884,8 +896,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		ArrayList<TargetObject> returned = new ArrayList<TargetObject>();
 
 		Object current = context.getValue(getBindingVariable());
-
 		returned.add(new TargetObject(context, getBindingVariable().getVariableName()));
+
+		if (debug) {
+			logger.info("Computing getTargetObjects(), current=" + current);
+		}
 
 		if (current == null) {
 			return returned;

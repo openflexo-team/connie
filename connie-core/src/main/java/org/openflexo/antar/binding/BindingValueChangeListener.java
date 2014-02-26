@@ -73,9 +73,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 	private synchronized void refreshObserving(boolean debug) {
 
-		/*if (dataBinding.toString().equals("ColorBackgroundPanel.data.color")) {
-			System.out.println("%%%%%%%%%%%%%%%%%%%%%%% OK, j'ecoute dans le contexte de " + context);
-			Thread.dumpStack();
+		/*if (dataBinding.toString().equals("data.rootObject")) {
+			debug = true;
 		}*/
 
 		if (debug) {
@@ -85,6 +84,13 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 		List<TargetObject> updatedDependingObjects = new ArrayList<TargetObject>();
 		List<TargetObject> targetObjects = dataBinding.getTargetObjects(context);
+
+		if (debug) {
+			for (TargetObject to : targetObjects) {
+				logger.info("-------------> TargetObject: " + to.target + " property: " + to.propertyName);
+			}
+		}
+
 		if (targetObjects != null) {
 			updatedDependingObjects.addAll(targetObjects);
 			if (targetObjects.size() > 0) {
@@ -153,10 +159,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 				pcSupport.addPropertyChangeListener(o.propertyName, this);
 			} else if (o.target instanceof Observable) {
 				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("Observer of " + dataBinding + " add observable: " + o);
+					logger.fine("Observer of " + dataBinding + " add observable: " + o.target);
 				}
 				if (debug) {
-					logger.info("Observer of " + dataBinding + " add observable: " + o + " for " + o.propertyName);
+					logger.info("Observer of " + dataBinding + " add observable: " + o.target + " for " + o.propertyName);
 				}
 				((Observable) o.target).addObserver(this);
 			}
@@ -194,7 +200,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 	public T evaluateValue() throws NullReferenceException {
 		try {
-			return (T) dataBinding.getBindingValue(context);
+			return dataBinding.getBindingValue(context);
 		} catch (TypeMismatchException e) {
 			logger.warning("Unexpected exception raised. See logs for details.");
 			e.printStackTrace();
@@ -231,4 +237,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	}
 
 	public abstract void bindingValueChanged(Object source, T newValue);
+
+	public List<TargetObject> getDependingObjects() {
+		return dependingObjects;
+	}
 }
