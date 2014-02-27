@@ -21,8 +21,7 @@
 package org.openflexo.toolbox;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 
@@ -30,15 +29,23 @@ import javax.swing.ImageIcon;
  * @author bmangez
  */
 public class ImageIconResource extends ImageIcon {
-	private File resourceFile;
+	private static final long serialVersionUID = 1L;
+	private File resourceFile = null;
+	private String _relativePathName;
 
+	private static String FILE_SUFFIX = ".flexoicon";
 
 	public ImageIconResource(String relativePathName) {
-		super(ResourceLocator.locateFile(relativePathName).getAbsolutePath());
-		resourceFile = ResourceLocator.locateFile(relativePathName);
+		super(ResourceLocator.locateResource(relativePathName));
+		_relativePathName=relativePathName;
 	}
 
-	public File getResourceFile() {
+	private File getResourceFile() throws IOException {
+		if (resourceFile == null) {
+			resourceFile = ResourceLocator.locateFile(_relativePathName);
+		}if (resourceFile == null) {
+			resourceFile = File.createTempFile(_relativePathName.replace(File.pathSeparatorChar, '_'), FILE_SUFFIX);
+		}
 		return resourceFile;
 	}
 

@@ -1,5 +1,6 @@
 /*
  * (c) Copyright 2010-2011 AgileBirds
+ * (c) Copyright 2013-2014 Openflexo
  *
  * This file is part of OpenFlexo.
  *
@@ -43,7 +44,7 @@ public class PlaySound {
 
 		File file = new File(fileName);
 		if (!file.exists()) {
-			file = new FileResource(fileName);
+			file = new OldFileResource(fileName);
 		}
 		try {
 			Class soundFile = Class.forName("org.openflexo.sound.SoundFile");
@@ -124,7 +125,7 @@ public class PlaySound {
 
 	public static void tryToPlayRandomSound() {
 		try {
-			FileResource soundDir = new FileResource("Resources/Sounds");
+			OldFileResource soundDir = new OldFileResource("Resources/Sounds");
 			File[] f = soundDir.listFiles();
 			tryToPlaySound(f[new Random(System.currentTimeMillis()).nextInt(f.length)].getAbsolutePath());
 		} catch (Exception e) {

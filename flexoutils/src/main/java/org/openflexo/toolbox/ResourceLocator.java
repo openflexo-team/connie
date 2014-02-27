@@ -21,8 +21,10 @@
 package org.openflexo.toolbox;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,6 +47,88 @@ public class ResourceLocator {
 	private static final Logger logger = Logger.getLogger(ResourceLocator.class.getPackage().getName());
 	private static final ClassLoader cl = ResourceLocator.class.getClassLoader().getSystemClassLoader();
 
+
+
+	/**
+	 * Locate resource.
+	 * 
+	 * @param relativePathName
+	 *            the relative path name
+	 * @return the input stream
+	 */
+	public static URL locateResource(String relativePathName) {
+
+		URL resourceLocation = null;
+
+		try {
+			resourceLocation = cl.getResource(relativePathName);
+		}
+		catch (Exception e)  {
+			logger.severe("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
+		}
+  	   return resourceLocation;
+
+	}
+	
+	/**
+	 * Get Resource as InputStream
+	 * 
+	 * @param relativePathName
+	 *            the relative path name
+	 * @return the input stream
+	 */
+	public static InputStream retrieveResource(String relativePathName) {
+
+		InputStream locatedResource = null;
+		URL resourceLocation = null;
+
+		try {
+			resourceLocation = cl.getResource(relativePathName);
+		}
+		catch (Exception e)  {
+			logger.warning("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
+		}
+
+		if (resourceLocation != null){
+			try {
+				if (resourceLocation.getProtocol().equalsIgnoreCase("file")){
+					// TODO Un Truc a mieux faire ICI aussi, Mais l'idée est là!
+					locatedResource = (InputStream) new FileInputStream(new File(resourceLocation.toURI()));
+					
+				}
+				else {
+					locatedResource = cl.getResourceAsStream(relativePathName);
+				}
+			}catch (Exception e) {
+				locatedResource = null;		
+				logger.warning("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
+				e.printStackTrace();
+			}
+		}
+
+  	   return locatedResource;
+
+	}
+	
+	/**
+	 * Locate and returns file identified by relativePathName, if it's a directory<br>
+	 * If many files match supplied relativePathName, then return the one which is most narrow of current dir, relative to the distance
+	 * between files as defined in {@link FileUtils}.<br>
+	 * Please use locateAllFiles(String) to get the list of all files matching supplied relativePathName
+	 * 
+	 * @param relativePathName
+	 * @return
+	 */
+	
+	public static File locateDirectory(String relativePathName) {
+		File f = locateFile(relativePathName);
+		if (f.isDirectory()){
+			return f;
+		}
+		else {		
+			return null;
+		}
+	}
 
 	/**
 	 * Locate and returns file identified by relativePathName<br>
@@ -74,6 +158,8 @@ public class ResourceLocator {
 					locateFile = new File(fileLocation.toURI());
 				}
 				else {
+					//
+					// TODO Do something best than that!
 					logger.warning("XTOF TODO (API from File to InputStream?): resource found in jar or somethingElse " + relativePathName + " got: " + fileLocation);
 					locateFile = null;
 				}
@@ -177,7 +263,7 @@ public class ResourceLocator {
 		return found;
 
 	}
-
+/*
 	static String retrieveRelativePath(FileResource fileResource) {
 		for (File f : getDirectoriesSearchOrder()) {
 			if (fileResource.getAbsolutePath().startsWith(f.getAbsolutePath())) {
@@ -192,7 +278,7 @@ public class ResourceLocator {
 		}
 		return null;
 	}
-
+*/
 	public static String cleanPath(String relativePathName) {
 		try {
 			return locateFile(relativePathName).getCanonicalPath();
@@ -243,6 +329,8 @@ public class ResourceLocator {
 	 * 
 	 * @return
 	 */
+	// TODO : To Remove when ResourceLocator is fixed 
+	/*
 	private static File getGitRoot() {
 		File workingDirectory = new File(System.getProperty("user.dir"));
 		// System.out.println("********** workingDirectory = " + workingDirectory);
@@ -258,13 +346,14 @@ public class ResourceLocator {
 		}
 		return null;
 	}
-
+	*/
 	/**
 	 * Find all directories matching src/main/resources or src/test/resources or src/dev/resources pattern, from a diven root directory
 	 * 
 	 * @param root
 	 * @return
 	 */
+	/*
 	private static void appendAllResourcesDirectories(File root, List<File> returned) {
 		appendAllResourcesDirectories(root, "src", returned);
 	}
@@ -294,6 +383,7 @@ public class ResourceLocator {
 			}
 		}
 	}
+	*/
 
 	private static List<File> getDirectoriesSearchOrder() {
 		if (directoriesSearchOrder == null) {
@@ -309,13 +399,15 @@ public class ResourceLocator {
 						}*/
 						directoriesSearchOrder.add(preferredResourcePath);
 					}
+					// TODO : To remove when ResourceLocator is Fixed
+					/*
 					File gitRoot = getGitRoot();
 					if (gitRoot != null && gitRoot.exists()) {
 						// System.out.println("Found gitRoot=" + gitRoot);
 						// We gets one level further to handle multiple repositories
 						appendAllResourcesDirectories(gitRoot.getParentFile(), directoriesSearchOrder);
 					}
-
+					*/
 					/*File workingDirectory = new File(System.getProperty("user.dir"));
 					File flexoDesktopDirectory = findProjectDirectoryWithName(workingDirectory, "openflexo");
 					System.out.println("********** workingDirectory = " + workingDirectory);

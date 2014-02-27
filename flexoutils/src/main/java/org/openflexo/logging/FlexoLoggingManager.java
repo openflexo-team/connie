@@ -1,5 +1,6 @@
 /*
  * (c) Copyright 2010-2011 AgileBirds
+ * (c) Copyright 2013-2014 Openflexo
  *
  * This file is part of OpenFlexo.
  *
@@ -25,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.openflexo.toolbox.FileResource;
+import org.openflexo.toolbox.OldFileResource;
 
 /**
  * Flexo logging manager: manages logs for the application above java.util.logging<br>
@@ -253,7 +254,8 @@ public class FlexoLoggingManager {
 		if (lev == Level.FINEST) {
 			fileName = "FINEST";
 		}
-		File newConfigurationFile = new FileResource("Config/logging_" + fileName + ".properties");
+		// TODO : Fix This when Resource Locator is fixed
+		File newConfigurationFile = new OldFileResource("Config/logging_" + fileName + ".properties");
 		_configurationFile = newConfigurationFile.getAbsolutePath();
 		if (_delegate != null) {
 			_delegate.setConfigurationFileName(_configurationFile);

@@ -27,23 +27,23 @@ import junit.framework.TestCase;
 import org.openflexo.diff.DiffSource;
 import org.openflexo.diff.merge.MergeChange.MergeChangeSource;
 import org.openflexo.diff.merge.MergeChange.MergeChangeType;
-import org.openflexo.toolbox.FileResource;
+import org.openflexo.toolbox.OldFileResource;
 
 public class TestMerge extends TestCase {
 
 	public void test0() throws IOException {
-		File original = new FileResource("TestMerge/TestMerge0-original.java");
-		File left = new FileResource("TestMerge/TestMerge0-left.java");
-		File right = new FileResource("TestMerge/TestMerge0-right.java");
+		File original = new OldFileResource("TestMerge/TestMerge0-original.java");
+		File left = new OldFileResource("TestMerge/TestMerge0-left.java");
+		File right = new OldFileResource("TestMerge/TestMerge0-right.java");
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 0);
 		assertFalse(merge.isReallyConflicting());
 	}
 
 	public void test1() throws IOException {
-		File original = new FileResource("TestMerge/TestMerge1-original.java");
-		File left = new FileResource("TestMerge/TestMerge1-left.java");
-		File right = new FileResource("TestMerge/TestMerge1-right.java");
+		File original = new OldFileResource("TestMerge/TestMerge1-original.java");
+		File left = new OldFileResource("TestMerge/TestMerge1-left.java");
+		File right = new OldFileResource("TestMerge/TestMerge1-right.java");
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 9);
 		assertFalse(merge.isReallyConflicting());
@@ -59,9 +59,9 @@ public class TestMerge extends TestCase {
 	}
 
 	public void test2() throws IOException {
-		File original = new FileResource("TestMerge/TestMerge2-original.java");
-		File left = new FileResource("TestMerge/TestMerge2-left.java");
-		File right = new FileResource("TestMerge/TestMerge2-right.java");
+		File original = new OldFileResource("TestMerge/TestMerge2-original.java");
+		File left = new OldFileResource("TestMerge/TestMerge2-left.java");
+		File right = new OldFileResource("TestMerge/TestMerge2-right.java");
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 14);
 		assertTrue(merge.isReallyConflicting());
@@ -82,9 +82,9 @@ public class TestMerge extends TestCase {
 	}
 
 	public void test3() throws IOException {
-		File original = new FileResource("TestMerge/TestMerge3-original.java");
-		File left = new FileResource("TestMerge/TestMerge3-left.java");
-		File right = new FileResource("TestMerge/TestMerge3-right.java");
+		File original = new OldFileResource("TestMerge/TestMerge3-original.java");
+		File left = new OldFileResource("TestMerge/TestMerge3-left.java");
+		File right = new OldFileResource("TestMerge/TestMerge3-right.java");
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 9);
 		assertTrue(merge.isReallyConflicting());
