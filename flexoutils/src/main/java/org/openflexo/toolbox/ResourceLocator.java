@@ -42,6 +42,7 @@ import java.util.logging.Logger;
  * 
  *         <B>Class Description</B>
  */
+// TODO : have a more consistent API
 public class ResourceLocator {
 
 	private static final Logger logger = Logger.getLogger(ResourceLocator.class.getPackage().getName());
