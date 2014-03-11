@@ -27,44 +27,15 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
-			<!-- 
-			<resource>
-				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>**/*</exclude>
-				</excludes>
-			</resource>
-			 -->
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
-				<!-- 
-					<include>META-INF/**/*</include>
-					 -->
 					<include>**/*</include>
 				</includes>
 			</resource>
 		</resources>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<configuration>
-						<descriptors>
-							<descriptor>package-resources.xml</descriptor>
-						</descriptors>
-					</configuration>
-					<executions>
-						<execution>
-							<id>build-resources</id>
-							<phase>package</phase>
-							<goals>
-								<goal>single</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
