@@ -30,21 +30,21 @@ import javax.swing.ImageIcon;
  */
 public class ImageIconResource extends ImageIcon {
 	private static final long serialVersionUID = 1L;
-	private File resourceFile = null;
-	private String _relativePathName;
+	private ResourceLocation _location;
 
 	private static String FILE_SUFFIX = ".flexoicon";
 
-	public ImageIconResource(String relativePathName) {
-		super(ResourceLocator.locateResource(relativePathName));
-		_relativePathName=relativePathName;
+	public ImageIconResource(ResourceLocation location) {
+		super(location.getURL());
+		_location = location;
 	}
-
+	
 	private File getResourceFile() throws IOException {
-		if (resourceFile == null) {
-			resourceFile = ResourceLocator.locateFile(_relativePathName);
+		File resourceFile = null;
+		if (_location != null && _location instanceof FileResourceLocation) {
+			resourceFile = ((FileResourceLocation)_location).getFile();
 		}if (resourceFile == null) {
-			resourceFile = File.createTempFile(_relativePathName.replace(File.pathSeparatorChar, '_'), FILE_SUFFIX);
+			resourceFile = File.createTempFile(_location.getURL().getFile().replace(File.pathSeparatorChar, '_'), FILE_SUFFIX);
 		}
 		return resourceFile;
 	}

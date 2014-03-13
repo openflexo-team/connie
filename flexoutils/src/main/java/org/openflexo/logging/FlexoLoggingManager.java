@@ -26,7 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.openflexo.toolbox.OldFileResource;
+import org.openflexo.toolbox.ResourceLocation;
+import org.openflexo.toolbox.ResourceLocator;
 
 /**
  * Flexo logging manager: manages logs for the application above java.util.logging<br>
@@ -39,6 +40,7 @@ import org.openflexo.toolbox.OldFileResource;
 public class FlexoLoggingManager {
 
 	static final Logger logger = Logger.getLogger(FlexoLoggingManager.class.getPackage().getName());
+	static final ResourceLocator rl = ResourceLocator.getResourceLocator();
 
 	// private static XMLMapping _loggingMapping = null;
 	private static FlexoLoggingManager _instance;
@@ -52,7 +54,7 @@ public class FlexoLoggingManager {
 	private boolean _keepLogTrace;
 	private int _maxLogCount;
 	private Level _loggingLevel;
-	private String _configurationFile;
+	private ResourceLocation _configurationFile;
 
 	public static interface LoggingManagerDelegate {
 		public void setKeepLogTrace(boolean logTrace);
@@ -61,10 +63,10 @@ public class FlexoLoggingManager {
 
 		public void setDefaultLoggingLevel(Level lev);
 
-		public void setConfigurationFileName(String configurationFile);
+		public void setConfigurationFileLocation(ResourceLocation configurationFile);
 	}
 
-	public static FlexoLoggingManager initialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, File configurationFile,
+	public static FlexoLoggingManager initialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, ResourceLocation configurationFile,
 			Level logLevel, LoggingManagerDelegate delegate) throws SecurityException, IOException {
 		if (isInitialized()) {
 			return _instance;
@@ -72,7 +74,7 @@ public class FlexoLoggingManager {
 		return forceInitialize(numberOfLogsToKeep, keepLogTraceInMemory, configurationFile, logLevel, delegate);
 	}
 
-	public static FlexoLoggingManager forceInitialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, File configurationFile,
+	public static FlexoLoggingManager forceInitialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, ResourceLocation configurationFile,
 			Level logLevel, LoggingManagerDelegate delegate) {
 		_instance = new FlexoLoggingManager();
 		_instance._delegate = delegate;
@@ -80,7 +82,7 @@ public class FlexoLoggingManager {
 		_instance._keepLogTrace = keepLogTraceInMemory;
 		_instance._loggingLevel = logLevel;
 		if (configurationFile != null) {
-			_instance._configurationFile = configurationFile.getAbsolutePath();
+			_instance._configurationFile = configurationFile;
 			File f = new File(System.getProperty("user.home"), "Library/Logs/Flexo/");
 			if (!f.exists()) {
 				f.mkdirs();
@@ -254,32 +256,32 @@ public class FlexoLoggingManager {
 		if (lev == Level.FINEST) {
 			fileName = "FINEST";
 		}
-		// TODO : Fix This when Resource Locator is fixed
-		File newConfigurationFile = new OldFileResource("Config/logging_" + fileName + ".properties");
-		_configurationFile = newConfigurationFile.getAbsolutePath();
-		if (_delegate != null) {
-			_delegate.setConfigurationFileName(_configurationFile);
+		ResourceLocation newConfigurationFile = rl.locateResource("Config/logging_" + fileName + ".properties");
+		if (newConfigurationFile != null){
+			_configurationFile = newConfigurationFile;
 		}
-		reloadLoggingFile(newConfigurationFile.getAbsolutePath());
+		if (_delegate != null) {
+			_delegate.setConfigurationFileLocation(newConfigurationFile);
+		}
+		reloadLoggingFile(newConfigurationFile);
 	}
 
 	public String getConfigurationFileName() {
-		return _configurationFile;
+		return _configurationFile.getRelativePath();
 	}
 
-	public void setConfigurationFileName(String configurationFile) {
+	public void setConfigurationFileLocation(ResourceLocation configurationFile) {
 		_configurationFile = configurationFile;
 		if (_delegate != null) {
-			_delegate.setConfigurationFileName(configurationFile);
+			_delegate.setConfigurationFileLocation(configurationFile);
 		}
 		reloadLoggingFile(configurationFile);
 	}
 
-	private boolean reloadLoggingFile(String filePath) {
-		logger.info("reloadLoggingFile with " + filePath);
-		System.setProperty("java.util.logging.config.file", filePath);
+	private boolean reloadLoggingFile(ResourceLocation filePath) {
+		logger.info("reloadLoggingFile with " + filePath.getURL());
 		try {
-			LogManager.getLogManager().readConfiguration();
+			LogManager.getLogManager().readConfiguration(filePath.openStream());
 		} catch (SecurityException e) {
 			logger.warning("The specified logging configuration file can't be read (not enough privileges).");
 			e.printStackTrace();
