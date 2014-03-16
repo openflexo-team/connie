@@ -17,7 +17,7 @@
  * along with OpenFlexo. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openflexo.toolbox;
+package org.openflexo.rm;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -33,26 +34,28 @@ import java.util.regex.Pattern;
  *         A Flexible Resource Locator that enables to get resources from multiple locations using delegates
  */
 
-final public class ResourceLocator implements ResourceLocatorDelegate  {
+final public class CompositeResourceLocatorImpl implements ResourceLocator  {
 
-	private ArrayList<ResourceLocatorDelegate>  _delegatesList;
+	private static final Logger logger = Logger.getLogger(CompositeResourceLocatorImpl.class.getPackage().getName());
 
-	private static ClasspathResourceLocator _cprl = new ClasspathResourceLocator();
-	private static FileSystemResourceLocator _defaultFSrl = new FileSystemResourceLocator();
-	private static ResourceLocator _instance = new ResourceLocator();
+	private ArrayList<ResourceLocator>  _delegatesList;
+
+	private static ClasspathResourceLocatorImpl _cprl = new ClasspathResourceLocatorImpl();
+	private static FileSystemResourceLocatorImpl _defaultFSrl = new FileSystemResourceLocatorImpl();
+	private static CompositeResourceLocatorImpl _instance = new CompositeResourceLocatorImpl();
 	
 	
-	ResourceLocator() { 
-		_delegatesList = new ArrayList<ResourceLocatorDelegate>();
+	CompositeResourceLocatorImpl() { 
+		_delegatesList = new ArrayList<ResourceLocator>();
 		this.resetConfiguration();
 	}
 	
 	@Override
-	public ResourceLocation locateResource(String relativePath) {
-		ResourceLocation location = null;
-		Iterator<ResourceLocatorDelegate> delegateIt = _delegatesList.iterator();
+	public Resource locateResource(String relativePath) {
+		Resource location = null;
+		Iterator<ResourceLocator> delegateIt = _delegatesList.iterator();
 		while (delegateIt.hasNext() && location == null){
-			ResourceLocatorDelegate del = delegateIt.next();
+			ResourceLocator del = delegateIt.next();
 			location = del.locateResource(relativePath);
 		}
 		return location;
@@ -60,38 +63,47 @@ final public class ResourceLocator implements ResourceLocatorDelegate  {
 	
 
 	@Override
-	public ResourceLocation locateResourceWithBaseLocation(ResourceLocation baseLocation, String relativePath) {
-		return baseLocation.getDelegate().locateResourceWithBaseLocation(baseLocation, relativePath);
+	public Resource locateResourceWithBaseLocation(Resource baseLocation, String relativePath) {
+		return baseLocation.getLocator().locateResourceWithBaseLocation(baseLocation, relativePath);
 	}
 
 	@Override
-	public List<ResourceLocation> listResources(ResourceLocation dir,
+	public List<Resource> listResources(Resource dir,
 			Pattern pattern) {
 		if (dir != null){
-			return dir.getDelegate().listResources(dir, pattern);
+			return dir.getLocator().listResources(dir, pattern);
 		}
 		return null;
 	}
 
+	/*
 	@Override
-	public List<ResourceLocation> listAllResources(ResourceLocation dir) {
+	public List<Resource> listAllResources(Resource dir) {
 		if (dir != null){
-			return dir.getDelegate().listAllResources(dir);
+			return dir.getLocator().listAllResources(dir);
 		}
 		return null;
 	}
-
+*/
 	
 	@Override
-	public File retrieveResourceAsFile(ResourceLocation location) {
-		return location.getDelegate().retrieveResourceAsFile(location);
+	public File retrieveResourceAsFile(Resource location) {
+		if (location != null){
+			return location.getLocator().retrieveResourceAsFile(location);
+		}
+		else {
+			logger.warning("Cannot retrieve a File for a Null Location!");
+			return null;
+		}
 	}
 
+	/*
 	@Override
 	public InputStream retrieveResourceAsInputStream(
-			ResourceLocation location) {
-		return location.getDelegate().retrieveResourceAsInputStream(location);
+			Resource location) {
+		return location.getLocator().retrieveResourceAsInputStream(location);
 	}
+	*/
 
 
 	
@@ -100,7 +112,7 @@ final public class ResourceLocator implements ResourceLocatorDelegate  {
 	 * @param delegate
 	 */
 
-	public void removeDelegate (ResourceLocatorDelegate delegate){
+	public void removeDelegate (ResourceLocator delegate){
 		if (delegate != null) {
 			_delegatesList.remove(delegate);
 		}
@@ -111,7 +123,7 @@ final public class ResourceLocator implements ResourceLocatorDelegate  {
 	 * 
 	 * @param newdelegate
 	 */
-	public void appendDelegate (ResourceLocatorDelegate newdelegate){
+	public void appendDelegate (ResourceLocator newdelegate){
 		if (newdelegate != null) {
 			_delegatesList.add(newdelegate);
 		}
@@ -123,7 +135,7 @@ final public class ResourceLocator implements ResourceLocatorDelegate  {
 	 * 
 	 * @param newdelegate
 	 */
-	public void prependDelegate (ResourceLocatorDelegate newdelegate){
+	public void prependDelegate (ResourceLocator newdelegate){
 		if (newdelegate != null) {
 			_delegatesList.add(0,newdelegate);
 		}
@@ -134,7 +146,7 @@ final public class ResourceLocator implements ResourceLocatorDelegate  {
 	 * @return FlexibleResourceLocator
 	 */
 
-	public static ResourceLocator getResourceLocator(){
+	public static CompositeResourceLocatorImpl getResourceLocator(){
 		return _instance;
 	}
 	
@@ -158,7 +170,7 @@ final public class ResourceLocator implements ResourceLocatorDelegate  {
 	 * returns the default FileSystemResourceLocator
 	 * @return 
 	 */
-	public FileSystemResourceLocator getDefaultFSResourceLocator(){
+	public FileSystemResourceLocatorImpl getDefaultFSResourceLocator(){
 		return this._defaultFSrl;
 	}
 
@@ -166,7 +178,7 @@ final public class ResourceLocator implements ResourceLocatorDelegate  {
 	 * returns the ClasspathResourceLocator
 	 * @return 
 	 */
-	public ClasspathResourceLocator getDefaultCPResourceLocator(){
+	public ClasspathResourceLocatorImpl getDefaultCPResourceLocator(){
 		return this._cprl;
 	}
 

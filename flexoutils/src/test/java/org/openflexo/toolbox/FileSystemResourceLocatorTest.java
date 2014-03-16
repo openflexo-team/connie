@@ -26,9 +26,10 @@ import java.util.regex.Pattern;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.openflexo.toolbox.ClasspathResourceLocator;
-import org.openflexo.toolbox.FileResourceLocation;
-import org.openflexo.toolbox.ResourceLocation;
+import org.openflexo.rm.ClasspathResourceLocatorImpl;
+import org.openflexo.rm.FileResourceImpl;
+import org.openflexo.rm.FileSystemResourceLocatorImpl;
+import org.openflexo.rm.Resource;
 
 public class FileSystemResourceLocatorTest extends TestCase {
 
@@ -36,7 +37,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources() throws Exception {
-		FileSystemResourceLocator rl = new FileSystemResourceLocator();
+		FileSystemResourceLocatorImpl rl = new FileSystemResourceLocatorImpl();
 		File workingDirectory = new File(System.getProperty("user.dir"));
 		rl.prependToDirectories(workingDirectory + PATH_SEP + "src/main/resources");
 		rl.prependToDirectories(workingDirectory + PATH_SEP + "src/test/resources");
@@ -44,7 +45,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 		rl.printDirectoriesSearchOrder(System.out);
 
-		ResourceLocation rloc = null;
+		Resource rloc = null;
 
 		rloc = rl.locateResource("Config");
 
@@ -52,7 +53,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 		if (rloc != null){
 
-			List<ResourceLocation> list = rl.listResources(rloc, Pattern.compile(".*[.]properties"));
+			List<Resource> list = rl.listResources(rloc, Pattern.compile(".*[.]properties"));
 
 			assertTrue(list.size() == 7);
 
@@ -61,22 +62,22 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources2() throws Exception {
-		FileSystemResourceLocator rl = new FileSystemResourceLocator();
+		FileSystemResourceLocatorImpl rl = new FileSystemResourceLocatorImpl();
 		File workingDirectory = new File(System.getProperty("user.dir"));
 		rl.appendToDirectories(workingDirectory + PATH_SEP + "src/main/resources");
 		rl.appendToDirectories(workingDirectory + PATH_SEP + "src/test/resources");
 
 		rl.printDirectoriesSearchOrder(System.out);
 		
-		ResourceLocation rloc = null;
+		Resource rloc = null;
 
 		rloc = rl.locateResource("META-INF");
 
 		assertTrue(rloc != null);
 
-		assertTrue (rloc instanceof FileResourceLocation);
+		assertTrue (rloc instanceof FileResourceImpl);
 
-		System.out.println(rloc.getURL());
+		System.out.println(rloc.getURI());
 
 
 		rloc = rl.locateResource("TestDiff");
@@ -85,12 +86,12 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 		if (rloc != null){
 
-			List<ResourceLocation> list = rl.listAllResources(rloc);
+			List<? extends Resource> list = rloc.getContents();
 
 			assertTrue (list.size() == 8);
 
-			for (ResourceLocation r : list){
-				System.out.println(r.getURL());
+			for (Resource r : list){
+				System.out.println(r.getURI());
 			}
 
 		}

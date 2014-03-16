@@ -27,26 +27,26 @@ import junit.framework.TestCase;
 import org.openflexo.diff.DiffSource;
 import org.openflexo.diff.merge.MergeChange.MergeChangeSource;
 import org.openflexo.diff.merge.MergeChange.MergeChangeType;
-import org.openflexo.toolbox.ResourceLocator;
-import org.openflexo.toolbox.FileResourceLocation;
+import org.openflexo.rm.FileResourceImpl;
+import org.openflexo.rm.CompositeResourceLocatorImpl;
 
 public class TestMerge extends TestCase {
 
 	public void test0() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File original = ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge0-original.java"))).getFile();
-		File left =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge0-left.java"))).getFile();
-		File right =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge0-right.java"))).getFile();
+		CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
+		File original = ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge0-original.java"))).getFile();
+		File left =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge0-left.java"))).getFile();
+		File right =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge0-right.java"))).getFile();
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 0);
 		assertFalse(merge.isReallyConflicting());
 	}
 
 	public void test1() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File original =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge1-original.java"))).getFile();
-		File left =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge1-left.java"))).getFile();
-		File right =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge1-right.java"))).getFile();
+		CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
+		File original =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge1-original.java"))).getFile();
+		File left =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge1-left.java"))).getFile();
+		File right =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge1-right.java"))).getFile();
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 9);
 		assertFalse(merge.isReallyConflicting());
@@ -62,10 +62,10 @@ public class TestMerge extends TestCase {
 	}
 
 	public void test2() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File original =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge2-original.java"))).getFile();
-		File left =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge2-left.java"))).getFile();
-		File right =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge2-right.java"))).getFile();
+		CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
+		File original =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge2-original.java"))).getFile();
+		File left =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge2-left.java"))).getFile();
+		File right =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge2-right.java"))).getFile();
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 14);
 		assertTrue(merge.isReallyConflicting());
@@ -86,10 +86,10 @@ public class TestMerge extends TestCase {
 	}
 
 	public void test3() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File original =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge3-original.java"))).getFile();
-		File left =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge3-left.java"))).getFile();
-		File right =  ((FileResourceLocation) (rl.locateResource("TestMerge/TestMerge3-right.java"))).getFile();
+		CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
+		File original =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge3-original.java"))).getFile();
+		File left =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge3-left.java"))).getFile();
+		File right =  ((FileResourceImpl) (rl.locateResource("TestMerge/TestMerge3-right.java"))).getFile();
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 9);
 		assertTrue(merge.isReallyConflicting());

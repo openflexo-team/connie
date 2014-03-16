@@ -1,6 +1,5 @@
 /*
- * (c) Copyright 2010-2011 AgileBirds
- * (c) Copyright 2013-2014 Openflexo
+ * (c) Copyright 2014- Openflexo
  *
  * This file is part of OpenFlexo.
  *
@@ -18,7 +17,9 @@
  * along with OpenFlexo. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.openflexo.toolbox;
+
+
+package org.openflexo.rm;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,21 +41,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.openflexo.toolbox.FileUtils;
+
 /**
  * @author bmangez
  * 
  *         <B>Class Description</B>
  */
 // TODO : have a more consistent API
-public class FileSystemResourceLocator implements ResourceLocatorDelegate {
+public class FileSystemResourceLocatorImpl implements ResourceLocator {
 
-	private static final Logger logger = Logger.getLogger(FileSystemResourceLocator.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
 	private static String PATH_SEP = System.getProperty("file.separator");
 
 
 
 	@Override
-	public  ResourceLocation locateResource(String relativePathName) {
+	public  Resource locateResource(String relativePathName) {
 
 		File file = locateFile(relativePathName,false);
 		if (file == null){
@@ -62,7 +65,7 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 		}
 		try {
 			if (file != null){
-				return new FileResourceLocation(this, relativePathName, file.toURI().toURL(),file);
+				return new FileResourceImpl(this, relativePathName, file.toURI().toURL(),file);
 			}
 		} catch (MalformedURLException e) {
 			logger.severe("Unable to find given file: " + relativePathName);
@@ -72,10 +75,10 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 	}
 
 	@Override
-	public ResourceLocation locateResourceWithBaseLocation(	ResourceLocation baseLocation, final String relativePath) {
+	public Resource locateResourceWithBaseLocation(	Resource baseLocation, final String relativePath) {
 		if (baseLocation != null) {
-			if (baseLocation instanceof FileResourceLocation){
-				File f = ((FileResourceLocation) baseLocation).getFile();
+			if (baseLocation instanceof FileResourceImpl){
+				File f = ((FileResourceImpl) baseLocation).getFile();
 				if (f.isDirectory()) {
 					File [] foundFiles = f.listFiles(new FilenameFilter() {
 						@Override
@@ -85,7 +88,7 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 					});
 					if (foundFiles.length == 1) {
 						try {
-							return new FileResourceLocation( this, baseLocation.getRelativePath() + PATH_SEP + relativePath, foundFiles[0].toURI().toURL(),foundFiles[0]);
+							return new FileResourceImpl( this, baseLocation.getRelativePath() + PATH_SEP + relativePath, foundFiles[0].toURI().toURL(),foundFiles[0]);
 						} catch (MalformedURLException e) {
 							logger.severe("Unable to convert File To ResourceLocation: " + relativePath);
 							e.printStackTrace();
@@ -101,17 +104,19 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 	}
 
 	@Override
-	public List<ResourceLocation> listResources(ResourceLocation dir,Pattern pattern) {	
-
-		URL url = dir.getURL();
+	public List<Resource> listResources(Resource dir,Pattern pattern) {	
+		URL url = null;
+		if (dir != null & dir instanceof BasicResourceImpl){
+			url = ((BasicResourceImpl) dir).getURL();
+		}
 		if (url != null ){
 
-			if (dir instanceof FileResourceLocation){
-				File file = ((FileResourceLocation) dir).getFile();
+			if (dir instanceof FileResourceImpl){
+				File file = ((FileResourceImpl) dir).getFile();
 				if (file == null){
 					try {
 						file = new File(url.toURI());
-						if (file != null) ((FileResourceLocation) dir).setFile(file);
+						if (file != null) ((FileResourceImpl) dir).setFile(file);
 					} catch (URISyntaxException e) {
 						logger.severe("Unable to convert URL to File : " + url);
 						e.printStackTrace();
@@ -119,9 +124,9 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 				}
 				if (file != null && file.isDirectory()){
 
-					List<ResourceLocation> retval = new ArrayList<ResourceLocation>();
+					List<Resource> retval = new ArrayList<Resource>();
 
-					FileSystemResourceLocator.addDirectoryContent(this,file,pattern,retval);
+					FileSystemResourceLocatorImpl.addDirectoryContent(this,file,pattern,retval);
 
 					return retval;
 				}
@@ -135,50 +140,35 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 
 
 	}
-
+/*
 	@Override
-	public List<ResourceLocation> listAllResources(ResourceLocation dir) {
-		URL url = dir.getURL();
-		if (url != null ){
+	public List<Resource> listAllResources(Resource dir) {
 
-			if (dir instanceof FileResourceLocation){
-				File file = ((FileResourceLocation) dir).getFile();
-				if (file == null){
-					try {
-						file = new File(url.toURI());
-						if (file != null) ((FileResourceLocation) dir).setFile(file);
-					} catch (URISyntaxException e) {
-						logger.severe("Unable to convert URL to File : " + url);
-						e.printStackTrace();
-					}
-				}
-				if (file != null && file.isDirectory()){
+		if (dir instanceof FileResourceImpl && dir.isContainer()){
+			File file = ((FileResourceImpl) dir).getFile();
 
-					List<ResourceLocation> retval = new ArrayList<ResourceLocation>();
+			if (file != null){
 
-					FileSystemResourceLocator.addDirectoryContent(this,file,retval);
-
-					return retval;
-				}
+				return (List<Resource>) dir.getContents();
 			}
-			else {
-				// TODO , but it should not happen
-				logger.warning("Found a File that is not hold by a FileResourceLocation");
-			}	
 		}
+		else {
+			logger.warning("Found a File that is not hold by a FileResourceLocation");
+		}	
 		return java.util.Collections.emptyList();
 
 	}
-
+*/
+	/*
 
 	@Override
-	public InputStream retrieveResourceAsInputStream(ResourceLocation rl) {
+	public InputStream retrieveResourceAsInputStream(Resource rl) {
 
 		if (rl != null){
 
 			URL url = rl.getURL();
 			try {
-				if (rl instanceof FileResourceLocation){
+				if (rl instanceof FileResourceImpl){
 					File file = retrieveResourceAsFile(rl);
 					try {
 						return new FileInputStream(file);
@@ -197,18 +187,22 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 		return null;
 	}
 
+	 */
 
 	@Override
-	public File retrieveResourceAsFile(ResourceLocation rl) {
+	public File retrieveResourceAsFile(Resource rl) {
 
 		File locateFile = null;
 
-		if (rl != null && rl instanceof FileResourceLocation){
+		if (rl != null && rl instanceof FileResourceImpl){
 
-			locateFile =  ((FileResourceLocation) rl).getFile();
+			locateFile =  ((FileResourceImpl) rl).getFile();
 		}
 		else {
-			URL url = rl.getURL();
+			URL url = null;
+			if (rl != null & rl instanceof BasicResourceImpl){
+				url = ((BasicResourceImpl) rl).getURL();
+			}
 			if (url != null){
 				try {
 					locateFile = new File(url.toURI());
@@ -217,7 +211,7 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 					e.printStackTrace();
 				}
 				if (locateFile != null){
-					((FileResourceLocation) rl).setFile(locateFile);
+					((FileResourceImpl) rl).setFile(locateFile);
 					return locateFile;
 				}
 			} 
@@ -230,7 +224,7 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 	/** Those methods do not belong to the ResourceLocatorDelegate interface */
 
 
-	public static void addDirectoryContent (ResourceLocatorDelegate dl, File file, Pattern pattern,List<ResourceLocation> list) {
+	public static void addDirectoryContent (ResourceLocator dl, File file, Pattern pattern,List<Resource> list) {
 
 		File[] fileList = file.listFiles();
 		for(final File f : fileList){
@@ -239,7 +233,7 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 					final String fileName = f.getCanonicalPath();
 					final boolean accept = pattern.matcher(fileName).matches();
 					if(accept){
-						list.add(new FileResourceLocation(dl,fileName,f.toURI().toURL()));
+						list.add(new FileResourceImpl(dl,fileName,f.toURI().toURL()));
 					}
 				} catch(final Exception e){
 					try {
@@ -258,31 +252,7 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 
 	}
 
-	public static void addDirectoryContent (ResourceLocatorDelegate dl, File file, List<ResourceLocation> list) {
 
-		File[] fileList = file.listFiles();
-		for(final File f : fileList){
-			if(! f.isDirectory()){
-				try{
-					final String fileName = f.getCanonicalPath();
-					list.add(new FileResourceLocation(dl,fileName,f.toURI().toURL()));
-
-				} catch(final Exception e){
-					try {
-						logger.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
-			// Recursive search
-			else {
-				addDirectoryContent(dl,f, list);
-			}
-		}
-
-	}
 
 	/**
 	 * Locate and returns file identified by relativePathName, if it's a directory<br>
@@ -295,7 +265,7 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 	 */
 
 	public File locateDirectory(String relativePathName) {
-		FileResourceLocation rl = (FileResourceLocation) locateResource(relativePathName);
+		FileResourceImpl rl = (FileResourceImpl) locateResource(relativePathName);
 
 		File f = rl.getFile();
 		if (f.isDirectory()){
@@ -531,7 +501,7 @@ public class FileSystemResourceLocator implements ResourceLocatorDelegate {
 
 	private List<File> getDirectoriesSearchOrder() {
 		if (directoriesSearchOrder == null) {
-			synchronized (FileSystemResourceLocator.class) {
+			synchronized (FileSystemResourceLocatorImpl.class) {
 				if (directoriesSearchOrder == null) {
 					if (logger.isLoggable(Level.INFO)) {
 						logger.info("Initializing directories search order");

@@ -26,17 +26,17 @@ import java.util.regex.Pattern;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.openflexo.toolbox.ClasspathResourceLocator;
-import org.openflexo.toolbox.FileResourceLocation;
-import org.openflexo.toolbox.ResourceLocation;
+import org.openflexo.rm.ClasspathResourceLocatorImpl;
+import org.openflexo.rm.FileResourceImpl;
+import org.openflexo.rm.Resource;
 
 public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources() throws Exception {
-		ClasspathResourceLocator rl = new ClasspathResourceLocator();
+		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
 
-		ResourceLocation rloc = null;
+		Resource rloc = null;
 
 		rloc = rl.locateResource("Config");
 
@@ -44,7 +44,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		if (rloc != null){
 
-			List<ResourceLocation> list = rl.listResources(rloc, Pattern.compile(".*[.]properties"));
+			List<Resource> list = rl.listResources(rloc, Pattern.compile(".*[.]properties"));
 
 			assertTrue(list.size() == 7);
 
@@ -53,33 +53,33 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources2() throws Exception {
-		ClasspathResourceLocator rl = new ClasspathResourceLocator();
+		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
 
-		ResourceLocation rloc = null;
+		Resource rloc = null;
 
 		rloc = rl.locateResource("META-INF");
 
 		assertTrue(rloc != null);
 
-		assertTrue (rloc instanceof FileResourceLocation);
+		assertTrue (rloc instanceof FileResourceImpl);
 
-		System.out.println("Found META-INF here: " + rloc.getURL());
+		System.out.println("Found META-INF here: " + ((FileResourceImpl) rloc).getURL());
 
 		rloc = rl.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
 		assertTrue (rloc != null);
-		assertTrue (rloc instanceof ResourceLocation);
-		System.out.println(rloc.getURL());
+		assertTrue (rloc instanceof Resource);
+		System.out.println(rloc.getURI());
 
 		assertTrue(rloc != null);
-
+		
 		if (rloc != null){
 
-			List<ResourceLocation> list = rl.listResources(rloc, Pattern.compile(".*[.]wav"));
+			List<Resource> list = rl.listResources(rloc, Pattern.compile(".*[.]wav"));
 
 			assertTrue (list.size() == 1);
 
-			for (ResourceLocation r : list){
-				System.out.println(r.getURL());
+			for (Resource r : list){
+				System.out.println(r.getURI());
 			}
 
 		}
@@ -90,22 +90,22 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources3() throws Exception {
-		ClasspathResourceLocator rl = new ClasspathResourceLocator();
+		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
 
-		ResourceLocation rloc = null;
+		Resource rloc = null;
 
 		rloc = rl.locateResource("TestDiff");
 
 		assertTrue(rloc != null);
 		
-		System.out.println(rloc.getURL());
+		System.out.println(rloc.getURI());
 
 		if (rloc != null){
 
-			List<ResourceLocation> list = rl.listAllResources(rloc);
+			List<? extends Resource> list = rloc.getContents();
 
-			for (ResourceLocation r : list){
-				System.out.println(r.getURL());
+			for (Resource r : list){
+				System.out.println(r.getURI());
 			}
 
 			assertTrue (list.size() == 8);

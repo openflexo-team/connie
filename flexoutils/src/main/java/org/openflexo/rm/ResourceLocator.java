@@ -18,7 +18,7 @@
  *
  */
 
-package org.openflexo.toolbox;
+package org.openflexo.rm;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -26,21 +26,22 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public interface ResourceLocatorDelegate {
+public interface ResourceLocator {
 
 	/**
 	 *  Locates the resource given a relative PATH
 	 * @param relativePath
 	 * @return 
 	 */
-	public ResourceLocation locateResource (String relativePath);
+	public Resource locateResource (String relativePath);
 
 	/**
 	 *  Locates the resource given a relative PATH and a base Location
 	 * @param relativePath
 	 * @return 
 	 */
-	public ResourceLocation locateResourceWithBaseLocation(ResourceLocation baseLocation, String relativePath);
+	// TODO : voir si on ne peut pas supprimer ça avec le getContents
+	public Resource locateResourceWithBaseLocation(Resource baseLocation, String relativePath);
 
 	/**
 	 *  Returns all The Resources found in the dir base location, and which names correspond to
@@ -49,7 +50,9 @@ public interface ResourceLocatorDelegate {
 	 * @param nameFilter, expression used to filter results
 	 * @return 
 	 */
-	public List<ResourceLocation> listResources(ResourceLocation dir, Pattern pattern);
+	// TODO : A valider avec Syl => envoyer cette méthode dans FlexoResource
+	public List<Resource> listResources(Resource dir, Pattern pattern);
+
 
 	/**
 	 *  Returns all The Resources found in the dir base location
@@ -57,21 +60,14 @@ public interface ResourceLocatorDelegate {
 	 * @param dir
 	 * @return 
 	 */
-	public List<ResourceLocation>  listAllResources(ResourceLocation dir);
+	// public List<Resource>  listAllResources(Resource dir);
 
 	/**
 	 *  Gets the resource pointed by URL as a File
 	 * @param resourceURL
 	 * @return null when resource cannot be converted to File
 	 */
-	public File retrieveResourceAsFile(ResourceLocation location);
-
-	/**
-	 *  Gets the resource pointed by URL as an Input Stream
-	 * @param resourceURL
-	 * @return null when resource cannot be converted to InputStream
-	 */
-	public InputStream retrieveResourceAsInputStream(ResourceLocation resourceURL);
-
+	public File retrieveResourceAsFile(Resource location);
+	
 
 }

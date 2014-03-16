@@ -26,8 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.openflexo.toolbox.ResourceLocation;
-import org.openflexo.toolbox.ResourceLocator;
+import org.openflexo.rm.Resource;
+import org.openflexo.rm.CompositeResourceLocatorImpl;
 
 /**
  * Flexo logging manager: manages logs for the application above java.util.logging<br>
@@ -40,7 +40,7 @@ import org.openflexo.toolbox.ResourceLocator;
 public class FlexoLoggingManager {
 
 	static final Logger logger = Logger.getLogger(FlexoLoggingManager.class.getPackage().getName());
-	static final ResourceLocator rl = ResourceLocator.getResourceLocator();
+	static final CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
 
 	// private static XMLMapping _loggingMapping = null;
 	private static FlexoLoggingManager _instance;
@@ -54,7 +54,7 @@ public class FlexoLoggingManager {
 	private boolean _keepLogTrace;
 	private int _maxLogCount;
 	private Level _loggingLevel;
-	private ResourceLocation _configurationFile;
+	private Resource _configurationFile;
 
 	public static interface LoggingManagerDelegate {
 		public void setKeepLogTrace(boolean logTrace);
@@ -63,10 +63,10 @@ public class FlexoLoggingManager {
 
 		public void setDefaultLoggingLevel(Level lev);
 
-		public void setConfigurationFileLocation(ResourceLocation configurationFile);
+		public void setConfigurationFileLocation(Resource configurationFile);
 	}
 
-	public static FlexoLoggingManager initialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, ResourceLocation configurationFile,
+	public static FlexoLoggingManager initialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, Resource configurationFile,
 			Level logLevel, LoggingManagerDelegate delegate) throws SecurityException, IOException {
 		if (isInitialized()) {
 			return _instance;
@@ -74,7 +74,7 @@ public class FlexoLoggingManager {
 		return forceInitialize(numberOfLogsToKeep, keepLogTraceInMemory, configurationFile, logLevel, delegate);
 	}
 
-	public static FlexoLoggingManager forceInitialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, ResourceLocation configurationFile,
+	public static FlexoLoggingManager forceInitialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, Resource configurationFile,
 			Level logLevel, LoggingManagerDelegate delegate) {
 		_instance = new FlexoLoggingManager();
 		_instance._delegate = delegate;
@@ -256,7 +256,7 @@ public class FlexoLoggingManager {
 		if (lev == Level.FINEST) {
 			fileName = "FINEST";
 		}
-		ResourceLocation newConfigurationFile = rl.locateResource("Config/logging_" + fileName + ".properties");
+		Resource newConfigurationFile = rl.locateResource("Config/logging_" + fileName + ".properties");
 		if (newConfigurationFile != null){
 			_configurationFile = newConfigurationFile;
 		}
@@ -270,7 +270,7 @@ public class FlexoLoggingManager {
 		return _configurationFile.getRelativePath();
 	}
 
-	public void setConfigurationFileLocation(ResourceLocation configurationFile) {
+	public void setConfigurationFileLocation(Resource configurationFile) {
 		_configurationFile = configurationFile;
 		if (_delegate != null) {
 			_delegate.setConfigurationFileLocation(configurationFile);
@@ -278,10 +278,10 @@ public class FlexoLoggingManager {
 		reloadLoggingFile(configurationFile);
 	}
 
-	private boolean reloadLoggingFile(ResourceLocation filePath) {
-		logger.info("reloadLoggingFile with " + filePath.getURL());
+	private boolean reloadLoggingFile(Resource filePath) {
+		logger.info("reloadLoggingFile with " + filePath.getURI());
 		try {
-			LogManager.getLogManager().readConfiguration(filePath.openStream());
+			LogManager.getLogManager().readConfiguration(filePath.openInputStream());
 		} catch (SecurityException e) {
 			logger.warning("The specified logging configuration file can't be read (not enough privileges).");
 			e.printStackTrace();

@@ -25,26 +25,32 @@ import java.io.IOException;
 
 import javax.swing.ImageIcon;
 
+import org.openflexo.rm.FileResourceImpl;
+import org.openflexo.rm.Resource;
+
 /**
  * @author bmangez
  */
+
+//TODO : maybe it should implements Resource API to ease usage
+
 public class ImageIconResource extends ImageIcon {
 	private static final long serialVersionUID = 1L;
-	private ResourceLocation _location;
+	private Resource _location;
 
 	private static String FILE_SUFFIX = ".flexoicon";
 
-	public ImageIconResource(ResourceLocation location) {
-		super(location.getURL());
+	public ImageIconResource(Resource location) {
+		super(location.getURI());
 		_location = location;
 	}
 	
 	private File getResourceFile() throws IOException {
 		File resourceFile = null;
-		if (_location != null && _location instanceof FileResourceLocation) {
-			resourceFile = ((FileResourceLocation)_location).getFile();
+		if (_location != null && _location instanceof FileResourceImpl) {
+			resourceFile = ((FileResourceImpl)_location).getFile();
 		}if (resourceFile == null) {
-			resourceFile = File.createTempFile(_location.getURL().getFile().replace(File.pathSeparatorChar, '_'), FILE_SUFFIX);
+			resourceFile = File.createTempFile(((FileResourceImpl)_location).getURL().getFile().replace(File.pathSeparatorChar, '_'), FILE_SUFFIX);
 		}
 		return resourceFile;
 	}
