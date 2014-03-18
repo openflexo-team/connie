@@ -54,6 +54,9 @@ public class FileResourceImpl extends BasicResourceImpl {
 			} catch (MalformedURLException e) {
 				logger.severe("Unable to find parent directory for " + getURI());
 				e.printStackTrace();
+			} catch (LocatorNotFoundException e) {
+				logger.severe("Unable to find Locator for " + getURI());
+				e.printStackTrace();
 			}
 		}
 		return null;
@@ -68,19 +71,19 @@ public class FileResourceImpl extends BasicResourceImpl {
 	}
 
 	public FileResourceImpl(ResourceLocatorDelegate locator,String initialPath,
-			URL url2, File file2) {
+			URL url2, File file2) throws LocatorNotFoundException {
 		this (locator, initialPath, url2);
 		_file = file2;
 	}
 
 
-	public FileResourceImpl(ResourceLocatorDelegate locator,String path) throws MalformedURLException {
+	public FileResourceImpl(ResourceLocatorDelegate locator,String path) throws MalformedURLException, LocatorNotFoundException {
 		this (locator, new File(path));
 	}
 
 
 	public FileResourceImpl(
-			ResourceLocatorDelegate locator, String relativePath, URL url) {
+			ResourceLocatorDelegate locator, String relativePath, URL url) throws LocatorNotFoundException {
 		super(locator, relativePath, url);
 		try {
 			setFile(new File(url.toURI()));
@@ -91,7 +94,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 	}
 
 	public FileResourceImpl(ResourceLocatorDelegate locator,
-			File file) throws MalformedURLException {
+			File file) throws MalformedURLException, LocatorNotFoundException {
 		super(locator,file.getPath(),file.toURI().toURL());
 	}
 
@@ -100,8 +103,13 @@ public class FileResourceImpl extends BasicResourceImpl {
 	}
 
 
-	public FileResourceImpl(String canonicalPath, URL url, File file) {
+	public FileResourceImpl(String canonicalPath, URL url, File file) throws LocatorNotFoundException {
 		this(ResourceLocator.getInstanceForLocatorClass(FileSystemResourceLocatorImpl.class),canonicalPath, url, file);
+	}
+
+
+	public FileResourceImpl(File file) throws MalformedURLException, LocatorNotFoundException {
+		this (ResourceLocator.getInstanceForLocatorClass(FileSystemResourceLocatorImpl.class),file);
 	}
 
 

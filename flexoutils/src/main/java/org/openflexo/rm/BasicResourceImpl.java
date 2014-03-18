@@ -49,10 +49,14 @@ public class BasicResourceImpl implements Resource {
 	protected Resource _parent;
 
 	public BasicResourceImpl(
-			ResourceLocatorDelegate delegate, String initialPath, URL url) {
+			ResourceLocatorDelegate locator, String initialPath, URL url) throws LocatorNotFoundException {
+		if (locator == null){
+			logger.severe("Cannot create a Resource without a Locator : " + url.toString());
+			throw new LocatorNotFoundException();
+		}
 		_relativePath = initialPath;
 		_url = url;
-		_locator = delegate;
+		_locator = locator;
 
 	}
 
@@ -144,6 +148,7 @@ public class BasicResourceImpl implements Resource {
 
 	@Override
 	public String toString(){
+		ResourceLocator.getInstanceForLocatorClass(FileSystemResourceLocatorImpl.class);
 		return "[" + _locator.toString() + "]" +_url.toString();
 
 	}
@@ -163,6 +168,18 @@ public class BasicResourceImpl implements Resource {
 	public URL getURL(){
 		return this._url;
 	}
+	/***
+	 * Locator Not Found Exception
+	 */
 
+	public class LocatorNotFoundException extends Exception {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3102784112143915911L;
+		
+	}
+	
 
 }

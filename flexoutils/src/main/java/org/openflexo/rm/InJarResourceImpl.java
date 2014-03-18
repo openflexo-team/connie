@@ -45,13 +45,13 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	private static final Logger logger = Logger.getLogger(InJarResourceImpl.class.getPackage().getName());
 	
 	public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath,
-			URL url) {
+			URL url) throws LocatorNotFoundException {
 		super(delegate, initialPath, url);
 
 	}
 
 
-	public InJarResourceImpl(String initialPath, URL url) {
+	public InJarResourceImpl(String initialPath, URL url) throws LocatorNotFoundException {
 		super(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), initialPath, url);
 
 	}

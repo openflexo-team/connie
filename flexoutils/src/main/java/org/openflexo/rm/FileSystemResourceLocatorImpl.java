@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
 import org.openflexo.toolbox.FileUtils;
 
 /**
@@ -71,6 +72,9 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		} catch (MalformedURLException e) {
 			logger.severe("Unable to find given file: " + relativePathName);
 			e.printStackTrace();
+		} catch (LocatorNotFoundException e) {
+			logger.severe(" IMPOSSIBLE!  Locator is nullfor: " + relativePathName);
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -92,6 +96,9 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 							return new FileResourceImpl( this, baseLocation.getRelativePath() + PATH_SEP + relativePath, foundFiles[0].toURI().toURL(),foundFiles[0]);
 						} catch (MalformedURLException e) {
 							logger.severe("Unable to convert File To ResourceLocation: " + relativePath);
+							e.printStackTrace();
+						} catch (LocatorNotFoundException e) {
+							logger.severe(" IMPOSSIBLE!  Locator is nullfor: " + relativePath);
 							e.printStackTrace();
 						}
 					}

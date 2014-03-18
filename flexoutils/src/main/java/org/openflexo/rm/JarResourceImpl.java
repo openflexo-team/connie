@@ -109,6 +109,9 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 				} catch (MalformedURLException e) {
 					logger.severe("Unable to create JarResource whith filename: " +name);
 					e.printStackTrace();
+				} catch (LocatorNotFoundException e) {
+					logger.severe("Unable to find locator for : " +name);
+					e.printStackTrace();
 				}
 			}
 
