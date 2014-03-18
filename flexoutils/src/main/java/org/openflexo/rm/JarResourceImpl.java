@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -42,7 +43,7 @@ import java.util.logging.Logger;
 
 public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
-	
+
 	private static final Logger logger = Logger.getLogger(JarResourceImpl.class.getPackage().getName());
 
 	private List<Resource> contents;
@@ -50,7 +51,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	private String jarfilename = null;
 
 
-	public JarResourceImpl(ResourceLocator locator, String filename)
+	public JarResourceImpl(ResourceLocatorDelegate locator, String filename)
 			throws MalformedURLException {
 		super(locator);
 		this._relativePath = filename;
@@ -74,7 +75,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		}
 	}
 
-	
+
 	@Override
 	public Resource getContainer() {
 		return null;
@@ -116,6 +117,66 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	}
 
 	@Override
+	public List<? extends Resource> getContents(Pattern pattern) {
+		URL url = getURL();
+		try{
+			Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
+			List<Resource> retval = new ArrayList<Resource>();
+
+			while(entries.hasMoreElements()) {
+				String name = entries.nextElement().getName();
+				boolean accept = pattern.matcher(name).matches();
+				if (accept) {
+					retval.add(new InJarResourceImpl(name, new URL(url.getProtocol(), url.getHost(),"file:"+jarfilename +"!/"+name)));
+				}
+			}
+
+			return retval;
+		}
+		catch (Exception e){
+			logger.severe("Unable to look for resources in URL : " + url);
+			e.printStackTrace();
+		}
+
+		return java.util.Collections.emptyList();
+	}
+
+	
+	public List<? extends Resource> getContents(String startpath, Pattern pattern) {
+
+		URL url = getURL();
+		try{
+			Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
+			List<Resource> retval = new ArrayList<Resource>();
+
+			while(entries.hasMoreElements()) {
+				String name = entries.nextElement().getName();
+				boolean accept = pattern.matcher(name).matches();
+				if (name.startsWith(startpath) && accept) { //filter according to the path
+					String entry = name.substring(startpath.length());
+					int checkSubdir = entry.indexOf("/");
+					if (checkSubdir >= 0) {
+						// if it is a subdirectory, we just return the directory name
+						entry = entry.substring(0, checkSubdir);
+					}
+					retval.add(new InJarResourceImpl(name, new URL(url.getProtocol(), url.getHost(),"file:"+jarfilename +"!/"+name)));
+				}
+			}
+
+			return retval;
+		}
+		catch (Exception e){
+			logger.severe("Unable to look for resources in URL : " + url);
+			e.printStackTrace();
+		}
+
+		return java.util.Collections.emptyList();
+
+	}
+
+
+
+	@Override
 	public void setURI(String anURI) {
 		return;
 	}
@@ -124,6 +185,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	public String getRelativePath() {
 		return jarfilename;
 	}
+
 
 
 }

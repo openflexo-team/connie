@@ -25,10 +25,15 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class FileResourceImpl extends BasicResourceImpl {
 
@@ -62,20 +67,20 @@ public class FileResourceImpl extends BasicResourceImpl {
 		return;
 	}
 
-	public FileResourceImpl(ResourceLocator locator,String initialPath,
+	public FileResourceImpl(ResourceLocatorDelegate locator,String initialPath,
 			URL url2, File file2) {
 		this (locator, initialPath, url2);
 		_file = file2;
 	}
 
 
-	public FileResourceImpl(ResourceLocator locator,String path) throws MalformedURLException {
+	public FileResourceImpl(ResourceLocatorDelegate locator,String path) throws MalformedURLException {
 		this (locator, new File(path));
 	}
 
 
 	public FileResourceImpl(
-			ResourceLocator locator, String relativePath, URL url) {
+			ResourceLocatorDelegate locator, String relativePath, URL url) {
 		super(locator, relativePath, url);
 		try {
 			setFile(new File(url.toURI()));
@@ -85,12 +90,12 @@ public class FileResourceImpl extends BasicResourceImpl {
 		}
 	}
 
-	public FileResourceImpl(ResourceLocator locator,
+	public FileResourceImpl(ResourceLocatorDelegate locator,
 			File file) throws MalformedURLException {
 		super(locator,file.getPath(),file.toURI().toURL());
 	}
 
-	public FileResourceImpl(ResourceLocator locator) {
+	public FileResourceImpl(ResourceLocatorDelegate locator) {
 		super(locator);
 	}
 
@@ -144,9 +149,36 @@ public class FileResourceImpl extends BasicResourceImpl {
 		return retval;
 	}
 
+
+
+	@Override
+	public List<Resource> getContents(Pattern pattern) {
+
+		File file = getFile();
+		if (file == null){
+			try {
+				file = new File(getURL().toURI());
+				if (file != null) setFile(file);
+			} catch (URISyntaxException e) {
+				logger.severe("Unable to convert URL to File : " + getURL());
+				e.printStackTrace();
+			}
+		}
+		if (file != null && file.isDirectory()){
+
+			List<Resource> retval = new ArrayList<Resource>();
+
+			addDirectoryContent(getLocator(),file,pattern,retval);
+
+			return retval;
+		}
+		return java.util.Collections.emptyList();
+
+	}
+
 	// Additional methods not in Resource API
 
-	public static void addDirectoryContent (ResourceLocator dl, File file, List<Resource> list) {
+	public static void addDirectoryContent (ResourceLocatorDelegate dl, File file, List<Resource> list) {
 
 		File[] fileList = file.listFiles();
 		for(final File f : fileList){
@@ -172,4 +204,38 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	}
 
+
+	/***********************************************************************************************************************************************/
+	/** Those methods do not belong to the ResourceLocatorDelegate interface */
+
+
+	public static void addDirectoryContent (ResourceLocatorDelegate dl, File file, Pattern pattern,List<Resource> list) {
+
+		File[] fileList = file.listFiles();
+		for(final File f : fileList){
+			if(! f.isDirectory()){
+				try{
+					final String fileName = f.getCanonicalPath();
+					final boolean accept = pattern.matcher(fileName).matches();
+					if(accept){
+						list.add(new FileResourceImpl(dl,fileName,f.toURI().toURL()));
+					}
+				} catch(final Exception e){
+					try {
+						logger.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+			// Recursive search
+			else {
+				addDirectoryContent(dl,f, pattern, list);
+			}
+		}
+
+	}
+
+	
 }

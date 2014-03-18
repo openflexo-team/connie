@@ -49,7 +49,7 @@ import org.openflexo.toolbox.FileUtils;
  *         <B>Class Description</B>
  */
 // TODO : have a more consistent API
-public class FileSystemResourceLocatorImpl implements ResourceLocator {
+public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	private static final Logger logger = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
 	private static String PATH_SEP = System.getProperty("file.separator");
@@ -102,7 +102,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocator {
 		}
 		return null;
 	}
-
+/*
 	@Override
 	public List<Resource> listResources(Resource dir,Pattern pattern) {	
 		URL url = null;
@@ -140,6 +140,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocator {
 
 
 	}
+	*/
 /*
 	@Override
 	public List<Resource> listAllResources(Resource dir) {
@@ -217,38 +218,6 @@ public class FileSystemResourceLocatorImpl implements ResourceLocator {
 			} 
 		}
 		return locateFile;
-
-	}
-
-	/***********************************************************************************************************************************************/
-	/** Those methods do not belong to the ResourceLocatorDelegate interface */
-
-
-	public static void addDirectoryContent (ResourceLocator dl, File file, Pattern pattern,List<Resource> list) {
-
-		File[] fileList = file.listFiles();
-		for(final File f : fileList){
-			if(! f.isDirectory()){
-				try{
-					final String fileName = f.getCanonicalPath();
-					final boolean accept = pattern.matcher(fileName).matches();
-					if(accept){
-						list.add(new FileResourceImpl(dl,fileName,f.toURI().toURL()));
-					}
-				} catch(final Exception e){
-					try {
-						logger.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
-			// Recursive search
-			else {
-				addDirectoryContent(dl,f, pattern, list);
-			}
-		}
 
 	}
 

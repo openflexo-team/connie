@@ -32,7 +32,7 @@ import org.openflexo.diff.ComputeDiff.ModificationChange;
 import org.openflexo.diff.ComputeDiff.RemovalChange;
 import org.openflexo.diff.DiffSource.MergeToken;
 import org.openflexo.rm.FileResourceImpl;
-import org.openflexo.rm.CompositeResourceLocatorImpl;
+import org.openflexo.rm.ResourceLocator;
 import org.openflexo.toolbox.FileUtils;
 
 public class TestDiff extends TestCase {
@@ -49,9 +49,9 @@ public class TestDiff extends TestCase {
 
 	@Test
 	public void test0() throws IOException {
-		CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
-		File file1 = ((FileResourceImpl) (rl.locateResource("TestDiff/TestJava0-v1.java"))).getFile();
-		File file2 = ((FileResourceImpl) (rl.locateResource("TestDiff/TestJava0-v2.java"))).getFile();
+		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava0-v1.java"))).getFile();
+		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava0-v2.java"))).getFile();
 		System.out.println("Test 0");
 		DiffPrint.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2));
 		System.out.println("" + ComputeDiff.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2)));
@@ -62,9 +62,9 @@ public class TestDiff extends TestCase {
 
 	@Test
 	public void test1() throws IOException {
-		CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
-		File file1 =  ((FileResourceImpl) (rl.locateResource("TestDiff/TestJava1-v1.java"))).getFile();
-		File file2 =  ((FileResourceImpl) (rl.locateResource("TestDiff/TestJava1-v2.java"))).getFile();
+		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		File file1 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava1-v1.java"))).getFile();
+		File file2 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava1-v2.java"))).getFile();
 		System.out.println("Test 1");
 		DiffPrint.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2));
 		System.out.println("" + ComputeDiff.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2)));
@@ -80,9 +80,9 @@ public class TestDiff extends TestCase {
 
 	@Test
 	public void test2() throws IOException {
-		CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
-		File file1 =  ((FileResourceImpl) (rl.locateResource("TestDiff/TestJava2-v1.java"))).getFile();
-		File file2 =  ((FileResourceImpl) (rl.locateResource("TestDiff/TestJava2-v2.java"))).getFile();
+		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		File file1 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava2-v1.java"))).getFile();
+		File file2 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava2-v2.java"))).getFile();
 		System.out.println("Test 2");
 		DiffPrint.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2));
 		System.out.println("" + ComputeDiff.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2)));
@@ -98,9 +98,9 @@ public class TestDiff extends TestCase {
 	@Test
 	public void test3() throws IOException {
 
-		CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
-		File file1 =  ((FileResourceImpl) (rl.locateResource("TestDiff/TestJava3-v1.java"))).getFile();
-		File file2 =  ((FileResourceImpl) (rl.locateResource("TestDiff/TestJava3-v2.java"))).getFile();
+		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		File file1 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava3-v1.java"))).getFile();
+		File file2 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava3-v2.java"))).getFile();
 		System.out.println("Test 3");
 		DiffPrint.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2));
 		System.out.println("" + ComputeDiff.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2)));

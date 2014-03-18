@@ -32,6 +32,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class BasicResourceImpl implements Resource {
 
@@ -43,19 +44,19 @@ public class BasicResourceImpl implements Resource {
 	// Location of the resource for the given Delegate
 	protected URL _url; 
 	// The Delegate that can resolve this location
-	private ResourceLocator _locator;
+	private ResourceLocatorDelegate _locator;
 	// Parent Resource
 	protected Resource _parent;
 
 	public BasicResourceImpl(
-			ResourceLocator delegate, String initialPath, URL url) {
+			ResourceLocatorDelegate delegate, String initialPath, URL url) {
 		_relativePath = initialPath;
 		_url = url;
 		_locator = delegate;
 
 	}
 
-	public BasicResourceImpl(ResourceLocator locator) {
+	public BasicResourceImpl(ResourceLocatorDelegate locator) {
 		_locator = locator;
 	}
 
@@ -85,7 +86,7 @@ public class BasicResourceImpl implements Resource {
 	}
 
 	@Override
-	public ResourceLocator getLocator() {
+	public ResourceLocatorDelegate getLocator() {
 		return _locator;
 	}
 
@@ -151,11 +152,17 @@ public class BasicResourceImpl implements Resource {
 	public List<Resource> getContents() {
 		return java.util.Collections.emptyList();
 	}
+
+	@Override
+	public List<? extends Resource> getContents(Pattern pattern) {
+		return java.util.Collections.emptyList();
+	}
 	
 	// Additional methods not from Resource interface
 	
 	public URL getURL(){
 		return this._url;
 	}
+
 
 }

@@ -30,6 +30,7 @@ import org.openflexo.rm.ClasspathResourceLocatorImpl;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.FileSystemResourceLocatorImpl;
 import org.openflexo.rm.Resource;
+import org.openflexo.rm.ResourceLocator;
 
 public class FileSystemResourceLocatorTest extends TestCase {
 
@@ -47,15 +48,20 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 		Resource rloc = null;
 
-		rloc = rl.locateResource("Config");
+		rloc = ResourceLocator.locateResource("Config");
 
 		assertTrue(rloc != null);
 
 		if (rloc != null){
 
-			List<Resource> list = rl.listResources(rloc, Pattern.compile(".*[.]properties"));
+			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"));
 
 			assertTrue(list.size() == 7);
+
+			for (Resource r : list){
+				System.out.println(r.getURI());
+			}
+
 
 		}
 	}
@@ -71,7 +77,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 		
 		Resource rloc = null;
 
-		rloc = rl.locateResource("META-INF");
+		rloc = ResourceLocator.locateResource("META-INF");
 
 		assertTrue(rloc != null);
 
@@ -80,7 +86,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 		System.out.println(rloc.getURI());
 
 
-		rloc = rl.locateResource("TestDiff");
+		rloc = ResourceLocator.locateResource("TestDiff");
 		
 		assertTrue(rloc != null);
 

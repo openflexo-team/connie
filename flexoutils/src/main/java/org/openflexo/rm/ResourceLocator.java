@@ -17,57 +17,165 @@
  * along with OpenFlexo. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.openflexo.rm;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-public interface ResourceLocator {
+/**
+ * @author c guychard
+ * 
+ *         A Flexible Resource Locator that enables to get resources from multiple locations using delegates
+ *         A single deletage per ResourceDelegateLocator implementing class is authorized
+ */
+
+final public class ResourceLocator  {
+
+	private static final Logger logger = Logger.getLogger(ResourceLocator.class.getPackage().getName());
+
+	static final private ArrayList<ResourceLocatorDelegate>  _delegatesOrderedList = new ArrayList<ResourceLocatorDelegate>();
+	static final private Map<Class, ResourceLocatorDelegate>  _delegatesListMap = new Hashtable<Class,ResourceLocatorDelegate>();
+
+	private final static ClasspathResourceLocatorImpl _cprl = new ClasspathResourceLocatorImpl();
+	private final static ResourceLocator _instance = new ResourceLocator();
+
+	ResourceLocator(){
+		resetConfiguration();
+	}
+
+
+	static public ResourceLocatorDelegate getInstanceForLocatorClass(Class aClass) {
+		return _delegatesListMap.get(aClass);
+	}
+
+	static public Resource locateResource(String relativePath) {
+		Resource location = null;
+		Iterator<ResourceLocatorDelegate> delegateIt = _delegatesOrderedList.iterator();
+		while (delegateIt.hasNext() && location == null){
+			ResourceLocatorDelegate del = delegateIt.next();
+			location = del.locateResource(relativePath);
+		}
+		return location;
+	}
+
 
 	/**
-	 *  Locates the resource given a relative PATH
-	 * @param relativePath
-	 * @return 
+	 * 
+	 * @param delegate
 	 */
-	public Resource locateResource (String relativePath);
+
+	static public void removeDelegate (ResourceLocatorDelegate delegate){
+		if (delegate != null) {
+			_delegatesOrderedList.remove(delegate);
+		}
+	}
+	/**
+	 * 
+	 * Adds a new delegate at the end of the list, if a delegate of the given class is already present
+	 * in delegates list.
+	 * If a delegate of that class already exists, moves it to the end of the list if its the same 
+	 * reference as the one already in the delegates list
+	 * else, does nothing
+	 * 
+	 * @param newdelegate
+	 */
+	static public void appendDelegate (ResourceLocatorDelegate newdelegate){
+		if (newdelegate != null) {
+			ResourceLocatorDelegate dl = _delegatesListMap.get(newdelegate.getClass());
+			if (dl != null ){
+				logger.warning("A delegate for that class (" + newdelegate.getClass().getName() + " already exists");
+				if (dl.equals(newdelegate)){
+					_delegatesOrderedList.remove(dl);
+					_delegatesOrderedList.add(dl);
+				}
+				else {
+					logger.severe("The newdelegate is not added as it conflicts with existing one");
+				}
+			}
+			else {
+				_delegatesOrderedList.add(newdelegate);
+				_delegatesListMap.put(newdelegate.getClass(), newdelegate);
+			}
+		}
+	}
 
 	/**
-	 *  Locates the resource given a relative PATH and a base Location
-	 * @param relativePath
-	 * @return 
+	 * 
+	 * Adds a new delegate at the beginning of the list, if a delegate of the given class is already present
+	 * in delegates list.
+	 * If a delegate of that classe already exists, moves it to the beginning of the list if its the same 
+	 * reference as the one already in the delegates list
+	 * else, does nothing
+	 * 
+	 * @param newdelegate
 	 */
-	// TODO : voir si on ne peut pas supprimer ça avec le getContents
-	public Resource locateResourceWithBaseLocation(Resource baseLocation, String relativePath);
+	static public void prependDelegate (ResourceLocatorDelegate newdelegate){
+		if (newdelegate != null) {
+			ResourceLocatorDelegate dl = _delegatesListMap.get(newdelegate.getClass());
+			if (dl != null ){
+				logger.warning("A delegate for that class (" + newdelegate.getClass().getName() + " already exists");
+				if (dl.equals(newdelegate)){
+					_delegatesOrderedList.remove(dl);
+					_delegatesOrderedList.add(0,dl);
+				}
+				else {
+					logger.severe("The newdelegate is not added as it conflicts with existing one");
+				}
+			}else {
+				_delegatesOrderedList.add(0,newdelegate);
+				_delegatesListMap.put(newdelegate.getClass(), newdelegate);
+			}
+		}
+	}
 
 	/**
-	 *  Returns all The Resources found in the dir base location, and which names correspond to
-	 *  given pattern recursively
-	 * @param dir
-	 * @param nameFilter, expression used to filter results
-	 * @return 
+	 * get the singleton instance
+	 * @return FlexibleResourceLocator
 	 */
-	// TODO : A valider avec Syl => envoyer cette méthode dans FlexoResource
-	public List<Resource> listResources(Resource dir, Pattern pattern);
 
+	static public ResourceLocator getResourceLocator(){
+		return _instance;
+	}
 
 	/**
-	 *  Returns all The Resources found in the dir base location
-	 *  given pattern recursively
-	 * @param dir
-	 * @return 
+	 * clears ResourceLocator Configuration: removes all existing delegates from list 
 	 */
-	// public List<Resource>  listAllResources(Resource dir);
+	static public void clearConfiguration(){
+		_delegatesOrderedList.clear();
+	}
 
 	/**
-	 *  Gets the resource pointed by URL as a File
-	 * @param resourceURL
-	 * @return null when resource cannot be converted to File
+	 * resets ResourceLocator Configuration: removes all existing delegates from list 
+	 * and adds only the ClassPath ResourceLocator
 	 */
-	public File retrieveResourceAsFile(Resource location);
+	static public void resetConfiguration(){
+		_delegatesOrderedList.clear();
+		appendDelegate(_cprl);
+	}
+
+
+	@Deprecated
+	public static Resource locateResourceWithBaseLocation(Resource baseLocation, String relativePath) {
+		return baseLocation.getLocator().locateResourceWithBaseLocation(baseLocation, relativePath);
+	}
 	
+	@Deprecated
+	public static File retrieveResourceAsFile(Resource location) {
+		if (location != null){
+			return location.getLocator().retrieveResourceAsFile(location);
+		}
+		else {
+			logger.warning("Cannot retrieve a File for a Null Location!");
+			return null;
+		}
+	}
 
+	
+	
 }

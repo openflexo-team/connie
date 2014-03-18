@@ -27,7 +27,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.openflexo.rm.Resource;
-import org.openflexo.rm.CompositeResourceLocatorImpl;
+import org.openflexo.rm.ResourceLocator;
 
 /**
  * Flexo logging manager: manages logs for the application above java.util.logging<br>
@@ -40,7 +40,7 @@ import org.openflexo.rm.CompositeResourceLocatorImpl;
 public class FlexoLoggingManager {
 
 	static final Logger logger = Logger.getLogger(FlexoLoggingManager.class.getPackage().getName());
-	static final CompositeResourceLocatorImpl rl = CompositeResourceLocatorImpl.getResourceLocator();
+	static final ResourceLocator rl = ResourceLocator.getResourceLocator();
 
 	// private static XMLMapping _loggingMapping = null;
 	private static FlexoLoggingManager _instance;
@@ -256,7 +256,7 @@ public class FlexoLoggingManager {
 		if (lev == Level.FINEST) {
 			fileName = "FINEST";
 		}
-		Resource newConfigurationFile = rl.locateResource("Config/logging_" + fileName + ".properties");
+		Resource newConfigurationFile = ResourceLocator.locateResource("Config/logging_" + fileName + ".properties");
 		if (newConfigurationFile != null){
 			_configurationFile = newConfigurationFile;
 		}

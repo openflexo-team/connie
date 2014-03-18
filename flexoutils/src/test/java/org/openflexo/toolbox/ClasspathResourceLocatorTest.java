@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.openflexo.rm.ClasspathResourceLocatorImpl;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.Resource;
+import org.openflexo.rm.ResourceLocator;
 
 public class ClasspathResourceLocatorTest extends TestCase {
 
@@ -38,13 +39,13 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		Resource rloc = null;
 
-		rloc = rl.locateResource("Config");
+		rloc = ResourceLocator.locateResource("Config");
 
 		assertTrue(rloc != null);
 
 		if (rloc != null){
 
-			List<Resource> list = rl.listResources(rloc, Pattern.compile(".*[.]properties"));
+			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"));
 
 			assertTrue(list.size() == 7);
 
@@ -57,7 +58,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		Resource rloc = null;
 
-		rloc = rl.locateResource("META-INF");
+		rloc = ResourceLocator.locateResource("META-INF");
 
 		assertTrue(rloc != null);
 
@@ -65,7 +66,8 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		System.out.println("Found META-INF here: " + ((FileResourceImpl) rloc).getURL());
 
-		rloc = rl.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
+		rloc = ResourceLocator.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
+		
 		assertTrue (rloc != null);
 		assertTrue (rloc instanceof Resource);
 		System.out.println(rloc.getURI());
@@ -74,9 +76,9 @@ public class ClasspathResourceLocatorTest extends TestCase {
 		
 		if (rloc != null){
 
-			List<Resource> list = rl.listResources(rloc, Pattern.compile(".*[.]wav"));
+			List<Resource> list = (List<Resource>) rloc.getContainer().getContents(Pattern.compile(".*[.]wav"));
 
-			assertTrue (list.size() == 1);
+			assertTrue (list.size() > 1);
 
 			for (Resource r : list){
 				System.out.println(r.getURI());
@@ -94,7 +96,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		Resource rloc = null;
 
-		rloc = rl.locateResource("TestDiff");
+		rloc = ResourceLocator.locateResource("TestDiff");
 
 		assertTrue(rloc != null);
 		

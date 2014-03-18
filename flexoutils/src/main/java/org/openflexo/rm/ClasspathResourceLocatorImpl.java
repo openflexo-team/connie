@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  */
 
 
-public class ClasspathResourceLocatorImpl implements ResourceLocator {
+public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	private static final Logger logger = Logger.getLogger(ClasspathResourceLocatorImpl.class.getPackage().getName());
 	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
@@ -97,95 +97,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocator {
 
 	}
 
-
-
 	@Override
-	public List<Resource> listResources(Resource dir,
-			Pattern pattern) {
-
-		URL url = null;
-		if (dir != null & dir instanceof BasicResourceImpl){
-			url = ((BasicResourceImpl) dir).getURL();
-		}
-		if (dir instanceof InJarResourceImpl ){
-			try{
-				String jarPath = url.getPath().substring(5, url.getPath().indexOf("!")); //strip out only the JAR file
-				JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-				Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
-				List<Resource> retval = new ArrayList<Resource>();
-
-				while(entries.hasMoreElements()) {
-					String name = entries.nextElement().getName();
-					String startpath = dir.getRelativePath();
-					boolean accept = pattern.matcher(name).matches();
-					if (name.startsWith(dir.getRelativePath()) && accept) { //filter according to the path
-						String entry = name.substring(startpath.length());
-						int checkSubdir = entry.indexOf("/");
-						if (checkSubdir >= 0) {
-							// if it is a subdirectory, we just return the directory name
-							entry = entry.substring(0, checkSubdir);
-						}
-						retval.add(new InJarResourceImpl(this,name, new URL(url.getProtocol(), url.getHost(),"file:"+jarPath +"!/"+name)));
-					}
-				}
-
-				return retval;
-			}
-			catch (Exception e){
-				logger.severe("Unable to look for resources in URL : " + url);
-				e.printStackTrace();
-			}
-		}
-		else if (dir instanceof FileResourceImpl) {
-			if (dir instanceof FileResourceImpl){
-				File file = ((FileResourceImpl) dir).getFile();
-				if (file == null){
-					try {
-						file = new File(url.toURI());
-						if (file != null) ((FileResourceImpl) dir).setFile(file);
-					} catch (URISyntaxException e) {
-						logger.severe("Unable to convert URL to File : " + url);
-						e.printStackTrace();
-					}
-				}
-				if (file != null && file.isDirectory()){
-
-					List<Resource> retval = new ArrayList<Resource>();
-
-					FileSystemResourceLocatorImpl.addDirectoryContent(this,file,pattern,retval);
-
-					return retval;
-				}
-			}
-			else {
-				// TODO , but it should not happen
-				logger.warning("Found a File that is not hold by a FileResourceLocation");
-			}
-		}
-		return java.util.Collections.emptyList();
-
-	}
-
-	/*
-	@Override
-	public List<Resource> listAllResources(Resource dir) {
-		return (List<Resource>) dir.getContents();
-	}
-*/
-	/*
-	public InputStream retrieveResourceAsInputStream(Resource rl) {
-		if (rl != null){
-			try {
-				return rl.getURL().openStream();
-			} catch (Exception e) {
-				logger.warning("Did Not find Resource with URL " + rl.toString() );
-				e.printStackTrace();
-			}
-		}
-		return null;
-	}
-	 */
-
 	public File retrieveResourceAsFile(Resource rl) {
 
 		File locateFile = null;
@@ -210,7 +122,6 @@ public class ClasspathResourceLocatorImpl implements ResourceLocator {
 		}
 		return locateFile;
 	}
-
 
 	public String toString(){
 		return this.getClass().getSimpleName();
