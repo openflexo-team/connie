@@ -60,11 +60,10 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		rloc = ResourceLocator.locateResource("META-INF");
 
+		System.out.println("Found META-INF here: " + (rloc).getURI());
+		
 		assertTrue(rloc != null);
 
-		assertTrue (rloc instanceof FileResourceImpl);
-
-		System.out.println("Found META-INF here: " + ((FileResourceImpl) rloc).getURL());
 
 		rloc = ResourceLocator.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
 		

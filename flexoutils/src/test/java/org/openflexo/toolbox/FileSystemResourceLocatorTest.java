@@ -72,6 +72,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 		File workingDirectory = new File(System.getProperty("user.dir"));
 		rl.appendToDirectories(workingDirectory + PATH_SEP + "src/main/resources");
 		rl.appendToDirectories(workingDirectory + PATH_SEP + "src/test/resources");
+		ResourceLocator.prependDelegate(rl);
 
 		rl.printDirectoriesSearchOrder(System.out);
 		
@@ -81,9 +82,9 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 		assertTrue(rloc != null);
 
-		assertTrue (rloc instanceof FileResourceImpl);
-
-		System.out.println(rloc.getURI());
+		assertTrue(rloc instanceof FileResourceImpl);
+		
+		System.out.println("Found META-INF here: " + (rloc).getURI());
 
 
 		rloc = ResourceLocator.locateResource("TestDiff");
