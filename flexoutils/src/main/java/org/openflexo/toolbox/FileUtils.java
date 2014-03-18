@@ -49,6 +49,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.openflexo.logging.FlexoLogger;
+import org.openflexo.rm.FileResourceImpl;
+import org.openflexo.rm.InJarResourceImpl;
+import org.openflexo.rm.Resource;
 
 /**
  * Some File utilities
@@ -132,6 +135,33 @@ public class FileUtils {
 		newDir.mkdirs();
 		copyContentDirToDir(src, newDir, strategy);
 		return newDir;
+	}
+
+	public static File copyResourceToDir(Resource src, File dest, CopyStrategy strategy) throws IOException {
+
+		if (src instanceof FileResourceImpl){
+			return copyDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
+		}
+		else if (src instanceof InJarResourceImpl){
+			for (Resource rsc: src.getContents()) {
+				copyJarResourceToDir(rsc, dest);
+			}
+		}
+		else {
+			logger.severe("Unable to copy resource: " + src.toString());
+			return null;
+		}
+		return null;
+
+	}
+
+	public static void copyResourceToDir(Resource locateResource, File file) throws IOException {
+		copyResourceToDir(locateResource, file, CopyStrategy.REPLACE);
+		
+	}
+
+	private static void copyJarResourceToDir(Resource rsc, File dest) throws IOException {
+		throw new IOException("Not YET Implemented!");
 	}
 
 	public static void copyDirFromDirToDirIncludingCVSFiles(String srcName, File srcParentDir, File destDir) throws IOException {
@@ -1060,4 +1090,5 @@ public class FileUtils {
 		}
 		return new File(System.getProperty("user.home"), "Documents");
 	}
+
 }

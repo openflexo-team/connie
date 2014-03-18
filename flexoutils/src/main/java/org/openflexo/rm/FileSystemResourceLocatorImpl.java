@@ -61,13 +61,24 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	@Override
 	public  Resource locateResource(String relativePathName) {
 
-		File file = locateFile(relativePathName,false);
-		if (file == null){
-			file = locateFile(relativePathName,true);
-		}
+		File file = new File(relativePathName);
+
 		try {
-			if (file != null){
+			if (file.exists()){
+				// A absolute file path
 				return new FileResourceImpl(this, relativePathName, file.toURI().toURL(),file);
+			}
+			else {
+
+				file = locateFile(relativePathName,false);
+
+				if (file == null){
+					file = locateFile(relativePathName,true);
+				}
+				if (file != null){
+					return new FileResourceImpl(this, relativePathName, file.toURI().toURL(),file);
+				}
+
 			}
 		} catch (MalformedURLException e) {
 			logger.severe("Unable to find given file: " + relativePathName);
@@ -110,7 +121,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		}
 		return null;
 	}
-/*
+	/*
 	@Override
 	public List<Resource> listResources(Resource dir,Pattern pattern) {	
 		URL url = null;
@@ -148,8 +159,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 
 	}
-	*/
-/*
+	 */
+	/*
 	@Override
 	public List<Resource> listAllResources(Resource dir) {
 
@@ -167,7 +178,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		return java.util.Collections.emptyList();
 
 	}
-*/
+	 */
 	/*
 
 	@Override

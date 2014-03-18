@@ -90,7 +90,7 @@ public class FlexoLoggingManager {
 		}
 		_instance.logRecords = new LogRecords();
 		try {
-			LogManager.getLogManager().readConfiguration();
+			LogManager.getLogManager().readConfiguration(configurationFile.openInputStream());
 		} catch (SecurityException e) {
 			if (logger.isLoggable(Level.WARNING)) {
 				logger.warning(e.getMessage());
