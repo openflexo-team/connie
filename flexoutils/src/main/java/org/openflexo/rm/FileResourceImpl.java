@@ -21,7 +21,10 @@
 package org.openflexo.rm;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -215,6 +218,33 @@ public class FileResourceImpl extends BasicResourceImpl {
 			}
 		}
 
+	}
+
+	
+
+	@Override
+	public OutputStream openOutputStream() {
+		if (_file != null){
+			if (_file.exists() && _file.canWrite()){
+				try {
+					return new FileOutputStream(_file);
+				} catch (FileNotFoundException e) {
+					logger.severe("File Not Found : " + getURI() );
+					e.printStackTrace();
+				}
+			}
+			else {
+				try {
+					_file.createNewFile();
+					return new FileOutputStream(_file);
+				} catch (IOException e) {
+					logger.severe("FUnable to create new file : " + getURI() );
+					e.printStackTrace();
+				}
+				
+			}
+		}
+		return null;
 	}
 
 
