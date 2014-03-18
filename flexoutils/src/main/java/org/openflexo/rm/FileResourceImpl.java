@@ -100,6 +100,11 @@ public class FileResourceImpl extends BasicResourceImpl {
 	}
 
 
+	public FileResourceImpl(String canonicalPath, URL url, File file) {
+		this(ResourceLocator.getInstanceForLocatorClass(FileSystemResourceLocatorImpl.class),canonicalPath, url, file);
+	}
+
+
 	public File getFile(){
 		if (_file == null && _url != null){
 			try {

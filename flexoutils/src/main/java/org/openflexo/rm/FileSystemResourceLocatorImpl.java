@@ -44,11 +44,12 @@ import java.util.regex.Pattern;
 import org.openflexo.toolbox.FileUtils;
 
 /**
- * @author bmangez
+ * @author bmangez, sguerin, xtof
  * 
- *         <B>Class Description</B>
+ *         <B>Locates resources on the FileSystem, given a collection of directories to search in</B>
  */
-// TODO : have a more consistent API
+
+
 public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	private static final Logger logger = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
