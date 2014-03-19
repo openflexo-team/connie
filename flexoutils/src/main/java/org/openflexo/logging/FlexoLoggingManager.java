@@ -83,6 +83,7 @@ public class FlexoLoggingManager {
 		_instance._loggingLevel = logLevel;
 		if (configurationFile != null) {
 			_instance._configurationFile = configurationFile;
+			// TODO : Log files location should be parametrizable
 			File f = new File(System.getProperty("user.home"), "Library/Logs/Flexo/");
 			if (!f.exists()) {
 				f.mkdirs();
@@ -90,7 +91,12 @@ public class FlexoLoggingManager {
 		}
 		_instance.logRecords = new LogRecords();
 		try {
-			LogManager.getLogManager().readConfiguration(configurationFile.openInputStream());
+			if(configurationFile != null){
+				LogManager.getLogManager().readConfiguration(configurationFile.openInputStream());
+			}
+			else {
+				logger.warning("Unable to initialize LogginManager with NULL configurationFile...");
+			}
 		} catch (SecurityException e) {
 			if (logger.isLoggable(Level.WARNING)) {
 				logger.warning(e.getMessage());
