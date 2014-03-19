@@ -111,7 +111,7 @@ public class BasicResourceImpl implements Resource {
 
 	@Override
 	public boolean isContainer() {
-		return _parent != null;
+		return false;
 	}
 
 
@@ -154,7 +154,7 @@ public class BasicResourceImpl implements Resource {
 	}
 
 	@Override
-	public List<Resource> getContents() {
+	public List<? extends Resource> getContents() {
 		return java.util.Collections.emptyList();
 	}
 

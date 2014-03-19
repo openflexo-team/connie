@@ -21,6 +21,7 @@
 package org.openflexo.rm;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -92,31 +93,32 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	}
 
 	@Override
-	public List<Resource> getContents() {
+	public List<? extends Resource> getContents() {
+		URL url = getURL();
 
-		if (contents == null) {
-			contents = new ArrayList<Resource>();
+		if (jarfile != null) {
+			try{
+				Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
+				List<Resource> retval = new ArrayList<Resource>();
 
-			Enumeration<JarEntry> entries = jarfile.entries();
-			while(entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				String name = entry.getName();
-				InJarResourceImpl res;
-				try {
-					res = new InJarResourceImpl(this.getLocator(),name,new URL("jar:"+this.getURL().toString() + "!/" +entry.getName()));
+				while(entries.hasMoreElements()) {
 
-					contents.add(res);
-				} catch (MalformedURLException e) {
-					logger.severe("Unable to create JarResource whith filename: " +name);
-					e.printStackTrace();
-				} catch (LocatorNotFoundException e) {
-					logger.severe("Unable to find locator for : " +name);
-					e.printStackTrace();
+					JarEntry current = entries.nextElement();
+					String name = current.getName();
+					retval.add(new InJarResourceImpl(name, new URL("jar", url.getHost(),"file:"+jarfilename +"!/"+name)));
 				}
+
+				return retval;
+			}
+			catch (Exception e){
+				logger.severe("Unable to look for resources in URL : " + url);
+				e.printStackTrace();
 			}
 
+			return java.util.Collections.emptyList();
 		}
-		return contents;
+
+		return super.getContents();
 	}
 
 	@Override
@@ -127,10 +129,13 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			List<Resource> retval = new ArrayList<Resource>();
 
 			while(entries.hasMoreElements()) {
-				String name = entries.nextElement().getName();
+				JarEntry current = entries.nextElement();
+				String name = current.getName();
 				boolean accept = pattern.matcher(name).matches();
 				if (accept) {
-					retval.add(new InJarResourceImpl(name, new URL(url.getProtocol(), url.getHost(),"file:"+jarfilename +"!/"+name)));
+					InJarResourceImpl res = new InJarResourceImpl(name, new URL("jar", url.getHost(),"file:"+jarfilename +"!/"+name));
+					res.setEntry(current);
+					retval.add(res);
 				}
 			}
 
@@ -144,7 +149,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		return java.util.Collections.emptyList();
 	}
 
-	
+
 	public List<? extends Resource> getContents(String startpath, Pattern pattern) {
 
 		URL url = getURL();
@@ -153,7 +158,8 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			List<Resource> retval = new ArrayList<Resource>();
 
 			while(entries.hasMoreElements()) {
-				String name = entries.nextElement().getName();
+				JarEntry current = entries.nextElement();
+				String name = current.getName();
 				boolean accept = pattern.matcher(name).matches();
 				if (name.startsWith(startpath) && accept) { //filter according to the path
 					String entry = name.substring(startpath.length());
@@ -162,7 +168,9 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 						// if it is a subdirectory, we just return the directory name
 						entry = entry.substring(0, checkSubdir);
 					}
-					retval.add(new InJarResourceImpl(name, new URL(url.getProtocol(), url.getHost(),"file:"+jarfilename +"!/"+name)));
+					InJarResourceImpl res = new InJarResourceImpl(name, new URL("jar", url.getHost(),"file:"+jarfilename +"!/"+name));
+					res.setEntry(current);
+					retval.add(res);
 				}
 			}
 
@@ -187,8 +195,19 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	@Override
 	public String getRelativePath() {
 		return jarfilename;
+		
 	}
 
-
+	public InputStream openInputStream(JarEntry entry){
+		if (jarfile != null){
+			try {
+				jarfile.getInputStream(entry);
+			} catch (IOException e) {
+				logger.severe("Unable to access Resource");
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
 
 }

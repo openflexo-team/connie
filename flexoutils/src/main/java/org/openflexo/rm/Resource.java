@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.jar.JarEntry;
 import java.util.regex.Pattern;
 
 /**

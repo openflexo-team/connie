@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.rm.FileResourceImpl;
@@ -89,6 +90,9 @@ public class FileUtils {
 	private static final String UNACCEPTABLE_SLASH = "\\s+" + SLASH + "\\s*|\\s*" + SLASH + "\\s+|\\\\";
 
 	private static final Pattern UNACCEPTABLE_SLASH_PATTERN = Pattern.compile(UNACCEPTABLE_SLASH);
+
+	private static final String PATH_SEP = System.getProperty("file.separator");
+
 
 	public static final String VALID_FILE_NAME_REGEXP = SLASH + "?(" + NO_BLANK_NO_SLASH + "(" + NO_SLASH + "+?" + NO_BLANK_NO_SLASH + "|"
 			+ NO_BLANK_NO_SLASH + "*?)(" + SLASH + "(" + NO_BLANK_NO_SLASH + "*?|" + NO_BLANK_NO_SLASH + NO_SLASH + "+?)"
@@ -143,8 +147,8 @@ public class FileUtils {
 			return copyDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
 		}
 		else if (src instanceof InJarResourceImpl){
-			for (Resource rsc: src.getContents()) {
-				copyJarResourceToDir(rsc, dest);
+			for (Resource rsc: src.getContents(Pattern.compile(".*"+src.getRelativePath()+"/.*"))) {
+				copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
 			}
 		}
 		else {
@@ -157,11 +161,29 @@ public class FileUtils {
 
 	public static void copyResourceToDir(Resource locateResource, File file) throws IOException {
 		copyResourceToDir(locateResource, file, CopyStrategy.REPLACE);
-		
+
 	}
 
-	private static void copyJarResourceToDir(Resource rsc, File dest) throws IOException {
-		throw new IOException("Not YET Implemented!");
+	private static void copyInJarResourceToDir(InJarResourceImpl rsc, File dest) throws IOException {
+		String rpath = rsc.getRelativePath();
+		File f = new File(dest,  rpath.replace("/", PATH_SEP));
+		if (rpath.endsWith("/")) {
+			f.mkdir();
+		}
+		else {
+			f.createNewFile();
+			if (f.exists()){
+				InputStream in = rsc.openInputStream();
+				OutputStream out = new FileOutputStream(f);
+				IOUtils.copy(in,out);
+				in.close();
+				out.close();
+			}
+			else {
+				logger.severe("Unable to copy InJarResource: " + rsc );
+			}
+		}
+
 	}
 
 	public static void copyDirFromDirToDirIncludingCVSFiles(String srcName, File srcParentDir, File destDir) throws IOException {

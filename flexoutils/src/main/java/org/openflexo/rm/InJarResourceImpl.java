@@ -21,6 +21,8 @@
 package org.openflexo.rm;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -44,6 +46,8 @@ public class InJarResourceImpl extends BasicResourceImpl {
 
 	private static final Logger logger = Logger.getLogger(InJarResourceImpl.class.getPackage().getName());
 	
+	private JarEntry entry = null;
+	
 	public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath,
 			URL url) throws LocatorNotFoundException {
 		super(delegate, initialPath, url);
@@ -54,6 +58,37 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	public InJarResourceImpl(String initialPath, URL url) throws LocatorNotFoundException {
 		super(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), initialPath, url);
 
+	}
+
+
+
+	@Override
+	public InputStream openInputStream() {
+		if (entry != null && _parent != null){
+			return ((JarResourceImpl) _parent).openInputStream(entry);
+		}
+		if (_url != null){
+			try {
+				return _url.openStream();
+			} catch (IOException e) {
+				logger.severe("Cannot open given Resource: " + _url.toString());
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	
+	@Override
+	public List<Resource> getContents() {
+
+		if (entry != null && entry.isDirectory()) {
+		
+			// TODO some day ...
+			}
+			
+		return java.util.Collections.emptyList();
+		
 	}
 
 	
@@ -80,6 +115,11 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		String startpath = getRelativePath();
 		return container.getContents(startpath, pattern);
 		
+	}
+
+
+	public void setEntry(JarEntry current) {
+		entry = current;		
 	}
 
 }
