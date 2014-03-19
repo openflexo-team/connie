@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import javax.swing.ImageIcon;
 
+import org.openflexo.rm.BasicResourceImpl;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.Resource;
 
@@ -41,7 +42,7 @@ public class ImageIconResource extends ImageIcon {
 	private static String FILE_SUFFIX = ".flexoicon";
 
 	public ImageIconResource(Resource location) {
-		super(location.getURI());
+		super(((BasicResourceImpl) location).getURL());
 		_location = location;
 	}
 	
