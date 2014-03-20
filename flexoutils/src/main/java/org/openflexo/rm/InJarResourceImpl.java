@@ -23,6 +23,7 @@ package org.openflexo.rm;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -101,7 +102,13 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		
 		if (container == null) {
 			// finds the container
-			String jarPath = url.getPath().substring(5, url.getPath().indexOf("!")); //strip out only the JAR file
+			String jarPath = null;
+			try {
+				jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),"UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				logger.severe("Unable to decode given PATH");
+				e1.printStackTrace();
+			}
 			try {
 				container = new JarResourceImpl(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), jarPath);
 			} catch (MalformedURLException e) {
