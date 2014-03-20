@@ -24,6 +24,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -68,8 +69,8 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
 				}
 				else {
+					String jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),"UTF-8");
 					resourceLocation = new InJarResourceImpl(this,relativePathName,url);
-					String jarPath = Normalizer.normalize(url.getPath().substring(5, url.getPath().indexOf("!")), Normalizer.Form.NFC); //strip out only the JAR file
 					Resource parent = JarResourcesList.get(jarPath);
 					if (parent == null){
 						parent = new JarResourceImpl(this,jarPath);

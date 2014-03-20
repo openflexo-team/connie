@@ -20,12 +20,15 @@
 
 package org.openflexo.rm;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -58,7 +61,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		this._relativePath = filename;
 		jarfile = null;
 		try {
-			jarfile = new JarFile(URLDecoder.decode(filename, "UTF-8"));
+			jarfile = new JarFile(filename);
 		} catch (UnsupportedEncodingException e) {
 			logger.severe("Unable to create JarResource whith filename: " +filename);
 			e.printStackTrace();
