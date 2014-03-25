@@ -61,26 +61,30 @@ public class ClasspathResourceLocatorTest extends TestCase {
 		rloc = ResourceLocator.locateResource("META-INF");
 
 		System.out.println("Found META-INF here: " + (rloc).getURI());
-		
+
 		assertTrue(rloc != null);
 
 
 		rloc = ResourceLocator.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
-		
+
 		assertTrue (rloc != null);
 		assertTrue (rloc instanceof Resource);
-		System.out.println(rloc.getURI());
+//		System.out.println(rloc.getURI());
 
 		assertTrue(rloc != null);
-		
+
 		if (rloc != null){
 
-			List<Resource> list = (List<Resource>) rloc.getContainer().getContents(Pattern.compile(".*[.]wav"));
+			Resource container = rloc.getContainer();
 
-			assertTrue (list.size() > 1);
+			if (container != null) {
+				List<Resource> list = (List<Resource>) rloc.getContainer().getContents(Pattern.compile(".*[.]wav"));
 
-			for (Resource r : list){
-				System.out.println(r.getURI());
+				assertTrue (list.size() > 1);
+
+				for (Resource r : list){
+					System.out.println(r.getURI());
+				}
 			}
 
 		}
@@ -98,7 +102,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 		rloc = ResourceLocator.locateResource("TestDiff");
 
 		assertTrue(rloc != null);
-		
+
 		System.out.println(rloc.getURI());
 
 		if (rloc != null){
