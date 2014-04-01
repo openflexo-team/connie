@@ -744,8 +744,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			BindingPathElement previous = getBindingVariable();
 			for (BindingPathElement e : getBindingPath()) {
 				if (current == null) {
-					throw new NullReferenceException("NullReferenceException while evaluating " + this + ": null occured when evaluating "
-							+ previous);
+					throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + getParsedBindingPath()
+							+ ": null occured when evaluating " + previous);
 				}
 				current = e.getBindingValue(current, context);
 				previous = e;
