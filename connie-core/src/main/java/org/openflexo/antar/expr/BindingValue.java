@@ -335,7 +335,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// Thread.dumpStack();
 		// }
 		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME) || evt.getPropertyName().equals(BindingVariable.TYPE)) {
-			markedAsToBeReanalized();
+			if (dataBinding != null) {
+				dataBinding.markedAsToBeReanalized();
+			}
 		}
 	}
 
@@ -467,7 +469,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	public void markedAsToBeReanalized() {
 		// needsToBeReanalized = true;
 		needsAnalysing = true;
-		dataBinding.markedAsToBeReanalized();
+		// dataBinding.markedAsToBeReanalized();
 	}
 
 	public boolean isValid(DataBinding<?> dataBinding) {

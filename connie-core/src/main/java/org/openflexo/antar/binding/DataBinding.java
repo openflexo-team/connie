@@ -291,6 +291,22 @@ public class DataBinding<T> extends Observable {
 	public void markedAsToBeReanalized() {
 		bindingModelOnWhichValidityWasTested = null;
 		wasValid = false;
+		if (expression != null) {
+			try {
+				expression.visit(new ExpressionVisitor() {
+					@Override
+					public void visit(Expression e) throws InvalidBindingValue {
+						if (e instanceof BindingValue) {
+							((BindingValue) e).markedAsToBeReanalized();
+						}
+					}
+				});
+			} catch (VisitorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	public boolean isValid() {
