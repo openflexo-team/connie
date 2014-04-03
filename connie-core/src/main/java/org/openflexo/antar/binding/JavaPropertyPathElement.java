@@ -23,16 +23,31 @@ public class JavaPropertyPathElement extends SimplePathElement {
 	public JavaPropertyPathElement(BindingPathElement parent, String propertyName) {
 		super(parent, propertyName, Object.class);
 		keyValueProperty = KeyValueLibrary.getKeyValueProperty(parent.getType(), propertyName);
+
 		if (keyValueProperty != null) {
 			setType(keyValueProperty.getType());
 		} else {
 			logger.warning("cannot find property " + propertyName + " for " + parent + " which type is " + parent.getType());
 		}
+
+		warnWhenInconsistentData();
+
 	}
 
 	public JavaPropertyPathElement(BindingPathElement parent, KeyValueProperty property) {
 		super(parent, property.getName(), property.getType());
 		keyValueProperty = property;
+
+		warnWhenInconsistentData();
+	}
+
+	private void warnWhenInconsistentData() {
+
+		if (!TypeUtils.isTypeAssignableFrom(keyValueProperty.getGetMethod().getDeclaringClass(), getParent().getType())) {
+			logger.warning("Inconsistent data: " + getParent().getType() + " is not an instance of "
+					+ keyValueProperty.getGetMethod().getDeclaringClass());
+		}
+
 	}
 
 	@Override
