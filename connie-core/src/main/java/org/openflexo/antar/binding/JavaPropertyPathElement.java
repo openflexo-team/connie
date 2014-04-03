@@ -43,7 +43,8 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	private void warnWhenInconsistentData() {
 
-		if (!TypeUtils.isTypeAssignableFrom(keyValueProperty.getGetMethod().getDeclaringClass(), getParent().getType())) {
+		if (keyValueProperty.getGetMethod() != null
+				&& !TypeUtils.isTypeAssignableFrom(keyValueProperty.getGetMethod().getDeclaringClass(), getParent().getType())) {
 			logger.warning("Inconsistent data: " + getParent().getType() + " is not an instance of "
 					+ keyValueProperty.getGetMethod().getDeclaringClass());
 		}
