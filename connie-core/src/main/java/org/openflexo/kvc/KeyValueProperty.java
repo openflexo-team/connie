@@ -492,12 +492,13 @@ public class KeyValueProperty extends Observable {
 							+ getMethod.getName() + " Exception raised: " + e.getTargetException().toString(), e);
 				} catch (Exception e) {
 
-					/*System.out.println("current object = " + currentObject);
+					System.out.println("current object = " + currentObject);
 					System.out.println("declaring class = " + declaringClass);
 					System.out.println("Assignable=" + declaringClass.isAssignableFrom(currentObject.getClass()));
 					System.out.println("getMethod=" + getMethod);
 					System.out.println("declaring class = " + getMethod.getDeclaringClass());
-					System.out.println("Assignable=" + getMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass()));*/
+					System.out.println("Assignable=" + getMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass()));
+					e.printStackTrace();
 					throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
 							+ ": method " + getMethod.getName() + " Exception raised: " + e.toString());
 				}
