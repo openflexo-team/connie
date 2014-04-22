@@ -19,7 +19,7 @@ import org.openflexo.logging.FlexoLogger;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * A listener that tracks evalutated value of a DataBinding, given a run-time context given by a {@link BindingEvaluationContext}
+ * A listener that tracks evaluated value of a DataBinding, given a run-time context given by a {@link BindingEvaluationContext}
  * 
  * @author sylvain
  * 
@@ -42,7 +42,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		try {
 			newValue = evaluateValue();
 		} catch (NullReferenceException e) {
-			logger.warning("Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
+			// Don't warn since this may happen
+			// logger.warning("Could not evaluate " + dataBinding + " with context " + context +
+			// " because NullReferenceException has raised");
 			newValue = null;
 		}
 		refreshObserving(false);
