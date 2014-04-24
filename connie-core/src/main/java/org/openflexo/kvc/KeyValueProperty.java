@@ -67,7 +67,7 @@ public class KeyValueProperty extends Observable {
 
 	private boolean settable = false;
 
-	KeyValueProperty(Type aDeclaringType, String propertyName, boolean setMethodIsMandatory) throws InvalidKeyValuePropertyException {
+	 KeyValueProperty(Type aDeclaringType, String propertyName, boolean setMethodIsMandatory) throws InvalidKeyValuePropertyException {
 
 		super();
 		declaringClass = TypeUtils.getBaseClass(aDeclaringType);
@@ -232,7 +232,12 @@ public class KeyValueProperty extends Observable {
 			}
 		}
 
-		// manage static class methods
+		// If declaring class is interface, also lookup in Object class
+		if (returnedMethod == null && aDeclaringClass.isInterface()) {
+			return searchMatchingGetMethod(Object.class, propertyName);
+		}
+
+		// If everything fails, try static class methods
 		for (String trie : tries) {
 			try {
 				return ((Class) aDeclaringClass.getClass()).getMethod(trie, (Class<?>[]) null);
@@ -241,11 +246,6 @@ public class KeyValueProperty extends Observable {
 			} catch (NoSuchMethodException err) {
 				// we continue
 			}
-		}
-
-		// If declaring class is interface, also lookup in Object class
-		if (returnedMethod == null && aDeclaringClass.isInterface()) {
-			return searchMatchingGetMethod(Object.class, propertyName);
 		}
 
 		// Debugging.debug ("No method matching "
@@ -359,6 +359,10 @@ public class KeyValueProperty extends Observable {
 	public Class<?> getDeclaringClass() {
 
 		return declaringClass;
+	}
+
+	public Type getDeclaringType() {
+		return declaringType;
 	}
 
 	/**

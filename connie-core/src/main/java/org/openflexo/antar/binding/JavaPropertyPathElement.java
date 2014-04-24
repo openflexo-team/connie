@@ -30,7 +30,7 @@ public class JavaPropertyPathElement extends SimplePathElement {
 			logger.warning("cannot find property " + propertyName + " for " + parent + " which type is " + parent.getType());
 		}
 
-		warnWhenInconsistentData();
+		warnWhenInconsistentData(parent, propertyName);
 
 	}
 
@@ -38,15 +38,26 @@ public class JavaPropertyPathElement extends SimplePathElement {
 		super(parent, property.getName(), property.getType());
 		keyValueProperty = property;
 
-		warnWhenInconsistentData();
+		warnWhenInconsistentData(parent, property.getName());
 	}
 
-	private void warnWhenInconsistentData() {
+	private void warnWhenInconsistentData(BindingPathElement parent, String propertyName) {
 
 		if (keyValueProperty.getGetMethod() != null
 				&& !TypeUtils.isTypeAssignableFrom(keyValueProperty.getGetMethod().getDeclaringClass(), getParent().getType())) {
 			logger.warning("Inconsistent data: " + getParent().getType() + " is not an instance of "
 					+ keyValueProperty.getGetMethod().getDeclaringClass());
+			/*System.out.println("propertyName=" + propertyName);
+			 System.out.println("parent=" + parent);
+			System.out.println("parent type=" + parent.getType());
+			System.out.println("bc = " + TypeUtils.getBaseClass(parent.getType()));
+			System.out.println("keyValueProperty=" + keyValueProperty);
+			System.out.println("keyValueProperty.getGetMethod()=" + keyValueProperty.getGetMethod());
+			System.out.println("keyValueProperty.getType()=" + keyValueProperty.getType());
+			System.out.println("keyValueProperty.getDeclaringClass()=" + keyValueProperty.getDeclaringClass());
+			System.out.println("keyValueProperty.getDeclaringType()=" + keyValueProperty.getDeclaringType());
+			*/
+
 		}
 
 	}
