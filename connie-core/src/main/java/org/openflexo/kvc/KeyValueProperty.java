@@ -67,7 +67,7 @@ public class KeyValueProperty extends Observable {
 
 	private boolean settable = false;
 
-	 KeyValueProperty(Type aDeclaringType, String propertyName, boolean setMethodIsMandatory) throws InvalidKeyValuePropertyException {
+	KeyValueProperty(Type aDeclaringType, String propertyName, boolean setMethodIsMandatory) throws InvalidKeyValuePropertyException {
 
 		super();
 		declaringClass = TypeUtils.getBaseClass(aDeclaringType);
@@ -237,8 +237,9 @@ public class KeyValueProperty extends Observable {
 			return searchMatchingGetMethod(Object.class, propertyName);
 		}
 
+		// TODO: this code is totally wrong ??? i commented it
 		// If everything fails, try static class methods
-		for (String trie : tries) {
+		/*for (String trie : tries) {
 			try {
 				return ((Class) aDeclaringClass.getClass()).getMethod(trie, (Class<?>[]) null);
 			} catch (SecurityException err) {
@@ -246,7 +247,7 @@ public class KeyValueProperty extends Observable {
 			} catch (NoSuchMethodException err) {
 				// we continue
 			}
-		}
+		}*/
 
 		// Debugging.debug ("No method matching "
 		// +propertyName+"() or "
