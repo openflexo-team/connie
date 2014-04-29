@@ -111,9 +111,9 @@ public class BindingEvaluator implements Bindable, BindingEvaluationContext {
 		binding.setDeclaredType(Object.class);
 		binding.setBindingDefinitionType(BindingDefinitionType.GET);
 
-		System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
+		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {
-			System.out.println("not valid: " + binding.invalidBindingReason());
+			// System.out.println("not valid: " + binding.invalidBindingReason());
 			throw new InvalidKeyValuePropertyException("Cannot interpret " + normalizedBindingPath + " for object of type "
 					+ object.getClass());
 		}
