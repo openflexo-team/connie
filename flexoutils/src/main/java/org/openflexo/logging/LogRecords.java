@@ -78,11 +78,16 @@ public class LogRecords implements HasPropertyChangeSupport {
 			allRecords.add(record);
 			if (record.level == Level.WARNING) {
 				totalWarningLogs++;
+				getPropertyChangeSupport().firePropertyChange("warningLogs", null, record);
 			}
 			if (record.level == Level.SEVERE) {
 				totalSevereLogs++;
+				getPropertyChangeSupport().firePropertyChange("severeLogs", null, record);
 			}
 			totalLogs++;
+			getPropertyChangeSupport().firePropertyChange("records", null, record);
+			getPropertyChangeSupport().firePropertyChange("totalLogs", null, record);
+			getPropertyChangeSupport().firePropertyChange("logCount", null, record);
 		}
 	}
 
