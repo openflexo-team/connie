@@ -11,6 +11,9 @@
 	<artifactId>connie</artifactId>
 	<name>Connie</name>
 	<packaging>pom</packaging>
+	<properties>
+		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
+	</properties>
 	<scm>
 		<connection>scm:git:ssh://git@github.com:openflexo-team/connie.git</connection>
 		<url>https://github.com/openflexo-team/connie</url>
