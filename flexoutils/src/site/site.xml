@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Maven" xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+   
+  <bannerLeft>
+	<name>Connie</name>
+	<src>${connie.logo}</src>
+	<href>https://openflexo.org/tiki/Connie</href>
+  </bannerLeft> 
+  <bannerRight>
+    <name>Openflexo</name>
+    <src>${organization.logo}</src>
+    <href>http://openflexo.org/</href>
+  </bannerRight>
+  <skin>
+    <groupId>org.openflexo</groupId>
+    <artifactId>openflexo-skin</artifactId>
+    <version>1.2-SNAPSHOT</version>
+  </skin>
+
+  <body>
+    <links>
+      <item name="Maven 2" href="http://maven.apache.org/maven2/"/>
+    </links>
+<!--
+    <menu name="Usage">
+      <item name="Usage simple" href="usage.html" />
+      <item name="FAQ" href="http://maven.apache.org/archetype/maven-archetype-plugin/specification/specification.html"/>
+    </menu>	
+-->
+<!--
+    <menu name="Maintenance">
+      <item name="pre-requis" 		href="pre_requis.html" />
+      <item name="structure"    	href="structure.html" />
+      <item name="conception" 		href="conception.html" />
+      <item name="production"   	href="production.html" />
+      <item name="test" 		href="test.html" />
+      <item name="documentation" 	href="documentation_archetype.html" />
+      <item name="maintenance" 		href="maintenance.html" />
+      <item name="gconf" 		href="gconf.html" />
+      <item name="liens" 		href="liens.html" />
+      <item name="TODO" 		href="todo.html" />
+    </menu>	
+-->
+
+    <menu ref="parent" />
+    <menu ref="modules" />
+    <menu ref="reports" />
+<!--    <menu ref="plugins" /> -->
+  </body>
+</project>
