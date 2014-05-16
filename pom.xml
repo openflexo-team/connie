@@ -136,7 +136,7 @@
         <site>
 
             <id>openflexo.website</id>
-	<url>scp:server-one.openflexo.org/home/www/sites/</url>
+	<url>scp://server-one.openflexo.org/home/www/sites/connie/</url>
         </site>
     </distributionManagement>
 
