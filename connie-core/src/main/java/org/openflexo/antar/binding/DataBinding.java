@@ -24,7 +24,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,6 +79,14 @@ public class DataBinding<T> extends Observable {
 		EXECUTE /* */
 	}
 
+	public static enum CachingStrategy {
+		NO_CACHING, /* Do not cache, execute inconditionaly */
+		OPTIMIST_CACHE, /* Always cache executed value, fully rely on notification schemes */
+		PRAGMATIC_CACHE /* Do no cache when a property is declared as not safe according to notification schemes */
+	}
+
+	private static final CachingStrategy DEFAULT_CACHING_STRATEGY = CachingStrategy.NO_CACHING;
+
 	private Bindable owner;
 	private String unparsedBinding;
 	private BindingDefinition bindingDefinition;
@@ -97,6 +107,8 @@ public class DataBinding<T> extends Observable {
 	private boolean needsParsing = false;
 	private String bindingName;
 
+	private CachingStrategy cachingStrategy = DEFAULT_CACHING_STRATEGY;
+
 	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
 		super();
 		setOwner(owner);
@@ -113,6 +125,17 @@ public class DataBinding<T> extends Observable {
 	public DataBinding(String unparsed) {
 		super();
 		setUnparsedBinding(unparsed);
+	}
+
+	public CachingStrategy getCachingStrategy() {
+		if (cachingStrategy == null) {
+			return DEFAULT_CACHING_STRATEGY;
+		}
+		return cachingStrategy;
+	}
+
+	public void setCachingStrategy(CachingStrategy cachingStrategy) {
+		this.cachingStrategy = cachingStrategy;
 	}
 
 	@Override
@@ -576,6 +599,9 @@ public class DataBinding<T> extends Observable {
 		}
 	}
 
+	private final Map<BindingEvaluationContext, T> cachedValues = new HashMap<BindingEvaluationContext, T>();
+	private final Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = new HashMap<BindingEvaluationContext, BindingValueChangeListener<T>>();
+
 	/**
 	 * Evaluate this binding in run-time evaluation context provided by supplied {@link BindingEvaluationContext} parameter. This evaluation
 	 * is performed in READ_ONLY mode.
@@ -589,6 +615,19 @@ public class DataBinding<T> extends Observable {
 	@SuppressWarnings("unchecked")
 	public T getBindingValue(final BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
 			InvocationTargetException {
+
+		if (getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE) {
+			if (cachedValues.containsKey(context)) {
+				return cachedValues.get(context);
+			}
+		}
+
+		else if (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE) {
+			// TODO: implement this
+			if (cachedValues.containsKey(context)) {
+				return cachedValues.get(context);
+			}
+		}
 
 		// System.out.println("Evaluating " + this + " in context " + context);
 
@@ -634,6 +673,8 @@ public class DataBinding<T> extends Observable {
 
 				Expression evaluatedExpression = resolvedExpression.evaluate();
 
+				T returned = null;
+
 				if (evaluatedExpression instanceof CastExpression) {
 					Expression argument = ((CastExpression) evaluatedExpression).getArgument();
 					if (argument instanceof Constant) {
@@ -641,23 +682,40 @@ public class DataBinding<T> extends Observable {
 						if (declaredType == File.class && argument.getEvaluationType() == EvaluationType.STRING) {
 							return (T) new File((String) ((Constant) argument).getValue());
 						}
-						return (T) ((Constant) ((CastExpression) evaluatedExpression).getArgument()).getValue();
+						returned = (T) ((Constant) ((CastExpression) evaluatedExpression).getArgument()).getValue();
 					}
 				}
 
-				if (evaluatedExpression instanceof Constant) {
+				else if (evaluatedExpression instanceof Constant) {
 					Class baseClassForType = TypeUtils.getBaseClass(getDeclaredType());
 					if (baseClassForType != null && Number.class.isAssignableFrom(baseClassForType)) {
 						return (T) TypeUtils.castTo(((Constant) evaluatedExpression).getValue(), getDeclaredType());
 					}
-					return (T) ((Constant) evaluatedExpression).getValue();
+					returned = (T) ((Constant) evaluatedExpression).getValue();
 				}
 
-				// We do not warn anymore since this situation happens very often
-				// logger.warning("Cannot evaluate " + expression + " max reduction is " + evaluatedExpression + " resolvedExpression="
-				// + resolvedExpression);
+				else {
+					// We do not warn anymore since this situation happens very often
+					// logger.warning("Cannot evaluate " + expression + " max reduction is " + evaluatedExpression + " resolvedExpression="
+					// + resolvedExpression);
 
-				return null;
+					return null;
+				}
+
+				if ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE) || (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE)) {
+					cachedValues.put(context, returned);
+
+					BindingValueChangeListener<T> listener = new BindingValueChangeListener<T>(this, context) {
+						@Override
+						public void bindingValueChanged(Object source, T newValue) {
+							System.out.println("Tiens la valeur a change pour " + DataBinding.this);
+							cachedValues.put(context, newValue);
+						}
+					};
+					cachedBindingValueChangeListeners.put(context, listener);
+				}
+
+				return returned;
 
 			} catch (NullReferenceException e1) {
 				throw e1;
