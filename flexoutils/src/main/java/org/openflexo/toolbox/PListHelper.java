@@ -44,11 +44,7 @@ public class PListHelper {
 		}
 		if (o instanceof String) {
 			String s = ((String) o).toLowerCase();
-			if (s.equals("true") || s.equals("y") || s.equals("yes")) {
-				return true;
-			} else {
-				return false;
-			}
+			return s.equals("true") || s.equals("y") || s.equals("yes");
 		} else if (o instanceof Boolean) {
 			return ((Boolean) o).booleanValue();
 		} else {

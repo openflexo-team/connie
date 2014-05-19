@@ -34,7 +34,7 @@ public class DateUtils {
 	 * same will be used for all values. <br>
 	 * If a common date format cannot be found, null is returned.
 	 * 
-	 * @param values
+	 * @param values the strings to parse
 	 * @return all specified String values as Date, null if they cannot be converted.
 	 */
 	public static Date[] parseDate(String[] values) {
@@ -55,7 +55,7 @@ public class DateUtils {
 			}
 
 			if (results.size() == values.length) {
-				return results.toArray(new Date[0]);
+				return results.toArray(new Date[values.length]);
 			}
 		}
 

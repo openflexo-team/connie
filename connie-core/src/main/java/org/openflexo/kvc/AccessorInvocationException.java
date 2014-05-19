@@ -30,8 +30,7 @@ import java.lang.reflect.InvocationTargetException;
  * {@link #getTargetException()})
  * 
  * @author <a href="mailto:Sylvain.Guerin@enst-bretagne.fr">Sylvain Guerin</a>
- * @see XMLCoder
- * @see XMLDecoder
+ * @see org.openflexo.kvc.KeyValueProperty
  */
 public class AccessorInvocationException extends RuntimeException {
 
@@ -40,7 +39,7 @@ public class AccessorInvocationException extends RuntimeException {
 	/**
 	 * Creates a new <code>AccessorInvocationException</code> instance.
 	 * 
-	 * @param exception
+	 * @param exception target exception.
 	 * 
 	 */
 	public AccessorInvocationException(InvocationTargetException exception) {
@@ -54,7 +53,7 @@ public class AccessorInvocationException extends RuntimeException {
 	 * 
 	 * @param aMessage
 	 *            a <code>String</code> value
-	 * @param exception
+	 * @param exception target exception.
 	 */
 	public AccessorInvocationException(String aMessage, InvocationTargetException exception) {
 
@@ -65,8 +64,6 @@ public class AccessorInvocationException extends RuntimeException {
 
 	/**
 	 * Return the exception thrown during accessor invocation
-	 * 
-	 * @return
 	 */
 	public Throwable getTargetException() {
 		return targetException;

@@ -247,8 +247,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	/**
 	 * Return the last binding path element, which is the binding variable itself if the binding path is empty, or the last binding path
 	 * element registered in the binding path
-	 * 
-	 * @return
 	 */
 	public BindingPathElement getLastBindingPathElement() {
 		if (getBindingPath() != null && getBindingPath().size() > 0) {

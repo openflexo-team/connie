@@ -12,8 +12,7 @@ public interface BindingEvaluationContext {
 	/**
 	 * Return the value of symbolic variable {@link BindingVariable} in current run-time context
 	 * 
-	 * @param variable
-	 * @return
+	 * @param variable the binding to evaluate.
 	 */
 	public Object getValue(BindingVariable variable);
 

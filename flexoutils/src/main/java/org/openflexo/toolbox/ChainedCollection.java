@@ -2,6 +2,7 @@ package org.openflexo.toolbox;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,16 +20,12 @@ public class ChainedCollection<T> implements Collection<T> {
 
 	public ChainedCollection(T... items) {
 		this();
-		for (T item : items) {
-			this.items.add(item);
-		}
+        Collections.addAll(this.items, items);
 	}
 
 	public ChainedCollection(Collection<? extends T>... collections) {
 		this();
-		for (Collection<? extends T> collection : collections) {
-			this.collections.add(collection);
-		}
+        Collections.addAll(this.collections, collections);
 	}
 
 	public void add(Collection<? extends T> itemCollection) {
@@ -76,10 +73,7 @@ public class ChainedCollection<T> implements Collection<T> {
 				return true;
 			}
 		}
-		if (items.contains(o)) {
-			return true;
-		}
-		return false;
+		return items.contains(o);
 	}
 
 	@Override
@@ -118,10 +112,7 @@ public class ChainedCollection<T> implements Collection<T> {
 				return true;
 			}
 		}
-		if (items.remove(o)) {
-			return true;
-		}
-		return false;
+		return items.remove(o);
 	}
 
 	@Override

@@ -139,7 +139,7 @@ public class LatexUtils {
 	 * @param path
 	 */
 	private static String testCommandsWithPath(String path) {
-		File file = new File(path.toString());
+		File file = new File(path);
 		if (file.exists() && file.isDirectory()) {
 			File cmd = new File(file, "texify");
 			if (cmd.exists()) {

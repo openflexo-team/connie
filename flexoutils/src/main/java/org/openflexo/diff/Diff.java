@@ -570,7 +570,7 @@ public class Diff {
 		 * Mark to be discarded each line that matches no line of another file. If a line matches many lines, mark it as provisionally
 		 * discardable.
 		 * 
-		 * @see equivCount()
+		 * @see Diff#
 		 * @param counts
 		 *            The count of each equivalence number for the other file.
 		 * @return 0=nondiscardable, 1=discardable or 2=provisionally discardable for each line

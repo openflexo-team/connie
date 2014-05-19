@@ -22,10 +22,10 @@ package org.openflexo.diff.merge;
 public interface AutomaticMergeResolvingModelInterface {
 
 	/**
-	 * Resolve supplied MergeChange
+	 * Resolves supplied MergeChange.
 	 * 
-	 * @param change
-	 * @return a boolean, false if no automatic resolving was available
+	 * @param change change to resolve.
+	 * @return a boolean, false if no automatic resolving was available.
 	 */
 	public boolean resolve(MergeChange change);
 
