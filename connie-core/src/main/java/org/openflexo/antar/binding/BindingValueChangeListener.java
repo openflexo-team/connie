@@ -75,9 +75,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 	protected synchronized void refreshObserving(boolean debug) {
 
-		if (dataBinding.toString().equals("iterator.name")) {
+		/*if (dataBinding.toString().equals("iterator.name")) {
 			debug = true;
-		}
+			Thread.dumpStack();
+		}*/
 
 		if (debug) {
 			logger.info("-------------> refreshObserving() for " + dataBinding + " context=" + context);

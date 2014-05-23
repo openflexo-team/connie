@@ -645,6 +645,11 @@ public class DataBinding<T> extends Observable {
 	public T getBindingValue(final BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
 			InvocationTargetException {
 
+		/*if (toString().equals("iterator.name")) {
+			System.out.println("J'evalue iterator.name, caching strategy = " + getCachingStrategy());
+			System.out.println("hash=" + hashCode() + " owner=" + getOwner());
+		}*/
+
 		if (getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE) {
 			if (cachedValues.containsKey(context)) {
 				return cachedValues.get(context);
@@ -734,14 +739,16 @@ public class DataBinding<T> extends Observable {
 				if ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE) || (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE)) {
 					cachedValues.put(context, returned);
 
-					LazyBindingValueChangeListener<T> listener = new LazyBindingValueChangeListener<T>(this, context) {
-						@Override
-						public void bindingValueChanged(Object source) {
-							System.out.println("Detected DataBinding evaluation changed for " + DataBinding.this);
-						}
-					};
-					System.out.println("Je viens de mettre en place un listener pour " + this);
-					cachedBindingValueChangeListeners.put(context, listener);
+					BindingValueChangeListener<T> listener = cachedBindingValueChangeListeners.get(context);
+					if (listener == null) {
+						listener = new LazyBindingValueChangeListener<T>(this, context) {
+							@Override
+							public void bindingValueChanged(Object source) {
+								// System.out.println("Detected DataBinding evaluation changed for " + DataBinding.this);
+							}
+						};
+						cachedBindingValueChangeListeners.put(context, listener);
+					}
 				}
 
 				return returned;
@@ -886,5 +893,9 @@ public class DataBinding<T> extends Observable {
 
 	public void clearCacheForBindingEvaluationContext(BindingEvaluationContext context) {
 		cachedValues.remove(context);
+		/*BindingValueChangeListener<?> l = cachedBindingValueChangeListeners.get(context);
+		if (l != null) {
+			l.refreshObserving();
+		}*/
 	}
 }
