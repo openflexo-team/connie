@@ -21,6 +21,7 @@ package org.openflexo.antar.expr;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openflexo.antar.annotations.NotificationUnsafe;
 import org.openflexo.antar.binding.BindingEvaluationContext;
 import org.openflexo.antar.binding.BindingModel;
 import org.openflexo.antar.binding.BindingPathElement;
@@ -36,6 +38,8 @@ import org.openflexo.antar.binding.DataBinding;
 import org.openflexo.antar.binding.Function;
 import org.openflexo.antar.binding.Function.FunctionArgument;
 import org.openflexo.antar.binding.FunctionPathElement;
+import org.openflexo.antar.binding.JavaMethodPathElement;
+import org.openflexo.antar.binding.JavaPropertyPathElement;
 import org.openflexo.antar.binding.SettableBindingEvaluationContext;
 import org.openflexo.antar.binding.SettableBindingPathElement;
 import org.openflexo.antar.binding.SimplePathElement;
@@ -43,6 +47,7 @@ import org.openflexo.antar.binding.TargetObject;
 import org.openflexo.antar.binding.TypeUtils;
 import org.openflexo.antar.expr.parser.ExpressionParser;
 import org.openflexo.antar.expr.parser.ParseException;
+import org.openflexo.kvc.KeyValueProperty;
 
 /**
  * Represents a binding path, as formed by an access to a binding variable and a path of BindingPathElement<br>
@@ -366,6 +371,34 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingValue} is notification-safe<br>
+	 * 
+	 * A {@link BindingValue} is unsafe when any involved method is annotated with {@link NotificationUnsafe} annotation<br>
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
+	public boolean isNotificationSafe() {
+		for (BindingPathElement pathElement : getBindingPath()) {
+			if (pathElement instanceof JavaPropertyPathElement) {
+				JavaPropertyPathElement propertyPathElement = (JavaPropertyPathElement) pathElement;
+				KeyValueProperty kvProperty = propertyPathElement.getKeyValueProperty();
+				Method m = kvProperty.getGetMethod();
+				if (m.getAnnotation(NotificationUnsafe.class) != null) {
+					return false;
+				}
+			} else if (pathElement instanceof JavaMethodPathElement) {
+				JavaMethodPathElement methodPathElement = (JavaMethodPathElement) pathElement;
+				Method m = methodPathElement.getMethodDefinition().getMethod();
+				if (m.getAnnotation(NotificationUnsafe.class) != null) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	public String getVariableName() {

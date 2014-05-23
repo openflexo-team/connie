@@ -78,6 +78,10 @@ public class JavaPropertyPathElement extends SimplePathElement {
 		return getPropertyName();
 	}
 
+	public KeyValueProperty getKeyValueProperty() {
+		return keyValueProperty;
+	}
+
 	@Override
 	public boolean isSettable() {
 		return keyValueProperty != null && keyValueProperty.isSettable();

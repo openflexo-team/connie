@@ -31,6 +31,7 @@ import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openflexo.antar.annotations.NotificationUnsafe;
 import org.openflexo.antar.expr.BindingValue;
 import org.openflexo.antar.expr.CastExpression;
 import org.openflexo.antar.expr.Constant;
@@ -82,10 +83,10 @@ public class DataBinding<T> extends Observable {
 	public static enum CachingStrategy {
 		NO_CACHING, /* Do not cache, execute inconditionaly */
 		OPTIMIST_CACHE, /* Always cache executed value, fully rely on notification schemes */
-		PRAGMATIC_CACHE /* Do no cache when a property is declared as not safe according to notification schemes */
+		PRAGMATIC_CACHE /* Do no cache when a property is declared as not safe according to notification schemes, see NotificationUnsafe annotation */
 	}
 
-	private static final CachingStrategy DEFAULT_CACHING_STRATEGY = CachingStrategy.NO_CACHING;
+	private static final CachingStrategy DEFAULT_CACHING_STRATEGY = CachingStrategy.OPTIMIST_CACHE;
 
 	private Bindable owner;
 	private String unparsedBinding;
@@ -100,7 +101,7 @@ public class DataBinding<T> extends Observable {
 	// We assume here that the type model is not dynamic, only BindingVariable name and type changing are notified
 	// If type model is not dynamic, use setCacheable(false)
 	private boolean wasValid = false;
-	private boolean cacheable = true;
+	// private boolean cacheable = true;
 	private BindingModel bindingModelOnWhichValidityWasTested = null;
 	private String invalidBindingReason;
 
@@ -348,7 +349,7 @@ public class DataBinding<T> extends Observable {
 			return false;
 		}
 
-		if (cacheable && wasValid && getOwner().getBindingModel() == bindingModelOnWhichValidityWasTested) {
+		if (/*cacheable &&*/wasValid && getOwner().getBindingModel() == bindingModelOnWhichValidityWasTested) {
 			// Use cache info to test DataBinding validity
 			return true;
 		}
@@ -367,6 +368,8 @@ public class DataBinding<T> extends Observable {
 
 		bindingModelOnWhichValidityWasTested = getOwner().getBindingModel();
 
+		isNotificationSafe = true;
+
 		if (getOwner() != null) {
 			try {
 				expression.visit(new ExpressionVisitor() {
@@ -378,6 +381,9 @@ public class DataBinding<T> extends Observable {
 								throw new InvalidBindingValue((BindingValue) e);
 							} else {
 								// System.out.println("Valid binding " + e);
+							}
+							if (!((BindingValue) e).isNotificationSafe()) {
+								isNotificationSafe = false;
 							}
 						}
 					}
@@ -449,6 +455,29 @@ public class DataBinding<T> extends Observable {
 
 	public String invalidBindingReason() {
 		return invalidBindingReason;
+	}
+
+	private boolean isNotificationSafe = true;
+
+	/**
+	 * Return boolean indicating if this {@link BindingValue} is notification-safe<br>
+	 * 
+	 * A {@link BindingValue} is unsafe when any involved method is annotated with {@link NotificationUnsafe} annotation<br>
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
+	public boolean isNotificationSafe() {
+
+		// Computes it and cache it during isValid() computation
+		isValid();
+
+		if (!isNotificationSafe) {
+			System.out.println("Ah, marrant ca, le binding " + toString() + " n'est pas NotificationSafe");
+		}
+
+		return isNotificationSafe;
+
 	}
 
 	public boolean isSet() {
@@ -705,13 +734,13 @@ public class DataBinding<T> extends Observable {
 				if ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE) || (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE)) {
 					cachedValues.put(context, returned);
 
-					BindingValueChangeListener<T> listener = new BindingValueChangeListener<T>(this, context) {
+					LazyBindingValueChangeListener<T> listener = new LazyBindingValueChangeListener<T>(this, context) {
 						@Override
-						public void bindingValueChanged(Object source, T newValue) {
-							System.out.println("Tiens la valeur a change pour " + DataBinding.this);
-							cachedValues.put(context, newValue);
+						public void bindingValueChanged(Object source) {
+							System.out.println("Detected DataBinding evaluation changed for " + DataBinding.this);
 						}
 					};
+					System.out.println("Je viens de mettre en place un listener pour " + this);
 					cachedBindingValueChangeListeners.put(context, listener);
 				}
 
@@ -847,11 +876,15 @@ public class DataBinding<T> extends Observable {
 		return new DataBinding<Boolean>("false");
 	}
 
-	public boolean isCacheable() {
+	/*public boolean isCacheable() {
 		return cacheable;
 	}
 
 	public void setCacheable(boolean cacheable) {
 		this.cacheable = cacheable;
+	}*/
+
+	public void clearCacheForBindingEvaluationContext(BindingEvaluationContext context) {
+		cachedValues.remove(context);
 	}
 }
