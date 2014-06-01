@@ -30,213 +30,209 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
 
 /**
- * This SaxHandler is used to de-serialize any XML file, either conformant or not to an XSD file The behavior of the Handler depends on the
- * situation (existing XSD).
+ * This SaxHandler is used to de-serialize any XML file
  * 
  * @author xtof
  * 
- * @param <M>, the Model to populate
- * @param <MM>, The MetaModel that will be populated (if createMissingType is true) or that is given (if XML is XSD conformant)
  * @param <IC>, The Class of Individuals (mapping to XML Elements)
  * @param <AC>, The Class of Attributes (mapping to XML Attributes)
  */
 
 public class XMLReaderSAXHandler<IC extends IXMLIndividual<IC, AC>, AC extends IXMLAttribute> extends DefaultHandler2 {
 
-	protected static final Logger logger = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
+    protected static final Logger logger            = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
 
-	private boolean createMissingType = true;
+    private IC                    currentContainer  = null;
+    private IC                    currentIndividual = null;
+    private AC                    currentAttribute  = null;
 
-	private IC currentContainer = null;
-	private IC currentIndividual = null;
-	private AC currentAttribute = null;
+    private final StringBuffer    cdataBuffer       = new StringBuffer();
 
-	private final StringBuffer cdataBuffer = new StringBuffer();
+    private final Stack<IC>       indivStack        = new Stack<IC>();
 
-	private final Stack<IC> indivStack = new Stack<IC>();
+    private IFactory              factory           = null;
 
-	private IFactory factory = null;
+    public XMLReaderSAXHandler(IFactory aFactory) {
+        super();
+        factory = aFactory;
+    }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-	public XMLReaderSAXHandler(IFactory aFactory) {
-		super();
-		factory = aFactory;
-	}
+        String NSPrefix = "p"; // default
 
+        currentAttribute = null;
 
-	public XMLReaderSAXHandler(IFactory aFactory, boolean allowTypeCreation) {
-		super();
-		factory = aFactory;
-		createMissingType = allowTypeCreation;
-	}
+        try {
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+            // Depending on the choices made when interpreting MetaModel, an XML
+            // Element might be translated as a Property or a new Type....
 
-		String NSPrefix = "p"; // default
+            Type currentType;
 
-		currentAttribute = null;
+            if (uri.length() == 0) {
+                currentType = factory.getTypeFromURI(uri + "#" + localName);
+            }
+            else {
+                currentType = factory.getTypeFromURI(localName);
+            }
 
-		try {
+            // looking for the equally named property in currentContainer
+            if (currentContainer != null) {
+                currentAttribute = (AC) ((IXMLIndividual<IC, AC>) currentContainer).getAttributeByName(localName);
+            }
 
-			// Depending on the choices made when interpreting MetaModel, an XML Element
-			// might be translated as a Property or a new Type....
-			Type currentType = factory.getTypeFromURI(uri + "#" + localName);
+            if (currentAttribute != null) {
+                Type attrType = ((AC) currentAttribute).getAttributeType();
 
-			// looking for the equally named property in currentContainer
-			if (currentContainer != null) {
-				currentAttribute = (AC) ((IXMLIndividual<IC, AC>) currentContainer).getAttributeByName(localName);
-			}
+                if (!currentAttribute.isSimpleAttribute()) {
+                    // this is a complex attribute, we will create an individual
+                    // and then add to the attribute values
+                    currentType = attrType;
+                }
+            }
 
-			if (currentAttribute != null) {
-				Type attrType = ((AC) currentAttribute).getAttributeType();
+            // creates individual
+            if (currentType != null) {
+                currentIndividual = (IC) factory.newInstance(currentType);
+                ((IXMLIndividual<IC, AC>) currentIndividual).setType(currentType);
+                currentIndividual = currentIndividual;
+                cdataBuffer.delete(0, cdataBuffer.length());
+            }
 
-				if (!currentAttribute.isSimpleAttribute()) {
-					// this is a complex attribute, we will create an individual and then add to the attribute values
-					currentType = attrType;
-				}
-			}
+            if (currentIndividual != null) {
+                // ************************************
+                // processing Attributes
 
-			// creates type on the Fly
-			if (currentType == null && createMissingType) {
-				logger.info("Creating a new Type");
-				currentType = factory.newType(uri, localName, qName);
-			}
+                int len = attributes.getLength();
 
-			// creates individual
-			if (currentType != null) {
-				currentIndividual = (IC) factory.newInstance(currentType);
-				((IXMLIndividual<IC, AC>) currentIndividual).setType(currentType);
-				currentIndividual = currentIndividual;
-				cdataBuffer.delete(0, cdataBuffer.length());
-			}
+                for (int i = 0; i < len; i++) {
 
-			if (currentIndividual != null) {
-				// ************************************
-				// processing Attributes
+                    Type aType = null;
+                    String typeName = attributes.getType(i);
+                    String attrQName = attributes.getQName(i);
+                    String attrName = attributes.getLocalName(i);
+                    String attrURI = attributes.getURI(i);
+                    NSPrefix = "p"; // default
+                    if (attrQName != null && attrName != null && currentContainer == null) {
+                        // we only set prefix if there is no other Root Element
+                        NSPrefix = attrQName;
+                        NSPrefix.replace(attrName, "");
+                    }
 
-				int len = attributes.getLength();
+                    aType = factory.getTypeFromURI(attrURI + "#" + attrName);
 
-				for (int i = 0; i < len; i++) {
+                    if (typeName.equals(XMLCst.CDATA_TYPE_NAME)) {
+                        aType = String.class;
 
-					Type aType = null;
-					String typeName = attributes.getType(i);
-					String attrQName = attributes.getQName(i);
-					String attrName = attributes.getLocalName(i);
-					String attrURI = attributes.getURI(i);
-					NSPrefix = "p"; // default
-					if (attrQName != null && attrName != null && currentContainer == null) { // we only set prefix if there is no other Root
-						// Element
-						NSPrefix = attrQName;
-						NSPrefix.replace(attrName, "");
-					}
+                        if (attrName.equals(""))
+                            attrName = attrQName;
 
-					aType = factory.getTypeFromURI(attrURI + "#" + attrName);
+                        ((IC) currentIndividual).createAttribute(attrName, String.class, attributes.getValue(i));
+                    }
+                    else {
+                        if (aType == null) {
+                            logger.warning("XMLIndividual: cannot find a type for " + typeName + " - falling back to String");
+                            aType = String.class;
+                        }
 
-					if (typeName.equals(XMLCst.CDATA_TYPE_NAME)) {
-						aType = String.class;
+                        ((IC) currentIndividual).createAttribute(attrName, String.class, attributes.getValue(i));
+                    }
 
-						if (attrName.equals(""))
-							attrName = attrQName;
+                }
 
-						((IC) currentIndividual).createAttribute(attrName, String.class, attributes.getValue(i));
-					} else {
-						if (aType == null) {
-							logger.warning("XMLIndividual: cannot find a type for " + typeName
-									+ " - falling back to String");
-							aType = String.class;
-						}
+                // ************************************
+                // Current element is contained in another one
 
-						((IC) currentIndividual).createAttribute(attrName, String.class, attributes.getValue(i));
-					}
+                if (currentContainer != null && currentContainer != currentIndividual) {
 
-				}
+                    if (currentAttribute != null) {
+                        // logger.info("ADDING " + anIndividual.toString() +
+                        // " TO " + currentContainer.toString() +
+                        // "   / Attribute is: " +
+                        // currentAttribute );
+                        currentAttribute.addValue((IC) currentContainer, currentIndividual);
+                    }
+                    else {
+                        ((IC) currentContainer).addChild((IC) currentIndividual);
+                    }
+                }
 
-				// ************************************
-				// Current element is contained in another one
+                // ************************************
+                // Current element is not contained in another one, it is root!
+                if (currentContainer == null) {
+                    factory.setRoot((IC) currentIndividual);
+                    if (uri != null && !uri.isEmpty()) {
 
-				if (currentContainer != null && currentContainer != currentIndividual) {
+                        factory.setNamespace(uri, NSPrefix);
+                    }
+                    // logger.info("OPENING ROOT Container is + " +
+                    // currentContainer.toString() + "   / Attribute is: " +
+                    // currentAttribute
+                    // );
 
-					if (currentAttribute != null) {
-						// logger.info("ADDING " + anIndividual.toString() + " TO " + currentContainer.toString() + "   / Attribute is: " +
-						// currentAttribute );
-						currentAttribute.addValue((IC) currentContainer, currentIndividual);
-					} else {
-						((IC) currentContainer).addChild((IC) currentIndividual);
-					}
-				}
+                }
 
-				// ************************************
-				// Current element is not contained in another one, it is root!
+                if (currentContainer != null) {
+                    indivStack.push(currentContainer);
+                }
+                currentContainer = currentIndividual;
 
-				// TODO : the fact that there is a root node should not be handled by the reader but the factory?
-				/*
-				if (currentContainer == null) {
-					((IXMLModel) aXMLModel).setRoot((IC) currentIndividual);
-					if (uri != null && !uri.isEmpty()) {
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-						((IXMLModel) aXMLModel).setNamespace(uri, NSPrefix);
-					}
-					// logger.info("OPENING ROOT Container is + " + currentContainer.toString() + "   / Attribute is: " + currentAttribute
-					// );
+    }
 
-				}
-				 */
-				if (currentContainer != null){
-					indivStack.push(currentContainer);
-				}
-				currentContainer = currentIndividual;
+    @Override
+    @SuppressWarnings("unchecked")
+    public void endElement(String uri, String localName, String qName) throws SAXException {
 
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        // Allocation of CDATA information depends on the type of entity we have
+        // to allocate
+        // content to (Individual or Attribute)
+        // As such, it depends on the interpretation that has been done of XSD
+        // MetaModel
+        //
+        // Same stands for individuals to be allocated to ObjectProperties
 
-	}
+        // CDATA allocation
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void endElement(String uri, String localName, String qName) throws SAXException {
+        String str = cdataBuffer.toString().trim();
 
-		// Allocation of CDATA information depends on the type of entity we have to allocate
-		// content to (Individual or Attribute)
-		// As such, it depends on the interpretation that has been done of XSD MetaModel
-		//
-		// Same stands for individuals to be allocated to ObjectProperties
+        if (str.length() > 0) {
+            if (currentAttribute != null && currentAttribute.isSimpleAttribute()) {
+                currentAttribute.addValue((IXMLIndividual<IC, AC>) currentIndividual, str);
+                cdataBuffer.delete(0, cdataBuffer.length());
+            }
+            else if (currentIndividual != null) {
+                ((IXMLIndividual<IC, AC>) currentIndividual).createAttribute(XMLCst.CDATA_ATTR_NAME, String.class, str);
+                cdataBuffer.delete(0, cdataBuffer.length());
+            }
+            else {
+                logger.info("Don't know where to allocate the CDATA textual information");
+            }
+        }
 
-		// CDATA allocation
+        // node stack management
 
-		String str = cdataBuffer.toString().trim();
+        if (!indivStack.isEmpty()) {
+            currentContainer = indivStack.pop();
+        }
+        else {
+            currentContainer = null;
+        }
 
-		if (str.length() > 0) {
-			if (currentAttribute != null && currentAttribute.isSimpleAttribute()) {
-				currentAttribute.addValue((IXMLIndividual<IC, AC>) currentIndividual, str);
-				cdataBuffer.delete(0, cdataBuffer.length());
-			} else if (currentIndividual != null) {
-				((IXMLIndividual<IC, AC>) currentIndividual).createAttribute(XMLCst.CDATA_ATTR_NAME, String.class, str);
-				cdataBuffer.delete(0, cdataBuffer.length());
-			} else {
-				logger.info("ERROR: don't know where to allocate the CDATA textual information");
-			}
-		}
+    }
 
-		// node stack management
+    @Override
+    public void characters(char ch[], int start, int length) throws SAXException {
 
-		if (!indivStack.isEmpty()) {
-			currentContainer = indivStack.pop();
-		} else {
-			currentContainer = null;
-		}
-
-	}
-
-	@Override
-	public void characters(char ch[], int start, int length) throws SAXException {
-
-		if (length > 0)
-			cdataBuffer.append(ch, start, length);
-	}
-
+        if (length > 0)
+            cdataBuffer.append(ch, start, length);
+    }
 }

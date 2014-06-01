@@ -25,67 +25,59 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class testXMLModel implements IXMLModel, IXMLMetaModel {
+public class testXMLModel {
 
-	protected static final Logger logger = Logger.getLogger(testXMLModel.class.getPackage().getName());
+    protected static final Logger     logger = Logger.getLogger(testXMLModel.class.getPackage().getName());
 
-	private Map<String, testXMLIndiv> listIndiv;
+    private Map<String, testXMLIndiv> listIndiv;
 
-	private Map<String, Type> listType;
-	
-	private testXMLIndiv root;
-	
-	public testXMLModel(){
-		listIndiv = new HashMap<String, testXMLIndiv>();
-		listType = new HashMap<String, Type>();
-		root = null;
-	}
-	
-	@Override
-	public Object addNewIndividual(Type aType) {
-		logger.info("CREATE a NEW Individual");
-		testXMLIndiv indiv = new testXMLIndiv();
-		listIndiv.put(indiv.getUUID(), indiv);
-		return indiv;
-	}
+    private Map<String, Type>         listType;
 
-	@Override
-	public void setRoot(IXMLIndividual<?, ?> anIndividual) {
+    private testXMLIndiv              root;
 
-		logger.info("ROOT element is " + anIndividual.toString());
-		root = (testXMLIndiv) anIndividual;
+    public testXMLModel() {
+        listIndiv = new HashMap<String, testXMLIndiv>();
+        listType = new HashMap<String, Type>();
+        root = null;
+    }
 
-	}
+    public Object addNewIndividual(Type aType) {
+        logger.info("CREATE a NEW Individual");
+        testXMLIndiv indiv = new testXMLIndiv();
+        listIndiv.put(indiv.getUUID(), indiv);
+        return indiv;
+    }
 
-	@Override
-	public IXMLIndividual<?, ?> getRoot() {
-		return root;
-	}
+    public void setRoot(IXMLIndividual<?, ?> anIndividual) {
 
-	@Override
-	public void setNamespace(String uri, String prefix) {
-		// TODO Auto-generated method stub
+        logger.info("ROOT element is " + anIndividual.toString());
+        root = (testXMLIndiv) anIndividual;
 
-	}
+    }
 
-	@Override
-	public String getNamespacePrefix() {
-		return "ATEST";
-	}
+    public IXMLIndividual<?, ?> getRoot() {
+        return root;
+    }
 
-	@Override
-	public String getNamespaceURI() {
-		return "http://a.test.org/";
-	}
+    public void setNamespace(String uri, String prefix) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public Type getTypeFromURI(String string) {
-		return String.class;
-	}
+    }
 
-	@Override
-	public Type createNewType(String uri, String localName, String qName) {
-		return Object.class;
-	}
+    public String getNamespacePrefix() {
+        return "ATEST";
+    }
+
+    public String getNamespaceURI() {
+        return "http://a.test.org/";
+    }
+
+    public Type getTypeFromURI(String uri) {
+        return String.class;
+    }
+
+    public Type createNewType(String uri, String localName, String qName) {
+        return Object.class;
+    }
 
 }

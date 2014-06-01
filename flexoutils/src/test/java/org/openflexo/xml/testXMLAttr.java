@@ -24,34 +24,39 @@ import java.lang.reflect.Type;
 
 public class testXMLAttr implements IXMLAttribute {
 
-	@Override
-	public boolean isSimpleAttribute() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    private String _name  = null;
 
-	@Override
-	public boolean isElement() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    private String _value = null;
 
-	@Override
-	public void addValue(IXMLIndividual<?, ?> indiv, Object value) {
-		// TODO Auto-generated method stub
+    testXMLAttr(String name) {
+        super();
+        _name = name;
+    }
 
-	}
+    @Override
+    public boolean isSimpleAttribute() {
+        return true;
+    }
 
-	@Override
-	public Type getAttributeType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public boolean isElement() {
+        return false;
+    }
 
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void addValue(IXMLIndividual<?, ?> indiv, Object value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Type getAttributeType() {
+        return String.class;
+    }
+
+    @Override
+    public String getName() {
+        return _name;
+    }
 
 }

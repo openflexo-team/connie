@@ -24,26 +24,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
-
 /**
- * A generic Factory Interface
- * typical use: write generic deserialization code
+ * A generic Factory Interface typical use: write generic deserialization code
  * 
  * @author xtof
- *
+ * 
  */
+
 public interface IFactory {
-	
 
-	public Object newInstance(Type aType) ;
-	
-	public Type getTypeFromURI(String string);
+    public Object newInstance(Type aType);
 
-	public Type newType(String uri, String localName, String qName);
-	
-	public Object deserialize(String input) throws IOException;
+    public Type getTypeFromURI(String uri);
 
-	public Object deserialize(InputStream input) throws IOException;
+    public void setRoot(Object anObject);
 
-	
+    public Object deserialize(String input) throws IOException;
+
+    public Object deserialize(InputStream input) throws IOException;
+
+    public void setNamespace(String uri, String nSPrefix);
+
 }

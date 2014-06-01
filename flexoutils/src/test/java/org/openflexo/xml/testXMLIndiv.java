@@ -18,11 +18,12 @@
  *
  */
 
-
 package org.openflexo.xml;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,105 +32,105 @@ import org.w3c.dom.Element;
 
 public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
 
-	private String uuid;
-	
-	public testXMLIndiv() {
-		uuid = UUID.randomUUID().toString();
-	}
+    private String           uuid;
 
-	@Override
-	public String getContentDATA() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    private static String    NAME_KEY   = "___The_NAME___";
 
-	@Override
-	public void setName(String name) {
-		// TODO Auto-generated method stub
-		
-	}
+    Map<String, testXMLAttr> attributes = null;
 
-	@Override
-	public String getFullyQualifiedName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    private String           _name      = null;
 
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public testXMLIndiv() {
+        uuid = UUID.randomUUID().toString();
+        attributes = new HashMap<String, testXMLAttr>();
+    }
 
-	@Override
-	public Object getAttributeValue(String attributeName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getContentDATA() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public testXMLAttr getAttributeByName(String aName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void setName(String name) {
+        _name = name;
+    }
 
-	@Override
-	public Collection<? extends testXMLAttr> getAttributes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getFullyQualifiedName() {
+        return _name;
+    }
 
-	@Override
-	public Object createAttribute(String attrLName, Type aType, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getName() {
+        return _name;
+    }
 
-	@Override
-	public String getAttributeStringValue(IXMLAttribute a) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Object getAttributeValue(String attributeName) {
+        testXMLAttr attr = attributes.get(attributeName);
+        return attributes.get(attr);
+    }
 
-	@Override
-	public void addChild(IXMLIndividual<testXMLIndiv, testXMLAttr> anIndividual) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public testXMLAttr getAttributeByName(String aName) {
+        return attributes.get(aName);
+    }
 
-	@Override
-	public Set<testXMLIndiv> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Collection<? extends testXMLAttr> getAttributes() {
+        return attributes.values();
+    }
 
-	@Override
-	public testXMLIndiv getParent() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Object createAttribute(String attrLName, Type aType, String value) {
+        testXMLAttr attr = new testXMLAttr(attrLName);
+        attr.addValue(this, value);
+        return attr;
+    }
 
-	@Override
-	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getAttributeStringValue(IXMLAttribute a) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void setType(Type myClass) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void addChild(IXMLIndividual<testXMLIndiv, testXMLAttr> anIndividual) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public String getUUID() {
-		return uuid;
-	}
+    }
 
-	@Override
-	public Element toXML(Document doc) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Set<testXMLIndiv> getChildren() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public testXMLIndiv getParent() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Type getType() {
+        return String.class;
+    }
+
+    @Override
+    public void setType(Type myClass) {
+    }
+
+    @Override
+    public String getUUID() {
+        return uuid;
+    }
+
+    @Override
+    public Element toXML(Document doc) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }
