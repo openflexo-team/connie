@@ -1,7 +1,7 @@
 /*
- * (c) Copyright 2013-2014 Openflexo
+ * (c) Copyright 2014- Openflexo
  *
- * This file is part of OpenFlexo.
+ * This file is part of the Openflexo Software Infrastructure.
  *
  * OpenFlexo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 
 /**
- * A generic Factory Interface typical use: write generic deserialization code
+ * A Factory Interface used to create factories for graph of objects.
  * 
  * @author xtof
  * 
@@ -33,16 +33,42 @@ import java.lang.reflect.Type;
 
 public interface IFactory {
 
-    public Object newInstance(Type aType);
+    // ***************************************************
+    // Methods concerning the resulting Object graph
 
-    public Type getTypeFromURI(String uri);
+    public void setContext(Object objectGraph);
+
+    public void resetContext();
 
     public void setRoot(Object anObject);
 
-    public Object deserialize(String input) throws IOException;
-
-    public Object deserialize(InputStream input) throws IOException;
-
     public void setNamespace(String uri, String nSPrefix);
+
+    /**
+     * Retuns the type of Object corresponding to the given URI, it must be a
+     * type of object relevant in the context of the current graph to be built
+     * 
+     * @param uri
+     * @return the relevant Type
+     */
+    public Type getTypeFromURI(String uri);
+
+    // ***************************************************
+    // Methods concerning Objects in the graph
+
+    public Object getInstanceOf(Type aType);
+
+    public boolean objectHasAttributeNamed(Object currentContainer, Type currentType, String localName);
+
+    public void setAttributeValueForObject(Object object, String attrName, Object value);
+
+    public void addChildToObject(Object currentObject, Object currentContainer);
+
+    // ***************************************************
+    // Methods concerning deserialization
+
+    public void deserialize(String input) throws IOException;
+
+    public void deserialize(InputStream input) throws IOException;
 
 }

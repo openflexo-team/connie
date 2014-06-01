@@ -33,19 +33,19 @@ import org.xml.sax.SAXException;
 
 public class testModelFactory implements IFactory {
 
-    protected static final Logger                            logger    = Logger.getLogger(testModelFactory.class.getPackage().getName());
+    protected static final Logger logger    = Logger.getLogger(testModelFactory.class.getPackage().getName());
 
-    protected SAXParserFactory                               factory   = null;
-    protected SAXParser                                      saxParser = null;
-    protected XMLReaderSAXHandler<testXMLIndiv, testXMLAttr> handler   = null;
+    protected SAXParserFactory    factory   = null;
+    protected SAXParser           saxParser = null;
+    protected XMLReaderSAXHandler handler   = null;
 
-    private testXMLModel                                     model     = null;
+    private testXMLModel          model     = null;
 
     testModelFactory() {
         factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setXIncludeAware(true);
-        handler = new XMLReaderSAXHandler<testXMLIndiv, testXMLAttr>(this);
+        handler = new XMLReaderSAXHandler(this);
 
         try {
             factory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
@@ -57,7 +57,7 @@ public class testModelFactory implements IFactory {
     }
 
     @Override
-    public Object newInstance(Type aType) {
+    public Object getInstanceOf(Type aType) {
         return model.addNewIndividual(aType);
     }
 
@@ -67,21 +67,40 @@ public class testModelFactory implements IFactory {
     }
 
     @Override
-    public testXMLModel deserialize(String input) throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+    public void deserialize(String input) throws IOException {
+        if (model != null) {
+
+            try {
+                saxParser.parse(input, handler);
+            } catch (SAXException e) {
+                logger.warning("Cannot parse document: " + e.getMessage());
+                throw new IOException(e.getMessage());
+            }
+            return;
+
+        }
+        else {
+            logger.warning("Context is not set for parsing, aborting");
+        }
+
     }
 
     @Override
-    public testXMLModel deserialize(InputStream input) throws IOException {
-        model = new testXMLModel();
-        try {
-            saxParser.parse(input, handler);
-        } catch (SAXException e) {
-            logger.warning("Cannot parse document: " + e.getMessage());
-            throw new IOException(e.getMessage());
+    public void deserialize(InputStream input) throws IOException {
+        if (model != null) {
+
+            try {
+                saxParser.parse(input, handler);
+            } catch (SAXException e) {
+                logger.warning("Cannot parse document: " + e.getMessage());
+                throw new IOException(e.getMessage());
+            }
+            return;
+
         }
-        return model;
+        else {
+            logger.warning("Context is not set for parsing, aborting");
+        }
     }
 
     @Override
@@ -92,6 +111,36 @@ public class testModelFactory implements IFactory {
     @Override
     public void setNamespace(String uri, String nSPrefix) {
         model.setNamespace(uri, nSPrefix);
+
+    }
+
+    @Override
+    public void setContext(Object objectGraph) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void resetContext() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean objectHasAttributeNamed(Object currentContainer, Type currentType, String localName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setAttributeValueForObject(Object object, String attrName, Object value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void addChildToObject(Object currentObject, Object currentContainer) {
+        // TODO Auto-generated method stub
 
     }
 }

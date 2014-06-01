@@ -21,6 +21,7 @@
 package org.openflexo.xml;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import junit.framework.TestCase;
 
@@ -38,12 +39,17 @@ public class testXMLSAXParser extends TestCase {
         assertNotNull(rsc);
 
         IFactory modelFactory = new testModelFactory();
-
         assertNotNull(modelFactory);
 
+        testXMLModel model = new testXMLModel();
+        assertNotNull(model);
+
+        modelFactory.setContext(model);
+
         try {
-            testXMLModel model = (testXMLModel) modelFactory.deserialize(rsc.openInputStream());
-            assertNotNull(model);
+            InputStream in = rsc.openInputStream();
+            modelFactory.deserialize(in);
+            in.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -58,16 +64,25 @@ public class testXMLSAXParser extends TestCase {
         assertNotNull(rsc);
 
         IFactory mapFactory = new testMapFactory();
-
         assertNotNull(mapFactory);
 
+        testMapModel model = new testMapModel();
+        assertNotNull(model);
+
+        mapFactory.setContext(model);
+
         try {
-            testMapModel model = (testMapModel) mapFactory.deserialize(rsc.openInputStream());
-            assertNotNull(model);
+            InputStream in = rsc.openInputStream();
+            mapFactory.deserialize(in);
+            in.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        mapFactory.resetContext();
+
+        System.out.println(model.name + "[ " + model.getValues() + "]");
 
     }
 }

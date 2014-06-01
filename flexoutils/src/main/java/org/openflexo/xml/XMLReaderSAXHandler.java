@@ -10,7 +10,7 @@
  *
  * OpenFlexo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTObjectULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -34,23 +34,22 @@ import org.xml.sax.ext.DefaultHandler2;
  * 
  * @author xtof
  * 
- * @param <IC>, The Class of Individuals (mapping to XML Elements)
- * @param <AC>, The Class of Attributes (mapping to XML Attributes)
  */
 
-public class XMLReaderSAXHandler<IC extends IXMLIndividual<IC, AC>, AC extends IXMLAttribute> extends DefaultHandler2 {
+public class XMLReaderSAXHandler extends DefaultHandler2 {
 
-    protected static final Logger logger            = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
+    protected static final Logger logger                 = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
 
-    private IC                    currentContainer  = null;
-    private IC                    currentIndividual = null;
-    private AC                    currentAttribute  = null;
+    private Object                currentContainer       = null;
+    private Object                currentObject          = null;
+    private Boolean               isAttributeOfContainer = false;
+    private Type                  currentType            = null;
 
-    private final StringBuffer    cdataBuffer       = new StringBuffer();
+    private final StringBuffer    cdataBuffer            = new StringBuffer();
 
-    private final Stack<IC>       indivStack        = new Stack<IC>();
+    private final Stack<Object>   indivStack             = new Stack<Object>();
 
-    private IFactory              factory           = null;
+    private IFactory              factory                = null;
 
     public XMLReaderSAXHandler(IFactory aFactory) {
         super();
@@ -58,51 +57,38 @@ public class XMLReaderSAXHandler<IC extends IXMLIndividual<IC, AC>, AC extends I
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         String NSPrefix = "p"; // default
 
-        currentAttribute = null;
+        System.out.println("NEW Element : " + localName);
 
         try {
 
             // Depending on the choices made when interpreting MetaModel, an XML
             // Element might be translated as a Property or a new Type....
 
-            Type currentType;
-
             if (uri.length() == 0) {
-                currentType = factory.getTypeFromURI(uri + "#" + localName);
-            }
-            else {
+                // If there is no base uri, we use the localName of the XML Tag
                 currentType = factory.getTypeFromURI(localName);
             }
-
-            // looking for the equally named property in currentContainer
-            if (currentContainer != null) {
-                currentAttribute = (AC) ((IXMLIndividual<IC, AC>) currentContainer).getAttributeByName(localName);
-            }
-
-            if (currentAttribute != null) {
-                Type attrType = ((AC) currentAttribute).getAttributeType();
-
-                if (!currentAttribute.isSimpleAttribute()) {
-                    // this is a complex attribute, we will create an individual
-                    // and then add to the attribute values
-                    currentType = attrType;
-                }
+            else {
+                currentType = factory.getTypeFromURI(uri + "#" + localName);
             }
 
             // creates individual
             if (currentType != null) {
-                currentIndividual = (IC) factory.newInstance(currentType);
-                ((IXMLIndividual<IC, AC>) currentIndividual).setType(currentType);
-                currentIndividual = currentIndividual;
+                currentObject = (Object) factory.getInstanceOf(currentType);
+
+                System.out.println("CREATED Individual : " + currentObject);
+
+                // ((IXMLIndividual<Object, Object>)
+                // currentIndividual).setType(currentType);
+                currentObject = currentObject;
                 cdataBuffer.delete(0, cdataBuffer.length());
             }
 
-            if (currentIndividual != null) {
+            if (currentObject != null) {
                 // ************************************
                 // processing Attributes
 
@@ -116,69 +102,60 @@ public class XMLReaderSAXHandler<IC extends IXMLIndividual<IC, AC>, AC extends I
                     String attrName = attributes.getLocalName(i);
                     String attrURI = attributes.getURI(i);
                     NSPrefix = "p"; // default
+
+                    System.out.println("Processing Attribute : " + attrName);
+
                     if (attrQName != null && attrName != null && currentContainer == null) {
                         // we only set prefix if there is no other Root Element
                         NSPrefix = attrQName;
                         NSPrefix.replace(attrName, "");
                     }
 
-                    aType = factory.getTypeFromURI(attrURI + "#" + attrName);
-
                     if (typeName.equals(XMLCst.CDATA_TYPE_NAME)) {
                         aType = String.class;
-
                         if (attrName.equals(""))
                             attrName = attrQName;
 
-                        ((IC) currentIndividual).createAttribute(attrName, String.class, attributes.getValue(i));
                     }
+
+                    factory.setAttributeValueForObject(currentObject, attrName, attributes.getValue(i));
+
+                    /*
                     else {
+                        if (attrURI.length() == 0) {
+                            // If there is no base uri, we use the localName of
+                            // the XML Tag
+                            aType = factory.getTypeFromURI(attrName);
+                        }
+                        else {
+                            aType = factory.getTypeFromURI(uri + "#" + attrName);
+                        }
+
                         if (aType == null) {
-                            logger.warning("XMLIndividual: cannot find a type for " + typeName + " - falling back to String");
+                            logger.warning("Cannot find a type for " + typeName + " - falling back to String");
                             aType = String.class;
                         }
 
-                        ((IC) currentIndividual).createAttribute(attrName, String.class, attributes.getValue(i));
+                        factory.setAttributeValueForObject(currentObject, attrName, attributes.getValue(i));
                     }
-
-                }
-
-                // ************************************
-                // Current element is contained in another one
-
-                if (currentContainer != null && currentContainer != currentIndividual) {
-
-                    if (currentAttribute != null) {
-                        // logger.info("ADDING " + anIndividual.toString() +
-                        // " TO " + currentContainer.toString() +
-                        // "   / Attribute is: " +
-                        // currentAttribute );
-                        currentAttribute.addValue((IC) currentContainer, currentIndividual);
-                    }
-                    else {
-                        ((IC) currentContainer).addChild((IC) currentIndividual);
-                    }
+                    */
                 }
 
                 // ************************************
                 // Current element is not contained in another one, it is root!
                 if (currentContainer == null) {
-                    factory.setRoot((IC) currentIndividual);
+                    factory.setRoot((Object) currentObject);
                     if (uri != null && !uri.isEmpty()) {
 
                         factory.setNamespace(uri, NSPrefix);
                     }
-                    // logger.info("OPENING ROOT Container is + " +
-                    // currentContainer.toString() + "   / Attribute is: " +
-                    // currentAttribute
-                    // );
 
                 }
 
                 if (currentContainer != null) {
                     indivStack.push(currentContainer);
                 }
-                currentContainer = currentIndividual;
+                currentContainer = currentObject;
 
             }
         } catch (Exception e) {
@@ -191,6 +168,15 @@ public class XMLReaderSAXHandler<IC extends IXMLIndividual<IC, AC>, AC extends I
     @Override
     @SuppressWarnings("unchecked")
     public void endElement(String uri, String localName, String qName) throws SAXException {
+
+        // node stack management
+
+        if (!indivStack.isEmpty()) {
+            currentContainer = indivStack.pop();
+        }
+        else {
+            currentContainer = null;
+        }
 
         // Allocation of CDATA information depends on the type of entity we have
         // to allocate
@@ -205,26 +191,23 @@ public class XMLReaderSAXHandler<IC extends IXMLIndividual<IC, AC>, AC extends I
         String str = cdataBuffer.toString().trim();
 
         if (str.length() > 0) {
-            if (currentAttribute != null && currentAttribute.isSimpleAttribute()) {
-                currentAttribute.addValue((IXMLIndividual<IC, AC>) currentIndividual, str);
-                cdataBuffer.delete(0, cdataBuffer.length());
-            }
-            else if (currentIndividual != null) {
-                ((IXMLIndividual<IC, AC>) currentIndividual).createAttribute(XMLCst.CDATA_ATTR_NAME, String.class, str);
-                cdataBuffer.delete(0, cdataBuffer.length());
+
+            factory.setAttributeValueForObject(currentObject, XMLCst.CDATA_ATTR_NAME, str);
+            cdataBuffer.delete(0, cdataBuffer.length());
+        }
+
+        // ************************************
+        // Current element is contained in another one
+
+        if (currentContainer != null && currentContainer != currentObject) {
+
+            if (factory.objectHasAttributeNamed(currentContainer, currentType, localName)) {
+                factory.setAttributeValueForObject(currentContainer, localName, currentObject);
+
             }
             else {
-                logger.info("Don't know where to allocate the CDATA textual information");
+                factory.addChildToObject(currentObject, currentContainer);
             }
-        }
-
-        // node stack management
-
-        if (!indivStack.isEmpty()) {
-            currentContainer = indivStack.pop();
-        }
-        else {
-            currentContainer = null;
         }
 
     }
