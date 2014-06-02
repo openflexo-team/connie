@@ -16,7 +16,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	private String variableName;
 	private Type type;
 	private boolean settable = false;
-	private PropertyChangeSupport pcSupport;
+	private final PropertyChangeSupport pcSupport;
 
 	public static final String VARIABLE_NAME = "variableName";
 	public static final String TYPE = "type";
@@ -140,6 +140,27 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	@Override
 	public String getDeletedProperty() {
 		return null;
+	}
+
+	private boolean cacheable = true;
+
+	/**
+	 * Return boolean indicating if this {@link BindingVariable} should be cached<br>
+	 * Default behaviour is cacheable
+	 * 
+	 * @return
+	 */
+	public boolean isCacheable() {
+		return cacheable;
+	}
+
+	/**
+	 * Sets boolean indicating if this {@link BindingVariable} should be cached<br>
+	 * Default behaviour is cacheable
+	 * 
+	 */
+	public void setCacheable(boolean cacheable) {
+		this.cacheable = cacheable;
 	}
 
 }

@@ -374,6 +374,20 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	/**
+	 * Return boolean indicating if the computation of this {@link BindingValue} should be cached<br>
+	 * A {@link BindingValue} is cacheable if
+	 * <ul>
+	 * <li>related {@link BindingVariable} is cacheable</li>
+	 * <li>this {@link BindingValue} should be notification-safe
+	 * 
+	 * 
+	 * @return
+	 */
+	public boolean isCacheable() {
+		return getBindingVariable() != null && getBindingVariable().isCacheable() && isNotificationSafe();
+	}
+
+	/**
 	 * Return boolean indicating if this {@link BindingValue} is notification-safe<br>
 	 * 
 	 * A {@link BindingValue} is unsafe when any involved method is annotated with {@link NotificationUnsafe} annotation<br>
@@ -382,6 +396,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @return
 	 */
 	public boolean isNotificationSafe() {
+		if (bindingVariable == null) {
+			return false;
+		}
 		for (BindingPathElement pathElement : getBindingPath()) {
 			if (pathElement instanceof JavaPropertyPathElement) {
 				JavaPropertyPathElement propertyPathElement = (JavaPropertyPathElement) pathElement;
