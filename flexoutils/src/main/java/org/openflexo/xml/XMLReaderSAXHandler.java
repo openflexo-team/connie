@@ -21,10 +21,12 @@
 package org.openflexo.xml;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-import org.openflexo.IFactory;
+import org.openflexo.IObjectGraphFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
@@ -40,6 +42,8 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
     protected static final Logger logger                 = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
 
+    public static final String    NAMESPACE_Property     = "Namespace";
+
     private Object                currentContainer       = null;
     private Object                currentObject          = null;
     private Boolean               isAttributeOfContainer = false;
@@ -49,9 +53,9 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
     private final Stack<Object>   indivStack             = new Stack<Object>();
 
-    private IFactory              factory                = null;
+    private IObjectGraphFactory              factory                = null;
 
-    public XMLReaderSAXHandler(IFactory aFactory) {
+    public XMLReaderSAXHandler(IObjectGraphFactory aFactory) {
         super();
         factory = aFactory;
     }
@@ -113,10 +117,12 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
                 // ************************************
                 // Current element is not contained in another one, it is root!
                 if (currentContainer == null) {
-                    factory.setRoot((Object) currentObject);
+                    factory.addToRootNodes((Object) currentObject);
                     if (uri != null && !uri.isEmpty()) {
-
-                        factory.setNamespace(uri, NSPrefix);
+                        List<String> namespace = new ArrayList<String>();
+                        namespace.add(uri);
+                        namespace.add(NSPrefix);
+                        factory.setContextProperty(NAMESPACE_Property, namespace);
                     }
 
                 }

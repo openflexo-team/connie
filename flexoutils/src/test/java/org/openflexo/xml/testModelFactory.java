@@ -23,15 +23,16 @@ package org.openflexo.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.openflexo.IFactory;
+import org.openflexo.IObjectGraphFactory;
 import org.xml.sax.SAXException;
 
-public class testModelFactory implements IFactory {
+public class testModelFactory implements IObjectGraphFactory {
 
     protected static final Logger        logger           = Logger.getLogger(testModelFactory.class.getPackage().getName());
 
@@ -116,13 +117,16 @@ public class testModelFactory implements IFactory {
     }
 
     @Override
-    public void setRoot(Object anObject) {
+    public void addToRootNodes(Object anObject) {
         model.setRoot((testXMLIndiv) anObject);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void setNamespace(String uri, String nSPrefix) {
-        model.setNamespace(uri, nSPrefix);
+    public void setContextProperty(String propertyName, Object value) {
+        if (propertyName.equals(XMLReaderSAXHandler.NAMESPACE_Property)) {
+            model.setNamespace(((List<String>) value).get(0), ((List<String>) value).get(1));
+        }
 
     }
 

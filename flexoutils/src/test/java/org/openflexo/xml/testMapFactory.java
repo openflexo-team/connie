@@ -28,10 +28,10 @@ import java.util.logging.Logger;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.openflexo.IFactory;
+import org.openflexo.IObjectGraphFactory;
 import org.xml.sax.SAXException;
 
-public class testMapFactory implements IFactory {
+public class testMapFactory implements IObjectGraphFactory {
 
     private static final Logger logger    = Logger.getLogger(testModelFactory.class.getPackage().getName());
 
@@ -97,7 +97,7 @@ public class testMapFactory implements IFactory {
     }
 
     @Override
-    public void setRoot(Object anObject) {
+    public void addToRootNodes(Object anObject) {
         // irrelevant in this context
         return;
     }
@@ -137,7 +137,7 @@ public class testMapFactory implements IFactory {
     }
 
     @Override
-    public void setNamespace(String uri, String nSPrefix) {
+    public void setContextProperty(String propertyName, Object value) {
         // Irrelevant for this test
     }
 

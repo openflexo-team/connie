@@ -26,7 +26,7 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.openflexo.IFactory;
+import org.openflexo.IObjectGraphFactory;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 
@@ -59,7 +59,7 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_0.xml");
         assertNotNull(rsc);
 
-        IFactory modelFactory = new testModelFactory();
+        IObjectGraphFactory modelFactory = new testModelFactory();
         assertNotNull(modelFactory);
 
         testXMLModel model = new testXMLModel();
@@ -84,7 +84,7 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_1.xml");
         assertNotNull(rsc);
 
-        IFactory modelFactory = new testModelFactory();
+        IObjectGraphFactory modelFactory = new testModelFactory();
         assertNotNull(modelFactory);
 
         testXMLModel model = new testXMLModel();
@@ -108,7 +108,7 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_2.xml");
         assertNotNull(rsc);
 
-        IFactory modelFactory = new testModelFactory();
+        IObjectGraphFactory modelFactory = new testModelFactory();
         assertNotNull(modelFactory);
 
         testXMLModel model = new testXMLModel();
@@ -133,7 +133,7 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_3.xml");
         assertNotNull(rsc);
 
-        IFactory modelFactory = new testModelFactory();
+        IObjectGraphFactory modelFactory = new testModelFactory();
         assertNotNull(modelFactory);
 
         testXMLModel model = new testXMLModel();
@@ -159,7 +159,7 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/MapTest.xml");
         assertNotNull(rsc);
 
-        IFactory mapFactory = new testMapFactory();
+        IObjectGraphFactory mapFactory = new testMapFactory();
         assertNotNull(mapFactory);
 
         testMapModel model = new testMapModel();

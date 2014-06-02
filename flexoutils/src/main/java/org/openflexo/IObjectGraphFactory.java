@@ -31,18 +31,29 @@ import java.lang.reflect.Type;
  * 
  */
 
-public interface IFactory {
+public interface IObjectGraphFactory {
 
     // ***************************************************
     // Methods concerning the resulting Object graph
 
+    /**
+     * Sets the context that contains the graph to be built
+     * 
+     * @param objectGraph
+     */
     public void setContext(Object objectGraph);
 
+    /**
+     * Resets The Context, enables re-use of the same Factory in various
+     * contexts
+     * 
+     * @param objectGraph
+     */
     public void resetContext();
 
-    public void setRoot(Object anObject);
+    public void addToRootNodes(Object anObject);
 
-    public void setNamespace(String uri, String nSPrefix);
+    public void setContextProperty(String propertyName, Object value);
 
     /**
      * Retuns the type of Object corresponding to the given URI, it must be a
