@@ -143,6 +143,11 @@ public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
     }
 
     public void setAttributeValue(testXMLAttr attr, Object value) {
-        this.attributeValues.put(attr, value);
+        if (value instanceof testXMLModel.StringAttribute) {
+            this.attributeValues.put(attr, ((testXMLModel.StringAttribute) value).getValue());
+        }
+        else {
+            this.attributeValues.put(attr, value);
+        }
     }
 }

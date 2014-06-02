@@ -45,6 +45,7 @@ public class testXMLAttr implements IXMLAttribute {
 
     @Override
     public void addValue(IXMLIndividual<?, ?> indiv, Object value) {
+        System.out.println("updating attribute " + _name + " with value :" + value);
         ((testXMLIndiv) indiv).setAttributeValue(this, value);
     }
 

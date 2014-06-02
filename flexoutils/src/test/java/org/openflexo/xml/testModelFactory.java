@@ -33,13 +33,15 @@ import org.xml.sax.SAXException;
 
 public class testModelFactory implements IFactory {
 
-    protected static final Logger logger    = Logger.getLogger(testModelFactory.class.getPackage().getName());
+    protected static final Logger        logger           = Logger.getLogger(testModelFactory.class.getPackage().getName());
 
-    protected SAXParserFactory    factory   = null;
-    protected SAXParser           saxParser = null;
-    protected XMLReaderSAXHandler handler   = null;
+    protected SAXParserFactory           factory          = null;
+    protected SAXParser                  saxParser        = null;
+    protected XMLReaderSAXHandler        handler          = null;
 
-    private testXMLModel          model     = null;
+    private testXMLModel                 model            = null;
+
+    private testXMLModel.StringAttribute attrStringBuffer = null;
 
     testModelFactory() {
         factory = SAXParserFactory.newInstance();
@@ -63,11 +65,12 @@ public class testModelFactory implements IFactory {
             // _inst.setName();
             return (Object) _inst;
         }
-        else {
-            // Fail Back to String
-            // Beware of memory Leaks!!!
-            return new String();
+        else if (aType == testXMLModel.StringAttribute.class) {
+            if (attrStringBuffer == null)
+                attrStringBuffer = model.new StringAttribute();
+            return attrStringBuffer;
         }
+        return null;
     }
 
     @Override
@@ -140,13 +143,19 @@ public class testModelFactory implements IFactory {
 
             testXMLAttr attr = ((testXMLIndiv) object).getAttributeByName(attrName);
 
-            return (attr != null && attr.getAttributeType() == aType);
+            if (aType == testXMLModel.StringAttribute.class) {
+                return true;
+            }
+            else {
+                return (attr != null && attr.getAttributeType() == aType);
+            }
         }
         return false;
     }
 
     @Override
     public void setAttributeValueForObject(Object object, String attrName, Object value) {
+
         if (object instanceof testXMLIndiv) {
             testXMLAttr attr = ((testXMLIndiv) object).getAttributeByName(attrName);
 
@@ -159,8 +168,8 @@ public class testModelFactory implements IFactory {
 
             }
         }
-        else if (object instanceof String) {
-            ((String) object).concat((String) value);
+        else if (object instanceof testXMLModel.StringAttribute) {
+            ((testXMLModel.StringAttribute) object).setValue((String) value);
         }
     }
 

@@ -80,8 +80,9 @@ public class testXMLModel {
         Type aType = listType.get(uri);
         if (aType == null) {
             if (uri.equals(NAME_ATTR_URI)) {
-                listType.put(uri, String.class);
-                aType = String.class;
+                // Name
+                listType.put(uri, StringAttribute.class);
+                aType = StringAttribute.class;
             }
             else {
                 aType = (testXMLType) new testXMLType(uri);
@@ -90,4 +91,19 @@ public class testXMLModel {
         }
         return aType;
     }
+
+    // Inner class to store a String Value
+    public class StringAttribute {
+        private String value = null;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+    }
+
 }

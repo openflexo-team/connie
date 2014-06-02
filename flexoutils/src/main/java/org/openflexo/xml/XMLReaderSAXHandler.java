@@ -63,8 +63,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
         try {
 
-            // Depending on the choices made when interpreting MetaModel, an XML
-            // Element might be translated as a Property or a new Type....
 
             if (uri.length() == 0) {
                 // If there is no base uri, we use the localName of the XML Tag
