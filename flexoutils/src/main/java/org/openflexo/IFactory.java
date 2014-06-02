@@ -56,11 +56,11 @@ public interface IFactory {
     // ***************************************************
     // Methods concerning Objects in the graph
 
-    public Object getInstanceOf(Type aType);
+    public Object getInstanceOf(Type aType, String name);
 
     public boolean objectHasAttributeNamed(Object object, Type attrType, String attrName);
 
-    public void setAttributeValueForObject(Object object, String attrName, Object value);
+    public void addAttributeValueForObject(Object object, String attrName, Object value);
 
     public void addChildToObject(Object child, Object container);
 

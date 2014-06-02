@@ -63,7 +63,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
         try {
 
-
             if (uri.length() == 0) {
                 // If there is no base uri, we use the localName of the XML Tag
                 currentType = factory.getTypeFromURI(localName);
@@ -74,7 +73,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
             // creates individual
             if (currentType != null) {
-                currentObject = (Object) factory.getInstanceOf(currentType);
+                currentObject = (Object) factory.getInstanceOf(currentType, localName);
 
                 cdataBuffer.delete(0, cdataBuffer.length());
             }
@@ -107,27 +106,8 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
                     }
 
-                    factory.setAttributeValueForObject(currentObject, attrName, attributes.getValue(i));
+                    factory.addAttributeValueForObject(currentObject, attrName, attributes.getValue(i));
 
-                    /*
-                    else {
-                        if (attrURI.length() == 0) {
-                            // If there is no base uri, we use the localName of
-                            // the XML Tag
-                            aType = factory.getTypeFromURI(attrName);
-                        }
-                        else {
-                            aType = factory.getTypeFromURI(uri + "#" + attrName);
-                        }
-
-                        if (aType == null) {
-                            logger.warning("Cannot find a type for " + typeName + " - falling back to String");
-                            aType = String.class;
-                        }
-
-                        factory.setAttributeValueForObject(currentObject, attrName, attributes.getValue(i));
-                    }
-                    */
                 }
 
                 // ************************************
@@ -181,7 +161,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
         if (str.length() > 0) {
 
-            factory.setAttributeValueForObject(currentObject, XMLCst.CDATA_ATTR_NAME, str);
+            factory.addAttributeValueForObject(currentObject, XMLCst.CDATA_ATTR_NAME, str);
             cdataBuffer.delete(0, cdataBuffer.length());
         }
 
@@ -191,7 +171,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
         if (currentContainer != null && currentContainer != currentObject) {
 
             if (factory.objectHasAttributeNamed(currentContainer, currentType, localName)) {
-                factory.setAttributeValueForObject(currentContainer, localName, currentObject);
+                factory.addAttributeValueForObject(currentContainer, localName, currentObject);
 
             }
             else {

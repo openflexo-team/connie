@@ -33,7 +33,7 @@ import org.openflexo.rm.ResourceLocator;
 public class testXMLSAXParser extends TestCase {
 
     private void printXMLNode(testXMLIndiv node, String indent) {
-        System.out.println(indent + ((testXMLType) node.getType()).getURI());
+        System.out.println(indent + "[N]" + node.getName());
 
         for (testXMLAttr a : node.getAttributes()) {
 
@@ -76,8 +76,6 @@ public class testXMLSAXParser extends TestCase {
             e.printStackTrace();
         }
 
-        printXMLTree(model);
-
     }
 
     @Test
@@ -102,9 +100,57 @@ public class testXMLSAXParser extends TestCase {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testLibrary2Parser() {
+
+        Resource rsc = ResourceLocator.locateResource("testXML/example_library_2.xml");
+        assertNotNull(rsc);
+
+        IFactory modelFactory = new testModelFactory();
+        assertNotNull(modelFactory);
+
+        testXMLModel model = new testXMLModel();
+        assertNotNull(model);
+
+        modelFactory.setContext(model);
+
+        try {
+            InputStream in = rsc.openInputStream();
+            modelFactory.deserialize(in);
+            in.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void testLibrary3Parser() {
+
+        Resource rsc = ResourceLocator.locateResource("testXML/example_library_3.xml");
+        assertNotNull(rsc);
+
+        IFactory modelFactory = new testModelFactory();
+        assertNotNull(modelFactory);
+
+        testXMLModel model = new testXMLModel();
+        assertNotNull(model);
+
+        modelFactory.setContext(model);
+
+        try {
+            InputStream in = rsc.openInputStream();
+            modelFactory.deserialize(in);
+            in.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         printXMLTree(model);
-
     }
 
     @Test
@@ -132,6 +178,8 @@ public class testXMLSAXParser extends TestCase {
 
         assertEquals(model.getValues().size(), 4);
         assertEquals(model.getName(), "lapin");
+
+        // System.out.println(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
 
         mapFactory.resetContext();
 

@@ -24,9 +24,7 @@ import java.lang.reflect.Type;
 
 public class testXMLAttr implements IXMLAttribute {
 
-    private String _name  = null;
-
-    private String _value = null;
+    private String _name = null;
 
     testXMLAttr(String name) {
         super();
@@ -45,7 +43,6 @@ public class testXMLAttr implements IXMLAttribute {
 
     @Override
     public void addValue(IXMLIndividual<?, ?> indiv, Object value) {
-        System.out.println("updating attribute " + _name + " with value :" + value);
         ((testXMLIndiv) indiv).setAttributeValue(this, value);
     }
 

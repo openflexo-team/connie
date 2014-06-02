@@ -59,10 +59,10 @@ public class testModelFactory implements IFactory {
     }
 
     @Override
-    public Object getInstanceOf(Type aType) {
+    public Object getInstanceOf(Type aType, String name) {
         if (aType instanceof testXMLType) {
             testXMLIndiv _inst = (testXMLIndiv) model.addNewIndividual(aType);
-            // _inst.setName();
+            _inst.setName(name);
             return (Object) _inst;
         }
         else if (aType == testXMLModel.StringAttribute.class) {
@@ -154,7 +154,7 @@ public class testModelFactory implements IFactory {
     }
 
     @Override
-    public void setAttributeValueForObject(Object object, String attrName, Object value) {
+    public void addAttributeValueForObject(Object object, String attrName, Object value) {
 
         if (object instanceof testXMLIndiv) {
             testXMLAttr attr = ((testXMLIndiv) object).getAttributeByName(attrName);

@@ -29,7 +29,8 @@ public class testXMLModel {
 
     protected static final Logger     logger        = Logger.getLogger(testXMLModel.class.getPackage().getName());
 
-    private static String             NAME_ATTR_URI = "name";
+    private static String             NAME_ATTR     = "name";
+    private static String             NAME_ATTR_URI = "http://www.example.org/Library#name";
 
     private Map<String, testXMLIndiv> listIndiv;
 
@@ -79,7 +80,7 @@ public class testXMLModel {
     public Type getTypeFromURI(String uri) {
         Type aType = listType.get(uri);
         if (aType == null) {
-            if (uri.equals(NAME_ATTR_URI)) {
+            if (uri.equals(NAME_ATTR_URI) || uri.equals(NAME_ATTR)) {
                 // Name
                 listType.put(uri, StringAttribute.class);
                 aType = StringAttribute.class;

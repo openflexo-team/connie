@@ -70,7 +70,7 @@ public class testMapFactory implements IFactory {
     }
 
     @Override
-    public Object getInstanceOf(Type aType) {
+    public Object getInstanceOf(Type aType, String name) {
         if (aType == testMapModel.class) {
             return context;
         }
@@ -152,7 +152,7 @@ public class testMapFactory implements IFactory {
     }
 
     @Override
-    public void setAttributeValueForObject(Object object, String attrName, Object value) {
+    public void addAttributeValueForObject(Object object, String attrName, Object value) {
         if (object instanceof NodeBuffer) {
             if (attrName.equals(XMLCst.CDATA_ATTR_NAME)) {
                 _node.value = (String) value;

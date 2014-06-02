@@ -7,4 +7,16 @@
    <p:category>Mystery</p:category>
    <p:author>Le Lapin</p:author>
   </p:books>
+  <p:books>
+   <p:title encoding="truc" >bonjour</p:title>
+   <p:pages>135</p:pages>
+   <p:category>Romance</p:category>
+   <p:author>R. T. </p:author>
+  </p:books>
+  <p:books>
+   <p:title encoding="machin" >Le Fleuve des îles dans la nuit perdue</p:title>
+   <p:pages>325</p:pages>
+   <p:category>Polar</p:category>
+   <p:author>La Truite de Schubert</p:author>
+  </p:books>
 </p:Library>
