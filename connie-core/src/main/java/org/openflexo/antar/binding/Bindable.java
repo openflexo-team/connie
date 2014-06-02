@@ -28,29 +28,25 @@ package org.openflexo.antar.binding;
 public interface Bindable {
 	/**
 	 * Return the Binding model for the current object.
-	 * 
-	 * @return
 	 */
 	public BindingModel getBindingModel();
 
 	/**
 	 * Return the factory used to build bindings related to this bindable
-	 * 
-	 * @return
 	 */
 	public BindingFactory getBindingFactory();
 
 	/**
 	 * Called when supplied data binding changed its value
 	 * 
-	 * @param dataBinding
+	 * @param dataBinding new data binding value.
 	 */
 	public void notifiedBindingChanged(DataBinding<?> dataBinding);
 
 	/**
 	 * Called when supplied data binding has been decoded (syntaxic and semantics analysis performed)
-	 * 
-	 * @param dataBinding
+	 *
+	 * @param dataBinding new data binding value.
 	 */
 	public void notifiedBindingDecoded(DataBinding<?> dataBinding);
 }

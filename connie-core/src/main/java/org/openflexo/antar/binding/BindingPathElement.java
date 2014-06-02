@@ -68,8 +68,6 @@ public interface BindingPathElement extends Typed {
 
 	/**
 	 * Return a flag indicating if this path element is settable or not (settable indicates that a new value can be set)
-	 * 
-	 * @return
 	 */
 	public boolean isSettable();
 
@@ -77,7 +75,7 @@ public interface BindingPathElement extends Typed {
 	 * Evaluate and return value for related path element, given a binding evaluation context
 	 * 
 	 * @param target
-	 *            : adress object as target of parent path: the object on which setting will be performed
+	 *            : address object as target of parent path: the object on which setting will be performed
 	 * @param context
 	 *            : binding evaluation context
 	 * @return accessed value

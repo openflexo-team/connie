@@ -63,10 +63,10 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		try {
 			jarfile = new JarFile(filename);
 		} catch (UnsupportedEncodingException e) {
-			logger.severe("Unable to create JarResource whith filename: " +filename);
+			logger.severe("Unable to create JarResource with filename: " +filename);
 			e.printStackTrace();
 		} catch (IOException e) {
-			logger.severe("Unable to create JarResource whith filename: " +filename);
+			logger.severe("Unable to create JarResource with filename: " +filename);
 			e.printStackTrace();
 		}
 		if (jarfile != null){
@@ -74,7 +74,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			jarfilename = filename;
 		}
 		else {
-			logger.severe("Unable to create JarResource whith filename: " +filename);
+			logger.severe("Unable to create JarResource with filename: " +filename);
 			return;
 		}
 	}

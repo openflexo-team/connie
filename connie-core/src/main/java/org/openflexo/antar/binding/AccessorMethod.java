@@ -125,8 +125,6 @@ public class AccessorMethod implements Comparable {
 
 	/**
 	 * Return the related <code>Method</code>
-	 * 
-	 * @return
 	 */
 	public Method getMethod() {
 

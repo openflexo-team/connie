@@ -32,6 +32,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	private BindingEvaluationContext context;
 	private List<TargetObject> dependingObjects;
 	protected T lastNotifiedValue;
+	private boolean deleted = false;
 
 	public BindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		super();
@@ -55,6 +56,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		context = null;
 		dependingObjects.clear();
 		dependingObjects = null;
+		deleted = true;
 	}
 
 	public List<TargetObject> getChainedBindings(TargetObject object) {
@@ -216,12 +218,16 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 	@Override
 	public void update(Observable o, Object arg) {
-		fireChange(o);
+		if (!deleted) {
+			fireChange(o);
+		}
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		fireChange(evt.getSource());
+		if (!deleted) {
+			fireChange(evt.getSource());
+		}
 	}
 
 	protected void fireChange(Object source) {
