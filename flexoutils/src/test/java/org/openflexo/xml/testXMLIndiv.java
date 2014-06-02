@@ -21,10 +21,11 @@
 package org.openflexo.xml;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.w3c.dom.Document;
@@ -32,17 +33,22 @@ import org.w3c.dom.Element;
 
 public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
 
-    private String           uuid;
+    private String                   uuid;
 
-    private static String    NAME_KEY   = "___The_NAME___";
+    private static String            NAME_KEY        = "___The_NAME___";
 
-    Map<String, testXMLAttr> attributes = null;
+    private Map<testXMLAttr, Object> attributeValues = null;
+    private List<testXMLIndiv>       children        = null;
+    private testXMLIndiv             parent          = null;
 
-    private String           _name      = null;
+    private testXMLType              type            = null;
+
+    private String                   _name           = null;
 
     public testXMLIndiv() {
         uuid = UUID.randomUUID().toString();
-        attributes = new HashMap<String, testXMLAttr>();
+        attributeValues = new HashMap<testXMLAttr, Object>();
+        children = new ArrayList<testXMLIndiv>();
     }
 
     @Override
@@ -68,18 +74,19 @@ public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
 
     @Override
     public Object getAttributeValue(String attributeName) {
-        testXMLAttr attr = attributes.get(attributeName);
-        return attributes.get(attr);
+        testXMLAttr attr = ((testXMLType) getType()).getAttributeByName(attributeName);
+        return attributeValues.get(attr);
     }
 
     @Override
     public testXMLAttr getAttributeByName(String aName) {
-        return attributes.get(aName);
+
+        return ((testXMLType) getType()).getAttributeByName(aName);
     }
 
     @Override
     public Collection<? extends testXMLAttr> getAttributes() {
-        return attributes.values();
+        return attributeValues.keySet();
     }
 
     @Override
@@ -91,35 +98,37 @@ public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
 
     @Override
     public String getAttributeStringValue(IXMLAttribute a) {
-        // TODO Auto-generated method stub
-        return null;
+        return attributeValues.get(a).toString();
     }
 
     @Override
     public void addChild(IXMLIndividual<testXMLIndiv, testXMLAttr> anIndividual) {
-        // TODO Auto-generated method stub
-
+        children.add((testXMLIndiv) anIndividual);
+        ((testXMLIndiv) anIndividual).setParent(this);
     }
 
     @Override
-    public Set<testXMLIndiv> getChildren() {
-        // TODO Auto-generated method stub
-        return null;
+    public List<testXMLIndiv> getChildren() {
+        return children;
+    }
+
+    public void setParent(testXMLIndiv container) {
+        parent = container;
     }
 
     @Override
     public testXMLIndiv getParent() {
-        // TODO Auto-generated method stub
-        return null;
+        return parent;
     }
 
     @Override
     public Type getType() {
-        return String.class;
+        return type;
     }
 
     @Override
     public void setType(Type myClass) {
+        type = (testXMLType) myClass;
     }
 
     @Override
@@ -133,4 +142,7 @@ public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
         return null;
     }
 
+    public void setAttributeValue(testXMLAttr attr, Object value) {
+        this.attributeValues.put(attr, value);
+    }
 }

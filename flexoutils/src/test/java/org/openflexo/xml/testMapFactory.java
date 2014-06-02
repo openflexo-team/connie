@@ -155,7 +155,6 @@ public class testMapFactory implements IFactory {
     public void setAttributeValueForObject(Object object, String attrName, Object value) {
         if (object instanceof NodeBuffer) {
             if (attrName.equals(XMLCst.CDATA_ATTR_NAME)) {
-                System.out.println("Got Some CDATA : " + value);
                 _node.value = (String) value;
 
             }
@@ -168,7 +167,6 @@ public class testMapFactory implements IFactory {
                 context.setName((String) value);
             }
             else if (attrName.equals(NODE_TAG)) {
-                System.out.println("Add Some Node");
                 context.addNode(((NodeBuffer) value).key, ((NodeBuffer) value).value);
             }
         }

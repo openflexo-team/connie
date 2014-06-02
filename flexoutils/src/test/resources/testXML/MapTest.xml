@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  cela doit finir désérializé dans un HashMap java -->
 <Map name="lapin">
-<Node key="45">Frout</Node>
-<Node key="46">Front</Node>
-<Node key="47">Fr</Node>
-<Node key="48">Frout dsfg 
+<Node key="45">Bonjour</Node>
+<Node key="46">Au revoir</Node>
+<Node key="47">Rouge</Node>
+<Node key="48">Vert 
 </Node>
 
 </Map>

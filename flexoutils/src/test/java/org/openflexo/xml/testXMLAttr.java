@@ -45,8 +45,7 @@ public class testXMLAttr implements IXMLAttribute {
 
     @Override
     public void addValue(IXMLIndividual<?, ?> indiv, Object value) {
-        // TODO Auto-generated method stub
-
+        ((testXMLIndiv) indiv).setAttributeValue(this, value);
     }
 
     @Override

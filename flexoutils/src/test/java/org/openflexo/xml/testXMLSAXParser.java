@@ -32,8 +32,29 @@ import org.openflexo.rm.ResourceLocator;
 
 public class testXMLSAXParser extends TestCase {
 
+    private void printXMLNode(testXMLIndiv node, String indent) {
+        System.out.println(indent + ((testXMLType) node.getType()).getURI());
+
+        for (testXMLAttr a : node.getAttributes()) {
+
+            System.out.println(indent + "-- " + a.getName() + " = " + node.getAttributeStringValue(a));
+        }
+
+        for (testXMLIndiv n : node.getChildren()) {
+            printXMLNode(n, indent + "    ");
+        }
+
+    }
+
+    private void printXMLTree(testXMLModel model) {
+
+        testXMLIndiv root = (testXMLIndiv) model.getRoot();
+
+        printXMLNode(root, "");
+    }
+
     @Test
-    public void testLibraryParser() {
+    public void testLibrary0Parser() {
 
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_0.xml");
         assertNotNull(rsc);
@@ -54,6 +75,35 @@ public class testXMLSAXParser extends TestCase {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        printXMLTree(model);
+
+    }
+
+    @Test
+    public void testLibrary1Parser() {
+
+        Resource rsc = ResourceLocator.locateResource("testXML/example_library_1.xml");
+        assertNotNull(rsc);
+
+        IFactory modelFactory = new testModelFactory();
+        assertNotNull(modelFactory);
+
+        testXMLModel model = new testXMLModel();
+        assertNotNull(model);
+
+        modelFactory.setContext(model);
+
+        try {
+            InputStream in = rsc.openInputStream();
+            modelFactory.deserialize(in);
+            in.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        printXMLTree(model);
 
     }
 
@@ -80,9 +130,10 @@ public class testXMLSAXParser extends TestCase {
             e.printStackTrace();
         }
 
-        mapFactory.resetContext();
+        assertEquals(model.getValues().size(), 4);
+        assertEquals(model.getName(), "lapin");
 
-        System.out.println(model.name + "[ " + model.getValues() + "]");
+        mapFactory.resetContext();
 
     }
 }

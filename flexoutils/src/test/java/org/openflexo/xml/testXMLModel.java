@@ -1,7 +1,7 @@
 /*
  * (c) Copyright 2013-2014 Openflexo
  *
- * This file is part of OpenFlexo.
+ * This file is part of Openflexo Software Infrastructure .
  *
  * OpenFlexo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,9 @@ import java.util.logging.Logger;
 
 public class testXMLModel {
 
-    protected static final Logger     logger = Logger.getLogger(testXMLModel.class.getPackage().getName());
+    protected static final Logger     logger        = Logger.getLogger(testXMLModel.class.getPackage().getName());
+
+    private static String             NAME_ATTR_URI = "name";
 
     private Map<String, testXMLIndiv> listIndiv;
 
@@ -42,15 +44,17 @@ public class testXMLModel {
     }
 
     public Object addNewIndividual(Type aType) {
-        logger.info("CREATE a NEW Individual");
-        testXMLIndiv indiv = new testXMLIndiv();
-        listIndiv.put(indiv.getUUID(), indiv);
-        return indiv;
+        if (aType instanceof testXMLType) {
+            testXMLIndiv indiv = new testXMLIndiv();
+            indiv.setType(aType);
+            listIndiv.put(indiv.getUUID(), indiv);
+            return indiv;
+        }
+        return null;
     }
 
     public void setRoot(IXMLIndividual<?, ?> anIndividual) {
 
-        logger.info("ROOT element is " + anIndividual.toString());
         root = (testXMLIndiv) anIndividual;
 
     }
@@ -73,11 +77,17 @@ public class testXMLModel {
     }
 
     public Type getTypeFromURI(String uri) {
-        return String.class;
+        Type aType = listType.get(uri);
+        if (aType == null) {
+            if (uri.equals(NAME_ATTR_URI)) {
+                listType.put(uri, String.class);
+                aType = String.class;
+            }
+            else {
+                aType = (testXMLType) new testXMLType(uri);
+                listType.put(uri, aType);
+            }
+        }
+        return aType;
     }
-
-    public Type createNewType(String uri, String localName, String qName) {
-        return Object.class;
-    }
-
 }

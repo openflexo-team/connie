@@ -58,11 +58,11 @@ public interface IFactory {
 
     public Object getInstanceOf(Type aType);
 
-    public boolean objectHasAttributeNamed(Object currentContainer, Type currentType, String localName);
+    public boolean objectHasAttributeNamed(Object object, Type attrType, String attrName);
 
     public void setAttributeValueForObject(Object object, String attrName, Object value);
 
-    public void addChildToObject(Object currentObject, Object currentContainer);
+    public void addChildToObject(Object child, Object container);
 
     // ***************************************************
     // Methods concerning deserialization

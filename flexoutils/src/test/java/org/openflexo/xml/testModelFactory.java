@@ -58,7 +58,16 @@ public class testModelFactory implements IFactory {
 
     @Override
     public Object getInstanceOf(Type aType) {
-        return model.addNewIndividual(aType);
+        if (aType instanceof testXMLType) {
+            testXMLIndiv _inst = (testXMLIndiv) model.addNewIndividual(aType);
+            // _inst.setName();
+            return (Object) _inst;
+        }
+        else {
+            // Fail Back to String
+            // Beware of memory Leaks!!!
+            return new String();
+        }
     }
 
     @Override
@@ -116,31 +125,50 @@ public class testModelFactory implements IFactory {
 
     @Override
     public void setContext(Object objectGraph) {
-        // TODO Auto-generated method stub
+        model = (testXMLModel) objectGraph;
 
     }
 
     @Override
     public void resetContext() {
-        // TODO Auto-generated method stub
-
+        model = null;
     }
 
     @Override
-    public boolean objectHasAttributeNamed(Object currentContainer, Type currentType, String localName) {
-        // TODO Auto-generated method stub
+    public boolean objectHasAttributeNamed(Object object, Type aType, String attrName) {
+        if (object instanceof testXMLIndiv) {
+
+            testXMLAttr attr = ((testXMLIndiv) object).getAttributeByName(attrName);
+
+            return (attr != null && attr.getAttributeType() == aType);
+        }
         return false;
     }
 
     @Override
     public void setAttributeValueForObject(Object object, String attrName, Object value) {
-        // TODO Auto-generated method stub
+        if (object instanceof testXMLIndiv) {
+            testXMLAttr attr = ((testXMLIndiv) object).getAttributeByName(attrName);
 
+            if (attr == null) {
+                attr = (testXMLAttr) ((testXMLIndiv) object).createAttribute(attrName, String.class, (String) value);
+            }
+            else {
+
+                attr.addValue(((testXMLIndiv) object), value);
+
+            }
+        }
+        else if (object instanceof String) {
+            ((String) object).concat((String) value);
+        }
     }
 
     @Override
     public void addChildToObject(Object currentObject, Object currentContainer) {
-        // TODO Auto-generated method stub
+        if (currentContainer instanceof testXMLIndiv) {
+            ((testXMLIndiv) currentContainer).addChild((IXMLIndividual<testXMLIndiv, testXMLAttr>) currentObject);
+        }
 
     }
 }

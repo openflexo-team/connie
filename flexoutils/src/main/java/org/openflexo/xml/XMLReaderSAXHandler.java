@@ -61,8 +61,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
         String NSPrefix = "p"; // default
 
-        System.out.println("NEW Element : " + localName);
-
         try {
 
             // Depending on the choices made when interpreting MetaModel, an XML
@@ -80,11 +78,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
             if (currentType != null) {
                 currentObject = (Object) factory.getInstanceOf(currentType);
 
-                System.out.println("CREATED Individual : " + currentObject);
-
-                // ((IXMLIndividual<Object, Object>)
-                // currentIndividual).setType(currentType);
-                currentObject = currentObject;
                 cdataBuffer.delete(0, cdataBuffer.length());
             }
 
@@ -102,8 +95,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
                     String attrName = attributes.getLocalName(i);
                     String attrURI = attributes.getURI(i);
                     NSPrefix = "p"; // default
-
-                    System.out.println("Processing Attribute : " + attrName);
 
                     if (attrQName != null && attrName != null && currentContainer == null) {
                         // we only set prefix if there is no other Root Element
@@ -209,6 +200,8 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
                 factory.addChildToObject(currentObject, currentContainer);
             }
         }
+
+        currentObject = currentContainer;
 
     }
 
