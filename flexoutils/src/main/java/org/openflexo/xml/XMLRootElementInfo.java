@@ -36,7 +36,7 @@ import javax.xml.parsers.SAXParserFactory;
  */
 public class XMLRootElementInfo {
 
-    protected static final Logger logger     = Logger.getLogger(testModelFactory.class.getPackage().getName());
+    protected static final Logger logger     = Logger.getLogger(XMLRootElementInfo.class.getPackage().getName());
 
     protected SAXParserFactory    factory    = null;
     protected SAXParser           saxParser  = null;
