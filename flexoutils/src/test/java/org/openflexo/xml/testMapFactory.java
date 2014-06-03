@@ -103,7 +103,7 @@ public class testMapFactory implements IObjectGraphFactory {
     }
 
     @Override
-    public void deserialize(String input) throws IOException {
+    public Object deserialize(String input) throws IOException {
         if (context != null) {
             try {
                 saxParser.parse(input, handler);
@@ -111,16 +111,17 @@ public class testMapFactory implements IObjectGraphFactory {
                 logger.warning("Cannot parse document: " + e.getMessage());
                 throw new IOException(e.getMessage());
             }
-            return;
+            return context;
 
         }
         else {
             logger.warning("Context is not set for parsing, aborting");
         }
+        return null;
     }
 
     @Override
-    public void deserialize(InputStream input) throws IOException {
+    public Object deserialize(InputStream input) throws IOException {
         if (context != null) {
             try {
                 saxParser.parse(input, handler);
@@ -128,12 +129,13 @@ public class testMapFactory implements IObjectGraphFactory {
                 logger.warning("Cannot parse document: " + e.getMessage());
                 throw new IOException(e.getMessage());
             }
-            return;
+            return context;
 
         }
         else {
             logger.warning("Context is not set for parsing, aborting");
         }
+        return null;
     }
 
     @Override
