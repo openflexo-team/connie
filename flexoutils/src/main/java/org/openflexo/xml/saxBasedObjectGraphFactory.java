@@ -36,7 +36,7 @@ import org.openflexo.IObjectGraphFactory;
  */
 public abstract class saxBasedObjectGraphFactory implements IObjectGraphFactory {
 
-    protected static final Logger logger    = Logger.getLogger(testModelFactory.class.getPackage().getName());
+    protected static final Logger logger    = Logger.getLogger(saxBasedObjectGraphFactory.class.getPackage().getName());
 
     protected SAXParserFactory    factory   = null;
     protected SAXParser           saxParser = null;
