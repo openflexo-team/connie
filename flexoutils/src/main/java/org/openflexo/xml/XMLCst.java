@@ -23,7 +23,7 @@ package org.openflexo.xml;
 final public class XMLCst {
     // Constants
 
-    static final String CDATA_TYPE_NAME = "CDATA";
-    static final String CDATA_ATTR_NAME = "PCDATA";
+    static final String        CDATA_TYPE_NAME = "CDATA";
+    public static final String CDATA_ATTR_NAME = "PCDATA";
 
 }
