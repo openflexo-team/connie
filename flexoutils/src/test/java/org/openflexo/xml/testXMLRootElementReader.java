@@ -50,7 +50,6 @@ public class testXMLRootElementReader extends TestCase {
         assertNotNull(result);
         assertEquals(result.getName(), "Library");
 
-        System.out.println(result);
     }
 
     @Test
@@ -71,7 +70,6 @@ public class testXMLRootElementReader extends TestCase {
         assertNotNull(result);
         assertEquals(result.getName(), "Library");
 
-        System.out.println(result);
     }
 
     @Test
@@ -91,8 +89,6 @@ public class testXMLRootElementReader extends TestCase {
 
         assertNotNull(result);
         assertEquals(result.getName(), "Library");
-
-        System.out.println(result);
     }
 
     @Test
@@ -113,7 +109,6 @@ public class testXMLRootElementReader extends TestCase {
         assertNotNull(result);
         assertEquals(result.getName(), "Library");
 
-        System.out.println(result);
     }
 
     @Test
@@ -133,6 +128,24 @@ public class testXMLRootElementReader extends TestCase {
         assertNotNull(result);
         assertEquals(result.getName(), "Map");
 
-        System.out.println(result);
+    }
+
+    @Test
+    public void testVPParsing() {
+
+        Resource rsc = ResourceLocator.locateResource("testXML/SampleUML.xml");
+        assertNotNull(rsc);
+        XMLRootElementInfo result = null;
+
+        try {
+            result = reader.readRootElement(rsc);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        assertNotNull(result);
+        assertEquals(result.getName(), "ViewPoint");
+
     }
 }

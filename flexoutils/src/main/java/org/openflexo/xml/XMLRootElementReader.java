@@ -108,14 +108,6 @@ public class XMLRootElementReader {
         private XMLRootElementInfo _info;
 
         @Override
-        public void processingInstruction(String target, String data) throws SAXException {
-
-            System.out.println(target + " --  " + data);
-            // super.processingInstruction(target, data);
-
-        }
-
-        @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
             String NSPrefix = "xmlns:p"; // default
