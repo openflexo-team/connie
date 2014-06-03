@@ -78,8 +78,8 @@ public interface IObjectGraphFactory {
     // ***************************************************
     // Methods concerning deserialization
 
-    public void deserialize(String input) throws IOException;
+    public Object deserialize(String input) throws IOException;
 
-    public void deserialize(InputStream input) throws IOException;
+    public Object deserialize(InputStream input) throws IOException;
 
 }
