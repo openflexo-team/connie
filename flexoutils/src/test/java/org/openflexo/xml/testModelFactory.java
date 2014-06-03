@@ -24,40 +24,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.logging.Logger;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.openflexo.IObjectGraphFactory;
 import org.xml.sax.SAXException;
 
-public class testModelFactory implements IObjectGraphFactory {
-
-    protected static final Logger        logger           = Logger.getLogger(testModelFactory.class.getPackage().getName());
-
-    protected SAXParserFactory           factory          = null;
-    protected SAXParser                  saxParser        = null;
-    protected XMLReaderSAXHandler        handler          = null;
+public class testModelFactory extends saxBasedObjectGraphFactory {
 
     private testXMLModel                 model            = null;
 
     private testXMLModel.StringAttribute attrStringBuffer = null;
-
-    testModelFactory() {
-        factory = SAXParserFactory.newInstance();
-        factory.setNamespaceAware(true);
-        factory.setXIncludeAware(true);
-        handler = new XMLReaderSAXHandler(this);
-
-        try {
-            factory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-            saxParser = factory.newSAXParser();
-
-        } catch (Exception e) {
-            logger.warning("Cannot create PARSER: " + e.getMessage());
-        }
-    }
 
     @Override
     public Object getInstanceOf(Type aType, String name) {

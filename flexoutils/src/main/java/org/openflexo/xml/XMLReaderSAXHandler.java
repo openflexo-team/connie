@@ -53,7 +53,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
     private final Stack<Object>   indivStack             = new Stack<Object>();
 
-    private IObjectGraphFactory              factory                = null;
+    private IObjectGraphFactory   factory                = null;
 
     public XMLReaderSAXHandler(IObjectGraphFactory aFactory) {
         super();
@@ -100,7 +100,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
                     if (attrQName != null && attrName != null && currentContainer == null) {
                         // we only set prefix if there is no other Root Element
                         NSPrefix = attrQName;
-                        NSPrefix.replace(attrName, "");
+                        NSPrefix.replace(attrName, "").replace(":", "");
                     }
 
                     if (typeName.equals(XMLCst.CDATA_TYPE_NAME)) {
