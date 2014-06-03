@@ -402,13 +402,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				JavaPropertyPathElement propertyPathElement = (JavaPropertyPathElement) pathElement;
 				KeyValueProperty kvProperty = propertyPathElement.getKeyValueProperty();
 				Method m = kvProperty.getGetMethod();
-				if (m.getAnnotation(NotificationUnsafe.class) != null) {
+				if (m != null && m.getAnnotation(NotificationUnsafe.class) != null) {
 					return false;
 				}
 			} else if (pathElement instanceof JavaMethodPathElement) {
 				JavaMethodPathElement methodPathElement = (JavaMethodPathElement) pathElement;
 				Method m = methodPathElement.getMethodDefinition().getMethod();
-				if (m.getAnnotation(NotificationUnsafe.class) != null) {
+				if (m != null && m.getAnnotation(NotificationUnsafe.class) != null) {
 					return false;
 				}
 			}
