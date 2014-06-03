@@ -75,10 +75,11 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		refreshObserving(false);
 	}
 
-	private synchronized void refreshObserving(boolean debug) {
+	protected synchronized void refreshObserving(boolean debug) {
 
-		/*if (dataBinding.toString().equals("data.rootObject")) {
+		/*if (dataBinding.toString().equals("iterator.name")) {
 			debug = true;
+			Thread.dumpStack();
 		}*/
 
 		if (debug) {
@@ -232,6 +233,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	protected void fireChange(Object source) {
 		T newValue;
 		try {
+			dataBinding.clearCacheForBindingEvaluationContext(context);
 			newValue = evaluateValue();
 		} catch (NullReferenceException e) {
 			logger.warning("Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
