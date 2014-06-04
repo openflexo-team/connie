@@ -125,11 +125,10 @@ public class JavaBindingFactory implements BindingFactory {
 		} else if (possiblyMatchingMethods.size() == 1) {
 			return MethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
 		} else {
-			logger.warning("Cannot find method named " + functionName + " with args=" + args + "(" + args.size() + ") for type "
-					+ parentType);
-			// Thread.dumpStack();
+			// We dont log it inconditionnaly, because this may happen (while for example inspectors are merged)
+			// logger.warning("Cannot find method named " + functionName + " with args=" + args + "(" + args.size() + ") for type "
+			// + parentType);
 			return null;
 		}
 	}
-
 }
