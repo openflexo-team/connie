@@ -19,8 +19,11 @@
  */
 package org.openflexo.antar.binding;
 
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.Vector;
+
+import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
  * A binding model represents a set of BindingVariable, which are variables accessible in the context of which this binding model is
@@ -29,10 +32,14 @@ import java.util.Vector;
  * @author sguerin
  * 
  */
-public class BindingModel {
+public class BindingModel implements HasPropertyChangeSupport {
 
-	private List<BindingVariable> _bindingVariables;
+	private final List<BindingVariable> _bindingVariables;
 	private final BindingModel mainBindingModel;
+
+	public static final String BINDING_VARIABLE = "bindingVariable";
+
+	private final PropertyChangeSupport pcSupport;
 
 	public BindingModel() {
 		this(null);
@@ -41,6 +48,18 @@ public class BindingModel {
 	public BindingModel(BindingModel mainBindingModel) {
 		_bindingVariables = new Vector<BindingVariable>();
 		this.mainBindingModel = mainBindingModel;
+		pcSupport = new PropertyChangeSupport(this);
+	}
+
+	@Override
+	public String getDeletedProperty() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PropertyChangeSupport getPropertyChangeSupport() {
+		return pcSupport;
 	}
 
 	public void clear() {
@@ -61,10 +80,12 @@ public class BindingModel {
 
 	public void addToBindingVariables(BindingVariable variable) {
 		_bindingVariables.add(variable);
+		pcSupport.firePropertyChange(BINDING_VARIABLE, null, variable);
 	}
 
 	public void removeFromBindingVariables(BindingVariable variable) {
 		_bindingVariables.remove(variable);
+		pcSupport.firePropertyChange(BINDING_VARIABLE, variable, null);
 	}
 
 	public BindingVariable bindingVariableNamed(String variableName) {
