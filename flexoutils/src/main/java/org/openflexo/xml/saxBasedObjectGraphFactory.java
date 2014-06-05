@@ -42,7 +42,7 @@ public abstract class saxBasedObjectGraphFactory implements IObjectGraphFactory 
     protected SAXParser           saxParser = null;
     protected XMLReaderSAXHandler handler   = null;
 
-    saxBasedObjectGraphFactory() {
+    public saxBasedObjectGraphFactory() {
         factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setXIncludeAware(true);
