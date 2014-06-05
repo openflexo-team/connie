@@ -65,6 +65,18 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
         String NSPrefix = "p"; // default
 
+        // ************************************
+        // Current element is not contained => root node, set NameSpace
+        if (currentContainer == null) {
+            if (uri != null && !uri.isEmpty()) {
+                List<String> namespace = new ArrayList<String>();
+                namespace.add(uri);
+                namespace.add(NSPrefix);
+                factory.setContextProperty(NAMESPACE_Property, namespace);
+            }
+
+        }
+
         try {
 
             if (uri.length() == 0) {
@@ -118,13 +130,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
                 // Current element is not contained in another one, it is root!
                 if (currentContainer == null) {
                     factory.addToRootNodes((Object) currentObject);
-                    if (uri != null && !uri.isEmpty()) {
-                        List<String> namespace = new ArrayList<String>();
-                        namespace.add(uri);
-                        namespace.add(NSPrefix);
-                        factory.setContextProperty(NAMESPACE_Property, namespace);
-                    }
-
                 }
 
                 if (currentContainer != null) {
