@@ -117,17 +117,17 @@ public class testModelFactory extends saxBasedObjectGraphFactory {
     }
 
     @Override
-    public boolean objectHasAttributeNamed(Object object, Type aType, String attrName) {
+    public boolean objectHasAttributeNamed(Object object, String attrName) {
         if (object instanceof testXMLIndiv) {
 
             testXMLAttr attr = ((testXMLIndiv) object).getAttributeByName(attrName);
-
-            if (aType == testXMLModel.StringAttribute.class) {
-                return true;
-            }
-            else {
-                return (attr != null && attr.getAttributeType() == aType);
-            }
+            /*
+                        if (aType == testXMLModel.StringAttribute.class) {
+                            return true;
+                        }
+                        else {*/
+            return (attr != null);
+            // }
         }
         return false;
     }
@@ -158,5 +158,10 @@ public class testModelFactory extends saxBasedObjectGraphFactory {
             ((testXMLIndiv) currentContainer).addChild((IXMLIndividual<testXMLIndiv, testXMLAttr>) currentObject);
         }
 
+    }
+
+    @Override
+    public Type getAttributeType(Object currentContainer, String localName) {
+        return testXMLModel.StringAttribute.class;
     }
 }

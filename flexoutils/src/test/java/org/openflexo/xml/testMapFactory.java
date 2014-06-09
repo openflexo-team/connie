@@ -64,9 +64,13 @@ public class testMapFactory implements IObjectGraphFactory {
         }
     }
 
-    private class NodeBuffer {
+    private class NodeBuffer implements IXMLType {
         public String  value;
         public Integer key;
+
+        public String getURI() {
+            return "NodeBuffer";
+        }
     }
 
     @Override
@@ -176,7 +180,7 @@ public class testMapFactory implements IObjectGraphFactory {
     }
 
     @Override
-    public boolean objectHasAttributeNamed(Object object, Type currentType, String localName) {
+    public boolean objectHasAttributeNamed(Object object, String localName) {
         if (object instanceof testMapModel) {
             return localName.equals(NODE_TAG);
         }
@@ -188,5 +192,14 @@ public class testMapFactory implements IObjectGraphFactory {
         logger.warning("This method is irrelevant in this context");
         return;
 
+    }
+
+    @Override
+    public Type getAttributeType(Object currentContainer, String localName) {
+        if (localName.equals(NODE_TAG)) {
+            return testMapModel.class;
+        }
+        else
+            return String.class;
     }
 }

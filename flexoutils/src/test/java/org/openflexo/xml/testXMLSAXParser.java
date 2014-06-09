@@ -72,7 +72,8 @@ public class testXMLSAXParser extends TestCase {
             modelFactory.deserialize(in);
             in.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -97,7 +98,8 @@ public class testXMLSAXParser extends TestCase {
             modelFactory.deserialize(in);
             in.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -121,7 +123,8 @@ public class testXMLSAXParser extends TestCase {
             modelFactory.deserialize(in);
             in.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -146,7 +149,8 @@ public class testXMLSAXParser extends TestCase {
             modelFactory.deserialize(in);
             in.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -172,14 +176,18 @@ public class testXMLSAXParser extends TestCase {
             mapFactory.deserialize(in);
             in.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         assertEquals(model.getValues().size(), 4);
         assertEquals(model.getName(), "lapin");
 
-        // System.out.println(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+        // System.out.println(Runtime.getRuntime().totalMemory() -
+        // Runtime.getRuntime().freeMemory());
+
+        System.out.println("MAP: " + model.getValues());
 
         mapFactory.resetContext();
 

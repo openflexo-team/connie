@@ -76,6 +76,9 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
             }
 
         }
+        if (indivStack.isEmpty()) {
+            currentContainer = null;
+        }
 
         try {
 
@@ -84,10 +87,22 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
                 currentType = factory.getTypeFromURI(localName);
             }
             else {
-                currentType = factory.getTypeFromURI(uri + "#" + localName);
+                if (currentContainer != null) {
+                    // find if there is an object property corresponding
+                    if (factory.objectHasAttributeNamed(currentContainer, localName)) {
+                        currentType = factory.getAttributeType(currentContainer, localName);
+                    }
+                    else {
+                        currentType = factory.getTypeFromURI(uri + "#" + localName);
+
+                    }
+                }
+                else {
+                    currentType = factory.getTypeFromURI(uri + "#" + localName);
+                }
             }
 
-            // creates individual
+            // creates individual if it is a complex Type
             if (currentType != null) {
                 currentObject = (Object) factory.getInstanceOf(currentType, localName);
 
@@ -128,12 +143,12 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
                 // ************************************
                 // Current element is not contained in another one, it is root!
-                if (currentContainer == null) {
+                if (currentContainer == null && currentObject != null) {
                     factory.addToRootNodes((Object) currentObject);
                 }
 
-                if (currentContainer != null) {
-                    indivStack.push(currentContainer);
+                if (currentObject != null) {
+                    indivStack.push(currentObject);
                 }
                 currentContainer = currentObject;
 
@@ -152,7 +167,10 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
         // node stack management
 
         if (!indivStack.isEmpty()) {
-            currentContainer = indivStack.pop();
+            currentObject = indivStack.pop();
+        }
+        if (!indivStack.isEmpty()) {
+            currentContainer = indivStack.lastElement();
         }
         else {
             currentContainer = null;
@@ -173,6 +191,8 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
         if (str.length() > 0) {
 
             factory.addAttributeValueForObject(currentObject, XMLCst.CDATA_ATTR_NAME, str);
+            // factory.addAttributeValueForObject(currentObject, localName,
+            // str);
             cdataBuffer.delete(0, cdataBuffer.length());
         }
 
@@ -181,7 +201,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
         if (currentContainer != null && currentContainer != currentObject) {
 
-            if (factory.objectHasAttributeNamed(currentContainer, currentType, localName)) {
+            if (factory.objectHasAttributeNamed(currentContainer, localName)) {
                 factory.addAttributeValueForObject(currentContainer, localName, currentObject);
 
             }
@@ -189,8 +209,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
                 factory.addChildToObject(currentObject, currentContainer);
             }
         }
-
-        currentObject = currentContainer;
 
     }
 

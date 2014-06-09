@@ -69,7 +69,12 @@ public interface IObjectGraphFactory {
 
     public Object getInstanceOf(Type aType, String name);
 
-    public boolean objectHasAttributeNamed(Object object, Type attrType, String attrName);
+    //
+    // public boolean objectHasAttributeNamed(Object object, Type attrType,
+    // String attrName);
+    public boolean objectHasAttributeNamed(Object object, String attrName);
+
+    public Type getAttributeType(Object currentContainer, String localName);
 
     public void addAttributeValueForObject(Object object, String attrName, Object value);
 
@@ -78,8 +83,8 @@ public interface IObjectGraphFactory {
     // ***************************************************
     // Methods concerning deserialization
 
-    public Object deserialize(String input) throws IOException;
+    public Object deserialize(String input) throws Exception, IOException;
 
-    public Object deserialize(InputStream input) throws IOException;
+    public Object deserialize(InputStream input) throws Exception, IOException;
 
 }
