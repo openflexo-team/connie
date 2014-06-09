@@ -40,20 +40,19 @@ import org.xml.sax.ext.DefaultHandler2;
 
 public class XMLReaderSAXHandler extends DefaultHandler2 {
 
-    protected static final Logger logger                 = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
+    protected static final Logger logger             = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
 
-    public static final String    NAMESPACE_Property     = "Namespace";
+    public static final String    NAMESPACE_Property = "Namespace";
 
-    private Object                currentContainer       = null;
-    private Object                currentObject          = null;
-    private Boolean               isAttributeOfContainer = false;
-    private Type                  currentType            = null;
+    private Object                currentContainer   = null;
+    private Object                currentObject      = null;
+    private Type                  currentType        = null;
 
-    private final StringBuffer    cdataBuffer            = new StringBuffer();
+    private final StringBuffer    cdataBuffer        = new StringBuffer();
 
-    private final Stack<Object>   indivStack             = new Stack<Object>();
+    private final Stack<Object>   indivStack         = new Stack<Object>();
 
-    private IObjectGraphFactory   factory                = null;
+    private IObjectGraphFactory   factory            = null;
 
     public XMLReaderSAXHandler(IObjectGraphFactory aFactory) {
         super();
@@ -164,51 +163,70 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
     @SuppressWarnings("unchecked")
     public void endElement(String uri, String localName, String qName) throws SAXException {
 
-        // node stack management
+        boolean isAttribute = false;
 
-        if (!indivStack.isEmpty()) {
-            currentObject = indivStack.pop();
+        if (currentContainer != null) {
+            isAttribute = factory.objectHasAttributeNamed(currentContainer, localName);
         }
-        if (!indivStack.isEmpty()) {
-            currentContainer = indivStack.lastElement();
-        }
-        else {
-            currentContainer = null;
-        }
-
-        // Allocation of CDATA information depends on the type of entity we have
-        // to allocate
-        // content to (Individual or Attribute)
-        // As such, it depends on the interpretation that has been done of XSD
-        // MetaModel
-        //
-        // Same stands for individuals to be allocated to ObjectProperties
 
         // CDATA allocation
 
         String str = cdataBuffer.toString().trim();
 
-        if (str.length() > 0) {
-
-            factory.addAttributeValueForObject(currentObject, XMLCst.CDATA_ATTR_NAME, str);
-            // factory.addAttributeValueForObject(currentObject, localName,
-            // str);
-            cdataBuffer.delete(0, cdataBuffer.length());
+        // Element is a simple attribute of current container => only allocate
+        // String
+        if (isAttribute && currentObject == null) {
+            currentObject = currentContainer;
+            if (str.length() > 0) {
+                factory.addAttributeValueForObject(currentObject, localName, str);
+                cdataBuffer.delete(0, cdataBuffer.length());
+            }
         }
+        else {
+            currentObject = indivStack.pop();
 
-        // ************************************
-        // Current element is contained in another one
+            // node stack management
 
-        if (currentContainer != null && currentContainer != currentObject) {
-
-            if (factory.objectHasAttributeNamed(currentContainer, localName)) {
-                factory.addAttributeValueForObject(currentContainer, localName, currentObject);
-
+            if (!indivStack.isEmpty()) {
+                currentContainer = indivStack.lastElement();
             }
             else {
-                factory.addChildToObject(currentObject, currentContainer);
+                currentContainer = null;
+            }
+
+            isAttribute = factory.objectHasAttributeNamed(currentContainer, localName);
+
+            // Allocation of CDATA information depends on the type of entity we
+            // have
+            // to allocate
+            // content to (Individual or Attribute)
+            // As such, it depends on the interpretation that has been done of
+            // XSD
+            // MetaModel
+            //
+            // Same stands for individuals to be allocated to ObjectProperties
+
+            if (str.length() > 0) {
+                factory.addAttributeValueForObject(currentObject, XMLCst.CDATA_ATTR_NAME, str);
+                cdataBuffer.delete(0, cdataBuffer.length());
+            }
+
+            // ************************************
+            // Current element is contained in another one
+
+            if (currentContainer != null && currentContainer != currentObject) {
+
+                if (isAttribute) {
+                    factory.addAttributeValueForObject(currentContainer, localName, currentObject);
+
+                }
+                else {
+                    factory.addChildToObject(currentObject, currentContainer);
+                }
             }
         }
+
+        currentObject = currentContainer;
 
     }
 
