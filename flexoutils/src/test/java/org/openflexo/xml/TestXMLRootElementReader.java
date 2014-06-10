@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 
-public class testXMLRootElementReader extends TestCase {
+public class TestXMLRootElementReader extends TestCase {
 
     protected static XMLRootElementReader reader = new XMLRootElementReader();
 

@@ -24,33 +24,33 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class testXMLType implements Type, IXMLType {
+public class XMLType implements Type, IXMLType {
 
     private static final Object NAME_ATTR = "name";
 
     private String              _uri      = null;
 
-    Map<String, testXMLAttr>    attributeNames;
+    Map<String, XMLAttr>    attributeNames;
 
-    testXMLType(String uri) {
+    XMLType(String uri) {
         super();
         _uri = uri;
-        attributeNames = new HashMap<String, testXMLAttr>();
+        attributeNames = new HashMap<String, XMLAttr>();
     }
 
     public void createAttribute(String name) {
         if (!hasAttribute(name))
-            attributeNames.put(name, new testXMLAttr(name));
+            attributeNames.put(name, new XMLAttr(name));
     }
 
     public Boolean hasAttribute(String name) {
         return attributeNames.containsKey(name);
     }
 
-    public testXMLAttr getAttributeByName(String name) {
-        testXMLAttr attr = attributeNames.get(name);
+    public XMLAttr getAttributeByName(String name) {
+        XMLAttr attr = attributeNames.get(name);
         if (attr == null && name.equals(NAME_ATTR)) {
-            attr = new testXMLAttr(name);
+            attr = new XMLAttr(name);
             attributeNames.put(name, attr);
         }
         return attr;

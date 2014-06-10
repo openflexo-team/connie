@@ -25,28 +25,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class testXMLModel {
+public class XMLModel {
 
-    protected static final Logger     logger        = Logger.getLogger(testXMLModel.class.getPackage().getName());
+    protected static final Logger     logger        = Logger.getLogger(XMLModel.class.getPackage().getName());
 
     private static String             NAME_ATTR     = "name";
     private static String             NAME_ATTR_URI = "http://www.example.org/Library#name";
 
-    private Map<String, testXMLIndiv> listIndiv;
+    private Map<String, XMLIndiv> listIndiv;
 
     private Map<String, Type>         listType;
 
-    private testXMLIndiv              root;
+    private XMLIndiv              root;
 
-    public testXMLModel() {
-        listIndiv = new HashMap<String, testXMLIndiv>();
+    public XMLModel() {
+        listIndiv = new HashMap<String, XMLIndiv>();
         listType = new HashMap<String, Type>();
         root = null;
     }
 
     public Object addNewIndividual(Type aType) {
-        if (aType instanceof testXMLType) {
-            testXMLIndiv indiv = new testXMLIndiv();
+        if (aType instanceof XMLType) {
+            XMLIndiv indiv = new XMLIndiv();
             indiv.setType(aType);
             listIndiv.put(indiv.getUUID(), indiv);
             return indiv;
@@ -56,7 +56,7 @@ public class testXMLModel {
 
     public void setRoot(IXMLIndividual<?, ?> anIndividual) {
 
-        root = (testXMLIndiv) anIndividual;
+        root = (XMLIndiv) anIndividual;
 
     }
 
@@ -86,7 +86,7 @@ public class testXMLModel {
                 aType = StringAttribute.class;
             }
             else {
-                aType = (testXMLType) new testXMLType(uri);
+                aType = (XMLType) new XMLType(uri);
                 listType.put(uri, aType);
             }
         }

@@ -22,11 +22,11 @@ package org.openflexo.xml;
 
 import java.lang.reflect.Type;
 
-public class testXMLAttr implements IXMLAttribute {
+public class XMLAttr implements IXMLAttribute {
 
     private String _name = null;
 
-    testXMLAttr(String name) {
+    XMLAttr(String name) {
         super();
         _name = name;
     }
@@ -43,7 +43,7 @@ public class testXMLAttr implements IXMLAttribute {
 
     @Override
     public void addValue(IXMLIndividual<?, ?> indiv, Object value) {
-        ((testXMLIndiv) indiv).setAttributeValue(this, value);
+        ((XMLIndiv) indiv).setAttributeValue(this, value);
     }
 
     @Override

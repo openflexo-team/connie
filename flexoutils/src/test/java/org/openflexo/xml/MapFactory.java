@@ -31,15 +31,15 @@ import javax.xml.parsers.SAXParserFactory;
 import org.openflexo.IObjectGraphFactory;
 import org.xml.sax.SAXException;
 
-public class testMapFactory implements IObjectGraphFactory {
+public class MapFactory implements IObjectGraphFactory {
 
-    private static final Logger logger    = Logger.getLogger(testModelFactory.class.getPackage().getName());
+    private static final Logger logger    = Logger.getLogger(ModelFactory.class.getPackage().getName());
 
     private SAXParserFactory    factory   = null;
     private SAXParser           saxParser = null;
     private XMLReaderSAXHandler handler   = null;
 
-    private testMapModel        context   = null;
+    private MapModel        context   = null;
 
     private NodeBuffer          _node     = null;
 
@@ -48,7 +48,7 @@ public class testMapFactory implements IObjectGraphFactory {
     private static String       KEY_ATTR  = "key";
     private static String       NAME_ATTR = "name";
 
-    testMapFactory() {
+    MapFactory() {
         factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setXIncludeAware(true);
@@ -75,7 +75,7 @@ public class testMapFactory implements IObjectGraphFactory {
 
     @Override
     public Object getInstanceOf(Type aType, String name) {
-        if (aType == testMapModel.class) {
+        if (aType == MapModel.class) {
             return context;
         }
         else if (aType == NodeBuffer.class) {
@@ -91,7 +91,7 @@ public class testMapFactory implements IObjectGraphFactory {
             return Integer.class;
         }
         else if (uri.equals(MAP_TAG)) {
-            return testMapModel.class;
+            return MapModel.class;
         }
         else if (uri.equals(NODE_TAG)) {
             return NodeBuffer.class;
@@ -149,7 +149,7 @@ public class testMapFactory implements IObjectGraphFactory {
 
     @Override
     public void setContext(Object objectGraph) {
-        context = (testMapModel) objectGraph;
+        context = (MapModel) objectGraph;
     }
 
     @Override
@@ -181,7 +181,7 @@ public class testMapFactory implements IObjectGraphFactory {
 
     @Override
     public boolean objectHasAttributeNamed(Object object, String localName) {
-        if (object instanceof testMapModel) {
+        if (object instanceof MapModel) {
             return localName.equals(NODE_TAG);
         }
         return false;
@@ -197,7 +197,7 @@ public class testMapFactory implements IObjectGraphFactory {
     @Override
     public Type getAttributeType(Object currentContainer, String localName) {
         if (localName.equals(NODE_TAG)) {
-            return testMapModel.class;
+            return MapModel.class;
         }
         else
             return String.class;

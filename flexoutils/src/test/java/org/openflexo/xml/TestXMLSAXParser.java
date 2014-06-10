@@ -30,25 +30,25 @@ import org.openflexo.IObjectGraphFactory;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 
-public class testXMLSAXParser extends TestCase {
+public class TestXMLSAXParser extends TestCase {
 
-    private void printXMLNode(testXMLIndiv node, String indent) {
+    private void printXMLNode(XMLIndiv node, String indent) {
         System.out.println(indent + "[N]" + node.getName());
 
-        for (testXMLAttr a : node.getAttributes()) {
+        for (XMLAttr a : node.getAttributes()) {
 
             System.out.println(indent + "-- " + a.getName() + " = " + node.getAttributeStringValue(a));
         }
 
-        for (testXMLIndiv n : node.getChildren()) {
+        for (XMLIndiv n : node.getChildren()) {
             printXMLNode(n, indent + "    ");
         }
 
     }
 
-    private void printXMLTree(testXMLModel model) {
+    private void printXMLTree(XMLModel model) {
 
-        testXMLIndiv root = (testXMLIndiv) model.getRoot();
+        XMLIndiv root = (XMLIndiv) model.getRoot();
 
         printXMLNode(root, "");
     }
@@ -59,10 +59,10 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_0.xml");
         assertNotNull(rsc);
 
-        IObjectGraphFactory modelFactory = new testModelFactory();
+        IObjectGraphFactory modelFactory = new ModelFactory();
         assertNotNull(modelFactory);
 
-        testXMLModel model = new testXMLModel();
+        XMLModel model = new XMLModel();
         assertNotNull(model);
 
         modelFactory.setContext(model);
@@ -85,10 +85,10 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_1.xml");
         assertNotNull(rsc);
 
-        IObjectGraphFactory modelFactory = new testModelFactory();
+        IObjectGraphFactory modelFactory = new ModelFactory();
         assertNotNull(modelFactory);
 
-        testXMLModel model = new testXMLModel();
+        XMLModel model = new XMLModel();
         assertNotNull(model);
 
         modelFactory.setContext(model);
@@ -110,10 +110,10 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_2.xml");
         assertNotNull(rsc);
 
-        IObjectGraphFactory modelFactory = new testModelFactory();
+        IObjectGraphFactory modelFactory = new ModelFactory();
         assertNotNull(modelFactory);
 
-        testXMLModel model = new testXMLModel();
+        XMLModel model = new XMLModel();
         assertNotNull(model);
 
         modelFactory.setContext(model);
@@ -136,10 +136,10 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/example_library_3.xml");
         assertNotNull(rsc);
 
-        IObjectGraphFactory modelFactory = new testModelFactory();
+        IObjectGraphFactory modelFactory = new ModelFactory();
         assertNotNull(modelFactory);
 
-        testXMLModel model = new testXMLModel();
+        XMLModel model = new XMLModel();
         assertNotNull(model);
 
         modelFactory.setContext(model);
@@ -163,10 +163,10 @@ public class testXMLSAXParser extends TestCase {
         Resource rsc = ResourceLocator.locateResource("testXML/MapTest.xml");
         assertNotNull(rsc);
 
-        IObjectGraphFactory mapFactory = new testMapFactory();
+        IObjectGraphFactory mapFactory = new MapFactory();
         assertNotNull(mapFactory);
 
-        testMapModel model = new testMapModel();
+        MapModel model = new MapModel();
         assertNotNull(model);
 
         mapFactory.setContext(model);

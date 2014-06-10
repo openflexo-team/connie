@@ -23,17 +23,17 @@ package org.openflexo.xml;
 import java.util.HashMap;
 import java.util.Map;
 
-public class testMapModel {
+public class MapModel {
 
     public String               name;
 
     public Map<Integer, String> aMap;
 
-    testMapModel() {
+    MapModel() {
         aMap = new HashMap<Integer, String>();
     }
 
-    testMapModel(String aName) {
+    MapModel(String aName) {
         name = aName;
         aMap = new HashMap<Integer, String>();
     }

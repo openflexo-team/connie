@@ -27,20 +27,20 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
-public class testModelFactory extends saxBasedObjectGraphFactory {
+public class ModelFactory extends saxBasedObjectGraphFactory {
 
-    private testXMLModel                 model            = null;
+    private XMLModel                 model            = null;
 
-    private testXMLModel.StringAttribute attrStringBuffer = null;
+    private XMLModel.StringAttribute attrStringBuffer = null;
 
     @Override
     public Object getInstanceOf(Type aType, String name) {
-        if (aType instanceof testXMLType) {
-            testXMLIndiv _inst = (testXMLIndiv) model.addNewIndividual(aType);
+        if (aType instanceof XMLType) {
+            XMLIndiv _inst = (XMLIndiv) model.addNewIndividual(aType);
             _inst.setName(name);
             return (Object) _inst;
         }
-        else if (aType == testXMLModel.StringAttribute.class) {
+        else if (aType == XMLModel.StringAttribute.class) {
             if (attrStringBuffer == null)
                 attrStringBuffer = model.new StringAttribute();
             return attrStringBuffer;
@@ -93,7 +93,7 @@ public class testModelFactory extends saxBasedObjectGraphFactory {
 
     @Override
     public void addToRootNodes(Object anObject) {
-        model.setRoot((testXMLIndiv) anObject);
+        model.setRoot((XMLIndiv) anObject);
     }
 
     @SuppressWarnings("unchecked")
@@ -107,7 +107,7 @@ public class testModelFactory extends saxBasedObjectGraphFactory {
 
     @Override
     public void setContext(Object objectGraph) {
-        model = (testXMLModel) objectGraph;
+        model = (XMLModel) objectGraph;
 
     }
 
@@ -118,9 +118,9 @@ public class testModelFactory extends saxBasedObjectGraphFactory {
 
     @Override
     public boolean objectHasAttributeNamed(Object object, String attrName) {
-        if (object instanceof testXMLIndiv) {
+        if (object instanceof XMLIndiv) {
 
-            testXMLAttr attr = ((testXMLIndiv) object).getAttributeByName(attrName);
+            XMLAttr attr = ((XMLIndiv) object).getAttributeByName(attrName);
             /*
                         if (aType == testXMLModel.StringAttribute.class) {
                             return true;
@@ -135,33 +135,33 @@ public class testModelFactory extends saxBasedObjectGraphFactory {
     @Override
     public void addAttributeValueForObject(Object object, String attrName, Object value) {
 
-        if (object instanceof testXMLIndiv) {
-            testXMLAttr attr = ((testXMLIndiv) object).getAttributeByName(attrName);
+        if (object instanceof XMLIndiv) {
+            XMLAttr attr = ((XMLIndiv) object).getAttributeByName(attrName);
 
             if (attr == null) {
-                attr = (testXMLAttr) ((testXMLIndiv) object).createAttribute(attrName, String.class, (String) value);
+                attr = (XMLAttr) ((XMLIndiv) object).createAttribute(attrName, String.class, (String) value);
             }
             else {
 
-                attr.addValue(((testXMLIndiv) object), value);
+                attr.addValue(((XMLIndiv) object), value);
 
             }
         }
-        else if (object instanceof testXMLModel.StringAttribute) {
-            ((testXMLModel.StringAttribute) object).setValue((String) value);
+        else if (object instanceof XMLModel.StringAttribute) {
+            ((XMLModel.StringAttribute) object).setValue((String) value);
         }
     }
 
     @Override
     public void addChildToObject(Object currentObject, Object currentContainer) {
-        if (currentContainer instanceof testXMLIndiv) {
-            ((testXMLIndiv) currentContainer).addChild((IXMLIndividual<testXMLIndiv, testXMLAttr>) currentObject);
+        if (currentContainer instanceof XMLIndiv) {
+            ((XMLIndiv) currentContainer).addChild((IXMLIndividual<XMLIndiv, XMLAttr>) currentObject);
         }
 
     }
 
     @Override
     public Type getAttributeType(Object currentContainer, String localName) {
-        return testXMLModel.StringAttribute.class;
+        return XMLModel.StringAttribute.class;
     }
 }

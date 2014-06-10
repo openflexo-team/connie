@@ -31,24 +31,24 @@ import java.util.UUID;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
+public class XMLIndiv implements IXMLIndividual<XMLIndiv, XMLAttr> {
 
     private String                   uuid;
 
     private static String            NAME_KEY        = "___The_NAME___";
 
-    private Map<testXMLAttr, Object> attributeValues = null;
-    private List<testXMLIndiv>       children        = null;
-    private testXMLIndiv             parent          = null;
+    private Map<XMLAttr, Object> attributeValues = null;
+    private List<XMLIndiv>       children        = null;
+    private XMLIndiv             parent          = null;
 
-    private testXMLType              type            = null;
+    private XMLType              type            = null;
 
     private String                   _name           = null;
 
-    public testXMLIndiv() {
+    public XMLIndiv() {
         uuid = UUID.randomUUID().toString();
-        attributeValues = new HashMap<testXMLAttr, Object>();
-        children = new ArrayList<testXMLIndiv>();
+        attributeValues = new HashMap<XMLAttr, Object>();
+        children = new ArrayList<XMLIndiv>();
     }
 
     @Override
@@ -74,24 +74,24 @@ public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
 
     @Override
     public Object getAttributeValue(String attributeName) {
-        testXMLAttr attr = ((testXMLType) getType()).getAttributeByName(attributeName);
+        XMLAttr attr = ((XMLType) getType()).getAttributeByName(attributeName);
         return attributeValues.get(attr);
     }
 
     @Override
-    public testXMLAttr getAttributeByName(String aName) {
+    public XMLAttr getAttributeByName(String aName) {
 
-        return ((testXMLType) getType()).getAttributeByName(aName);
+        return ((XMLType) getType()).getAttributeByName(aName);
     }
 
     @Override
-    public Collection<? extends testXMLAttr> getAttributes() {
+    public Collection<? extends XMLAttr> getAttributes() {
         return attributeValues.keySet();
     }
 
     @Override
     public Object createAttribute(String attrLName, Type aType, String value) {
-        testXMLAttr attr = new testXMLAttr(attrLName);
+        XMLAttr attr = new XMLAttr(attrLName);
         attr.addValue(this, value);
         return attr;
     }
@@ -102,22 +102,22 @@ public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
     }
 
     @Override
-    public void addChild(IXMLIndividual<testXMLIndiv, testXMLAttr> anIndividual) {
-        children.add((testXMLIndiv) anIndividual);
-        ((testXMLIndiv) anIndividual).setParent(this);
+    public void addChild(IXMLIndividual<XMLIndiv, XMLAttr> anIndividual) {
+        children.add((XMLIndiv) anIndividual);
+        ((XMLIndiv) anIndividual).setParent(this);
     }
 
     @Override
-    public List<testXMLIndiv> getChildren() {
+    public List<XMLIndiv> getChildren() {
         return children;
     }
 
-    public void setParent(testXMLIndiv container) {
+    public void setParent(XMLIndiv container) {
         parent = container;
     }
 
     @Override
-    public testXMLIndiv getParent() {
+    public XMLIndiv getParent() {
         return parent;
     }
 
@@ -128,7 +128,7 @@ public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
 
     @Override
     public void setType(Type myClass) {
-        type = (testXMLType) myClass;
+        type = (XMLType) myClass;
     }
 
     @Override
@@ -142,9 +142,9 @@ public class testXMLIndiv implements IXMLIndividual<testXMLIndiv, testXMLAttr> {
         return null;
     }
 
-    public void setAttributeValue(testXMLAttr attr, Object value) {
-        if (value instanceof testXMLModel.StringAttribute) {
-            this.attributeValues.put(attr, ((testXMLModel.StringAttribute) value).getValue());
+    public void setAttributeValue(XMLAttr attr, Object value) {
+        if (value instanceof XMLModel.StringAttribute) {
+            this.attributeValues.put(attr, ((XMLModel.StringAttribute) value).getValue());
         }
         else {
             this.attributeValues.put(attr, value);
