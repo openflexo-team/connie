@@ -77,7 +77,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 	protected synchronized void refreshObserving(boolean debug) {
 
-		/*if (dataBinding.toString().equals("iterator.name")) {
+		// Kept for future debug use
+		/*if (dataBinding.toString().equals("data.canUndo()")) {
 			debug = true;
 			Thread.dumpStack();
 		}*/
@@ -173,6 +174,13 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			}
 		}
 
+		if (debug) {
+			logger.info("-------------> dependingObjects:");
+			for (TargetObject o : dependingObjects) {
+				logger.info("> " + o.target.getClass().getSimpleName() + " / " + o.propertyName + "\n");
+			}
+		}
+
 	}
 
 	public synchronized void startObserving() {
@@ -225,6 +233,13 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
+
+		// Kept for future debug use
+		/*if (getDataBinding().toString().equals("data.canUndo()")) {
+			System.out.println("Received propertyChange with " + evt);
+			Thread.dumpStack();
+		}*/
+
 		if (!deleted) {
 			fireChange(evt.getSource());
 		}
