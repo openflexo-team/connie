@@ -20,6 +20,8 @@
 
 package org.openflexo.xml;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -48,7 +50,7 @@ public class XMLRootElementReader {
 
     private SAXParser             saxParser;
 
-    XMLRootElementReader() {
+    public XMLRootElementReader() {
         super();
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -76,15 +78,25 @@ public class XMLRootElementReader {
      */
     public XMLRootElementInfo readRootElement(Resource rsc) throws IOException {
 
-        XMLRootElementInfo info = new XMLRootElementInfo();
-
         InputStream input = rsc.openInputStream();
+        return readRootElement(input);
+    }
+
+    public XMLRootElementInfo readRootElement(File virtualModelFile) throws IOException {
+        InputStream input = new FileInputStream(virtualModelFile);
+        return readRootElement(input);
+    }
+
+    public XMLRootElementInfo readRootElement(InputStream input) throws IOException {
+
+        XMLRootElementInfo info = new XMLRootElementInfo();
 
         if (info != null && input != null) {
 
             try {
                 handler.setInfo(info);
                 saxParser.parse(input, handler);
+                input.close();
             } catch (stopParsingException e) {
                 // Stop the parser after parsing first element
             } catch (SAXException e) {
@@ -93,16 +105,24 @@ public class XMLRootElementReader {
             }
         }
         else {
-            logger.warning("Unable to parse root element for document: " + rsc);
+            logger.warning("Unable to parse root element for document");
         }
         return info;
 
     }
-
+    
+    
+    
+    
     public class stopParsingException extends SAXException {
         // an Exception used only to break parsing
     }
 
+    /**
+     * SAX handler used to only read the first XML tag
+     * @author xtof
+     *
+     */
     class LocalHandler extends DefaultHandler2 {
 
         private XMLRootElementInfo _info;
