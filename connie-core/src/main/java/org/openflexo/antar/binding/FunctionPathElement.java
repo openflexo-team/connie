@@ -1,7 +1,6 @@
 package org.openflexo.antar.binding;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
@@ -20,10 +19,10 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 
 	private static final Logger logger = Logger.getLogger(FunctionPathElement.class.getPackage().getName());
 
-	private BindingPathElement parent;
-	private Function function;
+	private final BindingPathElement parent;
+	private final Function function;
 	private Type type;
-	private HashMap<Function.FunctionArgument, DataBinding<?>> parameters;
+	private final HashMap<Function.FunctionArgument, DataBinding<?>> parameters;
 
 	public FunctionPathElement(BindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
 		this.parent = parent;
@@ -108,8 +107,8 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		return false;
 	}
 
-	public Collection<FunctionArgument> getArguments() {
-		return parameters.keySet();
+	public List<? extends FunctionArgument> getArguments() {
+		return function.getArguments();
 	}
 
 	public DataBinding<?> getParameter(Function.FunctionArgument argument) {
@@ -120,19 +119,6 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		serializationRepresentation = null;
 		// System.out.println("setParameter " + argument + " for " + this + " with " + value);
 		parameters.put(argument, value);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof FunctionPathElement) {
-			return getSerializationRepresentation().equals(((FunctionPathElement) obj).getSerializationRepresentation());
-		}
-		return super.equals(obj);
-	}
-
-	@Override
-	public int hashCode() {
-		return getSerializationRepresentation().hashCode();
 	}
 
 	@Override
