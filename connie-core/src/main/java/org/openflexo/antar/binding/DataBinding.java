@@ -101,7 +101,6 @@ public class DataBinding<T> extends Observable {
 	// We assume here that the type model is not dynamic, only BindingVariable name and type changing are notified
 	// If type model is not dynamic, use setCacheable(false)
 	private boolean wasValid = false;
-	// private boolean cacheable = true;
 	private BindingModel bindingModelOnWhichValidityWasTested = null;
 	private String invalidBindingReason;
 
@@ -310,7 +309,9 @@ public class DataBinding<T> extends Observable {
 	}
 
 	/**
-	 * Called when the typing model has changed
+	 * Explicitely called when a structural modification of data occurs, and when the validity status of the {@link DataBinding} might have
+	 * changed<br>
+	 * Calling this method will force the next call of isValid() to force recompute the {@link DataBinding} validity status and message
 	 */
 	public void markedAsToBeReanalized() {
 		bindingModelOnWhichValidityWasTested = null;
@@ -349,7 +350,7 @@ public class DataBinding<T> extends Observable {
 			return false;
 		}
 
-		if (/*cacheable &&*/wasValid && getOwner().getBindingModel() == bindingModelOnWhichValidityWasTested) {
+		if (wasValid && getOwner().getBindingModel() == bindingModelOnWhichValidityWasTested) {
 			// Use cache info to test DataBinding validity
 			return true;
 		}
@@ -612,7 +613,8 @@ public class DataBinding<T> extends Observable {
 		getOwner().notifiedBindingDecoded(this);
 	}
 
-	@Override
+	// DONT DO THIS, since it is really dangerous !!!
+	/*@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof DataBinding) {
 			if (toString() == null) {
@@ -622,7 +624,7 @@ public class DataBinding<T> extends Observable {
 		} else {
 			return super.equals(obj);
 		}
-	}
+	}*/
 
 	private final Map<BindingEvaluationContext, T> cachedValues = new HashMap<BindingEvaluationContext, T>();
 	private final Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = new HashMap<BindingEvaluationContext, BindingValueChangeListener<T>>();
