@@ -199,8 +199,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// logger.info("setBindingPathElementAtIndex " + element + " index=" +
 		// i);
 
-		System.out.println("setBindingPathElementAtIndex " + element + " index=" + i);
-
 		if (i < bindingPath.size() && bindingPath.get(i) == element) {
 			return;
 		}
@@ -227,16 +225,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// We need to update parsed binding path
 
 		updateParsedBindingPathFromBindingPath();
-
-		/*if (analysingSuccessfull) {
-			parsedBindingPath.clear();
-		}*/
-
-		System.out.println("Bon, j'ai ca: " + this);
-		System.out.println(">> " + getBindingVariable());
-		for (BindingPathElement e : bindingPath) {
-			System.out.println(" > " + e);
-		}
 	}
 
 	public void updateParsedBindingPathFromBindingPath() {
