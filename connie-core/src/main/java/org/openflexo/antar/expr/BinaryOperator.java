@@ -35,11 +35,11 @@ public abstract class BinaryOperator extends Operator {
 	public abstract EvaluationType getEvaluationType(EvaluationType leftOperandType, EvaluationType rightOperandType)
 			throws TypeMismatchException;
 
-	public Expression evaluate(Expression leftArg, Constant rightArg) throws TypeMismatchException {
+	public Expression evaluate(Expression leftArg, Constant rightArg) throws TypeMismatchException, NullReferenceException {
 		return new BinaryOperatorExpression(this, leftArg, rightArg);
 	}
 
-	public Expression evaluate(Constant leftArg, Expression rightArg) throws TypeMismatchException {
+	public Expression evaluate(Constant leftArg, Expression rightArg) throws TypeMismatchException, NullReferenceException {
 		return new BinaryOperatorExpression(this, leftArg, rightArg);
 	}
 

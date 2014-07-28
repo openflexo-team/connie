@@ -59,7 +59,7 @@ public abstract class BooleanBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Expression evaluate(Expression leftArg, Constant rightArg) throws TypeMismatchException {
+		public Expression evaluate(Expression leftArg, Constant rightArg) throws TypeMismatchException, NullReferenceException {
 			if (rightArg == BooleanConstant.FALSE) {
 				return BooleanConstant.FALSE;
 			}
@@ -70,7 +70,7 @@ public abstract class BooleanBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Expression evaluate(Constant leftArg, Expression rightArg) throws TypeMismatchException {
+		public Expression evaluate(Constant leftArg, Expression rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg == BooleanConstant.FALSE) {
 				return BooleanConstant.FALSE;
 			}
@@ -110,7 +110,7 @@ public abstract class BooleanBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Expression evaluate(Expression leftArg, Constant rightArg) throws TypeMismatchException {
+		public Expression evaluate(Expression leftArg, Constant rightArg) throws TypeMismatchException, NullReferenceException {
 			if (rightArg == BooleanConstant.FALSE) {
 				return leftArg;
 			}
@@ -121,7 +121,7 @@ public abstract class BooleanBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Expression evaluate(Constant leftArg, Expression rightArg) throws TypeMismatchException {
+		public Expression evaluate(Constant leftArg, Expression rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg == BooleanConstant.FALSE) {
 				return rightArg;
 			}

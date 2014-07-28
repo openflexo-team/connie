@@ -130,7 +130,7 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException {
+		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
 				if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
 					return new IntegerConstant(((IntegerConstant) leftArg).getValue() - ((IntegerConstant) rightArg).getValue());
@@ -153,6 +153,14 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 							((DateConstant) rightArg).getDate()));
 				}
 			}
+
+			if (rightArg == ObjectSymbolicConstant.NULL) {
+				throw new NullReferenceException(SUBSTRACTION);
+			}
+			if (leftArg == ObjectSymbolicConstant.NULL) {
+				throw new NullReferenceException(SUBSTRACTION);
+			}
+
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER, EvaluationType.DATE, EvaluationType.DURATION);
 		}
