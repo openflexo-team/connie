@@ -76,18 +76,18 @@ public class XMLRootElementReader {
      * @return
      * @throws IOException
      */
-    public XMLRootElementInfo readRootElement(Resource rsc) throws IOException {
+    synchronized public XMLRootElementInfo readRootElement(Resource rsc) throws IOException {
 
         InputStream input = rsc.openInputStream();
         return readRootElement(input);
     }
 
-    public XMLRootElementInfo readRootElement(File virtualModelFile) throws IOException {
+    synchronized public XMLRootElementInfo readRootElement(File virtualModelFile) throws IOException {
         InputStream input = new FileInputStream(virtualModelFile);
         return readRootElement(input);
     }
 
-    public XMLRootElementInfo readRootElement(InputStream input) throws IOException {
+    synchronized public XMLRootElementInfo readRootElement(InputStream input) throws IOException {
 
         XMLRootElementInfo info = new XMLRootElementInfo();
 
