@@ -38,7 +38,7 @@ public class ModelFactory extends saxBasedObjectGraphFactory {
         if (aType instanceof XMLType) {
             XMLIndiv _inst = (XMLIndiv) model.addNewIndividual(aType);
             _inst.setName(name);
-            return (Object) _inst;
+            return _inst;
         }
         else if (aType == XMLModel.StringAttribute.class) {
             if (attrStringBuffer == null)
@@ -49,8 +49,8 @@ public class ModelFactory extends saxBasedObjectGraphFactory {
     }
 
     @Override
-    public Type getTypeFromURI(String uri) {
-        return model.getTypeFromURI(uri);
+    public Type getTypeForObject(String typeURI, Object container, String objectName) {
+        return model.getTypeFromURI(typeURI);
     }
 
     @Override

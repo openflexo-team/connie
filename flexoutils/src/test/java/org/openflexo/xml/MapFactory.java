@@ -68,7 +68,8 @@ public class MapFactory implements IObjectGraphFactory {
         public String  value;
         public Integer key;
 
-        public String getURI() {
+        @Override
+		public String getURI() {
             return "NodeBuffer";
         }
     }
@@ -85,15 +86,15 @@ public class MapFactory implements IObjectGraphFactory {
     }
 
     @Override
-    public Type getTypeFromURI(String uri) {
+    public Type getTypeForObject(String typeURI, Object container, String objectName) {
 
-        if (uri.equals(KEY_ATTR)) {
+        if (typeURI.equals(KEY_ATTR)) {
             return Integer.class;
         }
-        else if (uri.equals(MAP_TAG)) {
+        else if (typeURI.equals(MAP_TAG)) {
             return MapModel.class;
         }
-        else if (uri.equals(NODE_TAG)) {
+        else if (typeURI.equals(NODE_TAG)) {
             return NodeBuffer.class;
         }
         else

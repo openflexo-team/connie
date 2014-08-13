@@ -59,10 +59,12 @@ public interface IObjectGraphFactory {
      * Retuns the type of Object corresponding to the given URI, it must be a
      * type of object relevant in the context of the current graph to be built
      * 
-     * @param uri
+     * @param typeURI => URI of the type
+     * @param objectName => the name of the object to be typed
+     * @param container => the object containing the object to be typed
      * @return the relevant Type
      */
-    public Type getTypeFromURI(String uri);
+    public Type getTypeForObject(String typeURI, Object container, String objectName);
 
     // ***************************************************
     // Methods concerning Objects in the graph
