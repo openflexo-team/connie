@@ -31,9 +31,9 @@ import java.util.UUID;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class XMLIndiv implements IXMLIndividual<XMLIndiv, XMLAttr> {
+public class XMLIndiv  {
 
-    private String                   uuid;
+    private final String                   uuid;
 
     private static String            NAME_KEY        = "___The_NAME___";
 
@@ -51,63 +51,53 @@ public class XMLIndiv implements IXMLIndividual<XMLIndiv, XMLAttr> {
         children = new ArrayList<XMLIndiv>();
     }
 
-    @Override
     public String getContentDATA() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
+
     public void setName(String name) {
         _name = name;
     }
 
-    @Override
     public String getFullyQualifiedName() {
         return _name;
     }
 
-    @Override
     public String getName() {
         return _name;
     }
 
-    @Override
     public Object getAttributeValue(String attributeName) {
         XMLAttr attr = ((XMLType) getType()).getAttributeByName(attributeName);
         return attributeValues.get(attr);
     }
 
-    @Override
     public XMLAttr getAttributeByName(String aName) {
 
         return ((XMLType) getType()).getAttributeByName(aName);
     }
 
-    @Override
     public Collection<? extends XMLAttr> getAttributes() {
         return attributeValues.keySet();
     }
 
-    @Override
     public Object createAttribute(String attrLName, Type aType, String value) {
         XMLAttr attr = new XMLAttr(attrLName);
         attr.addValue(this, value);
         return attr;
     }
 
-    @Override
-    public String getAttributeStringValue(IXMLAttribute a) {
+    public String getAttributeStringValue(XMLAttr a) {
         return attributeValues.get(a).toString();
     }
 
-    @Override
-    public void addChild(IXMLIndividual<XMLIndiv, XMLAttr> anIndividual) {
-        children.add((XMLIndiv) anIndividual);
-        ((XMLIndiv) anIndividual).setParent(this);
+    public void addChild(XMLIndiv anIndividual) {
+        children.add(anIndividual);
+        anIndividual.setParent(this);
     }
 
-    @Override
     public List<XMLIndiv> getChildren() {
         return children;
     }
@@ -116,27 +106,21 @@ public class XMLIndiv implements IXMLIndividual<XMLIndiv, XMLAttr> {
         parent = container;
     }
 
-    @Override
     public XMLIndiv getParent() {
         return parent;
     }
 
-    @Override
     public Type getType() {
         return type;
     }
-
-    @Override
-    public void setType(Type myClass) {
+   public void setType(Type myClass) {
         type = (XMLType) myClass;
     }
 
-    @Override
     public String getUUID() {
         return uuid;
     }
 
-    @Override
     public Element toXML(Document doc) {
         // TODO Auto-generated method stub
         return null;

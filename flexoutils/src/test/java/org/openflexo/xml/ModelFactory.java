@@ -155,7 +155,7 @@ public class ModelFactory extends saxBasedObjectGraphFactory {
     @Override
     public void addChildToObject(Object currentObject, Object currentContainer) {
         if (currentContainer instanceof XMLIndiv) {
-            ((XMLIndiv) currentContainer).addChild((IXMLIndividual<XMLIndiv, XMLAttr>) currentObject);
+            ((XMLIndiv) currentContainer).addChild((XMLIndiv) currentObject);
         }
 
     }

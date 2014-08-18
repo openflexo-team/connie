@@ -32,9 +32,9 @@ public class XMLModel {
     private static String             NAME_ATTR     = "name";
     private static String             NAME_ATTR_URI = "http://www.example.org/Library#name";
 
-    private Map<String, XMLIndiv> listIndiv;
+    private final Map<String, XMLIndiv> listIndiv;
 
-    private Map<String, Type>         listType;
+    private final Map<String, Type>         listType;
 
     private XMLIndiv              root;
 
@@ -54,13 +54,13 @@ public class XMLModel {
         return null;
     }
 
-    public void setRoot(IXMLIndividual<?, ?> anIndividual) {
+    public void setRoot(XMLIndiv anIndividual) {
 
-        root = (XMLIndiv) anIndividual;
+        root = anIndividual;
 
     }
 
-    public IXMLIndividual<?, ?> getRoot() {
+    public XMLIndiv getRoot() {
         return root;
     }
 
@@ -86,7 +86,7 @@ public class XMLModel {
                 aType = StringAttribute.class;
             }
             else {
-                aType = (XMLType) new XMLType(uri);
+                aType = new XMLType(uri);
                 listType.put(uri, aType);
             }
         }

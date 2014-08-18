@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class XMLType implements Type, IXMLType {
+public class XMLType implements Type {
 
     private static final Object NAME_ATTR = "name";
 
@@ -56,7 +56,6 @@ public class XMLType implements Type, IXMLType {
         return attr;
     }
 
-    @Override
     public String getURI() {
         return _uri;
     }

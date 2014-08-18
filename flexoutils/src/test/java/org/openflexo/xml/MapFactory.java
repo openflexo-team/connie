@@ -64,11 +64,10 @@ public class MapFactory implements IObjectGraphFactory {
         }
     }
 
-    private class NodeBuffer implements IXMLType {
+    private class NodeBuffer  {
         public String  value;
         public Integer key;
 
-        @Override
 		public String getURI() {
             return "NodeBuffer";
         }
