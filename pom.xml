@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<groupId>org.openflexo</groupId>
 		<artifactId>openflexo-component</artifactId>
-        <version>0.2-SNAPSHOT</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<version>1.1-SNAPSHOT</version>
 	<modelVersion>4.0.0</modelVersion>
@@ -16,12 +17,12 @@
 	<scm>
 		<connection>scm:git:ssh://git@github.com/openflexo-team/connie.git</connection>
 		<url>https://github.com/openflexo-team/connie</url>
-	  <tag>1.1</tag>
-  </scm>
+		<tag>1.1</tag>
+	</scm>
 	<modules>
 		<module>flexoutils</module>
 		<module>connie-core</module>
-    </modules>
+	</modules>
 	<build>
 		<resources>
 			<resource>
@@ -44,12 +45,12 @@
 					<artifactId>maven-jar-plugin</artifactId>
 					<executions>
 						<execution>
-						    <id>default-jar</id>
+							<id>default-jar</id>
 							<goals>
 								<goal>jar</goal>
 							</goals>
 							<configuration>
-							     <skipIfEmpty>true</skipIfEmpty>
+								<skipIfEmpty>true</skipIfEmpty>
 							</configuration>
 						</execution>
 						<execution>
@@ -57,7 +58,7 @@
 								<goal>test-jar</goal>
 							</goals>
 							<configuration>
-							     <skipIfEmpty>true</skipIfEmpty>
+								<skipIfEmpty>true</skipIfEmpty>
 							</configuration>
 						</execution>
 					</executions>
@@ -113,32 +114,37 @@
 				<version>2.0.4</version>
 			</dependency>
 			<dependency>
+				<groupId>com.rackspace.apache</groupId>
+				<artifactId>xerces2-xsd11</artifactId>
+				<version>2.11.1</version>
+			</dependency>
+			<dependency>
 				<groupId>com.google.code.findbugs</groupId>
 				<artifactId>jsr305</artifactId>
 				<version>2.0.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.openflexo</groupId>
 				<artifactId>flexoutils</artifactId>
 				<version>1.1-SNAPSHOT</version>
-			</dependency>	
+			</dependency>
 			<dependency>
 				<groupId>org.openflexo</groupId>
 				<artifactId>connie-core</artifactId>
 				<version>1.1-SNAPSHOT</version>
-			</dependency>	
-			
+			</dependency>
+
 		</dependencies>
-  	</dependencyManagement>
+	</dependencyManagement>
 
-    <distributionManagement>
-        <site>
+	<distributionManagement>
+		<site>
 
-            <id>openflexo.website</id>
-	<url>scp://server-one.openflexo.org/home/www/sites/connie/</url>
-        </site>
-    </distributionManagement>
+			<id>openflexo.website</id>
+			<url>scp://server-one.openflexo.org/home/www/sites/connie/</url>
+		</site>
+	</distributionManagement>
 
 
 
