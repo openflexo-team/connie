@@ -46,13 +46,14 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
 	private Object                currentContainer   = null;
 	private Object                currentObject      = null;
-	private Type                  currentType        = null;
+	private Type                  currentObjectType        = null;
 
 	private final StringBuffer    cdataBuffer        = new StringBuffer();
 
 	private final Stack<Object>   indivStack         = new Stack<Object>();
 
 	private IObjectGraphFactory   factory            = null;
+
 
 	public XMLReaderSAXHandler(IObjectGraphFactory aFactory) {
 		super();
@@ -63,7 +64,8 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
 		String NSPrefix = "p"; // default
-		
+
+		currentObject = null;
 
 		// ************************************
 		// Current element is not contained => root node, set NameSpace
@@ -84,28 +86,29 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
 			if (uri.length() == 0) {
 				// If there is no base uri, we use the localName of the XML Tag
-				currentType = factory.getTypeForObject(localName, currentContainer, localName);
-			}
+				currentObjectType = factory.getTypeForObject(localName, currentContainer, localName);
+			}			
 			else {
 				if (currentContainer != null) {
 					// find if there is an object property corresponding
 					if (factory.objectHasAttributeNamed(currentContainer, localName)) {
-						currentType = factory.getAttributeType(currentContainer, localName);
+						currentObjectType = factory.getAttributeType(currentContainer, localName);
 					}
 					else {
-						currentType = factory.getTypeForObject(uri + "#" + localName, currentContainer, localName);
+						currentObjectType = factory.getTypeForObject(uri + "#" + localName, currentContainer, localName);
 
 					}
 				}
 				else {
-					currentType = factory.getTypeForObject(uri + "#" + localName, currentContainer, localName);
+					currentObjectType = factory.getTypeForObject(uri + "#" + localName, null, localName);
 				}
 			}
 
-			// creates individual if it is a complex Type
-			if (currentType != null) {
 
-				currentObject = factory.getInstanceOf(currentType, localName);
+			// creates individual if it is a complex Type
+			if (currentObjectType != null) {
+
+				currentObject = factory.getInstanceOf(currentObjectType, localName);
 
 				cdataBuffer.delete(0, cdataBuffer.length());
 			}
@@ -166,7 +169,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 	@SuppressWarnings("unchecked")
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 
-		
+
 		boolean isAttribute = false;
 
 		if (currentContainer != null) {
