@@ -203,12 +203,9 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 			isAttribute = factory.objectHasAttributeNamed(currentContainer, localName);
 
 			// Allocation of CDATA information depends on the type of entity we
-			// have
-			// to allocate
-			// content to (Individual or Attribute)
+			// have to allocate content to (Individual or Attribute)
 			// As such, it depends on the interpretation that has been done of
-			// XSD
-			// MetaModel
+			// XSD MetaModel
 			//
 			// Same stands for individuals to be allocated to ObjectProperties
 
