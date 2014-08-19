@@ -58,8 +58,8 @@
 			<artifactId>jdom2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.rackspace.apache</groupId>
-			<artifactId>xerces2-xsd11</artifactId>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
