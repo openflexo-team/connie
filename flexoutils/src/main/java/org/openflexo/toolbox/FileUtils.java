@@ -652,12 +652,17 @@ public class FileUtils {
 		}
 	}
 
-	public static boolean directoryContainsFile(File directory, File file) {
+	public static boolean directoryContainsFile(File directory, File file, boolean recursive) {
 		if (file.equals(directory)) {
 			return true;
 		}
 		if (file.getParentFile() != null) {
-			return directoryContainsFile(directory, file.getParentFile());
+			if (recursive ){
+				return directoryContainsFile(directory, file.getParentFile(),recursive);
+			}
+			else {
+				return directory.equals(file.getParentFile());
+			}
 		}
 		return false;
 	}
