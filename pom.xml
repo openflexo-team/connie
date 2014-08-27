@@ -33,9 +33,20 @@
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
 				<includes>
-					<include>**/*</include>
+					<include>**/connie.properties</include>
 				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/connie.properties</exclude>
+				</excludes>
+				<!--  <includes>
+					<include>**/*</include>
+				</includes>-->
 			</resource>
 		</resources>
 		<pluginManagement>
