@@ -26,4 +26,7 @@ final public class XMLCst {
     static final String        CDATA_TYPE_NAME = "CDATA";
     public static final String CDATA_ATTR_NAME = "PCDATA";
 
+
+	public static String DEFAULT_NS = "ns1";
+	
 }
