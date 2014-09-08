@@ -18,28 +18,21 @@
  *
  */
 
-
 package org.openflexo.rm;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
 import org.openflexo.toolbox.FileUtils;
@@ -50,33 +43,29 @@ import org.openflexo.toolbox.FileUtils;
  *         <B>Locates resources on the FileSystem, given a collection of directories to search in</B>
  */
 
-
 public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	private static final Logger logger = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
 	private static String PATH_SEP = System.getProperty("file.separator");
 
-
-
 	@Override
-	public  Resource locateResource(String relativePathName) {
+	public Resource locateResource(String relativePathName) {
 
 		File file = new File(relativePathName);
 
 		try {
-			if (file.exists()){
+			if (file.exists()) {
 				// A absolute file path
-				return new FileResourceImpl(this, relativePathName, file.toURI().toURL(),file);
-			}
-			else {
+				return new FileResourceImpl(this, relativePathName, file.toURI().toURL(), file);
+			} else {
 
-				file = locateFile(relativePathName,false);
+				file = locateFile(relativePathName, false);
 
-				if (file == null){
-					file = locateFile(relativePathName,true);
+				if (file == null) {
+					file = locateFile(relativePathName, true);
 				}
-				if (file != null){
-					return new FileResourceImpl(this, relativePathName, file.toURI().toURL(),file);
+				if (file != null) {
+					return new FileResourceImpl(this, relativePathName, file.toURI().toURL(), file);
 				}
 
 			}
@@ -91,12 +80,12 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	}
 
 	@Override
-	public Resource locateResourceWithBaseLocation(	Resource baseLocation, final String relativePath) {
+	public Resource locateResourceWithBaseLocation(Resource baseLocation, final String relativePath) {
 		if (baseLocation != null) {
-			if (baseLocation instanceof FileResourceImpl){
+			if (baseLocation instanceof FileResourceImpl) {
 				File f = ((FileResourceImpl) baseLocation).getFile();
 				if (f.isDirectory()) {
-					File [] foundFiles = f.listFiles(new FilenameFilter() {
+					File[] foundFiles = f.listFiles(new FilenameFilter() {
 						@Override
 						public boolean accept(File dir, String name) {
 							return name.equals(relativePath);
@@ -104,7 +93,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					});
 					if (foundFiles.length == 1) {
 						try {
-							return new FileResourceImpl( this, baseLocation.getRelativePath() + PATH_SEP + relativePath, foundFiles[0].toURI().toURL(),foundFiles[0]);
+							return new FileResourceImpl(this, baseLocation.getRelativePath() + PATH_SEP + relativePath, foundFiles[0]
+									.toURI().toURL(), foundFiles[0]);
 						} catch (MalformedURLException e) {
 							logger.severe("Unable to convert File To ResourceLocation: " + relativePath);
 							e.printStackTrace();
@@ -114,13 +104,13 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 						}
 					}
 				}
-			}
-			else {
+			} else {
 				return locateResource(baseLocation.getRelativePath() + PATH_SEP + relativePath);
 			}
 		}
 		return null;
 	}
+
 	/*
 	@Override
 	public List<Resource> listResources(Resource dir,Pattern pattern) {	
@@ -214,33 +204,30 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 		File locateFile = null;
 
-		if (rl != null && rl instanceof FileResourceImpl){
+		if (rl != null && rl instanceof FileResourceImpl) {
 
-			locateFile =  ((FileResourceImpl) rl).getFile();
-		}
-		else {
+			locateFile = ((FileResourceImpl) rl).getFile();
+		} else {
 			URL url = null;
-			if (rl != null & rl instanceof BasicResourceImpl){
+			if (rl != null & rl instanceof BasicResourceImpl) {
 				url = ((BasicResourceImpl) rl).getURL();
 			}
-			if (url != null){
+			if (url != null) {
 				try {
 					locateFile = new File(url.toURI());
 				} catch (URISyntaxException e) {
 					logger.severe("Unable to retrieve File...: " + url.toString());
 					e.printStackTrace();
 				}
-				if (locateFile != null){
+				if (locateFile != null) {
 					((FileResourceImpl) rl).setFile(locateFile);
 					return locateFile;
 				}
-			} 
+			}
 		}
 		return locateFile;
 
 	}
-
-
 
 	/**
 	 * Locate and returns file identified by relativePathName, if it's a directory<br>
@@ -256,14 +243,12 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		FileResourceImpl rl = (FileResourceImpl) locateResource(relativePathName);
 
 		File f = rl.getFile();
-		if (f.isDirectory()){
+		if (f.isDirectory()) {
 			return f;
-		}
-		else {		
+		} else {
 			return null;
 		}
 	}
-
 
 	/**
 	 * Locate and returns file identified by relativePathName<br>
@@ -277,7 +262,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	// TODO: to be re-factored
 
-	private  File locateFile(String relativePathName, boolean lenient) {
+	private File locateFile(String relativePathName, boolean lenient) {
 		final File workingDirectory = new File(System.getProperty("user.dir"));
 		// System.out.println("Searching " + relativePathName + " in " + workingDirectory);
 		List<File> found = new ArrayList<File>();
@@ -363,6 +348,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		return found;
 
 	}
+
 	/*
 	static String retrieveRelativePath(FileResource fileResource) {
 		for (File f : getDirectoriesSearchOrder()) {
@@ -390,7 +376,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		// return cleanAbsolutePath(dirtyPath);
 	}
 	 */
-	private List<File> directoriesSearchOrder = null;
+	protected List<File> directoriesSearchOrder = null;
 
 	private static File preferredResourcePath;
 
@@ -402,7 +388,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		return preferredResourcePath;
 	}
 
-	public  void resetFlexoResourceLocation(File newLocation) {
+	public void resetFlexoResourceLocation(File newLocation) {
 		preferredResourcePath = newLocation;
 		directoriesSearchOrder = null;
 	}
@@ -425,69 +411,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		}
 	}*/
 
-	/**
-	 * Find directory where .git directory is defined.<br>
-	 * Start search from working directory
-	 * 
-	 * @return
-	 */
-	// TODO : To Remove when ResourceLocator is fixed 
-	/*
-	private static File getGitRoot() {
-		File workingDirectory = new File(System.getProperty("user.dir"));
-		// System.out.println("********** workingDirectory = " + workingDirectory);
-		File current = workingDirectory;
-		while (current != null) {
-			// System.out.println("Current: " + current);
-			File GIT_DIR = new File(current, ".git");
-			if (GIT_DIR.exists()) {
-				// System.out.println("Found .git");
-				return current;
-			}
-			current = current.getParentFile();
-		}
-		return null;
-	}
-	 */
-	/**
-	 * Find all directories matching src/main/resources or src/test/resources or src/dev/resources pattern, from a diven root directory
-	 * 
-	 * @param root
-	 * @return
-	 */
-	/*
-	private static void appendAllResourcesDirectories(File root, List<File> returned) {
-		appendAllResourcesDirectories(root, "src", returned);
-	}
-
-	private static void appendAllResourcesDirectories(File root, final String searchedToken, List<File> returned) {
-		for (File f : root.listFiles(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.equals(searchedToken);
-			}
-		})) {
-			if (searchedToken.equals("src")) {
-				appendAllResourcesDirectories(f, "main", returned);
-				appendAllResourcesDirectories(f, "test", returned);
-				appendAllResourcesDirectories(f, "dev", returned);
-			} else if (searchedToken.equals("main") || searchedToken.equals("test") || searchedToken.equals("dev")) {
-				appendAllResourcesDirectories(f, "resources", returned);
-			} else if (searchedToken.equals("resources")) {
-				// System.out.println("Found " + f);
-				returned.add(f);
-			}
-		}
-		for (File d : root.listFiles()) {
-			if (d.isDirectory() && (new File(d, "pom.xml").exists())) {
-				appendAllResourcesDirectories(d, returned);
-			}
-		}
-	}
-	 */
-
-	private List<File> getDirectoriesSearchOrder() {
+	protected List<File> getDirectoriesSearchOrder() {
 		if (directoriesSearchOrder == null) {
 			synchronized (FileSystemResourceLocatorImpl.class) {
 				if (directoriesSearchOrder == null) {
@@ -501,98 +425,11 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 						}*/
 						directoriesSearchOrder.add(preferredResourcePath);
 					}
-					// TODO : To remove when ResourceLocator is Fixed
-					/*
-					File gitRoot = getGitRoot();
-					if (gitRoot != null && gitRoot.exists()) {
-						// System.out.println("Found gitRoot=" + gitRoot);
-						// We gets one level further to handle multiple repositories
-						appendAllResourcesDirectories(gitRoot.getParentFile(), directoriesSearchOrder);
-					}
-					File workingDirectory = new File(System.getProperty("user.dir"));
-					System.out.println("********** userDirectory = " + workingDirectory);
-					directoriesSearchOrder.add(workingDirectory);
-					File current = workingDirectory;
-					while (current != null) {
-						System.out.println("Current: " + current);
-						File GIT_DIR = new File(current, ".git");
-						if (GIT_DIR.exists()) {
-							System.out.println("Found .git");
-						}
-						current = current.getParentFile();
-					}
-					 */
-					/*
-					 * File flexoDesktopDirectory = findProjectDirectoryWithName(workingDirectory, "openflexo");
-
-					if (flexoDesktopDirectory != null) {
-						findAllFlexoProjects(flexoDesktopDirectory, directoriesSearchOrder);
-						File technologyadaptersintegrationDirectory = new File(flexoDesktopDirectory.getParentFile(),
-								"packaging/technologyadaptersintegration");
-						if (technologyadaptersintegrationDirectory != null) {
-							findAllFlexoProjects(technologyadaptersintegrationDirectory, directoriesSearchOrder);
-						}
-					}
-					directoriesSearchOrder.add(workingDirectory);*/
 				}
 			}
 		}
 		return directoriesSearchOrder;
 	}
-
-	/*public static File findProjectDirectoryWithName(File currentDir, String projectName) {
-		if (currentDir != null) {
-			File attempt = new File(currentDir, projectName);
-			if (attempt.exists()) {
-				return attempt;
-			} else {
-				return findProjectDirectoryWithName(currentDir.getParentFile(), projectName);
-			}
-		}
-		return null;
-	}
-
-	public static void findAllFlexoProjects(File dir, List<File> files) {
-		if (new File(dir, "pom.xml").exists()) {
-			files.add(dir);
-			for (File f : dir.listFiles()) {
-				if (f.getName().startsWith("flexo") || f.getName().contains("connector")
-						|| f.getName().equals("technologyadaptersintegration") || f.getName().startsWith("diana")
-						|| f.getName().startsWith("fib") || f.getName().startsWith("agilebirdsconnector") || f.getName().equals("projects")
-						|| f.getName().equals("free-modelling-editor")) {
-					addProjectResourceDirs(files, f);
-				}
-				if (f.isDirectory()) {
-					findAllFlexoProjects(f, files);
-				}
-			}
-		}
-	}
-
-	public static void addProjectResourceDirs(List<File> files, File f) {
-		File file1 = new File(f.getAbsolutePath() + "/src/main/resources");
-		File file2 = new File(f.getAbsolutePath() + "/src/test/resources");
-		File file3 = new File(f.getAbsolutePath() + "/src/dev/resources");
-		// File file4 = new File(f.getAbsolutePath());
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Adding directory " + file1.getAbsolutePath());
-		}
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Adding directory " + file2.getAbsolutePath());
-		}
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Adding directory " + file3.getAbsolutePath());
-		}
-		if (file1.exists()) {
-			files.add(file1);
-		}
-		if (file2.exists()) {
-			files.add(file2);
-		}
-		if (file3.exists()) {
-			files.add(file3);
-		}
-	}*/
 
 	public static File getUserDirectory() {
 		return userDirectory;
@@ -602,13 +439,14 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		return userHomeDirectory;
 	}
 
-
-	public String toString(){
+	@Override
+	public String toString() {
 		return this.getClass().getSimpleName();
 	}
 
 	/**
 	 * Prepends a directory to the list of path to be searched
+	 * 
 	 * @param path
 	 */
 	public void prependToDirectories(String path) {
@@ -616,14 +454,15 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		if (directoriesSearchOrder == null) {
 			this.getDirectoriesSearchOrder();
 		}
-		if (d.exists() && d.isDirectory()){
-			directoriesSearchOrder.add(0,d);
+		if (d.exists() && d.isDirectory()) {
+			directoriesSearchOrder.add(0, d);
 		}
 
 	}
 
 	/**
 	 * Appends a directory to the list of path to be searched
+	 * 
 	 * @param path
 	 */
 	public void appendToDirectories(String path) {
@@ -631,11 +470,10 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		if (directoriesSearchOrder == null) {
 			getDirectoriesSearchOrder();
 		}
-		if (d.exists() && d.isDirectory()){
+		if (d.exists() && d.isDirectory()) {
 			directoriesSearchOrder.add(d);
 		}
 
 	}
-
 
 }
