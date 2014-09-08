@@ -59,6 +59,9 @@ final public class ResourceLocator {
 	 * @return
 	 */
 	static public Resource locateResource(String relativePath) {
+		if (relativePath == null) {
+			return null;
+		}
 		Resource location = null;
 		Iterator<ResourceLocatorDelegate> delegateIt = _delegatesOrderedList.iterator();
 		while (delegateIt.hasNext() && location == null) {

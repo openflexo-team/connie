@@ -55,6 +55,10 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	@Override
 	public FileResourceImpl locateResource(String relativePathName) {
 
+		if (relativePathName == null) {
+			return null;
+		}
+
 		try {
 			File file = locateFile(relativePathName);
 			if (file != null && file.exists()) {

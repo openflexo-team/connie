@@ -53,6 +53,10 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 	@Override
 	public Resource locateResource(String relativePathName) {
 
+		if (relativePathName == null) {
+			return null;
+		}
+
 		Resource resourceLocation = cache.get(relativePathName);
 
 		if (resourceLocation == null) {
