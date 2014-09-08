@@ -90,11 +90,16 @@ public class FlexoLoggingManager {
 			}
 		}
 		_instance.logRecords = new LogRecords();
+
+		if (configurationFile == null) {
+			// Default configuration in INFO
+			configurationFile = ResourceLocator.locateResource("Config/logging_INFO.properties");
+		}
+
 		try {
-			if(configurationFile != null){
+			if (configurationFile != null) {
 				LogManager.getLogManager().readConfiguration(configurationFile.openInputStream());
-			}
-			else {
+			} else {
 				logger.warning("Unable to initialize LogginManager with NULL configurationFile...");
 			}
 		} catch (SecurityException e) {
@@ -263,7 +268,7 @@ public class FlexoLoggingManager {
 			fileName = "FINEST";
 		}
 		Resource newConfigurationFile = ResourceLocator.locateResource("Config/logging_" + fileName + ".properties");
-		if (newConfigurationFile != null){
+		if (newConfigurationFile != null) {
 			_configurationFile = newConfigurationFile;
 		}
 		if (_delegate != null) {
@@ -273,6 +278,9 @@ public class FlexoLoggingManager {
 	}
 
 	public String getConfigurationFileName() {
+		if (_configurationFile == null) {
+			return null;
+		}
 		return _configurationFile.getRelativePath();
 	}
 
