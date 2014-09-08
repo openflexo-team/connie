@@ -39,6 +39,7 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Map;
@@ -1055,7 +1056,11 @@ public class FileUtils {
 						FileUtils.saveToFile(file, fileContent);
 					}
 				}
-			} catch (IOException e) {
+			} 
+			catch (UnknownHostException e) {
+				logger.warning("Could access to url " + url + ". Please check your internet connexion");
+			} 
+			catch (IOException e) {
 				logger.warning("Could not read url " + url);
 				e.printStackTrace();
 
