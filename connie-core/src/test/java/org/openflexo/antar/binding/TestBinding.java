@@ -18,7 +18,7 @@ public class TestBinding extends TestCase {
 	private static final TestBindingContext BINDING_CONTEXT = new TestBindingContext();
 	private static final TestBindingModel BINDING_MODEL = new TestBindingModel();
 
-	public static class TestBindingContext implements Bindable, BindingEvaluationContext {
+	public static class TestBindingContext extends DefaultBindable implements BindingEvaluationContext {
 
 		public static String aString = "this is a test";
 		public static boolean aBoolean = false;

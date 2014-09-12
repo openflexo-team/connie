@@ -19,6 +19,9 @@
  */
 package org.openflexo.antar.binding;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
@@ -27,7 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +51,7 @@ import org.openflexo.antar.expr.UnresolvedExpression;
 import org.openflexo.antar.expr.VisitorException;
 import org.openflexo.antar.expr.parser.ExpressionParser;
 import org.openflexo.antar.expr.parser.ParseException;
+import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.StringUtils;
 
 /**
@@ -60,7 +63,7 @@ import org.openflexo.toolbox.StringUtils;
  * 
  * @param <T>
  */
-public class DataBinding<T> extends Observable {
+public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeListener {
 
 	private static final Logger logger = Logger.getLogger(DataBinding.class.getPackage().getName());
 
@@ -109,8 +112,11 @@ public class DataBinding<T> extends Observable {
 
 	private CachingStrategy cachingStrategy = DEFAULT_CACHING_STRATEGY;
 
+	private PropertyChangeSupport pcSupport;
+
 	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
 		super();
+		pcSupport = new PropertyChangeSupport(this);
 		setOwner(owner);
 		this.declaredType = declaredType;
 		this.bdType = bdType;
@@ -125,6 +131,16 @@ public class DataBinding<T> extends Observable {
 	public DataBinding(String unparsed) {
 		super();
 		setUnparsedBinding(unparsed);
+	}
+
+	@Override
+	public PropertyChangeSupport getPropertyChangeSupport() {
+		return pcSupport;
+	}
+
+	@Override
+	public String getDeletedProperty() {
+		return null;
 	}
 
 	public CachingStrategy getCachingStrategy() {
@@ -313,6 +329,8 @@ public class DataBinding<T> extends Observable {
 	 * changed<br>
 	 * Calling this method will force the next call of isValid() to force recompute the {@link DataBinding} validity status and message
 	 */
+	// TODO: this should be private
+	@Deprecated
 	public void markedAsToBeReanalized() {
 		bindingModelOnWhichValidityWasTested = null;
 		wasValid = false;
@@ -535,7 +553,61 @@ public class DataBinding<T> extends Observable {
 	}
 
 	public void setOwner(Bindable owner) {
-		this.owner = owner;
+		if (this.owner != owner) {
+
+			// If owner change, we have to listen both owner and owner's binding model
+
+			if (this.owner != null && this.owner.getPropertyChangeSupport() != null) {
+				this.owner.getPropertyChangeSupport().removePropertyChangeListener(this);
+			}
+			if (this.owner != null && this.owner.getBindingModel() != null) {
+				this.owner.getBindingModel().getPropertyChangeSupport().removePropertyChangeListener(this);
+			}
+			this.owner = owner;
+			if (owner != null && owner.getPropertyChangeSupport() != null) {
+				owner.getPropertyChangeSupport().addPropertyChangeListener(this);
+			}
+			if (owner != null && owner.getBindingModel() != null && owner.getBindingModel().getPropertyChangeSupport() != null) {
+				owner.getBindingModel().getPropertyChangeSupport().addPropertyChangeListener(this);
+			}
+		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		// System.out.println("> Received propertyName=" + evt.getPropertyName() + " evt=" + evt);
+
+		// Track BindingModel changes
+		// We detect here that the owner of this DataBinding has changed its BindingModel
+		if (evt.getSource() == owner && evt.getPropertyName().equals(Bindable.BINDING_MODEL_PROPERTY)) {
+			// System.out.println("BindingModel changed for " + getOwner());
+			// System.out.println("was: " + evt.getOldValue());
+			// System.out.println("now: " + evt.getNewValue());
+			if (evt.getOldValue() instanceof BindingModel) {
+				((BindingModel) evt.getOldValue()).getPropertyChangeSupport().removePropertyChangeListener(this);
+			}
+			if (evt.getNewValue() instanceof BindingModel) {
+				((BindingModel) evt.getNewValue()).getPropertyChangeSupport().addPropertyChangeListener(this);
+			}
+			markedAsToBeReanalized();
+		}
+
+		// Track structural changes inside a BindingModel
+		if (getOwner() != null && evt.getSource() == owner.getBindingModel()) {
+			if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_PROPERTY)) {
+				// We detect here that a BindingVariable was added or removed from BindingModel
+				markedAsToBeReanalized();
+			} else if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_NAME_CHANGED)) {
+				// We detect here that a BindingVariable has changed its name, we should reanalyze the binding
+				markedAsToBeReanalized();
+			} else if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_TYPE_CHANGED)) {
+				// We detect here that a BindingVariable has changed its type, we should reanalyze the binding
+				markedAsToBeReanalized();
+			} else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
+				// We detect here that base BindingModel has changed
+				markedAsToBeReanalized();
+			}
+		}
 	}
 
 	/**

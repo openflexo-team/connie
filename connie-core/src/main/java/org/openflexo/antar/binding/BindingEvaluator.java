@@ -30,7 +30,7 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
  * @author sylvain
  * 
  */
-public class BindingEvaluator implements Bindable, BindingEvaluationContext {
+public class BindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
 
 	private static final BindingFactory BINDING_FACTORY = new JavaBindingFactory();
 
