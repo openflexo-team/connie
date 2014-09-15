@@ -340,13 +340,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// Thread.dumpStack();
 			// }
 			if (bindingVariable != null) {
-				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE, this);
-				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME, this);
+				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
+				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
 			}
 			bindingVariable = aBindingVariable;
 			if (bindingVariable != null) {
-				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE, this);
-				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME, this);
+				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
+				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
 			}
 			// System.out.println("Pour " + bindingVariable +
 			// " j'ai comme listeners: "
@@ -371,7 +371,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// logger.info("Et la avec " + evt);
 		// Thread.dumpStack();
 		// }
-		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME) || evt.getPropertyName().equals(BindingVariable.TYPE)) {
+		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY) || evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
 
 			if (getBindingVariable().getVariableName().equals(evt.getNewValue())) {
 				// In this case, we detect that our current BindingVariable has changed

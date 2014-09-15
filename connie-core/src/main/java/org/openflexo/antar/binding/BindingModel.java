@@ -19,6 +19,8 @@
  */
 package org.openflexo.antar.binding;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.Vector;
@@ -26,13 +28,15 @@ import java.util.Vector;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * A binding model represents a set of BindingVariable, which are variables accessible in the context of which this binding model is
- * declared
+ * A {@link BindingModel} represents a set of {@link BindingVariable}, which are variables accessible in the context of which this binding
+ * model is declared. This is the type specification of an evaluation context, determined at run-time by a {@link BindingEvaluationContext}
+ * instance<br>
+ * 
  * 
  * @author sguerin
  * 
  */
-public class BindingModel implements HasPropertyChangeSupport {
+public class BindingModel implements HasPropertyChangeSupport, PropertyChangeListener {
 
 	private final List<BindingVariable> _bindingVariables;
 	private BindingModel baseBindingModel;
@@ -42,8 +46,9 @@ public class BindingModel implements HasPropertyChangeSupport {
 	public static final String BINDING_VARIABLE_NAME_CHANGED = "bindingVariableNameChanged";
 	public static final String BINDING_VARIABLE_TYPE_CHANGED = "bindingVariableTypeChanged";
 	public static final String BASE_BINDING_MODEL_PROPERTY = "baseBindingModel";
+	public static final String DELETED_PROPERTY = "deleted";
 
-	private final PropertyChangeSupport pcSupport;
+	private PropertyChangeSupport pcSupport;
 
 	public BindingModel() {
 		this((BindingModel) null);
@@ -55,18 +60,6 @@ public class BindingModel implements HasPropertyChangeSupport {
 		setBaseBindingModel(baseBindingModel);
 	}
 
-	/*public BindingModel(Bindable bindable) {
-		this(bindable.getBindingModel());
-		this.mainBindable = bindable;
-		mainBindable.getPropertyChangeSupport().addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				System.out.println("> tiens, je recois ca: " + evt.getPropertyName() + " evt=" + evt);
-			}
-		});
-	}*/
-
 	public BindingModel getBaseBindingModel() {
 		return baseBindingModel;
 	}
@@ -76,13 +69,41 @@ public class BindingModel implements HasPropertyChangeSupport {
 			BindingModel oldBaseBindingModel = this.baseBindingModel;
 			this.baseBindingModel = baseBindingModel;
 			pcSupport.firePropertyChange(BASE_BINDING_MODEL_PROPERTY, oldBaseBindingModel, baseBindingModel);
+			if (baseBindingModel != null && baseBindingModel.getPropertyChangeSupport() != null) {
+				baseBindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
+			}
 		}
 	}
 
 	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getSource() == baseBindingModel) {
+			// Re-forward this notification from this BindingModel
+			getPropertyChangeSupport().firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+		}
+	}
+
+	/**
+	 * Delete this {@link BindingModel}
+	 */
+	public void delete() {
+		if (baseBindingModel != null && baseBindingModel.getPropertyChangeSupport() != null) {
+			baseBindingModel.getPropertyChangeSupport().removePropertyChangeListener(this);
+		}
+
+		baseBindingModel = null;
+
+		for (BindingVariable bv : _bindingVariables) {
+			bv.delete();
+		}
+
+		getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+		pcSupport = null;
+	}
+
+	@Override
 	public String getDeletedProperty() {
-		// TODO Auto-generated method stub
-		return null;
+		return DELETED_PROPERTY;
 	}
 
 	@Override
@@ -131,6 +152,6 @@ public class BindingModel implements HasPropertyChangeSupport {
 
 	@Override
 	public String toString() {
-		return "BindingModel: " + _bindingVariables + (baseBindingModel != null ? "Combined with:\n" + baseBindingModel : "");
+		return "[ BindingModel: " + _bindingVariables + (baseBindingModel != null ? " Combined with: " + baseBindingModel : "") + "]";
 	}
 }
