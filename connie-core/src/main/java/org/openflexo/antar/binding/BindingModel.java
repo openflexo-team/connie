@@ -152,6 +152,7 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 
 	@Override
 	public String toString() {
-		return "[ BindingModel: " + _bindingVariables + (baseBindingModel != null ? " Combined with: " + baseBindingModel : "") + "]";
+		return "[ " + getClass().getSimpleName() + ": " + _bindingVariables
+				+ (baseBindingModel != null ? " Combined with: " + baseBindingModel : "") + "]";
 	}
 }
