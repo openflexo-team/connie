@@ -371,7 +371,12 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// logger.info("Et la avec " + evt);
 		// Thread.dumpStack();
 		// }
-		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY) || evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
+		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)
+				|| evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
+
+			// System.out.println(">>> In binding value " + this);
+			// System.out.println(">>> Detecting that variable " + getBindingVariable().getVariableName() + " change to "
+			// + evt.getNewValue());
 
 			if (getBindingVariable().getVariableName().equals(evt.getNewValue())) {
 				// In this case, we detect that our current BindingVariable has changed
@@ -748,7 +753,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// System.out.println("Found binding variable " + bindingVariable);
 			if (bindingVariable == null) {
 				invalidBindingReason = "cannot find binding variable "
-						+ ((NormalBindingPathElement) getParsedBindingPath().get(0)).property+" BindingModel="+dataBinding.getOwner().getBindingModel();
+						+ ((NormalBindingPathElement) getParsedBindingPath().get(0)).property + " BindingModel="
+						+ dataBinding.getOwner().getBindingModel();
 				analysingSuccessfull = false;
 				return false;
 			}
