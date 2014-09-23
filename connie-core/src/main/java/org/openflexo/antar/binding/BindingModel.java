@@ -19,6 +19,8 @@
  */
 package org.openflexo.antar.binding;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.Vector;
@@ -26,35 +28,82 @@ import java.util.Vector;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * A binding model represents a set of BindingVariable, which are variables accessible in the context of which this binding model is
- * declared
+ * A {@link BindingModel} represents a set of {@link BindingVariable}, which are variables accessible in the context of which this binding
+ * model is declared. This is the type specification of an evaluation context, determined at run-time by a {@link BindingEvaluationContext}
+ * instance<br>
+ * 
  * 
  * @author sguerin
  * 
  */
-public class BindingModel implements HasPropertyChangeSupport {
+public class BindingModel implements HasPropertyChangeSupport, PropertyChangeListener {
 
 	private final List<BindingVariable> _bindingVariables;
-	private final BindingModel mainBindingModel;
+	private BindingModel baseBindingModel;
+	// private Bindable mainBindable;
 
-	public static final String BINDING_VARIABLE = "bindingVariable";
+	public static final String BINDING_VARIABLE_PROPERTY = "bindingVariable";
+	public static final String BINDING_VARIABLE_NAME_CHANGED = "bindingVariableNameChanged";
+	public static final String BINDING_VARIABLE_TYPE_CHANGED = "bindingVariableTypeChanged";
+	public static final String BASE_BINDING_MODEL_PROPERTY = "baseBindingModel";
+	public static final String DELETED_PROPERTY = "deleted";
 
-	private final PropertyChangeSupport pcSupport;
+	private PropertyChangeSupport pcSupport;
 
 	public BindingModel() {
-		this(null);
+		this((BindingModel) null);
 	}
 
-	public BindingModel(BindingModel mainBindingModel) {
+	public BindingModel(BindingModel baseBindingModel) {
 		_bindingVariables = new Vector<BindingVariable>();
-		this.mainBindingModel = mainBindingModel;
 		pcSupport = new PropertyChangeSupport(this);
+		setBaseBindingModel(baseBindingModel);
+	}
+
+	public BindingModel getBaseBindingModel() {
+		return baseBindingModel;
+	}
+
+	public void setBaseBindingModel(BindingModel baseBindingModel) {
+		if (this.baseBindingModel != baseBindingModel) {
+			BindingModel oldBaseBindingModel = this.baseBindingModel;
+			this.baseBindingModel = baseBindingModel;
+			pcSupport.firePropertyChange(BASE_BINDING_MODEL_PROPERTY, oldBaseBindingModel, baseBindingModel);
+			if (baseBindingModel != null && baseBindingModel.getPropertyChangeSupport() != null) {
+				baseBindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
+			}
+		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getSource() == baseBindingModel) {
+			// Re-forward this notification from this BindingModel
+			getPropertyChangeSupport().firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+		}
+	}
+
+	/**
+	 * Delete this {@link BindingModel}
+	 */
+	public void delete() {
+		if (baseBindingModel != null && baseBindingModel.getPropertyChangeSupport() != null) {
+			baseBindingModel.getPropertyChangeSupport().removePropertyChangeListener(this);
+		}
+
+		baseBindingModel = null;
+
+		for (BindingVariable bv : _bindingVariables) {
+			bv.delete();
+		}
+
+		getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+		pcSupport = null;
 	}
 
 	@Override
 	public String getDeletedProperty() {
-		// TODO Auto-generated method stub
-		return null;
+		return DELETED_PROPERTY;
 	}
 
 	@Override
@@ -67,25 +116,25 @@ public class BindingModel implements HasPropertyChangeSupport {
 	}
 
 	public int getBindingVariablesCount() {
-		return _bindingVariables.size() + (mainBindingModel != null ? mainBindingModel.getBindingVariablesCount() : 0);
+		return _bindingVariables.size() + (baseBindingModel != null ? baseBindingModel.getBindingVariablesCount() : 0);
 	}
 
 	public BindingVariable getBindingVariableAt(int index) {
-		if (mainBindingModel == null || index < _bindingVariables.size()) {
+		if (baseBindingModel == null || index < _bindingVariables.size()) {
 			return _bindingVariables.get(index);
 		} else {
-			return mainBindingModel.getBindingVariableAt(index - _bindingVariables.size());
+			return baseBindingModel.getBindingVariableAt(index - _bindingVariables.size());
 		}
 	}
 
 	public void addToBindingVariables(BindingVariable variable) {
 		_bindingVariables.add(variable);
-		pcSupport.firePropertyChange(BINDING_VARIABLE, null, variable);
+		pcSupport.firePropertyChange(BINDING_VARIABLE_PROPERTY, null, variable);
 	}
 
 	public void removeFromBindingVariables(BindingVariable variable) {
 		_bindingVariables.remove(variable);
-		pcSupport.firePropertyChange(BINDING_VARIABLE, variable, null);
+		pcSupport.firePropertyChange(BINDING_VARIABLE_PROPERTY, variable, null);
 	}
 
 	public BindingVariable bindingVariableNamed(String variableName) {
@@ -95,14 +144,15 @@ public class BindingModel implements HasPropertyChangeSupport {
 				return next;
 			}
 		}
-		if (mainBindingModel != null) {
-			return mainBindingModel.bindingVariableNamed(variableName);
+		if (baseBindingModel != null) {
+			return baseBindingModel.bindingVariableNamed(variableName);
 		}
 		return null;
 	}
 
 	@Override
 	public String toString() {
-		return "BindingModel: " + _bindingVariables + (mainBindingModel != null ? "Combined with:\n" + mainBindingModel : "");
+		return "[ " + getClass().getSimpleName() + ": " + _bindingVariables
+				+ (baseBindingModel != null ? " Combined with: " + baseBindingModel : "") + "]";
 	}
 }

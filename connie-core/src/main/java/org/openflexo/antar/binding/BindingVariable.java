@@ -16,10 +16,11 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	private String variableName;
 	private Type type;
 	private boolean settable = false;
-	private final PropertyChangeSupport pcSupport;
+	private PropertyChangeSupport pcSupport;
 
-	public static final String VARIABLE_NAME = "variableName";
-	public static final String TYPE = "type";
+	public static final String VARIABLE_NAME_PROPERTY = "variableName";
+	public static final String TYPE_PROPERTY = "type";
+	public static final String DELETED_PROPERTY = "deleted";
 
 	public BindingVariable(String variableName, Type type) {
 		super();
@@ -33,6 +34,14 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		setSettable(settable);
 	}
 
+	/**
+	 * Delete this {@link BindingModel}
+	 */
+	public void delete() {
+		getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+		pcSupport = null;
+	}
+
 	@Override
 	public Type getType() {
 		return type;
@@ -42,7 +51,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		if (type != null && !type.equals(this.type)) {
 			Type oldType = this.type;
 			this.type = type;
-			pcSupport.firePropertyChange(TYPE, oldType, type);
+			pcSupport.firePropertyChange(TYPE_PROPERTY, oldType, type);
 		}
 	}
 
@@ -54,7 +63,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		if (aVariableName != null && !aVariableName.equals(variableName)) {
 			String oldVariableName = variableName;
 			this.variableName = aVariableName;
-			pcSupport.firePropertyChange(VARIABLE_NAME, oldVariableName, variableName);
+			pcSupport.firePropertyChange(VARIABLE_NAME_PROPERTY, oldVariableName, variableName);
 		}
 	}
 

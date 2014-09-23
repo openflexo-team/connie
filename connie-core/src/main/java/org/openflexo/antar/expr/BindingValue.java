@@ -340,13 +340,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// Thread.dumpStack();
 			// }
 			if (bindingVariable != null) {
-				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE, this);
-				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME, this);
+				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
+				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
 			}
 			bindingVariable = aBindingVariable;
 			if (bindingVariable != null) {
-				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE, this);
-				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME, this);
+				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
+				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
 			}
 			// System.out.println("Pour " + bindingVariable +
 			// " j'ai comme listeners: "
@@ -371,9 +371,25 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// logger.info("Et la avec " + evt);
 		// Thread.dumpStack();
 		// }
-		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME) || evt.getPropertyName().equals(BindingVariable.TYPE)) {
-			if (dataBinding != null) {
-				dataBinding.markedAsToBeReanalized();
+		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)
+				|| evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
+
+			// System.out.println(">>> In binding value " + this);
+			// System.out.println(">>> Detecting that variable " + getBindingVariable().getVariableName() + " change to "
+			// + evt.getNewValue());
+
+			if (getBindingVariable().getVariableName().equals(evt.getNewValue())) {
+				// In this case, we detect that our current BindingVariable has changed
+				// It's really important to also change value in parsed binding path, otherwise if for any reason, the binding
+				// value is set again to be reanalyzed, the binding variable might not be found again
+				if (getParsedBindingPath().size() > 0 && getParsedBindingPath().get(0) instanceof NormalBindingPathElement) {
+					((NormalBindingPathElement) getParsedBindingPath().get(0)).property = (String) evt.getNewValue();
+				}
+			} else {
+				// Does't matter, but mark data binding as beeing reanalyzed
+				if (dataBinding != null) {
+					dataBinding.markedAsToBeReanalized();
+				}
 			}
 		}
 	}
@@ -737,7 +753,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// System.out.println("Found binding variable " + bindingVariable);
 			if (bindingVariable == null) {
 				invalidBindingReason = "cannot find binding variable "
-						+ ((NormalBindingPathElement) getParsedBindingPath().get(0)).property;
+						+ ((NormalBindingPathElement) getParsedBindingPath().get(0)).property + " BindingModel="
+						+ dataBinding.getOwner().getBindingModel();
 				analysingSuccessfull = false;
 				return false;
 			}

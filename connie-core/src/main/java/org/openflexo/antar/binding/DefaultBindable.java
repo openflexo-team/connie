@@ -19,29 +19,31 @@
  */
 package org.openflexo.antar.binding;
 
-import org.openflexo.toolbox.HasPropertyChangeSupport;
+import java.beans.PropertyChangeSupport;
 
 /**
- * Implemented by all classes defining a domain in which bindings take values<br>
- * 
- * Any Bindable implementation must implements {@link HasPropertyChangeSupport} and should notify BindingModel changes
+ * Default partial implementation for {@link Bindable} interface<br>
  * 
  * @author sguerin
  * 
  */
-public interface Bindable extends HasPropertyChangeSupport {
+public abstract class DefaultBindable implements Bindable {
 
-	public static final String BINDING_MODEL_PROPERTY = "bindingModel";
+	private final PropertyChangeSupport pcSupport;
 
-	/**
-	 * Return the Binding model for the current object.
-	 */
-	public BindingModel getBindingModel();
+	public DefaultBindable() {
+		pcSupport = new PropertyChangeSupport(this);
+	}
 
-	/**
-	 * Return the factory used to build bindings related to this bindable
-	 */
-	public BindingFactory getBindingFactory();
+	@Override
+	public PropertyChangeSupport getPropertyChangeSupport() {
+		return pcSupport;
+	}
+
+	@Override
+	public String getDeletedProperty() {
+		return null;
+	}
 
 	/**
 	 * Called when supplied data binding changed its value
@@ -49,7 +51,10 @@ public interface Bindable extends HasPropertyChangeSupport {
 	 * @param dataBinding
 	 *            new data binding value.
 	 */
-	public void notifiedBindingChanged(DataBinding<?> dataBinding);
+	@Override
+	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
+
+	}
 
 	/**
 	 * Called when supplied data binding has been decoded (syntaxic and semantics analysis performed)
@@ -57,5 +62,8 @@ public interface Bindable extends HasPropertyChangeSupport {
 	 * @param dataBinding
 	 *            new data binding value.
 	 */
-	public void notifiedBindingDecoded(DataBinding<?> dataBinding);
+	@Override
+	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
+
+	}
 }

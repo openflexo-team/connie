@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
  */
 public abstract class SimplePathElement implements BindingPathElement, SettableBindingPathElement {
 
-	private BindingPathElement parent;
+	private final BindingPathElement parent;
 	private String propertyName;
 	private Type type;
 
@@ -18,6 +18,10 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		this.parent = parent;
 		this.propertyName = propertyName;
 		this.type = type;
+	}
+
+	public void delete() {
+		// TODO
 	}
 
 	@Override

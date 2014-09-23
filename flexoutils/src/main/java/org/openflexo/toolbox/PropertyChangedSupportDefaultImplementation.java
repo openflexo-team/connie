@@ -2,7 +2,7 @@ package org.openflexo.toolbox;
 
 import java.beans.PropertyChangeSupport;
 
-public class PropertyChangedSupportDefaultImplementation implements HasPropertyChangeSupport {
+public abstract class PropertyChangedSupportDefaultImplementation implements HasPropertyChangeSupport {
 
 	private final PropertyChangeSupport pcSupport = new PropertyChangeSupport(this);
 
@@ -15,4 +15,5 @@ public class PropertyChangedSupportDefaultImplementation implements HasPropertyC
 	public String getDeletedProperty() {
 		return null;
 	}
+
 }
