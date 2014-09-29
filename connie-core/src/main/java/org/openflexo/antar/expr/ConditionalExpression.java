@@ -21,6 +21,8 @@ package org.openflexo.antar.expr;
 
 import java.util.Vector;
 
+import org.openflexo.antar.expr.Constant.BooleanConstant;
+
 public class ConditionalExpression extends Expression {
 
 	private Expression condition;
@@ -44,29 +46,22 @@ public class ConditionalExpression extends Expression {
 		return false;
 	}
 
-	/*@Override
-	public Expression evaluate(EvaluationContext context) throws TypeMismatchException {
-		_checkSemanticallyAcceptable();
-
-		Expression evaluatedCondition = condition.evaluate(context);
-		Expression evaluatedThenExpression = thenExpression.evaluate(context);
-		Expression evaluatedElseExpression = elseExpression.evaluate(context);
-
-		// special case if condition has been evaluated
-		if (evaluatedCondition == BooleanConstant.FALSE) {
-			return evaluatedElseExpression; // No need to analyze further
-		} else if (evaluatedCondition == BooleanConstant.TRUE) {
-			return evaluatedThenExpression; // No need to analyze further
-		}
-
-		return new ConditionalExpression(evaluatedCondition, evaluatedThenExpression, evaluatedElseExpression);
-	}*/
-
 	@Override
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 
 		Expression expression = this;
 		Expression transformedCondition = condition.transform(transformer);
+
+		// Lazy evaluation
+		// special case if condition has been evaluated
+		if (transformedCondition == BooleanConstant.TRUE) {
+			// No need to analyze further
+			return thenExpression.transform(transformer);
+		} else if (transformedCondition == BooleanConstant.FALSE) {
+			// No need to analyze further
+			return elseExpression.transform(transformer);
+		}
+
 		Expression transformedThenExpression = thenExpression.transform(transformer);
 		Expression transformedElseExpression = elseExpression.transform(transformer);
 
