@@ -133,8 +133,12 @@ public class BinaryOperatorExpression extends Expression {
 
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
-		leftArgument.visit(visitor);
-		rightArgument.visit(visitor);
+		if (leftArgument != null) {
+			leftArgument.visit(visitor);
+		}
+		if (rightArgument != null) {
+			rightArgument.visit(visitor);
+		}
 		visitor.visit(this);
 	}
 
