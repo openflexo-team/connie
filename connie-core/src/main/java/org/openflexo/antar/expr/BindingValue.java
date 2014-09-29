@@ -991,7 +991,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		boolean debug = false;
 
-		/*if (toString().equals("data.rootObject")) {
+		/*if (toString().equals("data.validationModel.getGenericRuleSet(ClassesTable.selected).rules")) {
 			debug = true;
 		}*/
 
@@ -1018,16 +1018,22 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		// try {
 		for (BindingPathElement element : getBindingPath()) {
+			if (debug) {
+				logger.info("Computing getTargetObjects(), current=" + current);
+			}
 			returned.add(new TargetObject(current, element.getLabel()));
 			try {
 				current = element.getBindingValue(current, context);
 			} catch (TypeMismatchException e) {
+				current = null;
 				// We silently escape...
 				// e.printStackTrace();
 			} catch (NullReferenceException e) {
+				current = null;
 				// We silently escape...
 				// e.printStackTrace();
 			} catch (InvocationTargetTransformException e) {
+				current = null;
 				// We silently escape...
 				// e.printStackTrace();
 			}
