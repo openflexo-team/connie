@@ -332,6 +332,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	// TODO: this should be private
 	@Deprecated
 	public void markedAsToBeReanalized() {
+
 		bindingModelOnWhichValidityWasTested = null;
 		wasValid = false;
 		if (expression != null) {
@@ -390,6 +391,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		isCacheable = true;
 
 		if (getOwner() != null) {
+
 			try {
 				expression.visit(new ExpressionVisitor() {
 					@Override
