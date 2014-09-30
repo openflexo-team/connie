@@ -79,6 +79,11 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 							((DurationConstant) rightArg).getDuration()));
 				}
 			}
+
+			// Special case to handle String concatenation with null
+			if (leftArg == ObjectSymbolicConstant.NULL && rightArg instanceof StringConstant) {
+				return evaluate(new StringConstant("null"), rightArg);
+			}
 			// System.out.println("leftArg=" + leftArg + " of " + leftArg.getClass() + " eval type =" + leftArg.getEvaluationType());
 			// System.out.println("rightArg=" + rightArg + " of " + rightArg.getClass() + " eval type =" + rightArg.getEvaluationType());
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(), EvaluationType.values());
