@@ -158,12 +158,10 @@ public class TestTypeUtils {
 	}
 
 	@Test
-	public void testInstantiatedTypes2() {
+	public void testInstantiatedTypes2() throws SecurityException, NoSuchMethodException {
 
 		// MyClass2<String, Boolean>
-		Type genericType = TestInstantiatedTypes.class.getMethods()[0].getGenericReturnType();
-
-		System.out.println("********** genericType=" + genericType);
+		Type genericType = TestInstantiatedTypes.class.getMethod("retrieveType1").getGenericReturnType();
 
 		TypeVariable a = MyClass1.class.getTypeParameters()[0];
 		assertEquals(Boolean.class, TypeUtils.makeInstantiatedType(a, genericType));
@@ -174,12 +172,12 @@ public class TestTypeUtils {
 	}
 
 	@Test
-	public void testInstantiatedTypes3() {
+	public void testInstantiatedTypes3() throws SecurityException, NoSuchMethodException {
 
 		// MyClass3<String>
-		Type genericType = TestInstantiatedTypes.class.getMethods()[1].getGenericReturnType();
+		Type genericType = TestInstantiatedTypes.class.getMethod("retrieveType2").getGenericReturnType();
 		// List<String>
-		Type expectedType = TestInstantiatedTypes.class.getMethods()[2].getGenericReturnType();
+		Type expectedType = TestInstantiatedTypes.class.getMethod("retrieveType3").getGenericReturnType();
 
 		TypeVariable a = MyClass1.class.getTypeParameters()[0];
 		assertEquals(expectedType, TypeUtils.makeInstantiatedType(a, genericType));
@@ -188,14 +186,14 @@ public class TestTypeUtils {
 	}
 
 	@Test
-	public void testInstantiatedTypes4() {
+	public void testInstantiatedTypes4() throws SecurityException, NoSuchMethodException {
 
 		// MyClass4
 		Type genericType = MyClass4.class;
 		// List<MyClass1<String>>
-		Type expectedType1 = TestInstantiatedTypes.class.getMethods()[3].getGenericReturnType();
+		Type expectedType1 = TestInstantiatedTypes.class.getMethod("retrieveType4").getGenericReturnType();
 		// MyClass1<String>
-		Type expectedType2 = TestInstantiatedTypes.class.getMethods()[4].getGenericReturnType();
+		Type expectedType2 = TestInstantiatedTypes.class.getMethod("retrieveType5").getGenericReturnType();
 
 		TypeVariable a = MyClass1.class.getTypeParameters()[0];
 		assertEquals(expectedType1, TypeUtils.makeInstantiatedType(a, genericType));
@@ -205,15 +203,15 @@ public class TestTypeUtils {
 	}
 
 	@Test
-	public void testInstantiatedTypes5() {
+	public void testInstantiatedTypes5() throws SecurityException, NoSuchMethodException {
 
 		// MyClass5<String, Integer>
-		Type genericType = TestInstantiatedTypes.class.getMethods()[5].getGenericReturnType();
+		Type genericType = TestInstantiatedTypes.class.getMethod("retrieveType6").getGenericReturnType();
 
 		// List<MyClass1<String>>
-		Type expectedType1 = TestInstantiatedTypes.class.getMethods()[3].getGenericReturnType();
+		Type expectedType1 = TestInstantiatedTypes.class.getMethod("retrieveType4").getGenericReturnType();
 		// MyClass1<String>
-		Type expectedType2 = TestInstantiatedTypes.class.getMethods()[4].getGenericReturnType();
+		Type expectedType2 = TestInstantiatedTypes.class.getMethod("retrieveType5").getGenericReturnType();
 
 		TypeVariable d5 = MyClass5.class.getTypeParameters()[0];
 		assertEquals(String.class, TypeUtils.makeInstantiatedType(d5, genericType));
@@ -230,9 +228,9 @@ public class TestTypeUtils {
 	}
 
 	@Test
-	public void testInstantiatedTypes6() {
+	public void testInstantiatedTypes6() throws SecurityException, NoSuchMethodException {
 
-		Type listGenericType = TestInstantiatedTypes.class.getMethods()[6].getGenericReturnType();
+		Type listGenericType = TestInstantiatedTypes.class.getMethod("retrieveType7").getGenericReturnType();
 		// ? extends MyClass2<String, Number>
 		Type genericType = ((ParameterizedType) listGenericType).getActualTypeArguments()[0];
 
@@ -322,7 +320,7 @@ public class TestTypeUtils {
 	}
 
 	@Test
-	public void testInstantiatedTypes7() {
+	public void testInstantiatedTypes7() throws SecurityException, NoSuchMethodException {
 
 		// ClassC
 		Type genericType = ClassC.class;
@@ -337,7 +335,7 @@ public class TestTypeUtils {
 		System.out.println("methodType = " + methodType);
 
 		// List<? extends Bound2>
-		Type expectedType1 = TestInstantiatedTypes.class.getMethods()[7].getGenericReturnType();
+		Type expectedType1 = TestInstantiatedTypes.class.getMethod("retrieveType8").getGenericReturnType();
 
 		assertEquals(expectedType1, TypeUtils.makeInstantiatedType(methodType, genericType));
 
@@ -364,10 +362,10 @@ public class TestTypeUtils {
 	}
 
 	@Test
-	public void testInstantiatedTypes8() {
+	public void testInstantiatedTypes8() throws SecurityException, NoSuchMethodException {
 
 		// List<? extends Bound3<?>
-		Type expectedType1 = TestInstantiatedTypes.class.getMethods()[8].getGenericReturnType();
+		Type expectedType1 = TestInstantiatedTypes.class.getMethod("retrieveType9").getGenericReturnType();
 		// ? extends Bound3<?>
 		Type genericType = ((ParameterizedType) expectedType1).getActualTypeArguments()[0];
 
@@ -378,7 +376,7 @@ public class TestTypeUtils {
 			WildcardType result = (WildcardType) TypeUtils.makeInstantiatedType(methodType3, genericType);
 
 			// List<? extends Number>
-			Type listOfExpectedType2 = TestInstantiatedTypes.class.getMethods()[9].getGenericReturnType();
+			Type listOfExpectedType2 = TestInstantiatedTypes.class.getMethod("retrieveType10").getGenericReturnType();
 			// ? extends Number
 			WildcardType expectedType2 = (WildcardType) ((ParameterizedType) listOfExpectedType2).getActualTypeArguments()[0];
 
