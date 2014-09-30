@@ -25,6 +25,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 
@@ -61,7 +62,7 @@ public class TestXMLRootElementReader extends TestCase {
         XMLRootElementInfo result = null;
 
         try {
-            result = reader.readRootElement(rsc);
+            result = reader.readRootElement(rsc.openInputStream());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -100,13 +101,14 @@ public class TestXMLRootElementReader extends TestCase {
         XMLRootElementInfo result = null;
 
         try {
-            result = reader.readRootElement(rsc);
+            result = reader.readRootElement(rsc.openInputStream());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         assertNotNull(result);
+        assertNotNull(result.getNamespaceByPrefix("p"));
         assertEquals(result.getName(), "Library");
 
     }
@@ -119,13 +121,16 @@ public class TestXMLRootElementReader extends TestCase {
         XMLRootElementInfo result = null;
 
         try {
-            result = reader.readRootElement(rsc);
+        	if (rsc instanceof FileResourceImpl) {
+        		result = reader.readRootElement(((FileResourceImpl) rsc).getFile());
+        	}
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         assertNotNull(result);
+        assertNotNull(result.getURI());
         assertEquals(result.getName(), "Map");
 
     }
@@ -146,6 +151,7 @@ public class TestXMLRootElementReader extends TestCase {
 
         assertNotNull(result);
         assertEquals(result.getName(), "ViewPoint");
+        System.out.println(result.toString());
 
     }
 }

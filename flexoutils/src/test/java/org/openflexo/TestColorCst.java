@@ -1,7 +1,7 @@
 /*
- * (c) Copyright 2013-2014 Openflexo
+ * (c) Copyright 2014 -  Openflexo
  *
- * This file is part of OpenFlexo Software Infrastructure.
+ * This file is part of OpenFlexo.
  *
  * OpenFlexo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,20 @@
  * along with OpenFlexo. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package org.openflexo;
 
-package org.openflexo.xml;
+import junit.framework.TestCase;
 
-final public class XMLCst {
-    // Constants
+import org.junit.Test;
 
-    public static final String  CDATA_TYPE_NAME = "CDATA";
-    public static final String CDATA_ATTR_NAME = "PCDATA";
+public class TestColorCst extends TestCase {
 
-
-	public static final String DEFAULT_NS = "ns1";
-	
+	@Test
+	public void test() {
+		
+		ColorCst cst = new ColorCst();
+		assertNotNull(cst.LIGHT_BLUE);
+		assertEquals(cst.ODD_LINES_TABULAR_VIEW_COLOR.getBlue(),254);
+		
+	}
 }

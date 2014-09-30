@@ -181,7 +181,15 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 					throw new NumberFormatException("Invalid snapshot number: " + token.substring(0, token.indexOf("-SNAPSHOT"))
 							+ " is not valid (" + versionAsString + ")");
 				}
-			} else {
+			} else if (token.indexOf("SNAPSHOT") > -1) {
+				isSnapshot = true;
+				try {
+					returned = Integer.parseInt(token.substring(0, token.indexOf("SNAPSHOT")));
+				} catch (NumberFormatException e) {
+					throw new NumberFormatException("Invalid snapshot number: " + token.substring(0, token.indexOf("SNAPSHOT"))
+							+ " is not valid (" + versionAsString + ")");
+				}
+			}else {
 				returned = Integer.valueOf(token).intValue();
 				rc = -1;
 			}
