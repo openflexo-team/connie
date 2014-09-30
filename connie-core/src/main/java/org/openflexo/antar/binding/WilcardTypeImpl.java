@@ -21,11 +21,12 @@ package org.openflexo.antar.binding;
 
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.util.Arrays;
 
 public class WilcardTypeImpl implements WildcardType {
 
-	private Type[] upperBounds = null;
-	private Type[] lowerBounds = null;
+	private Type[] upperBounds = new Type[0];
+	private Type[] lowerBounds = new Type[0];
 
 	public WilcardTypeImpl(Type[] upperBounds, Type[] lowerBounds) {
 		this.upperBounds = upperBounds;
@@ -35,7 +36,7 @@ public class WilcardTypeImpl implements WildcardType {
 	public WilcardTypeImpl(Type upperBound) {
 		upperBounds = new Type[1];
 		upperBounds[0] = upperBound;
-		lowerBounds = null;
+		lowerBounds = new Type[0];
 	}
 
 	@Override
@@ -72,6 +73,16 @@ public class WilcardTypeImpl implements WildcardType {
 		}
 
 		return sb.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof WildcardType) {
+			WildcardType that = (WildcardType) obj;
+			return Arrays.asList(lowerBounds).equals(Arrays.asList(that.getLowerBounds()))
+					&& Arrays.asList(upperBounds).equals(Arrays.asList(that.getUpperBounds()));
+		}
+		return false;
 	}
 
 }
