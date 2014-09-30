@@ -163,6 +163,8 @@ public class TestTypeUtils {
 		// MyClass2<String, Boolean>
 		Type genericType = TestInstantiatedTypes.class.getMethods()[0].getGenericReturnType();
 
+		System.out.println("********** genericType=" + genericType);
+
 		TypeVariable a = MyClass1.class.getTypeParameters()[0];
 		assertEquals(Boolean.class, TypeUtils.makeInstantiatedType(a, genericType));
 		TypeVariable b = MyClass2.class.getTypeParameters()[0];
