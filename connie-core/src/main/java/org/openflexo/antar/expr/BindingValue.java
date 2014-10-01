@@ -21,6 +21,7 @@ package org.openflexo.antar.expr;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import org.openflexo.antar.binding.TargetObject;
 import org.openflexo.antar.binding.TypeUtils;
 import org.openflexo.antar.expr.parser.ExpressionParser;
 import org.openflexo.antar.expr.parser.ParseException;
+import org.openflexo.kvc.InvalidKeyValuePropertyException;
 import org.openflexo.kvc.KeyValueProperty;
 
 /**
@@ -855,7 +857,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + getParsedBindingPath()
 							+ ": null occured when evaluating " + previous);
 				}
-				current = e.getBindingValue(current, context);
+				try {
+					current = e.getBindingValue(current, context);
+				} catch (InvalidKeyValuePropertyException e2) {
+					throw new InvocationTargetTransformException(new InvocationTargetException(e2));
+				}
 				previous = e;
 			}
 			// System.out.println("  > return "+current);
