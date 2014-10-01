@@ -415,7 +415,6 @@ public class TypeUtils {
 		}
 
 		if (aType instanceof WildcardType) {
-			System.out.println("Je compare " + aType + " et " + anOtherType);
 			if (anOtherType instanceof WildcardType) {
 				// If two wildcards, perform check on both upper bounds
 				return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], ((WildcardType) anOtherType).getUpperBounds()[0],
