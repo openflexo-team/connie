@@ -12,7 +12,7 @@ public class TargetObject {
 
 	@Override
 	public String toString() {
-		return "TargetObject[" + target + (target != null ? "of " + target.getClass().getSimpleName() : "") + "/" + propertyName + "]";
+		return "TargetObject[" + target + (target != null ? " of " + target.getClass().getSimpleName() : "") + "/" + propertyName + "]";
 	}
 
 	@Override
