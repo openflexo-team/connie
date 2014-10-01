@@ -78,6 +78,9 @@ public class TypeUtils {
 				}
 				logger.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
+			} else if (aType instanceof GenericArrayType) {
+				Type componentType = ((GenericArrayType) aType).getGenericComponentType();
+				return getBaseClass(componentType);
 			} else {
 				logger.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
