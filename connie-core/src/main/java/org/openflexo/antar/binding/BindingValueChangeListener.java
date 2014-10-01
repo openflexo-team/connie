@@ -34,6 +34,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	protected T lastNotifiedValue;
 	private boolean deleted = false;
 
+	// Use to prevent initial null value not to be fired (causing listener to not listen this value)
+	private boolean lastNotifiedValueWasFired = false;
+
 	public BindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		super();
 		this.dataBinding = dataBinding;
@@ -95,6 +98,11 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			for (TargetObject to : targetObjects) {
 				logger.info("-------------> TargetObject: " + to.target + " property: " + to.propertyName);
 			}
+			logger.info("dependingObjects = " + dependingObjects);
+		}
+
+		if (debug) {
+			logger.info("1-updatedDependingObjects = " + updatedDependingObjects);
 		}
 
 		if (targetObjects != null) {
@@ -106,6 +114,11 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 				}
 			}
 		}
+
+		if (debug) {
+			logger.info("2-updatedDependingObjects = " + updatedDependingObjects);
+		}
+
 		Set<HasPropertyChangeSupport> set = new HashSet<HasPropertyChangeSupport>();
 		for (TargetObject o : updatedDependingObjects) {
 			if (o.target instanceof HasPropertyChangeSupport) {
@@ -118,6 +131,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			}
 		}
 
+		if (debug) {
+			logger.info("3-updatedDependingObjects = " + updatedDependingObjects);
+		}
+
 		List<TargetObject> newDependingObjects = new ArrayList<TargetObject>();
 		List<TargetObject> oldDependingObjects = new ArrayList<TargetObject>(dependingObjects);
 		for (TargetObject o : updatedDependingObjects) {
@@ -127,6 +144,12 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 				newDependingObjects.add(o);
 			}
 		}
+
+		if (debug) {
+			logger.info("oldDependingObjects = " + oldDependingObjects);
+			logger.info("newDependingObjects = " + newDependingObjects);
+		}
+
 		for (TargetObject o : oldDependingObjects) {
 			dependingObjects.remove(o);
 			if (o.target instanceof HasPropertyChangeSupport) {
@@ -235,8 +258,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		// Kept for future debug use
-		/*if (getDataBinding().toString().equals("data.canUndo()")) {
+		/*if (getDataBinding().toString().equals("controller.editorController.selectedObject")) {
 			System.out.println("Received propertyChange with " + evt);
+			System.out.println("deleted=" + deleted);
 			Thread.dumpStack();
 		}*/
 
@@ -254,7 +278,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			logger.warning("Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
 			newValue = null;
 		}
-		if (newValue != lastNotifiedValue) {
+		// Prevent initial null value not to be fired (causing listener to not listen this value)
+		if (newValue != lastNotifiedValue || !lastNotifiedValueWasFired) {
+			lastNotifiedValueWasFired = true;
 			lastNotifiedValue = newValue;
 			bindingValueChanged(source, newValue);
 			refreshObserving(false);
