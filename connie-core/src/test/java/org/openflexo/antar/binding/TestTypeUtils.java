@@ -59,6 +59,16 @@ public class TestTypeUtils {
 		assertFalse(TypeUtils.isTypeAssignableFrom(MyVector.class, Vector.class));
 	}
 
+	@Test
+	public void testGenerics() throws SecurityException, NoSuchMethodException {
+		// MyClass5<?, ?>
+		Type type1 = TestInstantiatedTypes.class.getMethod("retrieveType11").getGenericReturnType();
+		// MyClass5<?, ? extends Number>
+		Type type2 = TestInstantiatedTypes.class.getMethod("retrieveType12").getGenericReturnType();
+		assertTrue(TypeUtils.isTypeAssignableFrom(type1, type2));
+		assertTrue(TypeUtils.isTypeAssignableFrom(type2, type1));
+	}
+
 	// Test that t2 is NOT an instance of t1
 	public static interface ShouldFail {
 		public void test4(short t1, double t2);
@@ -149,6 +159,11 @@ public class TestTypeUtils {
 		public List<? extends Bound3<?>> retrieveType9();
 
 		public List<? extends Number> retrieveType10();
+
+		public MyClass5<?, ?> retrieveType11();
+
+		public MyClass5<?, ? extends Number> retrieveType12();
+
 	}
 
 	@Test

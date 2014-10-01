@@ -415,6 +415,7 @@ public class TypeUtils {
 		}
 
 		if (aType instanceof WildcardType) {
+			System.out.println("Je compare " + aType + " et " + anOtherType);
 			if (anOtherType instanceof WildcardType) {
 				// If two wildcards, perform check on both upper bounds
 				return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], ((WildcardType) anOtherType).getUpperBounds()[0],
@@ -465,7 +466,17 @@ public class TypeUtils {
 			// Now, we have to compare parameter per parameter
 			for (int i = 0; i < t1.getActualTypeArguments().length; i++) {
 				Type st1 = t1.getActualTypeArguments()[i];
+				if (isPureWildCard(st1) && t1.getRawType() instanceof Class && ((Class) t1.getRawType()).getTypeParameters().length > i) {
+					// Fixed assignalibity issue with widcards as natural bounds of generic type
+					TypeVariable TV1 = ((Class) t1.getRawType()).getTypeParameters()[i];
+					st1 = new WilcardTypeImpl(TV1.getBounds(), new Type[0]);
+				}
 				Type st2 = t2.getActualTypeArguments()[i];
+				if (isPureWildCard(st2) && t2.getRawType() instanceof Class && ((Class) t2.getRawType()).getTypeParameters().length > i) {
+					// Fixed assignalibity issue with widcards as natural bounds of generic type
+					TypeVariable TV2 = ((Class) t2.getRawType()).getTypeParameters()[i];
+					st2 = new WilcardTypeImpl(TV2.getBounds(), new Type[0]);
+				}
 				if (!isTypeAssignableFrom(st1, st2, true)) {
 					return false;
 				}
