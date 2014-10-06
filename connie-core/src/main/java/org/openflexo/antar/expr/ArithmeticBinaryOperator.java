@@ -25,6 +25,7 @@ import org.openflexo.antar.expr.Constant.DateConstant;
 import org.openflexo.antar.expr.Constant.DurationConstant;
 import org.openflexo.antar.expr.Constant.FloatConstant;
 import org.openflexo.antar.expr.Constant.IntegerConstant;
+import org.openflexo.antar.expr.Constant.ObjectConstant;
 import org.openflexo.antar.expr.Constant.ObjectSymbolicConstant;
 import org.openflexo.antar.expr.Constant.StringConstant;
 import org.openflexo.toolbox.Duration;
@@ -64,6 +65,8 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 							+ ((DurationConstant) rightArg).getDuration().getSerializationRepresentation());
 				} else if (rightArg == ObjectSymbolicConstant.NULL) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + "null");
+				} else if (rightArg instanceof ObjectConstant) {
+					return new StringConstant(((StringConstant) leftArg).getValue() + ((ObjectConstant) rightArg).getValue().toString());
 				}
 			} else if (leftArg instanceof DurationConstant) {
 				if (rightArg instanceof DurationConstant) {
