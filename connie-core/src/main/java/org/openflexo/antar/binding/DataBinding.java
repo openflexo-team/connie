@@ -130,6 +130,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public DataBinding(String unparsed) {
 		super();
+		pcSupport = new PropertyChangeSupport(this);
 		setUnparsedBinding(unparsed);
 	}
 
@@ -253,7 +254,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void setBindingName(String bindingName) {
-		this.bindingName = bindingName;
+		if (this.bindingName != bindingName) {
+			String oldBindingName = this.bindingName;
+			this.bindingName = bindingName;
+			if (getPropertyChangeSupport() != null) {
+				getPropertyChangeSupport().firePropertyChange("bindingName", oldBindingName, bindingName);
+			}
+		}
 	}
 
 	public Type getDeclaredType() {
