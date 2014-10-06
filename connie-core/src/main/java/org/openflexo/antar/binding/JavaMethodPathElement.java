@@ -129,6 +129,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			e.getTargetException().printStackTrace();
 			StringBuffer sb = new StringBuffer();
 			sb.append("InvocationTargetException " + e.getTargetException().getClass().getSimpleName() + " : "
 					+ e.getTargetException().getMessage() + " while evaluating method " + getMethodDefinition().getMethod()
