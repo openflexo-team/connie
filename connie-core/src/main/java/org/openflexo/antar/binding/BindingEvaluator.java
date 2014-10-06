@@ -34,15 +34,23 @@ public class BindingEvaluator extends DefaultBindable implements BindingEvaluati
 
 	private static final BindingFactory BINDING_FACTORY = new JavaBindingFactory();
 
-	private final Object object;
-	private final BindingDefinition bindingDefinition;
-	private final BindingModel bindingModel;
+	private Object object;
+	private BindingDefinition bindingDefinition;
+	private BindingModel bindingModel;
 
 	private BindingEvaluator(Object object) {
 		this.object = object;
+
 		bindingDefinition = new BindingDefinition("object", object.getClass(), DataBinding.BindingDefinitionType.GET, true);
 		bindingModel = new BindingModel();
 		bindingModel.addToBindingVariables(new BindingVariable("object", object.getClass()));
+	}
+
+	public void delete() {
+		object = null;
+		bindingDefinition = null;
+		bindingModel.delete();
+		bindingModel = null;
 	}
 
 	private static String normalizeBindingPath(String bindingPath) {
@@ -124,7 +132,9 @@ public class BindingEvaluator extends DefaultBindable implements BindingEvaluati
 			NullReferenceException, InvocationTargetException {
 
 		BindingEvaluator evaluator = new BindingEvaluator(object);
-		return evaluator.evaluate(bindingPath);
+		Object returned = evaluator.evaluate(bindingPath);
+		evaluator.delete();
+		return returned;
 	}
 
 	public static void main(String[] args) {
