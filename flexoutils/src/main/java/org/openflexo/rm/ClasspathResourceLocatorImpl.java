@@ -24,8 +24,11 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -67,7 +70,8 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 					if (url.getProtocol().equals("file")) {
 						resourceLocation = new FileResourceImpl(this, relativePathName, url);
 
-					} else {
+					}
+					else {
 						String jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),
 								"UTF-8");
 						resourceLocation = new InJarResourceImpl(this, relativePathName, url);
@@ -93,6 +97,55 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	}
 
+	public List<Resource> locateAllResources(String relativePathName) {
+
+		if (relativePathName == null) {
+			return null;
+		}
+
+		ArrayList<Resource> returned = new ArrayList<Resource>();
+
+		Resource resourceLocation = null;
+
+		try {
+			Enumeration<URL> urlList = cl.getResources(relativePathName);
+
+			if (urlList != null && urlList.hasMoreElements()) {
+				while (urlList.hasMoreElements()) {
+					URL url = urlList.nextElement();
+
+					if (url.getProtocol().equals("file")) {
+						resourceLocation = new FileResourceImpl(this, relativePathName, url);
+
+					}
+					else {
+						String jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),
+								"UTF-8");
+						resourceLocation = new InJarResourceImpl(this, relativePathName, url);
+						Resource parent = JarResourcesList.get(jarPath);
+						if (parent == null) {
+							parent = new JarResourceImpl(this, jarPath);
+							if (parent != null) {
+								resourceLocation.setContainer(parent);
+								JarResourcesList.put(jarPath, parent);
+							}
+						}
+					}
+					if (resourceLocation != null) {
+						System.out.println("----- FOUND : " + resourceLocation.getURI());
+						returned.add(resourceLocation);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.severe("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
+			e.printStackTrace();
+		}
+
+		return returned;
+
+	}
+
 	@Override
 	public Resource locateResourceWithBaseLocation(Resource baseLocation, String relativePath) {
 
@@ -110,7 +163,8 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 			try {
 				if (url.getProtocol().equalsIgnoreCase("file")) {
 					locateFile = new File(url.toURI());
-				} else {
+				}
+				else {
 					logger.warning("Resource found is not convertible to a File " + url.toString());
 					locateFile = null;
 				}
