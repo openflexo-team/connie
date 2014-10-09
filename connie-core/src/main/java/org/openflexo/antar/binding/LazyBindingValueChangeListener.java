@@ -1,5 +1,6 @@
 package org.openflexo.antar.binding;
 
+import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
 
 import org.openflexo.logging.FlexoLogger;
@@ -19,9 +20,9 @@ public abstract class LazyBindingValueChangeListener<T> extends BindingValueChan
 	}
 
 	@Override
-	protected void fireChange(Object source) {
+	protected void fireChange(PropertyChangeEvent evt) {
 		getDataBinding().clearCacheForBindingEvaluationContext(getContext());
-		bindingValueChanged(source);
+		bindingValueChanged(evt.getSource());
 		refreshObserving(false);
 	}
 

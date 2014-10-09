@@ -250,7 +250,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	@Override
 	public void update(Observable o, Object arg) {
 		if (!deleted) {
-			fireChange(o);
+			fireChange(new PropertyChangeEvent(o, null, null, null));
 		}
 	}
 
@@ -258,18 +258,31 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		// Kept for future debug use
-		/*if (getDataBinding().toString().equals("controller.editorController.selectedObject")) {
+		/*if (getDataBinding().toString().equals("data.currentStep.issueMessageIcon.image")) {
 			System.out.println("Received propertyChange with " + evt);
 			System.out.println("deleted=" + deleted);
-			Thread.dumpStack();
+			// Thread.dumpStack();
+			System.out.println("property: " + evt.getPropertyName());
+			System.out.println("oldValue: " + evt.getOldValue());
+			System.out.println("newValue: " + evt.getNewValue());
+			for (TargetObject o : dependingObjects) {
+				System.out.println("TargetObject " + o.propertyName + " " + o.target);
+			}
 		}*/
 
 		if (!deleted) {
-			fireChange(evt.getSource());
+			fireChange(evt);
 		}
 	}
 
-	protected void fireChange(Object source) {
+	protected void fireChange(PropertyChangeEvent evt) {
+
+		// Kept for future debug use
+		/*if (getDataBinding().toString().equals("data.currentStep.issueMessageIcon.image")) {
+			System.out.println(">>>>>>>>>> fireChange for " + getDataBinding().toString());
+			refreshObserving(false);
+		}*/
+
 		T newValue;
 		try {
 			dataBinding.clearCacheForBindingEvaluationContext(context);
@@ -278,12 +291,28 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			logger.warning("Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
 			newValue = null;
 		}
+
+		// Kept for future debug use
+		/*if (getDataBinding().toString().equals("data.currentStep.issueMessageIcon.image")) {
+			System.out.println("lastNotifiedValue=" + lastNotifiedValue);
+			System.out.println("newValue=" + newValue);
+		}*/
+
 		// Prevent initial null value not to be fired (causing listener to not listen this value)
 		if (newValue != lastNotifiedValue || !lastNotifiedValueWasFired) {
 			lastNotifiedValueWasFired = true;
 			lastNotifiedValue = newValue;
-			bindingValueChanged(source, newValue);
+			bindingValueChanged(evt.getSource(), newValue);
 			refreshObserving(false);
+		} else {
+			// This change will not cause the change of the object, but a different path may lead to the same value
+			// If we do nothing, we might no longer observe the right objects
+			for (TargetObject o : new ArrayList<TargetObject>(dependingObjects)) {
+				if (evt.getSource() == o.target && evt.getPropertyName().equals(o.propertyName)) {
+					bindingValueChanged(evt.getSource(), newValue);
+					refreshObserving(false);
+				}
+			}
 		}
 	}
 
