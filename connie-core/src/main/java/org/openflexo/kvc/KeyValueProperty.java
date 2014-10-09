@@ -560,7 +560,7 @@ public class KeyValueProperty extends Observable {
 				try {
 					setMethod.invoke(currentObject, params);
 				} catch (InvocationTargetException e) {
-					// e.getTargetException().printStackTrace();
+					e.getTargetException().printStackTrace();
 					throw new AccessorInvocationException("AccessorInvocationException: class " + declaringClass.getName() + ": method "
 							+ setMethod.getName() + " Exception raised: " + e.getTargetException().toString(), e);
 				} catch (IllegalArgumentException e) {
