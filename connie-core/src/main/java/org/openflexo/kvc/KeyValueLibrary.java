@@ -392,19 +392,23 @@ public class KeyValueLibrary {
 				String methodName = e.nextElement();
 				// Method returned = type.getMethod(methodName, params);
 				Method returned = getMethod(declaringType, methodName, params);
-				return returned;
+				if (returned != null) {
+					return returned;
+				}
 			} catch (SecurityException err) {
 				// we continue
-			} catch (NoSuchMethodException err) {
+			} // catch (NoSuchMethodException err) {
 				// we continue
-			}
+			// }
 		}
 
 		return null;
 
 	}
 
-	private static Method getMethod(Type type, String methodName, Type... params) throws NoSuchMethodException {
+	// Not anymore throw SuchMethodException (return null instead)
+	// > performance issue
+	private static Method getMethod(Type type, String methodName, Type... params) /*throws NoSuchMethodException*/{
 		Class theClass = TypeUtils.getBaseClass(type);
 		if (theClass == null) {
 			logger.warning("Cannot search properties for type: " + type);
@@ -446,7 +450,8 @@ public class KeyValueLibrary {
 		if (logger.isLoggable(Level.FINE)) {
 			logger.fine("Looking for " + methodName + " with" + sb.toString() + ": NOT found");
 		}
-		throw new NoSuchMethodException();
+		// throw new NoSuchMethodException();
+		return null;
 	}
 
 }
