@@ -162,7 +162,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 					logger.info("-------------> Observer of " + dataBinding + " remove property change listener: " + o.target
 							+ " property:" + o.propertyName);
 				}
-				pcSupport.removePropertyChangeListener(o.propertyName, this);
+				if (pcSupport != null) {
+					pcSupport.removePropertyChangeListener(o.propertyName, this);
+				}
 			} else if (o.target instanceof Observable) {
 				if (logger.isLoggable(Level.FINE)) {
 					logger.fine("Observer of " + dataBinding + " remove observable: " + o);
@@ -185,7 +187,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 					logger.info("-------------> Observer of " + dataBinding + " add property change listener: " + o.target + " property:"
 							+ o.propertyName);
 				}
-				pcSupport.addPropertyChangeListener(o.propertyName, this);
+				if (pcSupport != null) {
+					pcSupport.addPropertyChangeListener(o.propertyName, this);
+				}
 			} else if (o.target instanceof Observable) {
 				if (logger.isLoggable(Level.FINE)) {
 					logger.fine("Observer of " + dataBinding + " add observable: " + o.target);
