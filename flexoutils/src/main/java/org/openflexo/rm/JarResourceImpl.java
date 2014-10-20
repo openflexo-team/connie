@@ -20,15 +20,11 @@
 
 package org.openflexo.rm;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -52,6 +48,10 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
 	private List<Resource> contents;
 	private JarFile jarfile = null;
+	public JarFile getJarfile() {
+		return jarfile;
+	}
+
 	private String jarfilename = null;
 
 
@@ -77,8 +77,30 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			logger.severe("Unable to create JarResource with filename: " +filename);
 			return;
 		}
+		
+		// Add the jarResource in the locator resource list if not contained
+		/*if(locator instanceof ClasspathResourceLocatorImpl){
+			ClasspathResourceLocatorImpl classPathLocator = (ClasspathResourceLocatorImpl)locator;
+			if(classPathLocator.getJarResourcesList().get(this)==null){
+				classPathLocator.getJarResourcesList().put(this.getRelativePath(), this);
+			}
+		}*/
 	}
 
+	public JarResourceImpl(ResourceLocatorDelegate locator, JarFile jarFile)
+			throws MalformedURLException {
+		super(locator);
+		this._relativePath = jarFile.getName();
+		this.jarfile = jarFile;
+		if (jarfile != null){
+			_url = new URL("file:"+jarFile.getName());
+			jarfilename = jarFile.getName();
+		}
+		else {
+			logger.severe("Unable to create JarResource with filename: " +jarFile.getName());
+			return;
+		}
+	}
 
 	@Override
 	public Resource getContainer() {
@@ -103,12 +125,14 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			try{
 				Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
 				List<Resource> retval = new ArrayList<Resource>();
-
 				while(entries.hasMoreElements()) {
 
 					JarEntry current = entries.nextElement();
 					String name = current.getName();
-					retval.add(new InJarResourceImpl(name, new URL("jar", url.getHost(),"file:"+jarfilename +"!/"+name)));
+
+					InJarResourceImpl inJarResource = new InJarResourceImpl(name, new URL("jar", url.getHost(),"file:"+jarfilename +"!/"+name));
+					inJarResource.setEntry(current);
+					retval.add(inJarResource);
 				}
 
 				return retval;
@@ -130,7 +154,6 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		try{
 			Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
 			List<Resource> retval = new ArrayList<Resource>();
-
 			while(entries.hasMoreElements()) {
 				JarEntry current = entries.nextElement();
 				String name = current.getName();
@@ -159,7 +182,6 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		try{
 			Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
 			List<Resource> retval = new ArrayList<Resource>();
-
 			while(entries.hasMoreElements()) {
 				JarEntry current = entries.nextElement();
 				String name = current.getName();
@@ -204,7 +226,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	public InputStream openInputStream(JarEntry entry){
 		if (jarfile != null){
 			try {
-				jarfile.getInputStream(entry);
+				return jarfile.getInputStream(entry);
 			} catch (IOException e) {
 				logger.severe("Unable to access Resource");
 				e.printStackTrace();
