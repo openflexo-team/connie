@@ -20,19 +20,15 @@
 
 package org.openflexo.rm;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -52,13 +48,18 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath,
 			URL url) throws LocatorNotFoundException {
 		super(delegate, initialPath, url);
-
 	}
 
 
 	public InJarResourceImpl(String initialPath, URL url) throws LocatorNotFoundException {
 		super(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), initialPath, url);
-
+		((ClasspathResourceLocatorImpl)this.getLocator()).getJarResourcesList().put(initialPath, this);
+		
+		// Add the InJarResource in the locator resource list if not contained
+		ClasspathResourceLocatorImpl locator = (ClasspathResourceLocatorImpl) ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class);
+		if(locator.getJarResourcesList().get(this)==null){
+			locator.getJarResourcesList().put(initialPath, this);
+		}
 	}
 
 
@@ -82,46 +83,78 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	
 	@Override
 	public List<Resource> getContents() {
-
-		if (entry != null && entry.isDirectory()) {
+		List<Resource> resources = new ArrayList<Resource>();
 		
-			// TODO some day ...
+		if (entry != null && entry.isDirectory()) {
+			// Browser the resource of the container
+			for(Resource resource : getContainer().getContents()){
+				String parentFolderPath=resource.getRelativePath();
+				//If it is a folder end with "/" then remove the "/" to find the parent path
+				if(parentFolderPath.endsWith("/")){
+					int lastSeparator = parentFolderPath.lastIndexOf("/");
+					parentFolderPath = parentFolderPath.substring(0, lastSeparator);
+				}
+				// Find the last separation
+				if(parentFolderPath.contains("/")){
+					int lastSeparator = parentFolderPath.lastIndexOf("/");
+					parentFolderPath = parentFolderPath.substring(0, lastSeparator+1);
+				}
+				// Check it corresponds to this in jar resource
+				if(parentFolderPath.equals(getRelativePath())){
+					resources.add(resource);
+				}
 			}
+			// TODO some day ...
 			
-		return java.util.Collections.emptyList();
+		}
+			
+		return resources;
 		
 	}
 
+	@Override
+	public boolean isContainer() {
+		return entry.isDirectory();
+		
+	};
+	
+	
+	@Override
+	public Resource getContainer() {
+		if(super.getContainer()!=null){
+			return super.getContainer();
+		} else{
+			URL url = getURL();
+			
+			JarResourceImpl container = (JarResourceImpl) this._parent;
+			
+			if (container == null) {
+				// finds the container
+				String jarPath = null;
+				try {
+					jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),"UTF-8");
+				} catch (UnsupportedEncodingException e1) {
+					logger.severe("Unable to decode given PATH");
+					e1.printStackTrace();
+				}
+				try {
+					container = new JarResourceImpl(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), jarPath);
+				} catch (MalformedURLException e) {
+					logger.severe("Unable to retrieve containing JarFile: " + jarPath);
+					e.printStackTrace();
+					return (Resource) java.util.Collections.emptyList();
+				}
+				this.setContainer(container);
+			}
+			return container;
+		}
+
+	}
 	
 	@Override
 	public List<? extends Resource> getContents(Pattern pattern) {
-
-		URL url = getURL();
-		
-		JarResourceImpl container = (JarResourceImpl) getContainer();
-		
-		if (container == null) {
-			// finds the container
-			String jarPath = null;
-			try {
-				jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),"UTF-8");
-			} catch (UnsupportedEncodingException e1) {
-				logger.severe("Unable to decode given PATH");
-				e1.printStackTrace();
-			}
-			try {
-				container = new JarResourceImpl(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), jarPath);
-			} catch (MalformedURLException e) {
-				logger.severe("Unable to retrieve containing JarFile: " + jarPath);
-				e.printStackTrace();
-				return java.util.Collections.emptyList();
-			}
-			this.setContainer(container);
-		}
-
 		String startpath = getRelativePath();
-		return container.getContents(startpath, pattern);
-		
+		return ((JarResourceImpl)getContainer()).getContents(startpath, pattern);
 	}
 
 
