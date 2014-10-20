@@ -499,4 +499,17 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	}
 
+	/**
+	 * Append a directory to the file system resource locator, create the locator if it doesn't exist
+	 * @param path
+	 */
+	public static void appendDirectoryToFileSystemResourceLocator(String path){
+		FileSystemResourceLocatorImpl fsrl = (FileSystemResourceLocatorImpl) ResourceLocator
+				.getInstanceForLocatorClass(FileSystemResourceLocatorImpl.class);
+		if (fsrl == null) {
+			fsrl = new FileSystemResourceLocatorImpl();
+			ResourceLocator.appendDelegate(fsrl);
+		}
+		fsrl.appendToDirectories(path);
+	}
 }
