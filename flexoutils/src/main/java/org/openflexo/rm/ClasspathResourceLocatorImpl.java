@@ -42,7 +42,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	private static final Logger logger = Logger.getLogger(ClasspathResourceLocatorImpl.class.getPackage().getName());
 	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
-	private static final String PATH_SEP = "/";
+	public static final String PATH_SEP = "/";
 
 	private final Map<String, Resource> JarResourcesList;
 
