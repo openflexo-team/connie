@@ -2,6 +2,9 @@ package org.openflexo.toolbox;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -51,6 +54,35 @@ public class ClassPathUtils {
 	private static boolean isJarFile(File jar){
 		return jar.getName().endsWith(".jar");
 	}
+	
+	public static URL[] findJarsFromDirectory(File targetDirectory){
+		// Retrieve downloaded files which are jars
+	    File[] files = targetDirectory.listFiles();
+	    URL[] urls = new URL[files.length];
+	    for (int i = 0; i < files.length; i++) {
+	        if (files[i].getName().endsWith(".jar")) {
+	        	try {
+	        		//loader.addURL(files[i].toURI().toURL());
+	        		urls[i] = files[i].toURI().toURL();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        }
+	    }
+	    return urls;
+	}
 
+	public static void downloadJars(List<URL> remoteUrls, String path){
+		// Download the files
+		for(URL url : remoteUrls){
+			try {
+				HTTPFileUtils.getFile(url.toURI().toString(), path);
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 }
