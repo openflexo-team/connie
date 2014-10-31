@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 @Deprecated
 public class BindingDefinition extends Observable {
 
-	static final Logger logger = Logger.getLogger(BindingDefinition.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(BindingDefinition.class.getPackage().getName());
 
 	private String variableName;
 
@@ -42,14 +42,14 @@ public class BindingDefinition extends Observable {
 
 	private boolean isMandatory;
 
-	private DataBinding.BindingDefinitionType _bindingDefinitionType = DataBinding.BindingDefinitionType.GET;
+	private DataBinding.BindingDefinitionType bindingDefinitionType = DataBinding.BindingDefinitionType.GET;
 
 	public BindingDefinition(String variableName, Type type, DataBinding.BindingDefinitionType bindingType, boolean mandatory) {
 		super();
 		this.variableName = variableName;
 		this.type = type;
 		isMandatory = mandatory;
-		_bindingDefinitionType = bindingType;
+		bindingDefinitionType = bindingType;
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class BindingDefinition extends Observable {
 		this.variableName = variableName;
 	}
 
-	public static final Comparator<BindingDefinition> bindingDefinitionComparator = new BindingDefinitionComparator();
+	public static final Comparator<BindingDefinition> BINDING_DEFINITION_COMPARATOR = new BindingDefinitionComparator();
 
 	/**
 	 * Used to sort binding definition according to name alphabetic ordering
@@ -139,11 +139,11 @@ public class BindingDefinition extends Observable {
 	}
 
 	public DataBinding.BindingDefinitionType getBindingDefinitionType() {
-		return _bindingDefinitionType;
+		return bindingDefinitionType;
 	}
 
 	public void setBindingDefinitionType(DataBinding.BindingDefinitionType bdType) {
-		_bindingDefinitionType = bdType;
+		bindingDefinitionType = bdType;
 	}
 
 	public String getTypeStringRepresentation() {
@@ -156,7 +156,7 @@ public class BindingDefinition extends Observable {
 
 	@Override
 	public String toString() {
-		return "BindingDefinition[name=" + variableName + ",type=" + type + ",mandatory=" + isMandatory + ",kind=" + _bindingDefinitionType
+		return "BindingDefinition[name=" + variableName + ",type=" + type + ",mandatory=" + isMandatory + ",kind=" + bindingDefinitionType
 				+ "]";
 	}
 

@@ -156,6 +156,11 @@ public class BinaryOperatorExpression extends Expression {
 	}
 
 	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BinaryOperatorExpression) {
 			BinaryOperatorExpression e = (BinaryOperatorExpression) obj;

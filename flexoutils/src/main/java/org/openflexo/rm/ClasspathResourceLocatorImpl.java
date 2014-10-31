@@ -40,7 +40,7 @@ import java.util.logging.Logger;
 
 public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
-	private static final Logger logger = Logger.getLogger(ClasspathResourceLocatorImpl.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(ClasspathResourceLocatorImpl.class.getPackage().getName());
 	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
 	public static final String PATH_SEP = "/";
 
@@ -86,7 +86,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 					}
 				}
 			} catch (Exception e) {
-				logger.severe("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
+				LOGGER.severe("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
 				e.printStackTrace();
 			}
 
@@ -138,7 +138,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 				}
 			}
 		} catch (Exception e) {
-			logger.severe("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
+			LOGGER.severe("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
 			e.printStackTrace();
 		}
 
@@ -174,14 +174,14 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 					locateFile = new File(url.toURI());
 				}
 				else {
-					logger.warning("Resource found is not convertible to a File " + url.toString());
+					LOGGER.warning("Resource found is not convertible to a File " + url.toString());
 					locateFile = null;
 				}
 			} catch (URISyntaxException e) {
 				locateFile = null;
 			} catch (Exception e) {
 				locateFile = null;
-				logger.warning("Did Not find Resource in classpath : " + url);
+				LOGGER.warning("Did Not find Resource in classpath : " + url);
 				e.printStackTrace();
 			}
 		}

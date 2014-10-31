@@ -79,12 +79,12 @@ public abstract class Constant<V> extends Expression {
 	}
 
 	@Override
-	public int getDepth() {
+	public int getDepth() { // NOPMD by beugnard on 31/10/14 00:05
 		return 0;
 	}
 
 	@Override
-	protected Vector<Expression> getChilds() {
+	protected Vector<Expression> getChilds() { // NOPMD by beugnard on 31/10/14 00:05
 		return null;
 	}
 

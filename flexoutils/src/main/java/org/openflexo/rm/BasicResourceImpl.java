@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 
 public class BasicResourceImpl implements Resource {
 
-	private static final Logger logger = Logger.getLogger(BasicResourceImpl.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(BasicResourceImpl.class.getPackage().getName());
 	protected static final Date _dateZero = new Date(0);
 
 	// Initial requested path
@@ -51,7 +51,7 @@ public class BasicResourceImpl implements Resource {
 	public BasicResourceImpl(
 			ResourceLocatorDelegate locator, String initialPath, URL url) throws LocatorNotFoundException {
 		if (locator == null){
-			logger.severe("Cannot create a Resource without a Locator : " + url.toString());
+			LOGGER.severe("Cannot create a Resource without a Locator : " + url.toString());
 			throw new LocatorNotFoundException();
 		}
 		_relativePath = initialPath;
@@ -75,14 +75,14 @@ public class BasicResourceImpl implements Resource {
 		try {
 			uri = new URI(anURI);
 		} catch (URISyntaxException e) {
-			logger.severe("Unable to translate given string to url: " + anURI);
+			LOGGER.severe("Unable to translate given string to url: " + anURI);
 			e.printStackTrace();
 		}
 		if (uri != null){
 			try {
 				_url = uri.toURL();
 			} catch (MalformedURLException e) {
-				logger.severe("Unable to translate given string to url: " + anURI);
+				LOGGER.severe("Unable to translate given string to url: " + anURI);
 				e.printStackTrace();
 			}
 		}
@@ -121,7 +121,7 @@ public class BasicResourceImpl implements Resource {
 			try {
 				return _url.openStream();
 			} catch (IOException e) {
-				logger.severe("Cannot open given Resource: " + _url.toString());
+				LOGGER.severe("Cannot open given Resource: " + _url.toString());
 				e.printStackTrace();
 			}
 		}

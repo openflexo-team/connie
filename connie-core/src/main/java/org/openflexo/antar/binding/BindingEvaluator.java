@@ -30,7 +30,7 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
  * @author sylvain
  * 
  */
-public class BindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
+final public class BindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
 
 	private static final BindingFactory BINDING_FACTORY = new JavaBindingFactory();
 
@@ -101,6 +101,11 @@ public class BindingEvaluator extends DefaultBindable implements BindingEvaluati
 	public Object getValue(BindingVariable variable) {
 		return object;
 	}
+	
+	@Override
+	public String getDeletedProperty() {
+		return null;
+	}
 
 	@Override
 	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
@@ -155,5 +160,4 @@ public class BindingEvaluator extends DefaultBindable implements BindingEvaluati
 			e.printStackTrace();
 		}
 	}
-
 }

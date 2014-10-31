@@ -16,7 +16,7 @@ import org.openflexo.toolbox.ToolBox;
  */
 public class JavaPropertyPathElement extends SimplePathElement {
 
-	private static final Logger logger = Logger.getLogger(DataBinding.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(DataBinding.class.getPackage().getName());
 
 	private final KeyValueProperty keyValueProperty;
 
@@ -27,7 +27,7 @@ public class JavaPropertyPathElement extends SimplePathElement {
 		if (keyValueProperty != null) {
 			setType(keyValueProperty.getType());
 		} else {
-			logger.warning("cannot find property " + propertyName + " for " + parent + " which type is " + parent.getType());
+			LOGGER.warning("cannot find property " + propertyName + " for " + parent + " which type is " + parent.getType());
 		}
 
 		warnWhenInconsistentData(parent, propertyName);
@@ -45,7 +45,7 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 		if (keyValueProperty.getGetMethod() != null
 				&& !TypeUtils.isTypeAssignableFrom(keyValueProperty.getGetMethod().getDeclaringClass(), getParent().getType())) {
-			logger.warning("Inconsistent data: " + getParent().getType() + " is not an instance of "
+			LOGGER.warning("Inconsistent data: " + getParent().getType() + " is not an instance of "
 					+ keyValueProperty.getGetMethod().getDeclaringClass());
 			/*System.out.println("propertyName=" + propertyName);
 			 System.out.println("parent=" + parent);

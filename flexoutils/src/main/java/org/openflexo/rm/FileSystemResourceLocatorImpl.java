@@ -47,7 +47,7 @@ import org.openflexo.toolbox.FileUtils;
 
 public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
-	private static final Logger logger = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
 	private static String PATH_SEP = System.getProperty("file.separator");
 
 	private final Map<File, FileResourceImpl> cache = new HashMap<File, FileResourceImpl>();
@@ -70,10 +70,10 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				return returned;
 			}
 		} catch (MalformedURLException e) {
-			logger.severe("Unable to find given file: " + relativePathName);
+			LOGGER.severe("Unable to find given file: " + relativePathName);
 			e.printStackTrace();
 		} catch (LocatorNotFoundException e) {
-			logger.severe(" IMPOSSIBLE!  Locator is null for: " + relativePathName);
+			LOGGER.severe(" IMPOSSIBLE!  Locator is null for: " + relativePathName);
 			e.printStackTrace();
 		}
 		return null;
@@ -119,10 +119,10 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 							return new FileResourceImpl(this, baseLocation.getRelativePath() + PATH_SEP + relativePath, foundFiles[0]
 									.toURI().toURL(), foundFiles[0]);
 						} catch (MalformedURLException e) {
-							logger.severe("Unable to convert File To ResourceLocation: " + relativePath);
+							LOGGER.severe("Unable to convert File To ResourceLocation: " + relativePath);
 							e.printStackTrace();
 						} catch (LocatorNotFoundException e) {
-							logger.severe(" IMPOSSIBLE!  Locator is nullfor: " + relativePath);
+							LOGGER.severe(" IMPOSSIBLE!  Locator is nullfor: " + relativePath);
 							e.printStackTrace();
 						}
 					}
@@ -239,7 +239,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				try {
 					locateFile = new File(url.toURI());
 				} catch (URISyntaxException e) {
-					logger.severe("Unable to retrieve File...: " + url.toString());
+					LOGGER.severe("Unable to retrieve File...: " + url.toString());
 					e.printStackTrace();
 				}
 				if (locateFile != null) {
@@ -292,8 +292,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
 			if (nextTry.exists()) {
-				if (logger.isLoggable(Level.FINER)) {
-					logger.finer("Found " + nextTry.getAbsolutePath());
+				if (LOGGER.isLoggable(Level.FINER)) {
+					LOGGER.finer("Found " + nextTry.getAbsolutePath());
 				}
 				try {
 					if (nextTry.getCanonicalFile().getName().equals(nextTry.getName()) || lenient) {
@@ -302,8 +302,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				} catch (IOException e1) {
 				}
 			} else {
-				if (logger.isLoggable(Level.FINER)) {
-					logger.finer("Searched for a " + nextTry.getAbsolutePath());
+				if (LOGGER.isLoggable(Level.FINER)) {
+					LOGGER.finer("Searched for a " + nextTry.getAbsolutePath());
 				}
 			}
 		}
@@ -329,8 +329,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 			return found.get(0);
 		}
 
-		if (logger.isLoggable(Level.WARNING)) {
-			logger.warning("Could not locate resource " + relativePathName);
+		if (LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Could not locate resource " + relativePathName);
 		}
 		return null;
 		// TODO: this should not happen!
@@ -356,8 +356,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
 			if (nextTry.exists()) {
-				if (logger.isLoggable(Level.FINER)) {
-					logger.finer("Found " + nextTry.getAbsolutePath());
+				if (LOGGER.isLoggable(Level.FINER)) {
+					LOGGER.finer("Found " + nextTry.getAbsolutePath());
 				}
 				try {
 					if (nextTry.getCanonicalFile().getName().equals(nextTry.getName()) || lenient) {
@@ -438,8 +438,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		if (directoriesSearchOrder == null) {
 			synchronized (FileSystemResourceLocatorImpl.class) {
 				if (directoriesSearchOrder == null) {
-					if (logger.isLoggable(Level.INFO)) {
-						logger.info("Initializing directories search order");
+					if (LOGGER.isLoggable(Level.INFO)) {
+						LOGGER.info("Initializing directories search order");
 					}
 					directoriesSearchOrder = new ArrayList<File>();
 					if (preferredResourcePath != null) {

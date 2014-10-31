@@ -27,7 +27,7 @@ import org.openflexo.logging.FlexoLogger;
 public class Class implements AlgorithmicUnit {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = FlexoLogger.getLogger(Class.class.getPackage().getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(Class.class.getPackage().getName());
 
 	private String className;
 	private String groupName;

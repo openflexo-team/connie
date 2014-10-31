@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
-public class ModelFactory extends saxBasedObjectGraphFactory {
+public class ModelFactory extends SaxBasedObjectGraphFactory {
 
     private XMLModel                 model            = null;
 
@@ -60,14 +60,14 @@ public class ModelFactory extends saxBasedObjectGraphFactory {
             try {
                 saxParser.parse(input, handler);
             } catch (SAXException e) {
-                logger.warning("Cannot parse document: " + e.getMessage());
+                LOGGER.warning("Cannot parse document: " + e.getMessage());
                 throw new IOException(e.getMessage());
             }
             return this.model;
 
         }
         else {
-            logger.warning("Context is not set for parsing, aborting");
+            LOGGER.warning("Context is not set for parsing, aborting");
         }
         return null;
     }
@@ -79,14 +79,14 @@ public class ModelFactory extends saxBasedObjectGraphFactory {
             try {
                 saxParser.parse(input, handler);
             } catch (SAXException e) {
-                logger.warning("Cannot parse document: " + e.getMessage());
+                LOGGER.warning("Cannot parse document: " + e.getMessage());
                 throw new IOException(e.getMessage());
             }
             return this.model;
 
         }
         else {
-            logger.warning("Context is not set for parsing, aborting");
+            LOGGER.warning("Context is not set for parsing, aborting");
         }
         return null;
     }

@@ -28,7 +28,7 @@ import org.openflexo.logging.FlexoLogger;
 public class Procedure implements AlgorithmicUnit {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = FlexoLogger.getLogger(Procedure.class.getPackage().getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(Procedure.class.getPackage().getName());
 
 	private String procedureName;
 	private Vector<ProcedureParameter> parameters;

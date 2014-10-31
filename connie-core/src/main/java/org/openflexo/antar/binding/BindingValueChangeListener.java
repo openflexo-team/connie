@@ -26,7 +26,7 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  */
 public abstract class BindingValueChangeListener<T> implements PropertyChangeListener, Observer {
 
-	private static final Logger logger = FlexoLogger.getLogger(BindingValueChangeListener.class.getName());
+	private static final Logger LOGGER= FlexoLogger.getLogger(BindingValueChangeListener.class.getName());
 
 	private DataBinding<T> dataBinding;
 	private BindingEvaluationContext context;
@@ -62,8 +62,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		deleted = true;
 	}
 
-	public List<TargetObject> getChainedBindings(TargetObject object) {
-		return null;
+	private List<TargetObject> getChainedBindings(TargetObject object) { // NOPMD by beugnard on 30/10/14 17:15
+		return null; // local optimization in refreshObserving
 	}
 
 	public DataBinding<T> getDataBinding() {
@@ -87,8 +87,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		}*/
 
 		if (debug) {
-			logger.info("-------------> refreshObserving() for " + dataBinding + " context=" + context);
-			logger.info("-------------> DependencyBindings:");
+			LOGGER.info("-------------> refreshObserving() for " + dataBinding + " context=" + context);
+			LOGGER.info("-------------> DependencyBindings:");
 		}
 
 		List<TargetObject> updatedDependingObjects = new ArrayList<TargetObject>();
@@ -96,13 +96,13 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 		if (debug) {
 			for (TargetObject to : targetObjects) {
-				logger.info("-------------> TargetObject: " + to.target + " property: " + to.propertyName);
+				LOGGER.info("-------------> TargetObject: " + to.target + " property: " + to.propertyName);
 			}
-			logger.info("dependingObjects = " + dependingObjects);
+			LOGGER.info("dependingObjects = " + dependingObjects);
 		}
 
 		if (debug) {
-			logger.info("1-updatedDependingObjects = " + updatedDependingObjects);
+			LOGGER.info("1-updatedDependingObjects = " + updatedDependingObjects);
 		}
 
 		if (targetObjects != null) {
@@ -116,7 +116,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		}
 
 		if (debug) {
-			logger.info("2-updatedDependingObjects = " + updatedDependingObjects);
+			LOGGER.info("2-updatedDependingObjects = " + updatedDependingObjects);
 		}
 
 		Set<HasPropertyChangeSupport> set = new HashSet<HasPropertyChangeSupport>();
@@ -132,7 +132,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		}
 
 		if (debug) {
-			logger.info("3-updatedDependingObjects = " + updatedDependingObjects);
+			LOGGER.info("3-updatedDependingObjects = " + updatedDependingObjects);
 		}
 
 		List<TargetObject> newDependingObjects = new ArrayList<TargetObject>();
@@ -146,31 +146,31 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		}
 
 		if (debug) {
-			logger.info("oldDependingObjects = " + oldDependingObjects);
-			logger.info("newDependingObjects = " + newDependingObjects);
+			LOGGER.info("oldDependingObjects = " + oldDependingObjects);
+			LOGGER.info("newDependingObjects = " + newDependingObjects);
 		}
 
 		for (TargetObject o : oldDependingObjects) {
 			dependingObjects.remove(o);
 			if (o.target instanceof HasPropertyChangeSupport) {
 				PropertyChangeSupport pcSupport = ((HasPropertyChangeSupport) o.target).getPropertyChangeSupport();
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("Observer of " + dataBinding + " remove property change listener: " + o.target + " property:"
+				if (LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.fine("Observer of " + dataBinding + " remove property change listener: " + o.target + " property:"
 							+ o.propertyName);
 				}
 				if (debug) {
-					logger.info("-------------> Observer of " + dataBinding + " remove property change listener: " + o.target
+					LOGGER.info("-------------> Observer of " + dataBinding + " remove property change listener: " + o.target
 							+ " property:" + o.propertyName);
 				}
 				if (pcSupport != null) {
 					pcSupport.removePropertyChangeListener(o.propertyName, this);
 				}
 			} else if (o.target instanceof Observable) {
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("Observer of " + dataBinding + " remove observable: " + o);
+				if (LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.fine("Observer of " + dataBinding + " remove observable: " + o);
 				}
 				if (debug) {
-					logger.info("Observer of " + dataBinding + " remove observable: " + o);
+					LOGGER.info("Observer of " + dataBinding + " remove observable: " + o);
 				}
 				((Observable) o.target).deleteObserver(this);
 			}
@@ -179,32 +179,32 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			dependingObjects.add(o);
 			if (o.target instanceof HasPropertyChangeSupport) {
 				PropertyChangeSupport pcSupport = ((HasPropertyChangeSupport) o.target).getPropertyChangeSupport();
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("-------------> Observer of " + dataBinding + " add property change listener: " + o.target + " property:"
+				if (LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.fine("-------------> Observer of " + dataBinding + " add property change listener: " + o.target + " property:"
 							+ o.propertyName);
 				}
 				if (debug) {
-					logger.info("-------------> Observer of " + dataBinding + " add property change listener: " + o.target + " property:"
+					LOGGER.info("-------------> Observer of " + dataBinding + " add property change listener: " + o.target + " property:"
 							+ o.propertyName);
 				}
 				if (pcSupport != null) {
 					pcSupport.addPropertyChangeListener(o.propertyName, this);
 				}
 			} else if (o.target instanceof Observable) {
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("Observer of " + dataBinding + " add observable: " + o.target);
+				if (LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.fine("Observer of " + dataBinding + " add observable: " + o.target);
 				}
 				if (debug) {
-					logger.info("Observer of " + dataBinding + " add observable: " + o.target + " for " + o.propertyName);
+					LOGGER.info("Observer of " + dataBinding + " add observable: " + o.target + " for " + o.propertyName);
 				}
 				((Observable) o.target).addObserver(this);
 			}
 		}
 
 		if (debug) {
-			logger.info("-------------> dependingObjects:");
+			LOGGER.info("-------------> dependingObjects:");
 			for (TargetObject o : dependingObjects) {
-				logger.info("> " + o.target.getClass().getSimpleName() + " / " + o.propertyName + "\n");
+				LOGGER.info("> " + o.target.getClass().getSimpleName() + " / " + o.propertyName + "\n");
 			}
 		}
 
@@ -242,10 +242,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		try {
 			return dataBinding.getBindingValue(context);
 		} catch (TypeMismatchException e) {
-			logger.warning("Unexpected exception raised. See logs for details.");
+			LOGGER.warning("Unexpected exception raised. See logs for details.");
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			logger.warning("Unexpected exception raised. See logs for details.");
+			LOGGER.warning("Unexpected exception raised. See logs for details.");
 			e.printStackTrace();
 		}
 		return null;
@@ -292,7 +292,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			dataBinding.clearCacheForBindingEvaluationContext(context);
 			newValue = evaluateValue();
 		} catch (NullReferenceException e) {
-			logger.warning("Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
+			LOGGER.warning("Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
 			newValue = null;
 		}
 

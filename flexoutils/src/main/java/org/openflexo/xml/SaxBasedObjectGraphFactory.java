@@ -34,15 +34,15 @@ import org.openflexo.IObjectGraphFactory;
  * @author xtof
  * 
  */
-public abstract class saxBasedObjectGraphFactory implements IObjectGraphFactory {
+public abstract class SaxBasedObjectGraphFactory implements IObjectGraphFactory {
 
-    protected static final Logger logger    = Logger.getLogger(saxBasedObjectGraphFactory.class.getPackage().getName());
+    protected static final Logger LOGGER    = Logger.getLogger(SaxBasedObjectGraphFactory.class.getPackage().getName());
 
     protected SAXParserFactory    factory   = null;
     protected SAXParser           saxParser = null;
     protected XMLReaderSAXHandler handler   = null;
 
-    public saxBasedObjectGraphFactory() {
+    public SaxBasedObjectGraphFactory() {
         factory = SAXParserFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setXIncludeAware(true);
@@ -53,7 +53,7 @@ public abstract class saxBasedObjectGraphFactory implements IObjectGraphFactory 
             saxParser = factory.newSAXParser();
 
         } catch (Exception e) {
-            logger.warning("Cannot create PARSER: " + e.getMessage());
+            LOGGER.warning("Cannot create PARSER: " + e.getMessage());
         }
     }
 

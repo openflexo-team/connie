@@ -44,7 +44,7 @@ import org.xml.sax.ext.DefaultHandler2;
 
 public class XMLRootElementReader {
 
-    protected static final Logger logger = Logger.getLogger(XMLRootElementReader.class.getPackage().getName());
+    protected static final Logger LOGGER = Logger.getLogger(XMLRootElementReader.class.getPackage().getName());
 
     private final LocalHandler    handler;
 
@@ -63,7 +63,7 @@ public class XMLRootElementReader {
             saxParser = factory.newSAXParser();
 
         } catch (Exception e) {
-            logger.warning("Cannot create PARSER: " + e.getMessage());
+            LOGGER.warning("Cannot create PARSER: " + e.getMessage());
         }
 
     }
@@ -100,12 +100,12 @@ public class XMLRootElementReader {
             } catch (stopParsingException e) {
                 // Stop the parser after parsing first element
             } catch (SAXException e) {
-                logger.warning("Cannot parse document: " + e.getMessage());
+                LOGGER.warning("Cannot parse document: " + e.getMessage());
                 throw new IOException(e.getMessage());
             }
         }
         else {
-            logger.warning("Unable to parse root element for document");
+            LOGGER.warning("Unable to parse root element for document");
         }
         return info;
 

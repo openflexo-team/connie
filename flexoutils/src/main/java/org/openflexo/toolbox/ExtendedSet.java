@@ -5,7 +5,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class ExtendedSet<E> extends AbstractSet<E> {
+public class ExtendedSet<E> extends AbstractSet<E> implements Cloneable {
 
 	private transient HashMap<E, E> map;
 

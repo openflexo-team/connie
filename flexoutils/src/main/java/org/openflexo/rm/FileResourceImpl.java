@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  */
 public class FileResourceImpl extends BasicResourceImpl {
 
-	private static final Logger logger = Logger.getLogger(FileResourceImpl.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(FileResourceImpl.class.getPackage().getName());
 
 	// Related File
 	private File _file;
@@ -55,10 +55,10 @@ public class FileResourceImpl extends BasicResourceImpl {
 			try {
 				_parent = new FileResourceImpl(this.getLocator(), file.getParentFile());
 			} catch (MalformedURLException e) {
-				logger.severe("Unable to find parent directory for " + getURI());
+				LOGGER.severe("Unable to find parent directory for " + getURI());
 				e.printStackTrace();
 			} catch (LocatorNotFoundException e) {
-				logger.severe("Unable to find Locator for " + getURI());
+				LOGGER.severe("Unable to find Locator for " + getURI());
 				e.printStackTrace();
 			}
 		}
@@ -86,7 +86,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 		try {
 			setFile(new File(url.toURI()));
 		} catch (URISyntaxException e) {
-			logger.severe("Unable to open file from URL: " + url.toString());
+			LOGGER.severe("Unable to open file from URL: " + url.toString());
 			e.printStackTrace();
 		}
 	}
@@ -112,7 +112,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 			try {
 				_file = new File(_url.toURI());
 			} catch (URISyntaxException e) {
-				logger.severe("Unable to convert URL to File : " + getURI());
+				LOGGER.severe("Unable to convert URL to File : " + getURI());
 				e.printStackTrace();
 			}
 		}
@@ -124,7 +124,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 		try {
 			this._url = f.toURI().toURL();
 		} catch (MalformedURLException e) {
-			logger.severe("Unable to assign a new file: " + f.getAbsolutePath());
+			LOGGER.severe("Unable to assign a new file: " + f.getAbsolutePath());
 			e.printStackTrace();
 		}
 	}
@@ -166,7 +166,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 				if (file != null)
 					setFile(file);
 			} catch (URISyntaxException e) {
-				logger.severe("Unable to convert URL to File : " + getURL());
+				LOGGER.severe("Unable to convert URL to File : " + getURL());
 				e.printStackTrace();
 			}
 		}
@@ -195,7 +195,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 				} catch (final Exception e) {
 					try {
-						logger.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
+						LOGGER.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -217,7 +217,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 				try {
 					return new FileOutputStream(_file);
 				} catch (FileNotFoundException e) {
-					logger.severe("File Not Found : " + getURI());
+					LOGGER.severe("File Not Found : " + getURI());
 					e.printStackTrace();
 				}
 			} else {
@@ -225,7 +225,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 					_file.createNewFile();
 					return new FileOutputStream(_file);
 				} catch (IOException e) {
-					logger.severe("FUnable to create new file : " + getURI());
+					LOGGER.severe("FUnable to create new file : " + getURI());
 					e.printStackTrace();
 				}
 
@@ -250,7 +250,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 					}
 				} catch (final Exception e) {
 					try {
-						logger.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
+						LOGGER.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

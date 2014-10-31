@@ -20,9 +20,9 @@ public class Parser
 
     private final Lexer lexer;
     private final ListIterator stack = new LinkedList().listIterator();
-    private int last_pos;
-    private int last_line;
-    private Token last_token;
+    private int lastPosition;
+    private int lastLine;
+    private Token lastToken;
     private final TokenIndex converter = new TokenIndex();
     private final int[] action = new int[2];
 
@@ -132,9 +132,9 @@ public class Parser
                 ign = null;
             }
 
-            this.last_pos = this.lexer.peek().getPos();
-            this.last_line = this.lexer.peek().getLine();
-            this.last_token = this.lexer.peek();
+            this.lastPosition = this.lexer.peek().getPos();
+            this.lastLine = this.lexer.peek().getLine();
+            this.lastToken = this.lexer.peek();
 
             int index = index(this.lexer.peek());
             this.action[0] = Parser.actionTable[state()][0][1];
@@ -587,8 +587,8 @@ public class Parser
                         return node;
                     }
                 case ERROR:
-                    throw new ParserException(this.last_token,
-                        "[" + this.last_line + "," + this.last_pos + "] " +
+                    throw new ParserException(this.lastToken,
+                        "[" + this.lastLine + "," + this.lastPosition + "] " +
                         Parser.errorMessages[Parser.errors[this.action[1]]]);
             }
         }
@@ -2521,7 +2521,7 @@ public class Parser
         }
         catch(Exception e)
         {
-            throw new RuntimeException("The file \"parser.dat\" is either missing or corrupted.");
+            throw new RuntimeException("The file \"parser.dat\" is either missing or corrupted."); // NOPMD by beugnard on 29/10/14 23:08
         }
     }
 }

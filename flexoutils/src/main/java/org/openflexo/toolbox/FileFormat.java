@@ -28,7 +28,7 @@ import org.openflexo.logging.FlexoLogger;
 
 public abstract class FileFormat {
 
-	protected static final Logger logger = FlexoLogger.getLogger(FileFormat.class.getPackage().getName());
+	protected static final Logger LOGGER = FlexoLogger.getLogger(FileFormat.class.getPackage().getName());
 
 	public static final FileFormat UNKNOWN = new FileFormat(null, null) {
 		@Override
@@ -100,10 +100,10 @@ public abstract class FileFormat {
 	public static TextFileFormat registerTextFileFormat(String formatId, String mimeType, TextSyntax syntax, String... extensions) {
 		if (_fileFormats.get(formatId) != null) {
 			if (_fileFormats.get(formatId) instanceof TextFileFormat) {
-				logger.warning("Already declared FileFormat " + formatId);
+				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (TextFileFormat) _fileFormats.get(formatId);
 			} else {
-				logger.severe("Already declared FileFormat of different type for " + formatId);
+				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
 				return null;
 			}
 		}
@@ -118,10 +118,10 @@ public abstract class FileFormat {
 	public static DirectoryFormat registerDirectoryFormat(String formatId, String mimeType, String... extensions) {
 		if (_fileFormats.get(formatId) != null) {
 			if (_fileFormats.get(formatId) instanceof DirectoryFormat) {
-				logger.warning("Already declared FileFormat " + formatId);
+				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (DirectoryFormat) _fileFormats.get(formatId);
 			} else {
-				logger.severe("Already declared FileFormat of different type for " + formatId);
+				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
 				return null;
 			}
 		}
@@ -136,10 +136,10 @@ public abstract class FileFormat {
 	public static BinaryFileFormat registerBinaryFileFormat(String formatId, String mimeType, String... extensions) {
 		if (_fileFormats.get(formatId) != null) {
 			if (_fileFormats.get(formatId) instanceof BinaryFileFormat) {
-				logger.warning("Already declared FileFormat " + formatId);
+				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (BinaryFileFormat) _fileFormats.get(formatId);
 			} else {
-				logger.severe("Already declared FileFormat of different type for " + formatId);
+				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
 				return null;
 			}
 		}
@@ -154,10 +154,10 @@ public abstract class FileFormat {
 	public static ImageFileFormat registerImageFileFormat(String formatId, String mimeType, String... extensions) {
 		if (_fileFormats.get(formatId) != null) {
 			if (_fileFormats.get(formatId) instanceof ImageFileFormat) {
-				logger.warning("Already declared FileFormat " + formatId);
+				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (ImageFileFormat) _fileFormats.get(formatId);
 			} else {
-				logger.severe("Already declared FileFormat of different type for " + formatId);
+				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
 				return null;
 			}
 		}

@@ -45,7 +45,7 @@ import org.openflexo.antar.expr.parser.parser.Parser;
  */
 public class ExpressionParser {
 
-	private static final Logger logger = Logger.getLogger(ExpressionParser.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(ExpressionParser.class.getPackage().getName());
 
 	/**
 	 * This is the method to invoke to perform a parsing. Syntaxic and (some) semantics analyzer are performed and returned value is an
@@ -93,7 +93,7 @@ public class ExpressionParser {
 			} else if (c instanceof FloatConstant) {
 				return new FloatConstant(-((FloatConstant) c).getValue());
 			} else {
-				logger.warning("Unexpected " + c);
+				LOGGER.warning("Unexpected " + c);
 			}
 		}
 		return e;

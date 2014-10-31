@@ -62,7 +62,7 @@ import org.openflexo.rm.Resource;
  */
 public class FileUtils {
 
-	private static final Logger logger = FlexoLogger.getLogger(FileUtils.class.getPackage().getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(FileUtils.class.getPackage().getName());
 
 	public static enum CopyStrategy {
 		REPLACE, REPLACE_OLD_ONLY, IGNORE_EXISTING
@@ -152,7 +152,7 @@ public class FileUtils {
 			}
 		}
 		else {
-			logger.severe("Unable to copy resource: " + src.toString());
+			LOGGER.severe("Unable to copy resource: " + src.toString());
 			return null;
 		}
 		return null;
@@ -180,7 +180,7 @@ public class FileUtils {
 				out.close();
 			}
 			else {
-				logger.severe("Unable to copy InJarResource: " + rsc);
+				LOGGER.severe("Unable to copy InJarResource: " + rsc);
 			}
 		}
 
@@ -1068,9 +1068,9 @@ public class FileUtils {
 					}
 				}
 			} catch (UnknownHostException e) {
-				logger.warning("Could access to url " + url + ". Please check your internet connexion");
+				LOGGER.warning("Could access to url " + url + ". Please check your internet connexion");
 			} catch (IOException e) {
-				logger.warning("Could not read url " + url);
+				LOGGER.warning("Could not read url " + url);
 				e.printStackTrace();
 
 			}

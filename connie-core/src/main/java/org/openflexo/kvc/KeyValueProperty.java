@@ -36,7 +36,7 @@ import org.openflexo.toolbox.ToolBox;
 
 public class KeyValueProperty extends Observable {
 
-	static final Logger logger = Logger.getLogger(KeyValueProperty.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(KeyValueProperty.class.getPackage().getName());
 
 	/** Stores property's name */
 	protected String name;
@@ -128,7 +128,7 @@ public class KeyValueProperty extends Observable {
 			type = field.getGenericType();
 			if (getMethod != null) {
 				if (getMethod.getGenericReturnType() != type) {
-					logger.warning("Public field " + name + " found, with type " + type + " found " + " and method " + getMethod.getName()
+					LOGGER.warning("Public field " + name + " found, with type " + type + " found " + " and method " + getMethod.getName()
 							+ " found " + " declaring return type " + getMethod.getReturnType() + " Ignoring method...");
 					getMethod = null;
 				}

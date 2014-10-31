@@ -44,7 +44,7 @@ import com.google.common.primitives.Primitives;
  */
 public class TypeUtils {
 
-	static final Logger logger = Logger.getLogger(TypeUtils.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(TypeUtils.class.getPackage().getName());
 
 	/**
 	 * <p>
@@ -76,13 +76,13 @@ public class TypeUtils {
 				if (rawType instanceof Class) {
 					return (Class) rawType;
 				}
-				logger.warning("Not handled: " + aType + " of " + aType.getClass().getName());
+				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
 			} else if (aType instanceof GenericArrayType) {
 				Type componentType = ((GenericArrayType) aType).getGenericComponentType();
 				return getBaseClass(componentType);
 			} else {
-				logger.warning("Not handled: " + aType + " of " + aType.getClass().getName());
+				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
 			}
 		}
@@ -115,7 +115,7 @@ public class TypeUtils {
 			}
 
 		}
-		logger.warning("Not handled: " + aType.getClass().getName());
+		LOGGER.warning("Not handled: " + aType.getClass().getName());
 		return null;
 	}
 
@@ -492,7 +492,7 @@ public class TypeUtils {
 		}
 
 		if (aType instanceof WildcardType) {
-			logger.warning("WildcardType not implemented yet !");
+			LOGGER.warning("WildcardType not implemented yet !");
 		}
 
 		return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
@@ -649,7 +649,7 @@ public class TypeUtils {
 			}
 			return false;
 		}
-		logger.warning("Unexpected " + type);
+		LOGGER.warning("Unexpected " + type);
 		return false;
 	}
 
@@ -768,7 +768,7 @@ public class TypeUtils {
 								}
 								return ((ParameterizedType) context).getActualTypeArguments()[i];
 							} else {
-								logger.warning("Could not retrieve parameterized type " + tv + " with context "
+								LOGGER.warning("Could not retrieve parameterized type " + tv + " with context "
 										+ simpleRepresentation(context));
 								return type;
 							}
@@ -785,8 +785,8 @@ public class TypeUtils {
 			} else if (gd instanceof Method) {
 				return type;
 			}
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Not found type variable " + tv + " in context " + context + " GenericDeclaration="
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("Not found type variable " + tv + " in context " + context + " GenericDeclaration="
 						+ tv.getGenericDeclaration() + " bounds=" + (tv.getBounds().length > 0 ? tv.getBounds()[0] : Object.class));
 			}
 			return tv.getBounds().length > 0 ? tv.getBounds()[0] : Object.class;
@@ -809,7 +809,7 @@ public class TypeUtils {
 			return new WilcardTypeImpl(upperBounds, lowerBounds);
 		}
 
-		logger.warning("Unexpected " + type);
+		LOGGER.warning("Unexpected " + type);
 		return type;
 
 	}
@@ -927,7 +927,7 @@ public class TypeUtils {
 		}
 
 		// No parent were found, take first item
-		logger.warning("Undefined specializing criteria between " + someClasses);
+		LOGGER.warning("Undefined specializing criteria between " + someClasses);
 		return someClasses.iterator().next();
 
 	}

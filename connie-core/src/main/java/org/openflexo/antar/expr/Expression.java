@@ -37,7 +37,7 @@ import org.openflexo.antar.expr.parser.ParseException;
  */
 public abstract class Expression {
 
-	private static final Logger logger = Logger.getLogger(Expression.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(Expression.class.getPackage().getName());
 
 	public abstract void visit(ExpressionVisitor visitor) throws VisitorException;
 
@@ -51,7 +51,7 @@ public abstract class Expression {
 		} catch (NullReferenceException e) {
 			throw e;
 		} catch (TransformException e) {
-			logger.warning("Unexpected exception occured during evaluation " + e);
+			LOGGER.warning("Unexpected exception occured during evaluation " + e);
 			e.printStackTrace();
 			return null;
 		}
@@ -113,7 +113,7 @@ public abstract class Expression {
 				}
 			});
 		} catch (VisitorException e) {
-			logger.warning("Unexpected " + e);
+			LOGGER.warning("Unexpected " + e);
 		}
 
 		return returned;
@@ -197,7 +197,7 @@ public abstract class Expression {
 		if (evaluation == Constant.BooleanConstant.FALSE) {
 			return false;
 		}
-		logger.warning("Unresolved expression: " + evaluation);
+		LOGGER.warning("Unresolved expression: " + evaluation);
 		throw new UnresolvedExpressionException();
 	}
 

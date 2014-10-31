@@ -2,6 +2,8 @@ package org.openflexo.antar.expr.parser;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import org.openflexo.antar.expr.ArithmeticBinaryOperator;
 import org.openflexo.antar.expr.ArithmeticUnaryOperator;
@@ -95,7 +97,7 @@ import org.openflexo.antar.expr.parser.node.TStringValue;
  */
 class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
-	private final Hashtable<Node, Expression> expressionNodes;
+	private final Map<Node, Expression> expressionNodes;
 	private Node topLevel = null;
 
 	public ExpressionSemanticsAnalyzer() {
@@ -172,7 +174,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 	private TypeReference makeParameteredTypeReference(AParameteredTypeReference node) {
 		PTypeReferenceArgList argList = node.getTypeReferenceArgList();
-		ArrayList<TypeReference> args = new ArrayList<TypeReference>();
+		List<TypeReference> args = new ArrayList<TypeReference>();
 		if (argList instanceof ATypeReferenceArgList) {
 			args.add(makeTypeReference(((ATypeReferenceArgList) argList).getTypeReference()));
 			for (PTypeReferenceAdditionalArg aa : ((ATypeReferenceArgList) argList).getTypeReferenceAdditionalArgs()) {

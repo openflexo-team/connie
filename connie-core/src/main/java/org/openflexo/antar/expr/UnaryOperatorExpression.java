@@ -102,6 +102,11 @@ public class UnaryOperatorExpression extends Expression {
 		returned.add(getArgument());
 		return returned;
 	}
+	
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
 
 	@Override
 	public boolean equals(Object obj) {

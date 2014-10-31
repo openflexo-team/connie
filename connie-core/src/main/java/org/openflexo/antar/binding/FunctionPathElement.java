@@ -17,7 +17,7 @@ import org.openflexo.antar.binding.Function.FunctionArgument;
  */
 public abstract class FunctionPathElement extends Observable implements BindingPathElement {
 
-	private static final Logger logger = Logger.getLogger(FunctionPathElement.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(FunctionPathElement.class.getPackage().getName());
 
 	private final BindingPathElement parent;
 	private final Function function;
@@ -29,7 +29,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		this.function = function;
 		parameters = new HashMap<Function.FunctionArgument, DataBinding<?>>();
 		if (function == null) {
-			logger.warning("FunctionPathElement called with null function");
+			LOGGER.warning("FunctionPathElement called with null function");
 		} else {
 			this.type = function.getReturnType();
 			if (paramValues != null) {

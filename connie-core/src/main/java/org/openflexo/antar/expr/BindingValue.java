@@ -60,7 +60,7 @@ import org.openflexo.kvc.KeyValueProperty;
  */
 public class BindingValue extends Expression implements PropertyChangeListener, Cloneable {
 
-	private static final Logger logger = Logger.getLogger(BindingValue.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(BindingValue.class.getPackage().getName());
 
 	private final ArrayList<Object> EMPTY_LIST = new ArrayList<Object>();
 
@@ -77,6 +77,14 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		@Override
 		public String toString() {
 			return "Normal[" + property + "]";
+		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (property == null?0:property.hashCode());
+			return result;
 		}
 
 		@Override
@@ -102,7 +110,16 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		public String toString() {
 			return "Call[" + method + "(" + args + ")" + "]";
 		}
-
+		
+		@Override
+		public int hashCode() {
+			final int prime = 37;
+			int result = 1;
+			result = prime * result + (method == null?0:method.hashCode());
+			result = prime * result + (args == null?0:args.hashCode());
+			return result;
+		}
+		
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof MethodCallBindingPathElement) {
@@ -204,8 +221,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		if (i < bindingPath.size() && bindingPath.get(i) == element) {
 			return;
 		}
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Set property " + element + " at index " + i);
+		if (LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.fine("Set property " + element + " at index " + i);
 		}
 		if (i < bindingPath.size()) {
 			bindingPath.set(i, element);
@@ -216,8 +233,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		} else if (i == bindingPath.size()) {
 			bindingPath.add(element);
 		} else {
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Could not set property at index " + i);
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Could not set property at index " + i);
 			}
 		}
 		analysingSuccessfull = _checkBindingPathValid();
@@ -611,20 +628,20 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		needsAnalysing = false;
 		// needsToBeReanalized = false;
 
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Is BindingValue valid ?");
+		if (LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.fine("Is BindingValue valid ?");
 		}
 
 		if (getBindingVariable() == null) {
 			invalidBindingReason = "binding value has no binding variable";
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Invalid binding because _bindingVariable is null");
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("Invalid binding because _bindingVariable is null");
 			}
 			return false;
 		}
 		if (!_checkBindingPathValid()) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Invalid binding because binding path not valid");
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("Invalid binding because binding path not valid");
 			}
 			return false;
 		}
@@ -724,19 +741,19 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// getParsedBindingPath());
 
 		if (dataBinding.getOwner() == null) {
-			logger.warning("DataBinding has no owner");
+			LOGGER.warning("DataBinding has no owner");
 			invalidBindingReason = "DataBinding has no owner";
 			return false;
 		}
 
 		if (dataBinding.getOwner().getBindingModel() == null) {
-			logger.warning("DataBinding owner has no binding model, owner=" + dataBinding.getOwner());
+			LOGGER.warning("DataBinding owner has no binding model, owner=" + dataBinding.getOwner());
 			invalidBindingReason = "DataBinding owner has no binding model, binding=" + dataBinding + " owner=" + dataBinding.getOwner();
 			return false;
 		}
 
 		if (dataBinding.getOwner().getBindingFactory() == null) {
-			logger.warning("DataBinding owner has no binding factory, owner=" + dataBinding.getOwner());
+			LOGGER.warning("DataBinding owner has no binding factory, owner=" + dataBinding.getOwner());
 			invalidBindingReason = "DataBinding owner has no binding factory, binding=" + dataBinding + " owner=" + dataBinding.getOwner();
 			return false;
 		}
@@ -822,7 +839,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 							return false;
 						}
 					} else {
-						logger.warning("Unexpected " + pathElement);
+						LOGGER.warning("Unexpected " + pathElement);
 						invalidBindingReason = "unexpected path element: " + pathElement;
 						analysingSuccessfull = false;
 						return false;
@@ -832,7 +849,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			analysingSuccessfull = true;
 		} else {
-			logger.warning("Invalid binding value " + this);
+			LOGGER.warning("Invalid binding value " + this);
 			// Thread.dumpStack();
 			analysingSuccessfull = false;
 		}
@@ -931,7 +948,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// getLastBindingPathElement() + " sur " + returned);
 			((SettableBindingPathElement) getLastBindingPathElement()).setBindingValue(value, returned, context);
 		} else {
-			logger.warning("Binding " + this + " is not settable");
+			LOGGER.warning("Binding " + this + " is not settable");
 		}
 		/*} catch (InvalidObjectSpecificationException e) {
 			logger.warning("InvalidObjectSpecificationException raised while evaluating SET " + this + " : " + e.getMessage());
@@ -1002,7 +1019,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		}*/
 
 		if (debug) {
-			logger.info("Computing getTargetObjects() for " + toString() + " with BindingEvaluationContext=" + context);
+			LOGGER.info("Computing getTargetObjects() for " + toString() + " with BindingEvaluationContext=" + context);
 		}
 
 		if (!isValid()) {
@@ -1015,7 +1032,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		returned.add(new TargetObject(context, getBindingVariable().getVariableName()));
 
 		if (debug) {
-			logger.info("Computing getTargetObjects(), current=" + current);
+			LOGGER.info("Computing getTargetObjects(), current=" + current);
 		}
 
 		if (current == null) {
@@ -1025,7 +1042,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// try {
 		for (BindingPathElement element : getBindingPath()) {
 			if (debug) {
-				logger.info("Computing getTargetObjects(), current=" + current);
+				LOGGER.info("Computing getTargetObjects(), current=" + current);
 			}
 			returned.add(new TargetObject(current, element.getLabel()));
 			try {

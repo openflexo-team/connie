@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 
 public class MapFactory implements IObjectGraphFactory {
 
-    private static final Logger logger    = Logger.getLogger(ModelFactory.class.getPackage().getName());
+    private static final Logger LOGGER    = Logger.getLogger(ModelFactory.class.getPackage().getName());
 
     private SAXParserFactory    factory   = null;
     private SAXParser           saxParser = null;
@@ -60,7 +60,7 @@ public class MapFactory implements IObjectGraphFactory {
             saxParser = factory.newSAXParser();
 
         } catch (Exception e) {
-            logger.warning("Cannot create PARSER: " + e.getMessage());
+            LOGGER.warning("Cannot create PARSER: " + e.getMessage());
         }
     }
 
@@ -112,14 +112,14 @@ public class MapFactory implements IObjectGraphFactory {
             try {
                 saxParser.parse(input, handler);
             } catch (SAXException e) {
-                logger.warning("Cannot parse document: " + e.getMessage());
+                LOGGER.warning("Cannot parse document: " + e.getMessage());
                 throw new IOException(e.getMessage());
             }
             return context;
 
         }
         else {
-            logger.warning("Context is not set for parsing, aborting");
+            LOGGER.warning("Context is not set for parsing, aborting");
         }
         return null;
     }
@@ -130,14 +130,14 @@ public class MapFactory implements IObjectGraphFactory {
             try {
                 saxParser.parse(input, handler);
             } catch (SAXException e) {
-                logger.warning("Cannot parse document: " + e.getMessage());
+                LOGGER.warning("Cannot parse document: " + e.getMessage());
                 throw new IOException(e.getMessage());
             }
             return context;
 
         }
         else {
-            logger.warning("Context is not set for parsing, aborting");
+            LOGGER.warning("Context is not set for parsing, aborting");
         }
         return null;
     }
@@ -189,7 +189,7 @@ public class MapFactory implements IObjectGraphFactory {
 
     @Override
     public void addChildToObject(Object currentObject, Object currentContainer) {
-        logger.warning("This method is irrelevant in this context");
+        LOGGER.warning("This method is irrelevant in this context");
         return;
 
     }

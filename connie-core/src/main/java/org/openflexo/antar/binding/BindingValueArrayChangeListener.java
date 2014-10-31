@@ -14,7 +14,7 @@ import org.openflexo.logging.FlexoLogger;
  */
 public abstract class BindingValueArrayChangeListener<T> extends BindingValueChangeListener<T[]> {
 
-	private static final Logger logger = FlexoLogger.getLogger(BindingValueArrayChangeListener.class.getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(BindingValueArrayChangeListener.class.getName());
 
 	private T[] lastKnownValues = null;
 
@@ -32,7 +32,7 @@ public abstract class BindingValueArrayChangeListener<T> extends BindingValueCha
 		try {
 			newValue = evaluateValue();
 		} catch (NullReferenceException e) {
-			logger.warning("Could not evaluate " + getDataBinding() + " with context " + getContext()
+			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext()
 					+ " because NullReferenceException has raised");
 			newValue = null;
 		}

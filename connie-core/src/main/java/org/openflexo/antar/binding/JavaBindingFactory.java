@@ -15,7 +15,7 @@ import org.openflexo.kvc.KeyValueLibrary;
 import org.openflexo.kvc.KeyValueProperty;
 
 public class JavaBindingFactory implements BindingFactory {
-	static final Logger logger = Logger.getLogger(JavaBindingFactory.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(JavaBindingFactory.class.getPackage().getName());
 
 	@Override
 	public List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent) {
@@ -88,6 +88,7 @@ public class JavaBindingFactory implements BindingFactory {
 		Class<?> typeClass = TypeUtils.getBaseClass(parentType);
 		if (typeClass == null) {
 			System.out.println("Cannot find typeClass for " + parentType);
+			return null;
 		}
 		Method[] allMethods = typeClass.getMethods();
 		// First attempt: we perform type checking on parameters
@@ -115,7 +116,7 @@ public class JavaBindingFactory implements BindingFactory {
 			}
 		}
 		if (possiblyMatchingMethods.size() > 1) {
-			logger.warning("Please implement disambiguity here");
+			LOGGER.warning("Please implement disambiguity here");
 			/*for (DataBinding<?> arg : args) {
 				System.out.println("arg " + arg + " of " + arg.getDeclaredType() + " / " + arg.getAnalyzedType());
 			}*/

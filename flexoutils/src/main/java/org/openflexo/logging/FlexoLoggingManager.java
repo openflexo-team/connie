@@ -39,7 +39,7 @@ import org.openflexo.rm.ResourceLocator;
 // TODO: we can now no more save or load a log file: proceed as a service in flexofoundation layer
 public class FlexoLoggingManager {
 
-	static final Logger logger = Logger.getLogger(FlexoLoggingManager.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(FlexoLoggingManager.class.getPackage().getName());
 	static final ResourceLocator rl = ResourceLocator.getResourceLocator();
 
 	// private static XMLMapping _loggingMapping = null;
@@ -100,17 +100,17 @@ public class FlexoLoggingManager {
 			if (configurationFile != null) {
 				LogManager.getLogManager().readConfiguration(configurationFile.openInputStream());
 			} else {
-				logger.warning("Unable to initialize LogginManager with NULL configurationFile...");
+				LOGGER.warning("Unable to initialize LogginManager with NULL configurationFile...");
 			}
 		} catch (SecurityException e) {
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning(e.getMessage());
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning(e.getMessage());
 			}
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning(e.getMessage());
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning(e.getMessage());
 			}
 		}
 		return _instance;
@@ -293,15 +293,15 @@ public class FlexoLoggingManager {
 	}
 
 	private boolean reloadLoggingFile(Resource filePath) {
-		logger.info("reloadLoggingFile with " + filePath.getURI());
+		LOGGER.info("reloadLoggingFile with " + filePath.getURI());
 		try {
 			LogManager.getLogManager().readConfiguration(filePath.openInputStream());
 		} catch (SecurityException e) {
-			logger.warning("The specified logging configuration file can't be read (not enough privileges).");
+			LOGGER.warning("The specified logging configuration file can't be read (not enough privileges).");
 			e.printStackTrace();
 			return false;
 		} catch (IOException e) {
-			logger.warning("The specified logging configuration file cannot be read.");
+			LOGGER.warning("The specified logging configuration file cannot be read.");
 			e.printStackTrace();
 			return false;
 		}

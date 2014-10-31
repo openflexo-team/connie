@@ -83,6 +83,11 @@ public class CastExpression extends Expression {
 	}
 
 	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof CastExpression) {
 			CastExpression e = (CastExpression) obj;

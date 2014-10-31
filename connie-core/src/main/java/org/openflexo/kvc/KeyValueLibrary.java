@@ -37,34 +37,34 @@ import org.openflexo.antar.binding.TypeUtils;
 
 public class KeyValueLibrary {
 
-	private static final Logger logger = Logger.getLogger(KeyValueLibrary.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(KeyValueLibrary.class.getPackage().getName());
 
-	private static final Map<Type, Hashtable<String, KeyValueProperty>> properties = new Hashtable<Type, Hashtable<String, KeyValueProperty>>();
+	private static final Map<Type, Hashtable<String, KeyValueProperty>> PROPERTIES = new Hashtable<Type, Hashtable<String, KeyValueProperty>>();
 
-	private static final Map<Type, Vector<KeyValueProperty>> declaredKeyValueProperties = new Hashtable<Type, Vector<KeyValueProperty>>();
+	private static final Map<Type, Vector<KeyValueProperty>> DECLARED_KEY_VALUE_PROPERTIES = new Hashtable<Type, Vector<KeyValueProperty>>();
 
-	private static final Map<Type, Vector<MethodDefinition>> declaredMethods = new Hashtable<Type, Vector<MethodDefinition>>();
+	private static final Map<Type, Vector<MethodDefinition>> DECLARED_METHODS = new Hashtable<Type, Vector<MethodDefinition>>();
 
-	private static final Map<Type, Vector<KeyValueProperty>> accessibleKeyValueProperties = new Hashtable<Type, Vector<KeyValueProperty>>();
+	private static final Map<Type, Vector<KeyValueProperty>> ACCESSIBLE_KEY_VALUE_PROPERTIES = new Hashtable<Type, Vector<KeyValueProperty>>();
 
-	private static final Map<Type, Vector<MethodDefinition>> accessibleMethods = new Hashtable<Type, Vector<MethodDefinition>>();
+	private static final Map<Type, Vector<MethodDefinition>> ACCESSIBLE_METHODS = new Hashtable<Type, Vector<MethodDefinition>>();
 
 	public static void clearCache() {
-		properties.clear();
-		declaredKeyValueProperties.clear();
-		declaredMethods.clear();
-		accessibleKeyValueProperties.clear();
-		accessibleMethods.clear();
+		PROPERTIES.clear();
+		DECLARED_KEY_VALUE_PROPERTIES.clear();
+		DECLARED_METHODS.clear();
+		ACCESSIBLE_KEY_VALUE_PROPERTIES.clear();
+		ACCESSIBLE_METHODS.clear();
 	}
 
 	public static KeyValueProperty getKeyValueProperty(Type declaringType, String propertyName) {
 		if (declaringType == null) {
 			return null;
 		}
-		Hashtable<String, KeyValueProperty> cacheForType = properties.get(declaringType);
+		Hashtable<String, KeyValueProperty> cacheForType = PROPERTIES.get(declaringType);
 		if (cacheForType == null) {
 			cacheForType = new Hashtable<String, KeyValueProperty>();
-			properties.put(declaringType, cacheForType);
+			PROPERTIES.put(declaringType, cacheForType);
 		}
 		KeyValueProperty returned = cacheForType.get(propertyName);
 		if (returned == null) {
@@ -82,35 +82,35 @@ public class KeyValueLibrary {
 	}
 
 	public static Vector<KeyValueProperty> getDeclaredProperties(Type declaringType) {
-		Vector<KeyValueProperty> returned = declaredKeyValueProperties.get(declaringType);
+		Vector<KeyValueProperty> returned = DECLARED_KEY_VALUE_PROPERTIES.get(declaringType);
 		if (returned == null) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("build declaredProperties() for " + declaringType);
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("build declaredProperties() for " + declaringType);
 			}
 			Vector<String> excludedSignatures = new Vector<String>();
 			returned = searchForProperties(declaringType, true, excludedSignatures);
-			declaredKeyValueProperties.put(declaringType, returned);
+			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, returned);
 			Vector<MethodDefinition> methods = searchForMethods(declaringType, excludedSignatures);
-			declaredMethods.put(declaringType, methods);
+			DECLARED_METHODS.put(declaringType, methods);
 		}
 		return returned;
 	}
 
 	public static Vector<MethodDefinition> getDeclaredMethods(Type declaringType) {
-		Vector<MethodDefinition> returned = declaredMethods.get(declaringType);
+		Vector<MethodDefinition> returned = DECLARED_METHODS.get(declaringType);
 		if (returned == null) {
-			logger.fine("build declaredMethods() for " + declaringType);
+			LOGGER.fine("build declaredMethods() for " + declaringType);
 			Vector<String> excludedSignatures = new Vector<String>();
 			Vector<KeyValueProperty> properties = searchForProperties(declaringType, true, excludedSignatures);
-			declaredKeyValueProperties.put(declaringType, properties);
+			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, properties);
 			returned = searchForMethods(declaringType, excludedSignatures);
-			declaredMethods.put(declaringType, returned);
+			DECLARED_METHODS.put(declaringType, returned);
 		}
 		return returned;
 	}
 
 	public static Vector<KeyValueProperty> getAccessibleProperties(Type declaringType) {
-		Vector<KeyValueProperty> returned = accessibleKeyValueProperties.get(declaringType);
+		Vector<KeyValueProperty> returned = ACCESSIBLE_KEY_VALUE_PROPERTIES.get(declaringType);
 		if (returned == null) {
 			returned = new Vector<KeyValueProperty>();
 			appendAccessibleProperties(declaringType, returned);
@@ -121,7 +121,7 @@ public class KeyValueLibrary {
 					return o1.getName().compareTo(o2.getName());
 				}
 			});
-			accessibleKeyValueProperties.put(declaringType, returned);
+			ACCESSIBLE_KEY_VALUE_PROPERTIES.put(declaringType, returned);
 		}
 		return returned;
 	}
@@ -159,7 +159,7 @@ public class KeyValueLibrary {
 	}
 
 	public static Vector<MethodDefinition> getAccessibleMethods(Type declaringType) {
-		Vector<MethodDefinition> returned = accessibleMethods.get(declaringType);
+		Vector<MethodDefinition> returned = ACCESSIBLE_METHODS.get(declaringType);
 		if (returned == null) {
 			returned = new Vector<MethodDefinition>();
 			Type current = declaringType;
@@ -175,7 +175,7 @@ public class KeyValueLibrary {
 					return o1.getSignature().compareTo(o2.getSignature());
 				}
 			});
-			accessibleMethods.put(declaringType, returned);
+			ACCESSIBLE_METHODS.put(declaringType, returned);
 		}
 		return returned;
 	}
@@ -183,18 +183,18 @@ public class KeyValueLibrary {
 	private static Vector<MethodDefinition> searchForMethods(Type declaringType, Vector<String> excludedSignatures) {
 		Vector<MethodDefinition> returned = new Vector<MethodDefinition>();
 
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("searchForMethods()");
+		if (LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.fine("searchForMethods()");
 		}
 		for (String excludedSignature : excludedSignatures) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Excluded: " + excludedSignature);
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("Excluded: " + excludedSignature);
 			}
 		}
 
 		Class theClass = TypeUtils.getBaseClass(declaringType);
 		if (theClass == null) {
-			logger.warning("Cannot search properties for type: " + declaringType);
+			LOGGER.warning("Cannot search properties for type: " + declaringType);
 			return null;
 		}
 
@@ -208,12 +208,12 @@ public class KeyValueLibrary {
 				}
 			}
 		} catch (NoClassDefFoundError e) {
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Could not find class: " + e.getMessage());
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Could not find class: " + e.getMessage());
 			}
 		} catch (Throwable e) {
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Unexpected exception raised " + e);
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Unexpected exception raised " + e);
 			}
 			e.printStackTrace();
 		}
@@ -233,7 +233,7 @@ public class KeyValueLibrary {
 
 		Class<?> theClass = TypeUtils.getBaseClass(declaringTypeType);
 		if (theClass == null) {
-			logger.warning("Cannot search properties for type: " + declaringTypeType);
+			LOGGER.warning("Cannot search properties for type: " + declaringTypeType);
 			return null;
 		}
 
@@ -243,8 +243,8 @@ public class KeyValueLibrary {
 				Method method = declaredMethods[i];
 				KeyValueProperty newProperty = makeProperty(declaringTypeType, method, includesGetOnlyProperties, excludedSignatures);
 				if (newProperty != null && !containsAPropertyNamed(returned, newProperty.getName())) {
-					if (logger.isLoggable(Level.FINE)) {
-						logger.fine("Make property from method: " + method);
+					if (LOGGER.isLoggable(Level.FINE)) {
+						LOGGER.fine("Make property from method: " + method);
 					}
 					returned.add(newProperty);
 				}
@@ -257,19 +257,19 @@ public class KeyValueLibrary {
 
 				KeyValueProperty newProperty = makeProperty(declaringTypeType, field);
 				if (newProperty != null && !containsAPropertyNamed(returned, newProperty.getName())) {
-					if (logger.isLoggable(Level.FINE)) {
-						logger.fine("Make property from field: " + field);
+					if (LOGGER.isLoggable(Level.FINE)) {
+						LOGGER.fine("Make property from field: " + field);
 					}
 					returned.add(newProperty);
 				}
 			}
 		} catch (NoClassDefFoundError e) {
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Could not find class: " + e.getMessage());
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Could not find class: " + e.getMessage());
 			}
 		} catch (Throwable e) {
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Unexpected exception raised " + e);
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Unexpected exception raised " + e);
 			}
 			e.printStackTrace();
 		}
@@ -411,7 +411,7 @@ public class KeyValueLibrary {
 	private static Method getMethod(Type type, String methodName, Type... params) /*throws NoSuchMethodException*/{
 		Class theClass = TypeUtils.getBaseClass(type);
 		if (theClass == null) {
-			logger.warning("Cannot search properties for type: " + type);
+			LOGGER.warning("Cannot search properties for type: " + type);
 			return null;
 		}
 
@@ -419,18 +419,18 @@ public class KeyValueLibrary {
 			params = new Type[0];
 		}
 		StringBuffer sb = null;
-		if (logger.isLoggable(Level.FINE)) {
+		if (LOGGER.isLoggable(Level.FINE)) {
 			sb = new StringBuffer();
 			for (Type t : params) {
 				sb.append(" " + t.toString());
 			}
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Looking for " + methodName + " with" + sb.toString());
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("Looking for " + methodName + " with" + sb.toString());
 			}
 		}
 		for (Method m : theClass.getMethods()) {
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Examining " + m);
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("Examining " + m);
 			}
 			if (m.getName().equals(methodName) && m.getGenericParameterTypes().length == params.length) {
 				boolean paramMatches = true;
@@ -440,15 +440,15 @@ public class KeyValueLibrary {
 					}
 				}
 				if (paramMatches) {
-					if (logger.isLoggable(Level.FINE)) {
-						logger.fine("Looking for " + methodName + " with" + sb.toString() + ": found");
+					if (LOGGER.isLoggable(Level.FINE)) {
+						LOGGER.fine("Looking for " + methodName + " with" + sb.toString() + ": found");
 					}
 					return m;
 				}
 			}
 		}
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Looking for " + methodName + " with" + sb.toString() + ": NOT found");
+		if (LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.fine("Looking for " + methodName + " with" + sb.toString() + ": NOT found");
 		}
 		// throw new NoSuchMethodException();
 		return null;

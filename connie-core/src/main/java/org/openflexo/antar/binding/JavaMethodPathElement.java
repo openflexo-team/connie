@@ -37,7 +37,7 @@ import org.openflexo.antar.expr.TypeMismatchException;
  */
 public class JavaMethodPathElement extends FunctionPathElement {
 
-	static final Logger logger = Logger.getLogger(JavaMethodPathElement.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(JavaMethodPathElement.class.getPackage().getName());
 
 	public JavaMethodPathElement(BindingPathElement parent, MethodDefinition method, List<DataBinding<?>> args) {
 		super(parent, method, args);
@@ -123,7 +123,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			for (i = 0; i < getFunction().getArguments().size(); i++) {
 				warningMessage.append(", arg[" + i + "] = " + args[i]);
 			}
-			logger.warning(warningMessage.toString());
+			LOGGER.warning(warningMessage.toString());
 			// e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -137,7 +137,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			for (int j = 0; j < args.length; j++) {
 				sb.append("arg " + j + " = " + args[j] + " ");
 			}
-			logger.warning(sb.toString());
+			LOGGER.warning(sb.toString());
 			/*e.printStackTrace();
 			logger.info("Caused by:");
 			e.getTargetException().printStackTrace();*/

@@ -29,13 +29,13 @@ import java.util.logging.Logger;
 
 import org.openflexo.toolbox.ToolBox;
 
-public class MethodDefinition extends Observable implements Function {
+public final class MethodDefinition extends Observable implements Function {
 
-	private static final Logger logger = Logger.getLogger(MethodDefinition.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(MethodDefinition.class.getPackage().getName());
 
-	private Type declaringType;
-	private Method method;
-	private ArrayList<Function.FunctionArgument> arguments;
+	private final Type declaringType;
+	private final Method method;
+	private final ArrayList<Function.FunctionArgument> arguments;
 	private static Hashtable<Method, MethodDefinition> cache = new Hashtable<Method, MethodDefinition>();
 
 	public static MethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {

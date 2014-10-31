@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class UnresolvedExpression extends Expression {
 
-	private static final Logger logger = Logger.getLogger(UnresolvedExpression.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(UnresolvedExpression.class.getPackage().getName());
 
 	public UnresolvedExpression() {
 	}

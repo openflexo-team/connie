@@ -13,7 +13,7 @@ import org.openflexo.logging.FlexoLogger;
  */
 public abstract class LazyBindingValueChangeListener<T> extends BindingValueChangeListener<T> {
 
-	private static final Logger logger = FlexoLogger.getLogger(LazyBindingValueChangeListener.class.getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(LazyBindingValueChangeListener.class.getName());
 
 	public LazyBindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		super(dataBinding, context);

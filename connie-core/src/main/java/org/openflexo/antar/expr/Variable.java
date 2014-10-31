@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class Variable extends BindingValue {
 
-	private static final Logger logger = Logger.getLogger(Variable.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(Variable.class.getPackage().getName());
 
 	public Variable(String variableName) {
 		super(makeSingleton(variableName));

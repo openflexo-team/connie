@@ -20,26 +20,12 @@
 
 package org.openflexo.toolbox;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.zip.ZipException;
 
 import org.apache.commons.io.FileUtils;
 /**
@@ -56,12 +42,12 @@ import org.apache.commons.io.FileUtils;
 public class JarInDirClassLoader extends URLClassLoader {
 
 
-	private static final java.util.logging.Logger logger = org.openflexo.logging.FlexoLogger.getLogger(JarInDirClassLoader.class.getPackage()
+	private static final java.util.logging.Logger LOGGER = org.openflexo.logging.FlexoLogger.getLogger(JarInDirClassLoader.class.getPackage()
 			.getName());
 
 
 
-	private List<File> jarDirectories;
+	private final List<File> jarDirectories;
 
 
 	public JarInDirClassLoader(List<File> jarDirectories) {
@@ -74,7 +60,8 @@ public class JarInDirClassLoader extends URLClassLoader {
 
 	@Override
 	protected void finalize() throws Throwable {
-		logger.info("Finalizing Jar Class Loader");
+		LOGGER.info("Finalizing Jar Class Loader");
+		super.finalize();
 	}
 	
 	/**
@@ -104,7 +91,7 @@ public class JarInDirClassLoader extends URLClassLoader {
 				try {
 					this.addURL(f.toURI().toURL());
 				} catch (MalformedURLException e) {
-					logger.severe("JarInDirClassLoader: cannot load file from Malformed URI: " + jarDir.toString());
+					LOGGER.severe("JarInDirClassLoader: cannot load file from Malformed URI: " + jarDir.toString());
 				}
 			}
 		}

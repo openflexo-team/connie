@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 
 final public class ResourceLocator {
 
-	private static final Logger logger = Logger.getLogger(ResourceLocator.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(ResourceLocator.class.getPackage().getName());
 
 	static final private ArrayList<ResourceLocatorDelegate> _delegatesOrderedList = new ArrayList<ResourceLocatorDelegate>();
 	static final private Map<Class, ResourceLocatorDelegate> _delegatesListMap = new Hashtable<Class, ResourceLocatorDelegate>();
@@ -126,12 +126,12 @@ final public class ResourceLocator {
 		if (newdelegate != null) {
 			ResourceLocatorDelegate dl = _delegatesListMap.get(newdelegate.getClass());
 			if (dl != null) {
-				logger.warning("A delegate for that class (" + newdelegate.getClass().getName() + " already exists");
+				LOGGER.warning("A delegate for that class (" + newdelegate.getClass().getName() + " already exists");
 				if (dl.equals(newdelegate)) {
 					_delegatesOrderedList.remove(dl);
 					_delegatesOrderedList.add(dl);
 				} else {
-					logger.severe("The newdelegate is not added as it conflicts with existing one");
+					LOGGER.severe("The newdelegate is not added as it conflicts with existing one");
 				}
 			} else {
 				_delegatesOrderedList.add(newdelegate);
@@ -152,12 +152,12 @@ final public class ResourceLocator {
 		if (newdelegate != null) {
 			ResourceLocatorDelegate dl = _delegatesListMap.get(newdelegate.getClass());
 			if (dl != null) {
-				logger.warning("A delegate for that class (" + newdelegate.getClass().getName() + " already exists");
+				LOGGER.warning("A delegate for that class (" + newdelegate.getClass().getName() + " already exists");
 				if (dl.equals(newdelegate)) {
 					_delegatesOrderedList.remove(dl);
 					_delegatesOrderedList.add(0, dl);
 				} else {
-					logger.severe("The newdelegate is not added as it conflicts with existing one");
+					LOGGER.severe("The newdelegate is not added as it conflicts with existing one");
 				}
 			} else {
 				_delegatesOrderedList.add(0, newdelegate);
@@ -201,7 +201,7 @@ final public class ResourceLocator {
 		if (location != null) {
 			return location.getLocator().retrieveResourceAsFile(location);
 		} else {
-			logger.warning("Cannot retrieve a File for a null location");
+			LOGGER.warning("Cannot retrieve a File for a null location");
 			return null;
 		}
 	}

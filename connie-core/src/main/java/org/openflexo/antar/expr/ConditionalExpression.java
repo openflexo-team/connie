@@ -123,6 +123,11 @@ public class ConditionalExpression extends Expression {
 	public void setElseExpression(Expression elseExpression) {
 		this.elseExpression = elseExpression;
 	}
+	
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
 
 	@Override
 	public boolean equals(Object obj) {

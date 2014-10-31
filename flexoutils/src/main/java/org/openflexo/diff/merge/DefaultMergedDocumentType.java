@@ -29,7 +29,7 @@ import org.openflexo.toolbox.TokenMarkerStyle;
 
 public class DefaultMergedDocumentType implements MergedDocumentType {
 
-	protected static final Logger logger = FlexoLogger.getLogger(DefaultMergedDocumentType.class.getPackage().getName());
+	protected static final Logger LOGGER = FlexoLogger.getLogger(DefaultMergedDocumentType.class.getPackage().getName());
 
 	private final DelimitingMethod _delimitingMethod;
 	private final TokenMarkerStyle _style;
@@ -191,7 +191,7 @@ public class DefaultMergedDocumentType implements MergedDocumentType {
 			return DEFAULT;
 		}
 
-		logger.warning("No merged document type for binary files");
+		LOGGER.warning("No merged document type for binary files");
 
 		return null;
 	}

@@ -28,7 +28,7 @@ import org.openflexo.logging.FlexoLogger;
 
 public class Sequence extends ControlGraph {
 
-	private static final Logger logger = FlexoLogger.getLogger(Sequence.class.getPackage().getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(Sequence.class.getPackage().getName());
 
 	private Vector<ControlGraph> statements;
 
@@ -130,12 +130,12 @@ public class Sequence extends ControlGraph {
 								firstStatement.appendHeaderComment(normalizedStatement.getHeaderComment(), true);
 							}
 						} else {
-							logger.warning("Forgetting comment " + normalizedStatement.getHeaderComment() + ". Implement this.");
+							LOGGER.warning("Forgetting comment " + normalizedStatement.getHeaderComment() + ". Implement this.");
 							// TODO: implement header comment recovery in this case
 						}
 						normalizedStatement.setHeaderComment(null);
 					} else if (normalizedStatement.getInlineComment() != null) {
-						logger.warning("Forgetting comment " + normalizedStatement.getInlineComment() + ". Implement this.");
+						LOGGER.warning("Forgetting comment " + normalizedStatement.getInlineComment() + ". Implement this.");
 						// TODO: implement inline comment recovery in this case
 					}
 					normalizedList.addAll(listOfNormalizedStatements);

@@ -27,7 +27,7 @@ import org.openflexo.toolbox.StringUtils;
 public abstract class ControlGraph implements AlgorithmicUnit {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = FlexoLogger.getLogger(ControlGraph.class.getPackage().getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(ControlGraph.class.getPackage().getName());
 
 	private String headerComment = null;
 	private String inlineComment = null;

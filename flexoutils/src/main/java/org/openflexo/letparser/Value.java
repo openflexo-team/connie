@@ -41,6 +41,10 @@ public abstract class Value extends Token {
 	public abstract String getStringValue();
 
 	@Override
+	public int hashCode() {
+		return getStringValue().hashCode();
+	}
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Value) {
 			return getStringValue().equals(((Value) obj).getStringValue());

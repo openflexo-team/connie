@@ -31,25 +31,25 @@ import org.openflexo.antar.expr.UnaryOperator;
 
 public class JavaGrammar implements ExpressionGrammar {
 
-	private static final BinaryOperator[] allSupportedBinaryOperators = { BooleanBinaryOperator.AND, BooleanBinaryOperator.OR,
+	private static final BinaryOperator[] ALL_SUPPORTED_BINARY_OPERATORS = { BooleanBinaryOperator.AND, BooleanBinaryOperator.OR,
 			BooleanBinaryOperator.EQUALS, BooleanBinaryOperator.NOT_EQUALS, BooleanBinaryOperator.LESS_THAN,
 			BooleanBinaryOperator.LESS_THAN_OR_EQUALS, BooleanBinaryOperator.GREATER_THAN, BooleanBinaryOperator.GREATER_THAN_OR_EQUALS,
 			ArithmeticBinaryOperator.ADDITION, ArithmeticBinaryOperator.SUBSTRACTION, ArithmeticBinaryOperator.MULTIPLICATION,
 			ArithmeticBinaryOperator.DIVISION, ArithmeticBinaryOperator.POWER, };
 
-	private static final UnaryOperator[] allSupportedUnaryOperators = { BooleanUnaryOperator.NOT, ArithmeticUnaryOperator.UNARY_MINUS,
+	private static final UnaryOperator[] ALL_SUPPORTED_UNARY_OPERATORS = { BooleanUnaryOperator.NOT, ArithmeticUnaryOperator.UNARY_MINUS,
 			ArithmeticUnaryOperator.SIN, ArithmeticUnaryOperator.ASIN, ArithmeticUnaryOperator.COS, ArithmeticUnaryOperator.ACOS,
 			ArithmeticUnaryOperator.TAN, ArithmeticUnaryOperator.ATAN, ArithmeticUnaryOperator.EXP, ArithmeticUnaryOperator.LOG,
 			ArithmeticUnaryOperator.SQRT };
 
 	@Override
 	public BinaryOperator[] getAllSupportedBinaryOperators() {
-		return allSupportedBinaryOperators;
+		return ALL_SUPPORTED_BINARY_OPERATORS;
 	}
 
 	@Override
 	public UnaryOperator[] getAllSupportedUnaryOperators() {
-		return allSupportedUnaryOperators;
+		return ALL_SUPPORTED_UNARY_OPERATORS;
 	}
 
 	public String getSymbol(UnaryOperator operator) throws OperatorNotSupportedException {

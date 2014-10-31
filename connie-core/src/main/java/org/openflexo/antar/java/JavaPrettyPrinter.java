@@ -47,7 +47,7 @@ import de.hunsicker.jalopy.Jalopy;
 
 public class JavaPrettyPrinter extends PrettyPrinter {
 
-	private static final Logger logger = FlexoLogger.getLogger(JavaPrettyPrinter.class.getPackage().getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(JavaPrettyPrinter.class.getPackage().getName());
 
 	private static final String MULTIPLE_NEW_LINE_ALONE_REG_EXP = "([\\s&&[^\n\r]]*[\n\r]{2,})";
 
@@ -326,16 +326,16 @@ public class JavaPrettyPrinter extends PrettyPrinter {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Exception occured while parsing the java code");
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Exception occured while parsing the java code");
 			}
 		}
 		if (jalopy.getState() == Jalopy.State.ERROR) {
-			logger.warning("Java code could not be formatted");
+			LOGGER.warning("Java code could not be formatted");
 			throw new JavaFormattingException();
 		}
-		if (logger.isLoggable(Level.WARNING)) {
-			logger.warning("Java code could not be formatted: " + jalopy.getState());
+		if (LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Java code could not be formatted: " + jalopy.getState());
 		}
 		return someCode;
 	}
@@ -368,16 +368,16 @@ public class JavaPrettyPrinter extends PrettyPrinter {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Exception occured while parsing the java code");
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Exception occured while parsing the java code");
 			}
 		}
 		if (jalopy.getState() == Jalopy.State.ERROR) {
-			logger.warning("Java code could not be formatted");
+			LOGGER.warning("Java code could not be formatted");
 			throw new JavaFormattingException();
 		}
-		if (logger.isLoggable(Level.WARNING)) {
-			logger.warning("Java code could not be formatted: " + jalopy.getState());
+		if (LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Java code could not be formatted: " + jalopy.getState());
 		}
 		return someCode;
 	}
@@ -411,16 +411,16 @@ public class JavaPrettyPrinter extends PrettyPrinter {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.warning("Exception occured while parsing the java code");
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Exception occured while parsing the java code");
 			}
 		}
 		if (jalopy.getState() == Jalopy.State.ERROR) {
-			logger.warning("Java code could not be formatted");
+			LOGGER.warning("Java code could not be formatted");
 			throw new JavaFormattingException();
 		}
-		if (logger.isLoggable(Level.WARNING)) {
-			logger.warning("Java code could not be formatted: " + jalopy.getState());
+		if (LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Java code could not be formatted: " + jalopy.getState());
 		}
 		return someCode;
 	}

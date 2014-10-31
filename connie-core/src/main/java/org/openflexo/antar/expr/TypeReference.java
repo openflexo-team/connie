@@ -34,7 +34,7 @@ import org.openflexo.antar.binding.ParameterizedTypeImpl;
  */
 public class TypeReference {
 
-	private static final Logger logger = Logger.getLogger(TypeReference.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(TypeReference.class.getPackage().getName());
 
 	private String baseType;
 	private List<TypeReference> parameters;

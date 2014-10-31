@@ -323,6 +323,10 @@ public class TestExpressionParser extends TestCase {
 	public void testParsingError5() {
 		tryToParse("test24 [ fdfd + 1", "", null, null, true);
 	}
+	
+	public void testParsingError6() {
+		tryToParse("obj..f()", "", null, null, true);
+	}
 
 	public void testIgnoredChars() {
 		tryToParse(" test  \n\n", "test", BindingValue.class, null, false);

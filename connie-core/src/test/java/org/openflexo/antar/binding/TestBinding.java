@@ -64,6 +64,11 @@ public class TestBinding extends TestCase {
 		@Override
 		public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
 		}
+
+		@Override
+		public String getDeletedProperty() {
+			return null;
+		}
 	}
 
 	// String aString;

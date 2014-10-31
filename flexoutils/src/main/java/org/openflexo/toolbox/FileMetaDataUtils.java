@@ -36,7 +36,7 @@ import org.openflexo.logging.FlexoLogger;
  */
 public class FileMetaDataUtils {
 
-	private static final Logger logger = FlexoLogger.getLogger(FileMetaDataUtils.class.getPackage().getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(FileMetaDataUtils.class.getPackage().getName());
 
 	public static String getProperty(String propertyName, File aFile) {
 		return getProperties(aFile).getProperty(propertyName);

@@ -7,7 +7,7 @@ import org.openflexo.toolbox.StringUtils;
 
 public class LoggingFilter {
 
-	static final Logger logger = Logger.getLogger(LoggingFilter.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(LoggingFilter.class.getPackage().getName());
 
 	public String filterName;
 	public FilterType type = FilterType.Highlight;
@@ -196,7 +196,7 @@ public class LoggingFilter {
 	}
 
 	private boolean dateMatches(LogRecord record) {
-		logger.warning("Not implemented ");
+		LOGGER.warning("Not implemented ");
 		return true;
 	}
 

@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 public class XMLModel {
 
-    protected static final Logger     logger        = Logger.getLogger(XMLModel.class.getPackage().getName());
+    protected static final Logger     LOGGER        = Logger.getLogger(XMLModel.class.getPackage().getName());
 
     private static String             NAME_ATTR     = "name";
     private static String             NAME_ATTR_URI = "http://www.example.org/Library#name";

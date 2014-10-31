@@ -26,10 +26,10 @@ import java.util.logging.Logger;
 
 import org.openflexo.logging.FlexoLogger;
 
-public class Flow extends ControlGraph {
+public class Flow extends ControlGraph implements Cloneable {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = FlexoLogger.getLogger(Sequence.class.getPackage().getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(Sequence.class.getPackage().getName());
 
 	private Vector<ControlGraph> statements;
 

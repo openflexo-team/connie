@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
 
-	private static final Logger logger = Logger.getLogger(JarResourceImpl.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(JarResourceImpl.class.getPackage().getName());
 
 	private List<Resource> contents;
 	private JarFile jarfile = null;
@@ -63,10 +63,10 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		try {
 			jarfile = new JarFile(filename);
 		} catch (UnsupportedEncodingException e) {
-			logger.severe("Unable to create JarResource with filename: " +filename);
+			LOGGER.severe("Unable to create JarResource with filename: " +filename);
 			e.printStackTrace();
 		} catch (IOException e) {
-			logger.severe("Unable to create JarResource with filename: " +filename);
+			LOGGER.severe("Unable to create JarResource with filename: " +filename);
 			e.printStackTrace();
 		}
 		if (jarfile != null){
@@ -74,7 +74,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			jarfilename = filename;
 		}
 		else {
-			logger.severe("Unable to create JarResource with filename: " +filename);
+			LOGGER.severe("Unable to create JarResource with filename: " +filename);
 			return;
 		}
 		
@@ -97,7 +97,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			jarfilename = jarFile.getName();
 		}
 		else {
-			logger.severe("Unable to create JarResource with filename: " +jarFile.getName());
+			LOGGER.severe("Unable to create JarResource with filename: " +jarFile.getName());
 			return;
 		}
 	}
@@ -138,7 +138,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 				return retval;
 			}
 			catch (Exception e){
-				logger.severe("Unable to look for resources in URL : " + url);
+				LOGGER.severe("Unable to look for resources in URL : " + url);
 				e.printStackTrace();
 			}
 
@@ -168,7 +168,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			return retval;
 		}
 		catch (Exception e){
-			logger.severe("Unable to look for resources in URL : " + url);
+			LOGGER.severe("Unable to look for resources in URL : " + url);
 			e.printStackTrace();
 		}
 
@@ -202,7 +202,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			return retval;
 		}
 		catch (Exception e){
-			logger.severe("Unable to look for resources in URL : " + url);
+			LOGGER.severe("Unable to look for resources in URL : " + url);
 			e.printStackTrace();
 		}
 
@@ -228,7 +228,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			try {
 				return jarfile.getInputStream(entry);
 			} catch (IOException e) {
-				logger.severe("Unable to access Resource");
+				LOGGER.severe("Unable to access Resource");
 				e.printStackTrace();
 			}
 		}

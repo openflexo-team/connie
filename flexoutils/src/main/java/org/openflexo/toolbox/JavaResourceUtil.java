@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  */
 public class JavaResourceUtil {
 
-	private static final Logger logger = Logger.getLogger(JavaResourceUtil.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(JavaResourceUtil.class.getPackage().getName());
 
 	/**
 	 * Retrieve all resources with the specified suffix in the resources where the specified class belongs (from jar or folder).
@@ -69,17 +69,17 @@ public class JavaResourceUtil {
 							jarFile.close();
 						}
 					} catch (IOException e) {
-						logger.log(Level.WARNING, "Cannot close jar file '" + jarFile.getName() + "' !", e);
+						LOGGER.log(Level.WARNING, "Cannot close jar file '" + jarFile.getName() + "' !", e);
 					}
 				}
 			} else {
-				logger.log(Level.WARNING, "Cannot handle file type for loading resources !");
+				LOGGER.log(Level.WARNING, "Cannot handle file type for loading resources !");
 			}
 
 		} catch (URISyntaxException e) {
-			logger.log(Level.SEVERE, "Cannot load files from jar !", e);
+			LOGGER.log(Level.SEVERE, "Cannot load files from jar !", e);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Cannot load files from jar !", e);
+			LOGGER.log(Level.SEVERE, "Cannot load files from jar !", e);
 		}
 
 		return new ArrayList<String>();
@@ -150,7 +150,7 @@ public class JavaResourceUtil {
 
 			return new Date(url.openConnection().getLastModified());
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Cannot retrieve last modified date for resources '" + resourcePath + "' !");
+			LOGGER.log(Level.SEVERE, "Cannot retrieve last modified date for resources '" + resourcePath + "' !");
 			e.printStackTrace();
 			return null;
 		}

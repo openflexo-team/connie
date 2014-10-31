@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 public class InJarResourceImpl extends BasicResourceImpl {
 
 
-	private static final Logger logger = Logger.getLogger(InJarResourceImpl.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(InJarResourceImpl.class.getPackage().getName());
 	
 	private JarEntry entry = null;
 	
@@ -73,7 +73,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 			try {
 				return _url.openStream();
 			} catch (IOException e) {
-				logger.severe("Cannot open given Resource: " + _url.toString());
+				LOGGER.severe("Cannot open given Resource: " + _url.toString());
 				e.printStackTrace();
 			}
 		}
@@ -134,13 +134,13 @@ public class InJarResourceImpl extends BasicResourceImpl {
 				try {
 					jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),"UTF-8");
 				} catch (UnsupportedEncodingException e1) {
-					logger.severe("Unable to decode given PATH");
+					LOGGER.severe("Unable to decode given PATH");
 					e1.printStackTrace();
 				}
 				try {
 					container = new JarResourceImpl(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), jarPath);
 				} catch (MalformedURLException e) {
-					logger.severe("Unable to retrieve containing JarFile: " + jarPath);
+					LOGGER.severe("Unable to retrieve containing JarFile: " + jarPath);
 					e.printStackTrace();
 					return (Resource) java.util.Collections.emptyList();
 				}

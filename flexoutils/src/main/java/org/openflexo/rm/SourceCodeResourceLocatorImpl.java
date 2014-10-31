@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl {
 
-	private static final Logger logger = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
 
 	@Override
 	protected List<File> getDirectoriesSearchOrder() {

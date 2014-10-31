@@ -22,7 +22,7 @@ package org.openflexo.antar;
 import org.openflexo.antar.expr.Expression;
 import org.openflexo.antar.expr.Variable;
 
-public abstract class ForLoop extends Loop {
+public abstract class ForLoop extends Loop { // NOPMD by beugnard on 29/10/14 23:12
 
 	private Variable iterator;
 	private Expression initValue;

@@ -41,7 +41,7 @@ import org.junit.Test;
  */
 public class TestTypeUtils {
 
-	static final Logger logger = Logger.getLogger(TypeUtils.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(TypeUtils.class.getPackage().getName());
 
 	@Test
 	public void testNumberAsPrimitives() {
@@ -71,7 +71,7 @@ public class TestTypeUtils {
 
 	// Test that t2 is NOT an instance of t1
 	public static interface ShouldFail {
-		public void test4(short t1, double t2);
+		public void test4(short t1, double t2); // NOPMD by beugnard on 29/10/14 23:17
 
 		public void test10(Vector t1, List<String> t2);
 

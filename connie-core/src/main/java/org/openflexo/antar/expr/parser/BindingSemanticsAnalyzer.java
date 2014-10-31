@@ -28,7 +28,7 @@ import org.openflexo.antar.expr.parser.node.TIdentifier;
  */
 class BindingSemanticsAnalyzer extends ExpressionSemanticsAnalyzer {
 
-	private final ArrayList<BindingValue.AbstractBindingPathElement> path;
+	private final List<BindingValue.AbstractBindingPathElement> path;
 
 	/**
 	 * This flag is used to escape binding processing that may happen in call args handling
@@ -68,7 +68,7 @@ class BindingSemanticsAnalyzer extends ExpressionSemanticsAnalyzer {
 
 	public BindingValue.MethodCallBindingPathElement makeMethodCallBindingPathElement(ACall node) {
 		PArgList argList = node.getArgList();
-		ArrayList<Expression> args = new ArrayList<Expression>();
+		List<Expression> args = new ArrayList<Expression>();
 		if (argList instanceof ANonEmptyListArgList) {
 			args.add(getExpression(((ANonEmptyListArgList) argList).getExpr()));
 			for (PAdditionalArg aa : ((ANonEmptyListArgList) argList).getAdditionalArgs()) {

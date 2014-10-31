@@ -40,7 +40,7 @@ import org.xml.sax.ext.DefaultHandler2;
 
 public class XMLReaderSAXHandler extends DefaultHandler2 {
 
-	protected static final Logger logger             = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
+	protected static final Logger LOGGER             = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
 
 	public static final String    NAMESPACE_Property = "Namespace";
 
@@ -84,7 +84,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
 		try {
 
-			if (uri.length() == 0) {
+			if (uri == null || (uri.length() == 0)) {
 				// If there is no base uri, we use the localName of the XML Tag
 				currentObjectType = factory.getTypeForObject(localName, currentContainer, localName);
 			}			
@@ -131,7 +131,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 					if (attrQName != null && attrName != null && currentContainer == null) {
 						// we only set prefix if there is no other Root Element
 						NSPrefix = attrQName;
-						NSPrefix.replace(attrName, "").replace(":", "");
+						NSPrefix = NSPrefix.replace(attrName, "").replace(":", "");
 					}
 
 					if (typeName.equals(XMLCst.CDATA_TYPE_NAME)) {

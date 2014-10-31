@@ -11,7 +11,7 @@ import org.openflexo.toolbox.ToolBox;
 
 public class BindingVariable implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
 
-	private static final Logger logger = Logger.getLogger(BindingVariable.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(BindingVariable.class.getPackage().getName());
 
 	private String variableName;
 	private Type type;

@@ -19,7 +19,7 @@
  */
 package org.openflexo.antar;
 
-public abstract class Loop extends ControlGraph {
+public abstract class Loop extends ControlGraph { // NOPMD by beugnard on 29/10/14 23:14
 
 	private ControlGraph statement;
 }

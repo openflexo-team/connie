@@ -89,7 +89,7 @@ public final class ACall extends PCall {
 			return;
 		}
 
-		throw new RuntimeException("Not a child.");
+		throw new RuntimeException("Not a child."); // NOPMD by beugnard on 31/10/14 00:08
 	}
 
 	@Override
@@ -105,6 +105,6 @@ public final class ACall extends PCall {
 			return;
 		}
 
-		throw new RuntimeException("Not a child.");
+		throw new RuntimeException("Not a child."); // NOPMD by beugnard on 31/10/14 00:08
 	}
 }

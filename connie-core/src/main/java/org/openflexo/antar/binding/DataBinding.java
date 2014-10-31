@@ -63,9 +63,9 @@ import org.openflexo.toolbox.StringUtils;
  * 
  * @param <T>
  */
-public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeListener {
+public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeListener, Cloneable {
 
-	private static final Logger logger = Logger.getLogger(DataBinding.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(DataBinding.class.getPackage().getName());
 
 	/**
 	 * Defines the access type of a binding, which is generally related to the purpose of the binding
@@ -226,7 +226,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			} else {
 				this.expression = value;
 				unparsedBinding = value != null ? expression.toString() : null;
-				logger.info("Binding takes now value " + value);
+				LOGGER.info("Binding takes now value " + value);
 				// analyseExpressionAfterParsing();
 				notifyBindingChanged(oldValue, value);
 				return;
@@ -254,7 +254,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void setBindingName(String bindingName) {
-		if (this.bindingName != bindingName) {
+		//if (this.bindingName != bindingName) {
+		if (bindingName != null && !bindingName.equals(this.bindingName)) {
 			String oldBindingName = this.bindingName;
 			this.bindingName = bindingName;
 			if (getPropertyChangeSupport() != null) {
@@ -423,7 +424,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				return false;
 			} catch (VisitorException e) {
 				invalidBindingReason = "Unexpected visitor exception: " + e.getMessage();
-				logger.warning("TransformException while transforming " + expression);
+				LOGGER.warning("TransformException while transforming " + expression);
 				wasValid = false;
 				return false;
 			}
@@ -431,8 +432,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		if (getAnalyzedType() == null) {
 			invalidBindingReason = "Invalid binding because accessed type is null";
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("Invalid binding because accessed type is null");
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("Invalid binding because accessed type is null");
 			}
 			wasValid = false;
 			return false;
@@ -443,8 +444,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 			if (!getExpression().isSettable()) {
 				invalidBindingReason = "Invalid binding because binding declared as settable and definition cannot satisfy it";
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("Invalid binding because binding definition declared as settable and definition cannot satisfy it (binding variable not settable)");
+				if (LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.fine("Invalid binding because binding definition declared as settable and definition cannot satisfy it (binding variable not settable)");
 				}
 				wasValid = false;
 				return false;
@@ -473,8 +474,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		invalidBindingReason = "Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
 				+ getAnalyzedType();
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
+		if (LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.fine("Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
 					+ getAnalyzedType());
 		}
 		wasValid = false;
@@ -646,7 +647,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		needsParsing = false;
 
 		if (!isValid()) {
-			logger.warning("Invalid binding "
+			LOGGER.warning("Invalid binding "
 					+ getUnparsedBinding()
 					+ " reason: "
 					+ invalidBindingReason()
@@ -677,7 +678,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					}
 				});
 			} catch (VisitorException e) {
-				logger.warning("Unexpected " + e);
+				LOGGER.warning("Unexpected " + e);
 			}
 		}
 
@@ -840,7 +841,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			} catch (InvocationTargetTransformException e1) {
 				throw e1.getException();
 			} catch (TransformException e1) {
-				logger.warning("Unexpected TransformException while evaluating " + expression + " " + e1.getMessage());
+				LOGGER.warning("Unexpected TransformException while evaluating " + expression + " " + e1.getMessage());
 				e1.printStackTrace();
 				return null;
 			}
@@ -904,7 +905,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				}
 			});
 		} catch (VisitorException e) {
-			logger.warning("Unexpected " + e);
+			LOGGER.warning("Unexpected " + e);
 		}
 
 		return returned;
@@ -934,7 +935,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				}
 			});
 		} catch (VisitorException e) {
-			logger.warning("Unexpected " + e);
+			LOGGER.warning("Unexpected " + e);
 		}
 
 		return returned;

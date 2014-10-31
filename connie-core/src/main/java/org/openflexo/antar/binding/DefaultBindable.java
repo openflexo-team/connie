@@ -52,9 +52,7 @@ public abstract class DefaultBindable implements Bindable {
 	 *            new data binding value.
 	 */
 	@Override
-	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
-
-	}
+	public abstract void notifiedBindingChanged(DataBinding<?> dataBinding);
 
 	/**
 	 * Called when supplied data binding has been decoded (syntaxic and semantics analysis performed)
@@ -63,7 +61,5 @@ public abstract class DefaultBindable implements Bindable {
 	 *            new data binding value.
 	 */
 	@Override
-	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
-
-	}
+	public abstract void notifiedBindingDecoded(DataBinding<?> dataBinding);
 }

@@ -122,6 +122,16 @@ public class AccessorMethod implements Comparable {
 			throw new ClassCastException();
 		}
 	}
+	
+	@Override
+	public int hashCode() {
+		return (toString()).hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return this.compareTo(obj) == 0;
+	}
 
 	/**
 	 * Return the related <code>Method</code>
