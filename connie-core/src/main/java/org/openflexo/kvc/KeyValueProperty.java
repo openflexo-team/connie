@@ -472,7 +472,7 @@ public class KeyValueProperty extends Observable {
 	 * @exception InvalidKeyValuePropertyException
 	 *                if an error occurs
 	 */
-	public synchronized Object getObjectValue(Object object) {
+	public Object getObjectValue(Object object) {
 		if (object == null) {
 			throw new InvalidKeyValuePropertyException("No object is specified");
 		} else {
@@ -536,7 +536,7 @@ public class KeyValueProperty extends Observable {
 	 * @exception InvalidKeyValuePropertyException
 	 *                if an error occurs
 	 */
-	public synchronized void setObjectValue(Object aValue, Object object) {
+	public void setObjectValue(Object aValue, Object object) {
 		if (object == null) {
 			throw new InvalidKeyValuePropertyException("No object is specified");
 		} else {
