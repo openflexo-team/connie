@@ -52,7 +52,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 		setType(getMethodDefinition().getMethod().getGenericReturnType());
 	}
 
-	public MethodDefinition getMethodDefinition() {
+	final public MethodDefinition getMethodDefinition() {
 		return getFunction();
 	}
 

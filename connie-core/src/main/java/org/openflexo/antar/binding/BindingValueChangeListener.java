@@ -238,7 +238,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		return sb.toString();
 	}
 
-	public T evaluateValue() throws NullReferenceException {
+	final public T evaluateValue() throws NullReferenceException {
 		try {
 			return dataBinding.getBindingValue(context);
 		} catch (TypeMismatchException e) {

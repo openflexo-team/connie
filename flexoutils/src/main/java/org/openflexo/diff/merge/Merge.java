@@ -44,9 +44,9 @@ public class Merge extends Observable implements IMerge {
 	private DiffSource _left;
 	private DiffSource _right;
 
-	private Vector<MergeChange> changes;
+	private final Vector<MergeChange> changes;
 
-	private MergedDocumentType _docType;
+	private final MergedDocumentType _docType;
 
 	public Merge(DiffSource original, DiffSource left, DiffSource right, MergedDocumentType docType) {
 		super();
@@ -259,7 +259,7 @@ public class Merge extends Observable implements IMerge {
 	private int originalToRight = 0;
 	private Vector<DiffChange> processedChanges;
 
-	protected void computeChanges() {
+	final protected void computeChanges() {
 		DiffReport leftReport = ComputeDiff.diff(_left, _original);
 		DiffReport rightReport = ComputeDiff.diff(_original, _right);
 		if (debug) {
