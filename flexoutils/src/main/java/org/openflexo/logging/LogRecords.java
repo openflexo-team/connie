@@ -70,6 +70,8 @@ public class LogRecords implements HasPropertyChangeSupport {
 		return null;
 	}
 
+	private boolean isNotifying = false;
+
 	public void add(LogRecord record, FlexoLoggingManager loggingManager) {
 		synchronized (allRecords) {
 			if (loggingManager.getMaxLogCount() > -1 && allRecords.size() > loggingManager.getMaxLogCount()) {
@@ -85,9 +87,13 @@ public class LogRecords implements HasPropertyChangeSupport {
 				getPropertyChangeSupport().firePropertyChange("severeLogs", null, record);
 			}
 			totalLogs++;
-			getPropertyChangeSupport().firePropertyChange("records", null, record);
-			getPropertyChangeSupport().firePropertyChange("totalLogs", null, record);
-			getPropertyChangeSupport().firePropertyChange("logCount", null, record);
+			if (!isNotifying) {
+				isNotifying = true;
+				getPropertyChangeSupport().firePropertyChange("records", null, record);
+				getPropertyChangeSupport().firePropertyChange("totalLogs", null, record);
+				getPropertyChangeSupport().firePropertyChange("logCount", null, record);
+				isNotifying = false;
+			}
 		}
 	}
 
@@ -184,7 +190,7 @@ public class LogRecords implements HasPropertyChangeSupport {
 	public void removeTableModelListener(TableModelListener arg0) {
 		model.removeTableModelListener(arg0);
 	}
-	*/
+	 */
 
 	public List<LogRecord> getRecords() {
 		return records;

@@ -32,6 +32,8 @@ public class FlexoLoggingHandler extends Handler {
 		super();
 	}
 
+	private boolean isPublishing = false;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -39,9 +41,20 @@ public class FlexoLoggingHandler extends Handler {
 	 */
 	@Override
 	public void publish(java.util.logging.LogRecord record) {
+		synchronized (this) {
+			if (isPublishing) {
+				return;
+			}
+		}
 		if (FlexoLoggingManager.instance(this) != null) {
+			synchronized (this) {
+				isPublishing = true;
+			}
 			org.openflexo.logging.LogRecord flexoRecord = new org.openflexo.logging.LogRecord(record, FlexoLoggingManager.instance(this));
 			FlexoLoggingManager.instance(this).logRecords.add(flexoRecord, FlexoLoggingManager.instance());
+			synchronized (this) {
+				isPublishing = false;
+			}
 		}
 	}
 
