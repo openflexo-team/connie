@@ -78,12 +78,12 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		public String toString() {
 			return "Normal[" + property + "]";
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + (property == null?0:property.hashCode());
+			result = prime * result + (property == null ? 0 : property.hashCode());
 			return result;
 		}
 
@@ -110,16 +110,16 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		public String toString() {
 			return "Call[" + method + "(" + args + ")" + "]";
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 37;
 			int result = 1;
-			result = prime * result + (method == null?0:method.hashCode());
-			result = prime * result + (args == null?0:args.hashCode());
+			result = prime * result + (method == null ? 0 : method.hashCode());
+			result = prime * result + (args == null ? 0 : args.hashCode());
 			return result;
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof MethodCallBindingPathElement) {
@@ -628,20 +628,20 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		needsAnalysing = false;
 		// needsToBeReanalized = false;
 
-		if (LOGGER.isLoggable(Level.FINE)) {
-			LOGGER.fine("Is BindingValue valid ?");
+		if (LOGGER.isLoggable(Level.FINEST)) {
+			LOGGER.finest("Is BindingValue valid ?");
 		}
 
 		if (getBindingVariable() == null) {
 			invalidBindingReason = "binding value has no binding variable";
-			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.fine("Invalid binding because _bindingVariable is null");
+			if (LOGGER.isLoggable(Level.FINER)) {
+				LOGGER.finer("Invalid binding because _bindingVariable is null");
 			}
 			return false;
 		}
 		if (!_checkBindingPathValid()) {
-			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.fine("Invalid binding because binding path not valid");
+			if (LOGGER.isLoggable(Level.FINER)) {
+				LOGGER.finer("Invalid binding because binding path not valid");
 			}
 			return false;
 		}
