@@ -72,10 +72,6 @@ public class ToolBox {
 	public static final String MACOS = "MACOS";
 
 	public static final String OTHER = "OTHER";
-
-
-	public static final ImageIcon FOLDER_ICON = new ImageIconResource(ResourceLocator.locateResource("Icons/Common/Folder.gif"));
-	
 	
 	static {
 		String osName = System.getProperty("os.name");
@@ -780,12 +776,12 @@ public class ToolBox {
 	//  - if no user defined icons, if it is a directory we return our own folder icon,
 	//		so that there is no possible deadlock
 	//  - Otherwise find the system defined icon.
-	public static Icon getIconFileChooserWithFix(File f, FileView view){
+	public static Icon getIconFileChooserWithFix(File f, FileView view, ImageIcon icon){
 		if(ToolBox.isWindows()){
 			if(view!=null && view.getIcon(f)!=null){
 				return view.getIcon(f);
 			}else if(f.isDirectory()){
-				return FOLDER_ICON;
+				return icon;
 			}
 		}
 		return null;
