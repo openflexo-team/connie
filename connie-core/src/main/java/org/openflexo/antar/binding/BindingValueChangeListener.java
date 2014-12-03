@@ -26,7 +26,7 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  */
 public abstract class BindingValueChangeListener<T> implements PropertyChangeListener, Observer {
 
-	private static final Logger LOGGER= FlexoLogger.getLogger(BindingValueChangeListener.class.getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(BindingValueChangeListener.class.getName());
 
 	private DataBinding<T> dataBinding;
 	private BindingEvaluationContext context;
@@ -254,7 +254,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	@Override
 	public void update(Observable o, Object arg) {
 		if (!deleted) {
-			fireChange(new PropertyChangeEvent(o, null, null, null));
+			fireChange(new PropertyChangeEvent(o, arg.getClass().getSimpleName(), null, null));
 		}
 	}
 
