@@ -254,7 +254,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void setBindingName(String bindingName) {
-		//if (this.bindingName != bindingName) {
+		// if (this.bindingName != bindingName) {
 		if (bindingName != null && !bindingName.equals(this.bindingName)) {
 			String oldBindingName = this.bindingName;
 			this.bindingName = bindingName;
@@ -864,13 +864,25 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			InvocationTargetException, NotSettableContextException {
 		if (isSettable()) {
 			if (isBindingValue()) {
-				// At this time, only BindingValue is settable
+				// BindingValue is settable
 				try {
 					((BindingValue) getExpression()).setBindingValue(value, context);
 				} catch (InvocationTargetTransformException e) {
 					throw e.getException();
 				}
+			} else if ((getExpression() instanceof CastExpression)
+					&& (((CastExpression) getExpression()).getArgument() instanceof BindingValue)) {
+				// A Cast expression for a BindingValue is also settable
+				try {
+					((BindingValue) ((CastExpression) getExpression()).getArgument()).setBindingValue(value, context);
+				} catch (InvocationTargetTransformException e) {
+					throw e.getException();
+				}
+			} else {
+				LOGGER.warning("Don't know how to set binding: " + this);
 			}
+		} else {
+			LOGGER.warning("Not settable binding: " + this);
 		}
 	}
 
