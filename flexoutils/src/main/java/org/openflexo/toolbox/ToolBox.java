@@ -48,15 +48,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.openflexo.rm.ResourceLocator;
 
 /**
  * @author bmangez <B>Class Description</B>
@@ -770,30 +769,23 @@ public class ToolBox {
 		return fileChooserRequiresFix;
 	}
 
-	// A deadlock can occurs with windows when retrieving a Folder Icon
+	// A deadlock can occurs with windows when retrieving an icon. It seems that it occurs on remote folders only
 	// The following fixes that:
-	//  - first check a user defined icon,
-	//  - if no user defined icons, if it is a directory we return our own folder icon,
-	//		so that there is no possible deadlock
-	//  - Otherwise find the system defined icon.
-	public static Icon getIconFileChooserWithFix(File f, FileView view, ImageIcon icon){
-		if(ToolBox.isWindows()){
-			if(view!=null && view.getIcon(f)!=null){
-				return view.getIcon(f);
-			}else if(f.isDirectory()){
-				return icon;
-			}
+	//  - check a user defined icon doesn't exists in the view,
+	//  - check if the folder is a drive 
+	//  If this is true then return an icon, otherwise return null;
+	public static Icon getIconFileChooserWithFix(File f, FileView view){
+		if(getIconFileChooserRequiresFix(f,view)){
+			return UIManager.getDefaults().getIcon("FileView.computerIcon");
 		}
 		return null;
 	}
 	
 	public static boolean getIconFileChooserRequiresFix(File f, FileView view){
-		if(ToolBox.isWindows()){
-			if(view!=null && view.getIcon(f)!=null){
-				return true;
-			}else if(f.isDirectory()){
-				return true;
-			}
+		if(ToolBox.isWindows() 
+				&& FileSystemView.getFileSystemView().isDrive(f)
+				&& (view==null || view.getIcon(f)==null)){
+			return true;
 		}
 		return false;
 	}
