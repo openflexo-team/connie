@@ -279,6 +279,16 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		}
 	}
 
+	/**
+	 * Return default value to be used when binding not computable (eg when NullReferencedException raised)<br>
+	 * Please override when required
+	 * 
+	 * @return
+	 */
+	protected T getDefaultValue() {
+		return null;
+	}
+
 	protected void fireChange(PropertyChangeEvent evt) {
 
 		// Kept for future debug use
@@ -292,8 +302,13 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			dataBinding.clearCacheForBindingEvaluationContext(context);
 			newValue = evaluateValue();
 		} catch (NullReferenceException e) {
-			LOGGER.warning("Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
-			newValue = null;
+			if (getDefaultValue() == null) {
+				// When computing the new value, a NullReferenceException has raised:
+				// This might be normal, but we warn it to make the developer think of what should be returned here as default value
+				LOGGER.warning("Could not evaluate " + dataBinding + " with context " + context
+						+ " because NullReferenceException has raised");
+			}
+			newValue = getDefaultValue();
 		}
 
 		// Kept for future debug use
