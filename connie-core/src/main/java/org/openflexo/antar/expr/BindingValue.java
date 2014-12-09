@@ -134,7 +134,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	private final List<AbstractBindingPathElement> parsedBindingPath;
 
 	private BindingVariable bindingVariable;
-	private ArrayList<BindingPathElement> bindingPath;
+	private final ArrayList<BindingPathElement> bindingPath;
 
 	private boolean needsAnalysing = true;
 	private boolean analysingSuccessfull = true;
@@ -740,7 +740,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @param dataBinding
 	 * @return
 	 */
-	public boolean buildBindingPathFromParsedBindingPath(DataBinding<?> dataBinding) {
+	// Developer's note: This method is flagged as synchronized and it is important, as it is a critical code
+	// Many threads may access to this at same time, causing BindingPath to be mixed
+	public synchronized boolean buildBindingPathFromParsedBindingPath(DataBinding<?> dataBinding) {
 
 		// logger.info("buildBindingPathFromParsedBindingPath() for " +
 		// getParsedBindingPath());
@@ -767,7 +769,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		analyzedWithBindingModel = dataBinding.getOwner().getBindingModel();
 		setDataBinding(dataBinding);
 		bindingVariable = null;
-		bindingPath = new ArrayList<BindingPathElement>();
+		bindingPath.clear();
+
 		if (getDataBinding() != null && getParsedBindingPath().size() > 0
 				&& getParsedBindingPath().get(0) instanceof NormalBindingPathElement) {
 			// Seems to be valid
