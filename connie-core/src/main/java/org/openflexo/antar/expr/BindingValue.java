@@ -134,7 +134,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	private final List<AbstractBindingPathElement> parsedBindingPath;
 
 	private BindingVariable bindingVariable;
-	private ArrayList<BindingPathElement> bindingPath;
+	private final ArrayList<BindingPathElement> bindingPath;
 
 	private boolean needsAnalysing = true;
 	private boolean analysingSuccessfull = true;
@@ -390,15 +390,14 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// logger.info("Et la avec " + evt);
 		// Thread.dumpStack();
 		// }
-		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)
-				|| evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
+		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 
 			// System.out.println(">>> In binding value " + this);
 			// System.out.println(">>> Detecting that variable " + getBindingVariable().getVariableName() + " change to "
 			// + evt.getNewValue());
 
 			if (getBindingVariable().getVariableName().equals(evt.getNewValue())) {
-				// In this case, we detect that our current BindingVariable has changed
+				// In this case, we detect that our current BindingVariable name has changed
 				// It's really important to also change value in parsed binding path, otherwise if for any reason, the binding
 				// value is set again to be reanalyzed, the binding variable might not be found again
 				if (getParsedBindingPath().size() > 0 && getParsedBindingPath().get(0) instanceof NormalBindingPathElement) {
@@ -409,6 +408,12 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				if (dataBinding != null) {
 					dataBinding.markedAsToBeReanalized();
 				}
+			}
+		} else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
+			// In this case, we detect that our current BindingVariable type has changed
+			// We need to mark the DataBinding as being reanalyzed
+			if (dataBinding != null) {
+				dataBinding.markedAsToBeReanalized();
 			}
 		}
 	}
@@ -735,7 +740,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @param dataBinding
 	 * @return
 	 */
-	public boolean buildBindingPathFromParsedBindingPath(DataBinding<?> dataBinding) {
+	// Developer's note: This method is flagged as synchronized and it is important, as it is a critical code
+	// Many threads may access to this at same time, causing BindingPath to be mixed
+	public synchronized boolean buildBindingPathFromParsedBindingPath(DataBinding<?> dataBinding) {
 
 		// logger.info("buildBindingPathFromParsedBindingPath() for " +
 		// getParsedBindingPath());
@@ -762,7 +769,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		analyzedWithBindingModel = dataBinding.getOwner().getBindingModel();
 		setDataBinding(dataBinding);
 		bindingVariable = null;
-		bindingPath = new ArrayList<BindingPathElement>();
+		bindingPath.clear();
+
 		if (getDataBinding() != null && getParsedBindingPath().size() > 0
 				&& getParsedBindingPath().get(0) instanceof NormalBindingPathElement) {
 			// Seems to be valid
