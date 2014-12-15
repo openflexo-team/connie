@@ -5,7 +5,7 @@
 		<artifactId>openflexo-component</artifactId>
 		<version>0.2</version>
 	</parent>
-	<version>1.1-RC1</version>
+	<version>1.1-SNAPSHOT</version>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>connie</artifactId>
 	<name>Connie</name>
@@ -16,7 +16,7 @@
 	<scm>
 		<connection>scm:git:ssh://git@github.com/openflexo-team/connie.git</connection>
 		<url>https://github.com/openflexo-team/connie</url>
-		<tag>Connie-1.1-RC1</tag>
+		<tag>1.1</tag>
 	</scm>
 	<modules>
 		<module>flexoutils</module>
