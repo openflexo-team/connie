@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.jar.JarEntry;
 import java.util.regex.Pattern;
 
 /**
@@ -110,5 +109,13 @@ public interface Resource {
 	 */		
 	public Date getLastUpdate();
 
+	/**
+	 * 
+	 * Make a relative path to a given resource, relative to a specified path.
+	 *
+	 * @param pathRelative
+	 * @return
+	 */
+	public String makePathRelativeToString(String pathRelative);
 	
 }

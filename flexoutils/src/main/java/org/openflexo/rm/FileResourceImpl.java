@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.openflexo.toolbox.FileUtils;
+
 /**
  * Represents a {@link Resource} which is explicitely stored (serialized) in a {@link File}
  * 
@@ -297,4 +299,14 @@ public class FileResourceImpl extends BasicResourceImpl {
 		return true;
 	}
 
+	
+	@Override
+	public String makePathRelativeToString(String pathRelative) {
+		try {
+			return FileUtils.makeFilePathRelativeToDir(getFile(), new File(pathRelative));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return getFile().getAbsolutePath();
+	}
 }

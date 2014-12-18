@@ -21,7 +21,6 @@
 
 package org.openflexo.rm;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -179,6 +178,11 @@ public class BasicResourceImpl implements Resource {
 		 */
 		private static final long serialVersionUID = -3102784112143915911L;
 		
+	}
+	
+	@Override
+	public String makePathRelativeToString(String pathRelative) {
+		return pathRelative;
 	}
 	
 
