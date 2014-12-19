@@ -20,13 +20,13 @@
 
 package org.openflexo.xml;
 
-final public class XMLCst {
-    // Constants
+// an interface as it only contains static String Constant for XMLparser
+public interface XMLCst {
+	// Constants
 
-    public static final String  CDATA_TYPE_NAME = "CDATA";
-    public static final String CDATA_ATTR_NAME = "PCDATA";
-
+	public static final String CDATA_TYPE_NAME = "CDATA";
+	public static final String CDATA_ATTR_NAME = "PCDATA";
 
 	public static final String DEFAULT_NS = "ns1";
-	
+
 }
