@@ -20,8 +20,8 @@ Introduction to CONNIE
 
   First link: {test1.html}
 
-  Second link: {test2}
+  Second link: {{test2}}
 
-  Third link: {test3}
+  Third link: {test3{test3}}
 
 
