@@ -6,20 +6,23 @@
 
 Introduction to CONNIE
 
-CONNIE is a Java library allowing to define and execute an expression-based language over a generic API.
+  CONNIE is a Java library allowing to define and execute an expression-based language over a generic API.
 
-This language is generally used to connect heterogeneous technologies with the same API.
+  This language is generally used to connect heterogeneous technologies with the same API.
 
-The purpose of CONNIE is to offer the ability to:
+  The purpose of CONNIE is to offer the ability to:
 
-* Navigate through a graph of objects mixing heterogeneous technologies
-* Define strong-typed paths and expressions
-* Execute strong-typed paths and expressions
+  * Navigate through a graph of objects mixing heterogeneous technologies.
+  
+  * Define strong-typed paths and expressions.
 
-First link: {test1.html}
+  * Execute strong-typed paths and expressions.
 
-Second link: {test2}
+  First link: {test1.html}
 
-Third link: {test3}
+  Second link: {{test2}}
+
+  Third link: {{test3}}
+
 
 
