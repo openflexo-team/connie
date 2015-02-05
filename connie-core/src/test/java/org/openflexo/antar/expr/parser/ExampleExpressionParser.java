@@ -39,7 +39,9 @@
 
 package org.openflexo.antar.expr.parser;
 
-import org.openflexo.antar.expr.Expression;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.parser.ExpressionParser;
+import org.openflexo.connie.expr.parser.ParseException;
 
 public class ExampleExpressionParser {
 	public static void main(String[] arguments) {

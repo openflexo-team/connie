@@ -54,6 +54,7 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.junit.Test;
+import org.openflexo.connie.type.TypeUtils;
 
 /**
  * Test type utils

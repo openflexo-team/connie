@@ -43,8 +43,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import junit.framework.TestCase;
 
-import org.openflexo.antar.expr.NullReferenceException;
-import org.openflexo.antar.expr.TypeMismatchException;
+import org.openflexo.connie.BindingEvaluator;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 public class TestBindingEvaluator extends TestCase {

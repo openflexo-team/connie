@@ -49,8 +49,8 @@ import java.util.Observable;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import org.openflexo.antar.binding.AccessorMethod;
-import org.openflexo.antar.binding.TypeUtils;
+import org.openflexo.connie.binding.AccessorMethod;
+import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
 
 public class KeyValueProperty extends Observable {

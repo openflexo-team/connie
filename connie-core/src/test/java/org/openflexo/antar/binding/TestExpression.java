@@ -44,12 +44,12 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.openflexo.antar.expr.BindingValue;
-import org.openflexo.antar.expr.Expression;
-import org.openflexo.antar.expr.TypeMismatchException;
-import org.openflexo.antar.expr.Variable;
-import org.openflexo.antar.expr.parser.ExpressionParser;
-import org.openflexo.antar.expr.parser.ParseException;
+import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.Variable;
+import org.openflexo.connie.expr.parser.ExpressionParser;
+import org.openflexo.connie.expr.parser.ParseException;
 
 public class TestExpression extends TestCase {
 

@@ -41,22 +41,24 @@ package org.openflexo.antar.expr.parser;
 
 import junit.framework.TestCase;
 
-import org.openflexo.antar.expr.BinaryOperatorExpression;
-import org.openflexo.antar.expr.BindingValue;
-import org.openflexo.antar.expr.BooleanBinaryOperator;
-import org.openflexo.antar.expr.CastExpression;
-import org.openflexo.antar.expr.ConditionalExpression;
-import org.openflexo.antar.expr.Constant;
-import org.openflexo.antar.expr.Constant.BooleanConstant;
-import org.openflexo.antar.expr.Constant.FloatConstant;
-import org.openflexo.antar.expr.Constant.FloatSymbolicConstant;
-import org.openflexo.antar.expr.Constant.IntegerConstant;
-import org.openflexo.antar.expr.Constant.StringConstant;
-import org.openflexo.antar.expr.DefaultExpressionPrettyPrinter;
-import org.openflexo.antar.expr.Expression;
-import org.openflexo.antar.expr.NullReferenceException;
-import org.openflexo.antar.expr.TypeMismatchException;
-import org.openflexo.antar.expr.UnaryOperatorExpression;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.BinaryOperatorExpression;
+import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BooleanBinaryOperator;
+import org.openflexo.connie.expr.CastExpression;
+import org.openflexo.connie.expr.ConditionalExpression;
+import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.DefaultExpressionPrettyPrinter;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.UnaryOperatorExpression;
+import org.openflexo.connie.expr.Constant.BooleanConstant;
+import org.openflexo.connie.expr.Constant.FloatConstant;
+import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
+import org.openflexo.connie.expr.Constant.IntegerConstant;
+import org.openflexo.connie.expr.Constant.StringConstant;
+import org.openflexo.connie.expr.parser.ExpressionParser;
+import org.openflexo.connie.expr.parser.ParseException;
 
 public class TestExpressionParser extends TestCase {
 

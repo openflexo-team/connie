@@ -51,8 +51,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openflexo.antar.binding.MethodDefinition;
-import org.openflexo.antar.binding.TypeUtils;
+import org.openflexo.connie.binding.MethodDefinition;
+import org.openflexo.connie.type.TypeUtils;
 
 public class KeyValueLibrary {
 
