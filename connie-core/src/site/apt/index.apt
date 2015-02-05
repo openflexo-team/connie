@@ -31,6 +31,12 @@ Getting started with Connie
 
   More about defining a BindingStrategy in {{{DefineBindingStrategy.html}Defining a BindingStategy}}
 
+* Defining DataBinding objects
+
+  We are at the core level of Connie. 
+  A DataBinding is the abstraction of an evaluable expression which might be executed in a BindingEvaluationContext.
+  
+
 * Define a binding model
 
   You then have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
