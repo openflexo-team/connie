@@ -18,10 +18,15 @@ Introduction to CONNIE
 
   * Execute strong-typed paths and expressions.
 
-  First link: {test1.html}
+Contents of this package
 
-  Second link: {{test2}}
+  Connie project contains two separates components (defined here as modules):
+  
+  * Connie-core component, which contains the Connie core library iteself
+  
+  * Some utilities which are used in whole Openflexo infrastructure
 
-  Third link: {{test3}}
-
-
+{Anchor}. Link to {{anchor}}. Link to {{http://www.pixware.fr}}.
+  Link to {{{anchor}showing alternate text}}.
+  Link to {{{http://www.pixware.fr}Pixware home page}}.
+  
