@@ -32,11 +32,11 @@ Getting started with Connie
 JavaBindingFactory
 +----------------------------------------
 
-  First link: {test1.html}
+  First link: {{test1.html}}
 
-  Second link: {{test2}}
+  Second link: {{test2.html}}
 
-  Third link: {{test3}}
+  Third link: {{test3.html}}
 
 
 

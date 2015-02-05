@@ -46,9 +46,9 @@
 
     <menu name="Connie core">
       <item name="Home" 		href="index.html" />
-      <item name="test1"    	href="test1" />
-      <item name="test2"    	href="test2" />
-      <item name="test3"    	href="test3" />
+      <item name="test1"    	href="test1.html" />
+      <item name="test2"    	href="test2.html" />
+      <item name="test3"    	href="test3.html" />
     </menu>
 
    <menu ref="parent" />
