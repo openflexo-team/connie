@@ -29,7 +29,7 @@ Getting started with Connie
 
   For using with native Java objects, you just have to use  {{{./apidocs/org/openflexo/connie/JavaBindingFactory.html}JavaBindingFactory}}
 
-  More about defining a BindingStrategy in {{{DefineBindingStrategy.html}Defining a BindingStategy}}
+  More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
 
 * Defining DataBinding objects
 
@@ -45,7 +45,7 @@ Getting started with Connie
 
   First link: {{test1.html}}
 
-  Second link: {{{test2.html}Define your binding strategy}}
+  Ce lien est il bon ? : {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
 
   Third link: {{test3.html}}
 
