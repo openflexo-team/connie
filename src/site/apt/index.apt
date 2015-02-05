@@ -12,9 +12,11 @@ Introduction to CONNIE
 
   The purpose of CONNIE is to offer the ability to:
 
-  * Navigate through a graph of objects mixing heterogeneous technologies
-  * Define strong-typed paths and expressions
-  * Execute strong-typed paths and expressions
+  * Navigate through a graph of objects mixing heterogeneous technologies.
+  
+  * Define strong-typed paths and expressions.
+
+  * Execute strong-typed paths and expressions.
 
   First link: {test1.html}
 
