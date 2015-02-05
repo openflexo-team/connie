@@ -27,10 +27,15 @@ Getting started with Connie
   
   This means that you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
 
-  For using with native Java objects, you just have to use  
-+----------------------------------------
-JavaBindingFactory
-+----------------------------------------
+  For using with native Java objects, you just have to use  {{{./apidocs/org/openflexo/connie/JavaBindingFactory.html}JavaBindingFactory}}
+
+  More about defining a BindingStrategy in {{{DefineBindingStrategy.html}Defining a BindingStategy}}
+
+* Define a binding model
+
+  You then have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
+
+
 
   First link: {{test1.html}}
 
