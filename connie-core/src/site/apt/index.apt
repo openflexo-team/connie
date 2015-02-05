@@ -18,6 +18,20 @@ Introduction to CONNIE
 
   * Execute strong-typed paths and expressions.
 
+Getting started with Connie
+
+* Define a binding strategy
+  
+  You should first think of which binding strategy you apply to andjects and types you will connect.
+  This is highly dependant of underlying technology.
+  
+  This means that you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
+
+  For using with native Java objects, you just have to use  
++----------------------------------------
+JavaBindingFactory
++----------------------------------------
+
   First link: {test1.html}
 
   Second link: {{test2}}
