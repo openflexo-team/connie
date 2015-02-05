@@ -39,7 +39,7 @@ Getting started with Connie
 
   First link: {{test1.html}}
 
-  Second link: {{test2.html}}
+  Second link: {{{test2.html}Define your binding strategy}}
 
   Third link: {{test3.html}}
 
