@@ -44,7 +44,13 @@
     </menu>	
 -->
 
-    <menu ref="parent" />
+    <menu name="Test">
+      <item name="test1" 		href="test1.html" />
+      <item name="test2"    	href="test2" />
+      <item name="test3"    	ref="test3" />
+    </menu>	
+
+  < <menu ref="parent" />
     <menu ref="modules" />
     <menu ref="reports" />
 <!--    <menu ref="plugins" /> -->
