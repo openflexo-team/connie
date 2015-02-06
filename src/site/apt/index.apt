@@ -25,13 +25,5 @@ Contents of this package
   * {{{./connie-core/index.html}Connie-core component}}, which contains the Connie core library itself
   
   * {{{./flexoutils/index.html}Some utilities}} which are used in whole Openflexo infrastructure
-
-
-
-<!--Link to {{anchor}}. Link to {{http://www.pixware.fr}}.
-  Link to {{{anchor}showing alternate text}}.
-  Link to {{{http://www.pixware.fr}Pixware home page}}.
-  
-{Anchor}. -->
-  
+    
   
