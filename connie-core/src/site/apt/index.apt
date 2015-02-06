@@ -27,11 +27,35 @@ Getting started with Connie
 
   More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
 
-  [[2]] Defining DataBinding objects
+  [[2]] Define DataBinding objects
 
   We are at the core level of Connie. 
-  A DataBinding is the abstraction of an evaluable expression which might be executed in a BindingEvaluationContext.
+  A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} is the abstraction of an evaluable 
+  expression which might be executed in a {{{./apidocs/org/openflexo/connie/BindingEvaluationContext.html}BindingEvaluationContext}}.
   
+  A DataBinding is defined in the context of a {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}}. 
+  A <<<Bindable>>> basically references a <<<BindingFactory>>> (which defines how bindings are defined) and a <<<BindingModel>>> (which defines the evaluation context, also called environment).
+  
+  A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} might be created using this constructor:
+  
+  +----------------------------------------------------
+  	public DataBinding(String unparsed, Bindable owner, Type declaredType, BindingDefinitionType bdType);
+  +----------------------------------------------------  
+
+  For example:
+  
+   +----------------------------------------------------
+    Bindable myBindable = ...; // myBindable should be somewhere initialized
+  	DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable,String.class,BindingDefinitionType.GET_SET);
+  +----------------------------------------------------  
+  
+  Initialize a <<<DataBinding>>>:
+  * whose owner is the <<<myBindable>>> variable (a <<<Bindable>>> instance)
+  * where declared type (type of expression defined by the binding) is <<<String>>>
+  * where binding is executable both as readable and settable
+  * where expression is set to <<<person.name>>>
+  
+  To be valid, <<<myBindable>> variable should define a <<<BindingFactory>>>
 
   [[3]] Define a binding model
 
