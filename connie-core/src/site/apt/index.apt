@@ -20,14 +20,14 @@ Introduction to CONNIE
 
 Getting started with Connie
 
-  [[1]] Define a binding strategy
+* Define a binding strategy
   
   You should first think of which binding strategy you apply to objects and types you will connect. 
   To do so, you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
 
   More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStrategy}}
 
-  [[2]] Define Bindable context
+* Define Bindable context
   
   A binding is defined in the context of a {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}}. 
   A <<<Bindable>>> basically references a <<<BindingFactory>>> (which defines how bindings are defined) and a <<<BindingModel>>> (which defines the evaluation context, also called environment).
@@ -37,7 +37,7 @@ Getting started with Connie
   
   More about defining a Bindable context in {{{./DefineBindableContext.html}Defining Bindable context}}
   
-  [[3]] Define <<<DataBinding>>> objects
+* Define <<<DataBinding>>> objects
 
   We are at the core level of Connie. 
   A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} is the abstraction of an evaluable 
@@ -69,17 +69,17 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
   
   * where expression is set to <<<person.name>>>
   
- To be valid, <<<myBindable>>> variable should define:
+  To be valid, <<<myBindable>>> variable should define:
   
   * a <<<BindingModel>>> declaring a <<<BindingVariable>>> called <<<'person'>>> (suppose that type of this variable is reflected by <<<Person>>> Java class)
   
   * a suitable <<<BindingFactory>>> allowing to browse <<<'name'>>> from a <<<Person>>> type (this might be implemented by <<<Person>>> Java class if this class defines both <<<getName()>>> and <<<setName(String)>>> methods, and if <<<JavaBindingFactory>>> is used)
 
- Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
+  Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
 
   More about defining <<<DataBinding>>> objects in {{{./DefineDataBinding.html}Defining DataBinding objects}}
 
-  [[4]] Execute <<<DataBinding>>> objects
+* Execute <<<DataBinding>>> objects
 
   Once your <<<DataBinding>>> is defined, you can "execute" it in a {{{./apidocs/org/openflexo/connie/BindingEvaluationContext.html}BindingEvaluationContext}}.
   
