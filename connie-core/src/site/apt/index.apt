@@ -20,14 +20,14 @@ Introduction to CONNIE
 
 Getting started with Connie
 
-* Define a binding strategy
+* 1. Define a binding strategy
   
   You should first think of which binding strategy you apply to objects and types you will connect. 
   To do so, you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
 
   More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStrategy}}
 
-* Define Bindable context
+* 2. Define Bindable context
   
   A binding is defined in the context of a {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}}. 
   A <<<Bindable>>> basically references a <<<BindingFactory>>> (which defines how bindings are defined) and a <<<BindingModel>>> (which defines the evaluation context, also called environment).
@@ -37,7 +37,7 @@ Getting started with Connie
   
   More about defining a Bindable context in {{{./DefineBindableContext.html}Defining Bindable context}}
   
-* Define <<<DataBinding>>> objects
+* 3. Define <<<DataBinding>>> objects
 
   We are at the core level of Connie. 
   A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} is the abstraction of an evaluable 
@@ -79,7 +79,7 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
 
   More about defining <<<DataBinding>>> objects in {{{./DefineDataBinding.html}Defining DataBinding objects}}
 
-* Execute <<<DataBinding>>> objects
+* 4. Execute <<<DataBinding>>> objects
 
   Once your <<<DataBinding>>> is defined, you can "execute" it in a {{{./apidocs/org/openflexo/connie/BindingEvaluationContext.html}BindingEvaluationContext}}.
   
