@@ -50,6 +50,7 @@
       <item name="Bindable context"    	href="DefineBindableContext.html" />
       <item name="Define DataBinding"   href="DefineDataBinding.html" />
       <item name="Execute DataBinding"   href="ExecuteDataBinding.html" />
+      <item name="FAQ" 			href="faq.html"/>
       <item name="Javadoc"    	href="./apidocs/index.html" />
     </menu>
 
