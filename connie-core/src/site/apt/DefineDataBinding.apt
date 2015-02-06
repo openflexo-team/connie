@@ -36,12 +36,12 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
   
   * where expression is set to <<<person.name>>>
   
-  To be valid, <<<myBindable>>> variable should define:
+ To be valid, <<<myBindable>>> variable should define:
   
   * a <<<BindingModel>>> declaring a <<<BindingVariable>>> called <<<'person'>>> (suppose that type of this variable is reflected by <<<Person>>> Java class)
   
   * a suitable <<<BindingFactory>>> allowing to browse <<<'name'>>> from a <<<Person>>> type (this might be implemented by <<<Person>>> Java class if this class defines both <<<getName()>>> and <<<setName(String)>>> methods, and if <<<JavaBindingFactory>>> is used)
 
-  Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
+ Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
 
 

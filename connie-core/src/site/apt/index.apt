@@ -25,7 +25,7 @@ Getting started with Connie
   You should first think of which binding strategy you apply to objects and types you will connect. 
   To do so, you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
 
-  More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
+  More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStrategy}}
 
   [[2]] Define Bindable context
   
@@ -69,15 +69,15 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
   
   * where expression is set to <<<person.name>>>
   
-  To be valid, <<<myBindable>>> variable should define:
+ To be valid, <<<myBindable>>> variable should define:
   
   * a <<<BindingModel>>> declaring a <<<BindingVariable>>> called <<<'person'>>> (suppose that type of this variable is reflected by <<<Person>>> Java class)
   
   * a suitable <<<BindingFactory>>> allowing to browse <<<'name'>>> from a <<<Person>>> type (this might be implemented by <<<Person>>> Java class if this class defines both <<<getName()>>> and <<<setName(String)>>> methods, and if <<<JavaBindingFactory>>> is used)
 
-  Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
+ Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
 
-  More about defining a <<<DataBinding>>> objects in {{{./DefineDataBinding.html}Defining DataBinding objects}}
+  More about defining <<<DataBinding>>> objects in {{{./DefineDataBinding.html}Defining DataBinding objects}}
 
   [[4]] Execute <<<DataBinding>>> objects
 
@@ -117,4 +117,14 @@ Object value = myBinding.execute(evaluationContext);
 +----------------------------------------------------  
   
   More about executing <<<DataBinding>>> objects in {{{./ExecuteDataBinding.html}Executing DataBinding objects}}
-  
+   
+Reference documentation
+
+  {{{./DefineBindingStrategy.html}Defining a BindingStrategy}}
+
+  {{{./DefineBindableContext.html}Defining Bindable context}}
+
+  {{{./DefineDataBinding.html}Defining DataBinding objects}}
+
+  {{{./ExecuteDataBinding.html}Executing DataBinding objects}}
+
