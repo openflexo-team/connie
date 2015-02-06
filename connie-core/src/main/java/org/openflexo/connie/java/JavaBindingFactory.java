@@ -40,7 +40,7 @@
  * 
  */
 
-package org.openflexo.connie;
+package org.openflexo.connie.java;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
