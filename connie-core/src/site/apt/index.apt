@@ -35,6 +35,8 @@ Getting started with Connie
   You have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
   A <<<BindingModel>>> defines a list of  {{{./apidocs/org/openflexo/connie/BindingVariable.html}BindingVariable}}. A <<<BindingVariable>>> basically has a name and a type.
   
+  More about defining a Bindable context in {{{./DefineBindableContext.html}Defining Bindable context}}
+  
   [[3]] Define <<<DataBinding>>> objects
 
   We are at the core level of Connie. 
@@ -67,11 +69,15 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
   
   * where expression is set to <<<person.name>>>
   
-  To be valid, <<<myBindable>>> variable should define
+  To be valid, <<<myBindable>>> variable should define:
   
   * a <<<BindingModel>>> declaring a <<<BindingVariable>>> called <<<'person'>>> (suppose that type of this variable is reflected by <<<Person>>> Java class)
   
   * a suitable <<<BindingFactory>>> allowing to browse <<<'name'>>> from a <<<Person>>> type (this might be implemented by <<<Person>>> Java class if this class defines both <<<getName()>>> and <<<setName(String)>>> methods, and if <<<JavaBindingFactory>>> is used)
+
+  Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
+
+  More about defining a <<<DataBinding>>> objects in {{{./DefineDataBinding.html}Defining DataBinding objects}}
 
   [[4]] Execute <<<DataBinding>>> objects
 
@@ -81,15 +87,15 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
   Only this method need to be implemented:
 
 +----------------------------------------------------
-	public Object getValue(BindingVariable variable);
+public Object getValue(BindingVariable variable);
 +----------------------------------------------------  
    
   Evaluation of <<<DataBinding>>> is typically performed using this code:
 
 +----------------------------------------------------
-    DataBinding<String> myBinding = ...; // myBinding has been initialized above
-    BindingEvaluationContext evaluationContext = ...; // evaluationContext should be somewhere initialized
-  	String value = myBinding.getBindingValue(evaluationContext);
+DataBinding<String> myBinding = ...; // myBinding has been initialized above
+BindingEvaluationContext evaluationContext = ...; // evaluationContext should be somewhere initialized
+String value = myBinding.getBindingValue(evaluationContext);
 +----------------------------------------------------  
   
   This code computes the value of <<<"person.name">>>.
@@ -97,9 +103,18 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
   Supposing that this binding has been declared as settable (here with <<<BindingDefinitionType.GET_SET>>>), we might assign a value to the name of a <<<Person>>> while invoking this code:
   
 +----------------------------------------------------
-    DataBinding<String> myBinding = ...; // myBinding has been initialized above
-    BindingEvaluationContext evaluationContext = ...; // evaluationContext should be somewhere initialized
-  	myBinding.setBindingValue("aName",evaluationContext);
+DataBinding<String> myBinding = ...; // myBinding has been initialized above
+BindingEvaluationContext evaluationContext = ...; // evaluationContext should be somewhere initialized
+myBinding.setBindingValue("aName",evaluationContext);
 +----------------------------------------------------  
 
-  More complex execution
+  General execution:
+ 
++----------------------------------------------------
+DataBinding<String> myBinding = ...; // myBinding has been initialized above
+BindingEvaluationContext evaluationContext = ...; // evaluationContext should be somewhere initialized
+Object value = myBinding.execute(evaluationContext);
++----------------------------------------------------  
+  
+  More about executing <<<DataBinding>>> objects in {{{./ExecuteDataBinding.html}Executing DataBinding objects}}
+  

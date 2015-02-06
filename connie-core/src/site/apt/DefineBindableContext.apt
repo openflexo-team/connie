@@ -1,0 +1,16 @@
+ -----
+ Define Bindable context
+ -----
+ The Openflexo team
+ -----
+
+Define Bindable context
+
+  A binding is defined in the context of a {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}}. 
+  A <<<Bindable>>> basically references a <<<BindingFactory>>> (which defines how bindings are defined) and a <<<BindingModel>>> (which defines the evaluation context, also called environment).
+  
+  You have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
+  A <<<BindingModel>>> defines a list of  {{{./apidocs/org/openflexo/connie/BindingVariable.html}BindingVariable}}. A <<<BindingVariable>>> basically has a name and a type.
+
+
+

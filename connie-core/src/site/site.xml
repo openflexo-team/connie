@@ -47,8 +47,9 @@
     <menu name="Connie core">
       <item name="Home" 		href="index.html" />
       <item name="Binding Strategy"    	href="DefineBindingStrategy.html" />
-      <item name="test2"    	href="test2.html" />
-      <item name="test3"    	href="test3.html" />
+      <item name="Bindable context"    	href="DefineBindableContext.html" />
+      <item name="Define DataBinding"   href="DefineDataBinding.html" />
+      <item name="Execute DataBinding"   href="ExecuteDataBinding.html" />
       <item name="Javadoc"    	href="./apidocs/index.html" />
     </menu>
 
