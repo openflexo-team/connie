@@ -41,8 +41,8 @@ Getting started with Connie
   A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} is the abstraction of an evaluable 
   expression which might be executed in a {{{./apidocs/org/openflexo/connie/BindingEvaluationContext.html}BindingEvaluationContext}}.
   
-  A DataBinding is defined in the context of a {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}}. 
-  A <<<Bindable>>> basically references a <<<BindingFactory>>> (which defines how bindings are defined) and a <<<BindingModel>>> (which defines the evaluation context, also called environment).
+  A DataBinding is defined in the context of a {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}}, which is the owner of <<<DataBinding>>> 
+  (remember that <<<Bindable>>> references both a <<<BindingFactory>>> and a <<<BindingModel>>>)
   
   A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} might be created using this constructor:
   
@@ -67,14 +67,33 @@ Getting started with Connie
   
   * where expression is set to <<<person.name>>>
   
+  [ ]
+  
   To be valid, <<<myBindable>>> variable should define
   
   * a <<<BindingModel>>> declaring a <<<BindingVariable>>> called <<<'person'>>> (suppose that type of this variable is reflected by <<<Person>>> Java class)
   
   * a suitable <<<BindingFactory>>> allowing to browse <<<'name'>>> from a <<<Person>>> type (this might be implemented by <<<Person>>> Java class if this class defines both <<<getName()>>> and <<<setName(String)>>> methods, and if <<<JavaBindingFactory>>> is used)
 
+  [ ]
+
   [[4]] Execute <<<DataBinding>>> objects
 
-  Some text about execution
+  Once your <<<DataBinding>>> is defined, you can "execute" it in a {{{./apidocs/org/openflexo/connie/BindingEvaluationContext.html}BindingEvaluationContext}}.
+  
+  <<<BindingEvaluationContext>>> is the implementation of variable resolving. Only this method should be implemented:
 
++----------------------------------------------------
+	public Object getValue(BindingVariable variable);
++----------------------------------------------------  
+   
+  Evaluation of <<<DataBinding>>> is typically performed using this code:
+
++----------------------------------------------------
+    DataBinding<String> myBinding = ...; // myBinding should be somewhere initialized
+    BindingEvaluationContext evaluationContext = ...; // evaluationContext should be somewhere initialized
+  	String value = myBinding.getBindingValue(evaluationContext);
++----------------------------------------------------  
+  
+  
 
