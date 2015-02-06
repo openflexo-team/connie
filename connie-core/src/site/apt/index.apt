@@ -20,24 +20,20 @@ Introduction to CONNIE
 
 Getting started with Connie
 
-* Define a binding strategy
+  [[1]] Define a binding strategy
   
-  You should first think of which binding strategy you apply to andjects and types you will connect.
-  This is highly dependant of underlying technology.
-  
-  This means that you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
-
-  For using with native Java objects, you just have to use  {{{./apidocs/org/openflexo/connie/JavaBindingFactory.html}JavaBindingFactory}}
+  You should first think of which binding strategy you apply to objects and types you will connect. 
+  To do so, you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
 
   More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
 
-* Defining DataBinding objects
+  [[2]] Defining DataBinding objects
 
   We are at the core level of Connie. 
   A DataBinding is the abstraction of an evaluable expression which might be executed in a BindingEvaluationContext.
   
 
-* Define a binding model
+  [[3]] Define a binding model
 
   You then have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
 

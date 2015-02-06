@@ -20,18 +20,18 @@ Introduction to CONNIE
 
 Contents of this package
 
-  Connie project contains two separates components (defined here as modules):
+  CONNIE project contains two separate components (defined here as modules):
   
-  * Connie-core component, which contains the Connie core library itself
+  * {{{./connie-core/index.html}Connie-core component}}, which contains the Connie core library itself
   
-  * Some utilities which are used in whole Openflexo infrastructure
+  * {{{./flexoutils/index.html}Some utilities}} which are used in whole Openflexo infrastructure
 
-Link to {{anchor}}. Link to {{http://www.pixware.fr}}.
+
+
+<!--Link to {{anchor}}. Link to {{http://www.pixware.fr}}.
   Link to {{{anchor}showing alternate text}}.
   Link to {{{http://www.pixware.fr}Pixware home page}}.
   
-  
-  
-{Anchor}. 
+{Anchor}. -->
   
   

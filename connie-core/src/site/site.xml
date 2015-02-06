@@ -49,11 +49,13 @@
       <item name="Binding Strategy"    	href="DefineBindingStrategy.html" />
       <item name="test2"    	href="test2.html" />
       <item name="test3"    	href="test3.html" />
+      <item name="Javadoc"    	href="./apidocs/index.html" />
     </menu>
 
-   <menu ref="parent" />
-    <menu ref="modules" />
+    <menu ref="parent" />
+
     <menu ref="reports" />
 <!--    <menu ref="plugins" /> -->
+
   </body>
 </project>
