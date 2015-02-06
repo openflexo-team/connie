@@ -27,7 +27,15 @@ Getting started with Connie
 
   More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
 
-  [[2]] Define DataBinding objects
+  [[2]] Define Bindable context
+  
+  A binding is defined in the context of a {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}}. 
+  A <<<Bindable>>> basically references a <<<BindingFactory>>> (which defines how bindings are defined) and a <<<BindingModel>>> (which defines the evaluation context, also called environment).
+  
+  You have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
+  A <<<BindingModel>>> defines a list of  {{{./apidocs/org/openflexo/connie/BindingVariable.html}BindingVariable}}. A <<<BindingVariable>>> basically has a name and a type.
+  
+  [[3]] Define <<<DataBinding>>> objects
 
   We are at the core level of Connie. 
   A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} is the abstraction of an evaluable 
@@ -38,36 +46,35 @@ Getting started with Connie
   
   A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} might be created using this constructor:
   
-  +----------------------------------------------------
++----------------------------------------------------
   	public DataBinding(String unparsed, Bindable owner, Type declaredType, BindingDefinitionType bdType);
-  +----------------------------------------------------  
++----------------------------------------------------  
 
   For example:
   
-   +----------------------------------------------------
++----------------------------------------------------
     Bindable myBindable = ...; // myBindable should be somewhere initialized
   	DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable,String.class,BindingDefinitionType.GET_SET);
-  +----------------------------------------------------  
++----------------------------------------------------  
   
   Initialize a <<<DataBinding>>>:
+  
   * whose owner is the <<<myBindable>>> variable (a <<<Bindable>>> instance)
+  
   * where declared type (type of expression defined by the binding) is <<<String>>>
+  
   * where binding is executable both as readable and settable
+  
   * where expression is set to <<<person.name>>>
   
-  To be valid, <<<myBindable>> variable should define a <<<BindingFactory>>>
+  To be valid, <<<myBindable>>> variable should define
+  
+  * a <<<BindingModel>>> declaring a <<<BindingVariable>>> called <<<'person'>>> (suppose that type of this variable is reflected by <<<Person>>> Java class)
+  
+  * a suitable <<<BindingFactory>>> allowing to browse <<<'name'>>> from a <<<Person>>> type (this might be implemented by <<<Person>>> Java class if this class defines both <<<getName()>>> and <<<setName(String)>>> methods, and if <<<JavaBindingFactory>>> is used)
 
-  [[3]] Define a binding model
+  [[4]] Execute <<<DataBinding>>> objects
 
-  You then have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
-
-
-
-  First link: {{test1.html}}
-
-  Ce lien est il bon ? : {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
-
-  Third link: {{test3.html}}
-
+  Some text about execution
 
 
