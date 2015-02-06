@@ -6,20 +6,48 @@
 
 Introduction to CONNIE
 
-CONNIE is a Java library allowing to define and execute an expression-based language over a generic API.
+  CONNIE is a Java library allowing to define and execute an expression-based language over a generic API.
 
-This language is generally used to connect heterogeneous technologies with the same API.
+  This language is generally used to connect heterogeneous technologies with the same API.
 
-The purpose of CONNIE is to offer the ability to:
+  The purpose of CONNIE is to offer the ability to:
 
-* Navigate through a graph of objects mixing heterogeneous technologies
-* Define strong-typed paths and expressions
-* Execute strong-typed paths and expressions
+  * Navigate through a graph of objects mixing heterogeneous technologies.
+  
+  * Define strong-typed paths and expressions.
 
-First link: {test1.html}
+  * Execute strong-typed paths and expressions.
 
-Second link: {test2}
+Getting started with Connie
 
-Third link: {test3}
+* Define a binding strategy
+  
+  You should first think of which binding strategy you apply to andjects and types you will connect.
+  This is highly dependant of underlying technology.
+  
+  This means that you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
+
+  For using with native Java objects, you just have to use  {{{./apidocs/org/openflexo/connie/JavaBindingFactory.html}JavaBindingFactory}}
+
+  More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
+
+* Defining DataBinding objects
+
+  We are at the core level of Connie. 
+  A DataBinding is the abstraction of an evaluable expression which might be executed in a BindingEvaluationContext.
+  
+
+* Define a binding model
+
+  You then have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
+
+
+
+  First link: {{test1.html}}
+
+  Ce lien est il bon ? : {{{./DefineBindingStrategy.html}Defining a BindingStategy}}
+
+  Third link: {{test3.html}}
+
 
 

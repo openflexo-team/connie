@@ -1,0 +1,38 @@
+ -----
+ Openflexo Connie
+ -----
+ The Openflexo team
+ -----
+
+How to define a BindingStrategy
+
+  You should consider at which binding strategy will apply to objects and types you will connect.
+  This is highly dependant of underlying technology.
+  
+  This means that you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
+  
+  You might also define your own BindingStrategy.
+  To do so, you have to define your own {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}.
+  
+  This is generally performed while declaring you own BindingFactory by implementing the whole interface.
+  
+  This interface implies implementing twose 5 methods:
+  
+-------------------------------------------
+  public interface BindingFactory {
+
+	public List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent);
+	public List<? extends FunctionPathElement> getAccessibleFunctionPathElements(BindingPathElement parent);
+	public SimplePathElement makeSimplePathElement(BindingPathElement father, String propertyName);
+	public Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
+	public FunctionPathElement makeFunctionPathElement(BindingPathElement father, Function function, List<DataBinding<?>> args);
+}
+-------------------------------------------
+  
+  
+
+Native JavaBindingFactory
+
+  For using with native Java objects, you just have to use  {{{./apidocs/org/openflexo/connie/JavaBindingFactory.html}JavaBindingFactory}}
+
+  
