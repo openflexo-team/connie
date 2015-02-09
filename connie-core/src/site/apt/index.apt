@@ -79,7 +79,7 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
 
   More about defining <<<DataBinding>>> objects in {{{./DefineDataBinding.html}Defining DataBinding objects}}
 
-* 4. Execute <<<DataBinding>>> objects
+* 4. Execute DataBinding objects
 
   Once your <<<DataBinding>>> is defined, you can "execute" it in a {{{./apidocs/org/openflexo/connie/BindingEvaluationContext.html}BindingEvaluationContext}}.
   

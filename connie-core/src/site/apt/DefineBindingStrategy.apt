@@ -31,7 +31,7 @@ How to define a BindingStrategy
 
 Native JavaBindingFactory
 
-  For using with native Java objects, you just have to use  {{{./apidocs/org/openflexo/connie/JavaBindingFactory.html}JavaBindingFactory}}
+  For using with native Java objects, simply use  {{{./apidocs/org/openflexo/connie/JavaBindingFactory.html}JavaBindingFactory}}
   
   
 
