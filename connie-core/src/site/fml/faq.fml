@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/FML/1.0 http://maven.apache.org/xsd/fml-1.0.xsd"
   id="General FAQ">
   <part id="General">
-    <faq id="where">
+    <faq id="why">
       <question>Why should i use Connie ?</question>
       <answer>
         <p>
@@ -11,7 +11,7 @@
         </p>
       </answer>
     </faq>
-    <faq id="why">
+    <faq id="requirements">
       <question>What are the requirements to use Connie ?</question>
       <answer>
         <p>
@@ -19,5 +19,13 @@
         </p>
       </answer>
     </faq>
+    <faq id="whyThisName">
+    <question>What does Connie mean ?</question>
+    <answer>
+      <p>
+        CONNIE stands for 'Connecting Object is Now a Non-Intrusive Experience'
+      </p>
+    </answer>
+  </faq>
   </part>
 </faqs>
