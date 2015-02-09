@@ -4,7 +4,7 @@
   id="General FAQ">
   <part id="General">
     <faq id="where">
-      <question>Why should i use Connie ?</question>
+      <question>First question</question>
       <answer>
         <p>
           Answer
@@ -12,7 +12,7 @@
       </answer>
     </faq>
     <faq id="why">
-      <question>What are the requirements to use Connie ?</question>
+      <question>Second question</question>
       <answer>
         <p>
           Answer

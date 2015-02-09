@@ -1,18 +1,11 @@
  -----
- The Site
+ Flexo Utilities
  -----
- The Maven Team
+ The Openflexo team
  -----
 
-Maven Site for your project
+Flexo Utilities
 
- Congratulations! If you are looking at this page then you have successfully generated a
- template site employing the site archetype and you have run:
-
-[https://media.openflexo.org/images/openflexo2.png]
-
-+-----+
-
-mvn site
-
-+-----+
+  This projects contains some utilities widely used in the whole Openflexo infrastructure.
+  
+  Some of those utilities may be deprecated and will be sooner replaced by some other libraries.  
