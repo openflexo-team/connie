@@ -21,6 +21,17 @@
 					</includes>
 				</configuration>
 			</plugin>
+			<!--  <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<excludePackageNames>org.openflexo.connie.expr.parser.analysis:org.openflexo.connie.expr.parser.lexer:org.openflexo.connie.expr.parser.node:org.openflexo.connie.expr.parser.parser</excludePackageNames>
+				</configuration>
+			</plugin>-->
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -29,7 +40,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</reporting>
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
