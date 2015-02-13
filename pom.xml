@@ -150,7 +150,7 @@
 
 	<distributionManagement>
 		<site>
-			<id>openflexo.website</id>
+			<id>connie.website</id>
 			<url>scp://server-one.openflexo.org/home/www/sites/connie/${project.version}</url>
 		</site>
 	</distributionManagement>
