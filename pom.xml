@@ -150,13 +150,10 @@
 
 	<distributionManagement>
 		<site>
-
 			<id>openflexo.website</id>
-			<url>scp://server-one.openflexo.org/home/www/sites/connie/</url>
+			<url>scp://server-one.openflexo.org/home/www/sites/connie/${project.version}</url>
 		</site>
 	</distributionManagement>
-
-
 	<reporting>
 		<plugins>
 			<plugin>
@@ -165,5 +162,10 @@
 			</plugin>
 		</plugins>
 	</reporting>
+	<url>https://connie.openflexo.org/</url>
+	<organization>
+		<name>Openflexo</name>
+		<url>https://www.openflexo.org/</url>
+	</organization>
 </project>
 
