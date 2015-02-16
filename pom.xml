@@ -161,8 +161,8 @@
    		-->
                <distributionManagement>
                     <site>
-                         <id>${project.artifactId}.website</id>
-                         <url>scp://server-one.openflexo.org/home/www/sites/${project.artifactId}/SNAPSHOT/</url>
+                         <id>connie.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
                     </site>
                </distributionManagement>
           </profile>
@@ -178,8 +178,8 @@
 		   -->
                <distributionManagement>
                     <site>
-                         <id>${project.artifactId}.website</id>
-                         <url>scp://server-one.openflexo.org/home/www/sites/${project.artifactId}/SNAPSHOT/</url>
+                         <id>connie.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
                     </site>
                </distributionManagement>
           </profile>
@@ -195,8 +195,8 @@
 		   -->
                <distributionManagement>
                     <site>
-                         <id>${project.artifactId}.website</id>
-                         <url>scp://server-one.openflexo.org/home/www/sites/${project.artifactId}/${project.version}/</url>
+                         <id>connie.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/connie/${project.version}/</url>
                     </site>
                </distributionManagement>
           </profile>
