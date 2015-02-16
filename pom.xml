@@ -5,11 +5,15 @@
 		<artifactId>openflexo-component</artifactId>
 		<version>0.3-SNAPSHOT</version>
 	</parent>
+     <!-- ************
+   Component identity and specific information
+   -->
 	<version>1.2-SNAPSHOT</version>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>connie</artifactId>
 	<name>Connie</name>
 	<packaging>pom</packaging>
+	<url>https://connie.openflexo.org/</url>
 	<properties>
 		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
 	</properties>
@@ -201,18 +205,5 @@
                </distributionManagement>
           </profile>
      </profiles>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
-	<url>https://connie.openflexo.org/</url>
-	<organization>
-		<name>Openflexo</name>
-		<url>https://www.openflexo.org/</url>
-	</organization>
 </project>
 
