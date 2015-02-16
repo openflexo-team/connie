@@ -73,6 +73,24 @@
 						</execution>
 					</executions>
 				</plugin>
+    				<plugin>
+             				<groupId>org.codehaus.mojo</groupId>
+        				<artifactId>build-helper-maven-plugin</artifactId>
+        				<version>1.9.1</version>
+        				<executions>
+          					<execution>
+					        	<goals>
+					              		<goal>regex-property</goal>
+							</goals>
+            						<configuration>
+								<name>versionForSiteDeployURL</name>
+              							<value>$\{project.version}</value>
+              							<regex>(.*)(-SNAPSHOT)</regex>
+              							<replacement>SNAPSHOT</replacement>	
+            						</configuration>
+          					</execution>
+        				</executions>
+      				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -151,7 +169,7 @@
 	<distributionManagement>
 		<site>
 			<id>connie.website</id>
-			<url>scp://server-one.openflexo.org/home/www/sites/connie/${project.version}</url>
+			<url>scp://server-one.openflexo.org/home/www/sites/${project.artifactId}/${versionForSiteDeployURL}</url>
 		</site>
 	</distributionManagement>
 	<reporting>
