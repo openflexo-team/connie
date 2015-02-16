@@ -73,24 +73,6 @@
 						</execution>
 					</executions>
 				</plugin>
-    				<plugin>
-             				<groupId>org.codehaus.mojo</groupId>
-        				<artifactId>build-helper-maven-plugin</artifactId>
-        				<version>1.9.1</version>
-        				<executions>
-          					<execution>
-					        	<goals>
-					              		<goal>regex-property</goal>
-							</goals>
-            						<configuration>
-								<name>versionForSiteDeployURL</name>
-              							<value>$\{project.version}</value>
-              							<regex>(.*)(-SNAPSHOT)</regex>
-              							<replacement>SNAPSHOT</replacement>	
-            						</configuration>
-          					</execution>
-        				</executions>
-      				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -165,13 +147,60 @@
 
 		</dependencies>
 	</dependencyManagement>
-
-	<distributionManagement>
-		<site>
-			<id>connie.website</id>
-			<url>scp://server-one.openflexo.org/home/www/sites/${project.artifactId}/${versionForSiteDeployURL}</url>
-		</site>
-	</distributionManagement>
+    <!-- ************
+   Specific profiles used to differentiate between snapshot release and release-candidates and official-releases
+   -->
+     <profiles>
+          <profile>
+               <id>snapshot-profile</id>
+               <activation>
+	            <activeByDefault>true</activeByDefault>
+               </activation>
+               <!-- ************
+   		Places where to upload files for component Maven site
+   		-->
+               <distributionManagement>
+                    <site>
+                         <id>${project.artifactId}.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/${project.artifactId}/SNAPSHOT/</url>
+                    </site>
+               </distributionManagement>
+          </profile>
+          <profile>
+               <id>RC-profile</id>
+               <activation>
+                    <property>
+                         <name>performRC</name>
+                    </property>
+               </activation>
+               <!-- ************
+   		Places where to upload files for component Maven site
+		   -->
+               <distributionManagement>
+                    <site>
+                         <id>${project.artifactId}.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/${project.artifactId}/SNAPSHOT/</url>
+                    </site>
+               </distributionManagement>
+          </profile>
+          <profile>
+               <id>release-profile</id>
+               <activation>
+                    <property>
+                         <name>performRelease</name>
+                    </property>
+               </activation>
+               <!-- ************
+   		Places where to upload files for component Maven site
+		   -->
+               <distributionManagement>
+                    <site>
+                         <id>${project.artifactId}.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/${project.artifactId}/${project.version}/</url>
+                    </site>
+               </distributionManagement>
+          </profile>
+     </profiles>
 	<reporting>
 		<plugins>
 			<plugin>
