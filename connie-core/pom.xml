@@ -21,25 +21,6 @@
                     </includes>
                 </configuration>
             </plugin>
-	  <!--
-		SableCC code generation
- 	  -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>sablecc-maven-plugin</artifactId>
-		<version>2.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-		<configuration>
-			<sourceDirectory>src/main/resources/Grammar</sourceDirectory>
-			<outputDirectory>src/main/java/prout</outputDirectory>
-		</configuration>
-            </plugin>
             <!--  <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -99,4 +80,35 @@
             <artifactId>flexoutils</artifactId>
         </dependency>
     </dependencies>
+    <!-- 
+	specific profile to generate SableCC sourceCode
+    -->
+    <profiles>
+        <profile>
+            <activation>
+                <property>generateSources</property>
+            </activation>
+            <build>
+                <!--
+		SableCC code generation
+ 	  -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>sablecc-maven-plugin</artifactId>
+                    <version>2.2</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <sourceDirectory>src/main/resources/Grammar</sourceDirectory>
+                        <outputDirectory>src/main/java</outputDirectory>
+                    </configuration>
+                </plugin>
+            </build>
+        </profile>
+    </profiles>
 </project>
