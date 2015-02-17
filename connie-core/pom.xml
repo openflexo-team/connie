@@ -85,29 +85,34 @@
     -->
     <profiles>
         <profile>
+            <id>sablecc-generation-profile</id>
             <activation>
-                <property>generateSources</property>
+                <property>
+                    <name>generateSableCC</name>
+                </property>
             </activation>
             <build>
-                <!--
+                <plugins>
+                    <!--
 		SableCC code generation
  	  -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>sablecc-maven-plugin</artifactId>
-                    <version>2.2</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <sourceDirectory>src/main/resources/Grammar</sourceDirectory>
-                        <outputDirectory>src/main/java</outputDirectory>
-                    </configuration>
-                </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>sablecc-maven-plugin</artifactId>
+                        <version>2.2</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <sourceDirectory>src/main/resources/Grammar</sourceDirectory>
+                            <outputDirectory>src/main/java</outputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>
