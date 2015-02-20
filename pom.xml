@@ -4,15 +4,20 @@
 	<parent>
 		<groupId>org.openflexo</groupId>
 		<artifactId>openflexo-component</artifactId>
-		<version>0.2</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
+     <!-- ************
+   Component identity and specific information
+   -->
 	<version>1.2-SNAPSHOT</version>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>connie</artifactId>
 	<name>Connie</name>
 	<packaging>pom</packaging>
+	<url>https://connie.openflexo.org/</url>
 	<properties>
 		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
+		<guava.version>18.0</guava.version>
 	</properties>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/openflexo-team/connie.git</connection>
@@ -93,19 +98,19 @@
 				<version>1.5rc3</version>
 			</dependency>
 			<dependency>
-				<groupId>com.google.inject</groupId>
-				<artifactId>guice</artifactId>
-				<version>3.0</version>
-			</dependency>
-			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>13.0.1</version>
+				<version>${guava.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sablecc-maven-plugin</artifactId>
+				<version>2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>sablecc</groupId>
@@ -121,6 +126,11 @@
 				<groupId>org.jdom</groupId>
 				<artifactId>jdom2</artifactId>
 				<version>2.0.5</version>
+			</dependency>
+			<dependency>
+				<groupId>xml-apis</groupId>
+				<artifactId>xml-apis</artifactId>
+				<version>1.4.01</version>
 			</dependency>
 			<dependency>
 				<groupId>xerces</groupId>
@@ -151,23 +161,59 @@
 
 		</dependencies>
 	</dependencyManagement>
-
-	<distributionManagement>
-		<site>
-
-			<id>openflexo.website</id>
-			<url>scp://server-one.openflexo.org/home/www/sites/connie/</url>
-		</site>
-	</distributionManagement>
-
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
+    <!-- ************
+   Specific profiles used to differentiate between snapshot release and release-candidates and official-releases
+   -->
+     <profiles>
+          <profile>
+               <id>snapshot-profile</id>
+               <activation>
+	            <activeByDefault>true</activeByDefault>
+               </activation>
+               <!-- ************
+   		Places where to upload files for component Maven site
+   		-->
+               <distributionManagement>
+                    <site>
+                         <id>connie.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
+                    </site>
+               </distributionManagement>
+          </profile>
+          <profile>
+               <id>RC-profile</id>
+               <activation>
+                    <property>
+                         <name>performRC</name>
+                    </property>
+               </activation>
+               <!-- ************
+   		Places where to upload files for component Maven site
+		   -->
+               <distributionManagement>
+                    <site>
+                         <id>connie.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
+                    </site>
+               </distributionManagement>
+          </profile>
+          <profile>
+               <id>release-profile</id>
+               <activation>
+                    <property>
+                         <name>performRelease</name>
+                    </property>
+               </activation>
+               <!-- ************
+   		Places where to upload files for component Maven site
+		   -->
+               <distributionManagement>
+                    <site>
+                         <id>connie.website</id>
+                         <url>scp://server-one.openflexo.org/home/www/sites/connie/${project.version}/</url>
+                    </site>
+               </distributionManagement>
+          </profile>
+     </profiles>
 </project>
 
