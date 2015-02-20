@@ -23,6 +23,10 @@
 		<url>https://github.com/openflexo-team/connie</url>
 		<tag>1.2</tag>
 	</scm>
+      <issueManagement>
+            <system>JIRA</system>
+            <url>https://bugs.openflexo.org/browse/CONNIE/</url>
+      </issueManagement>
 	<modules>
 		<module>flexoutils</module>
 		<module>connie-core</module>
