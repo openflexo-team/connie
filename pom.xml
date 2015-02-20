@@ -16,6 +16,8 @@
 	<url>https://connie.openflexo.org/</url>
 	<properties>
 		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
+		<google.guice.version>3.0</google.guice.version>
+		<guava.version>18.0</guava.version>
 	</properties>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/openflexo-team/connie.git</connection>
@@ -100,12 +102,12 @@
 			<dependency>
 				<groupId>com.google.inject</groupId>
 				<artifactId>guice</artifactId>
-				<version>3.0</version>
+				<version>${google.guice.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>13.0.1</version>
+				<version>${guava.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-collections</groupId>
