@@ -16,7 +16,6 @@
 	<url>https://connie.openflexo.org/</url>
 	<properties>
 		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
-		<google.guice.version>3.0</google.guice.version>
 		<guava.version>18.0</guava.version>
 	</properties>
 	<scm>
@@ -98,11 +97,6 @@
 				<groupId>jalopy</groupId>
 				<artifactId>jalopy</artifactId>
 				<version>1.5rc3</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.inject</groupId>
-				<artifactId>guice</artifactId>
-				<version>${google.guice.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
