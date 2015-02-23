@@ -39,6 +39,7 @@
 
 package org.openflexo.connie.expr;
 
+import java.lang.reflect.Type;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -85,6 +86,11 @@ public class UnresolvedExpression extends Expression {
 	@Override
 	public boolean isSettable() {
 		return false;
+	}
+
+	@Override
+	public Type getAccessedType() {
+		return null;
 	}
 
 }

@@ -39,6 +39,7 @@
 
 package org.openflexo.connie.expr;
 
+import java.lang.reflect.Type;
 import java.util.Vector;
 
 import org.openflexo.connie.exception.TransformException;
@@ -125,7 +126,7 @@ public class UnaryOperatorExpression extends Expression {
 		returned.add(getArgument());
 		return returned;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return toString().hashCode();
@@ -143,6 +144,16 @@ public class UnaryOperatorExpression extends Expression {
 	@Override
 	public boolean isSettable() {
 		return false;
+	}
+
+	@Override
+	public Type getAccessedType() {
+		try {
+			return getEvaluationType().getType();
+		} catch (TypeMismatchException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

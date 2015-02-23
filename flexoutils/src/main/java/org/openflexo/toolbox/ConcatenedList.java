@@ -62,6 +62,17 @@ public class ConcatenedList<E> extends AbstractList<E> {
 		embedded = new Vector<Object>();
 	}
 
+	public ConcatenedList(Object... elements) {
+		this();
+		for (Object element : elements) {
+			if (element instanceof List) {
+				addElementList((List) element);
+			} else {
+				addElement((E) element);
+			}
+		}
+	}
+
 	@Override
 	public void add(int index, E element) {
 		if (index < 0 || index >= size()) {

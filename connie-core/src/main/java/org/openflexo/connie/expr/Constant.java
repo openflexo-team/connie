@@ -116,6 +116,11 @@ public abstract class Constant<V> extends Expression {
 	}
 
 	@Override
+	public Type getAccessedType() {
+		return getEvaluationType().getType();
+	}
+
+	@Override
 	public boolean isSettable() {
 		return false;
 	}

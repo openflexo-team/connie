@@ -39,6 +39,7 @@
 
 package org.openflexo.connie.expr;
 
+import java.lang.reflect.Type;
 import java.util.Vector;
 
 import org.openflexo.connie.exception.TransformException;
@@ -108,7 +109,7 @@ public class CastExpression extends Expression {
 	public int hashCode() {
 		return toString().hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof CastExpression) {
@@ -122,4 +123,10 @@ public class CastExpression extends Expression {
 	public boolean isSettable() {
 		return getArgument().isSettable();
 	}
+
+	@Override
+	public Type getAccessedType() {
+		return getCastType().getType();
+	}
+
 }
