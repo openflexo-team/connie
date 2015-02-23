@@ -39,6 +39,7 @@
 
 package org.openflexo.connie.expr;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -241,5 +242,7 @@ public abstract class Expression {
 	}
 
 	public abstract boolean isSettable();
+
+	public abstract Type getAccessedType();
 
 }

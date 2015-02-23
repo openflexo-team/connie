@@ -65,14 +65,15 @@ import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.CastExpression;
+import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.expr.ExpressionVisitor;
 import org.openflexo.connie.expr.UnresolvedExpression;
 import org.openflexo.connie.expr.VisitorException;
-import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.TypeUtils;
@@ -320,6 +321,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				return ((CastExpression) getExpression()).getCastType().getType();
 			} else if (expression instanceof Constant) {
 				return ((Constant) expression).getType();
+			} else if (expression instanceof ConditionalExpression) {
+				return ((ConditionalExpression) expression).getAccessedType();
 			} else {
 				try {
 					/*System.out.println("****** expression=" + getExpression());

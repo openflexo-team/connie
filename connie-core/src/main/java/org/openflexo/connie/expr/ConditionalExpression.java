@@ -39,11 +39,13 @@
 
 package org.openflexo.connie.expr;
 
+import java.lang.reflect.Type;
 import java.util.Vector;
 
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Constant.BooleanConstant;
+import org.openflexo.connie.type.TypeUtils;
 
 public class ConditionalExpression extends Expression {
 
@@ -104,6 +106,19 @@ public class ConditionalExpression extends Expression {
 	}
 
 	@Override
+	public Type getAccessedType() {
+		Type thenType = thenExpression.getAccessedType();
+		Type elseType = elseExpression.getAccessedType();
+
+		if (TypeUtils.isTypeAssignableFrom(thenType, elseType)) {
+			return thenType;
+		} else if (TypeUtils.isTypeAssignableFrom(elseType, thenType)) {
+			return elseType;
+		}
+		return Object.class;
+	}
+
+	@Override
 	public EvaluationType getEvaluationType() throws TypeMismatchException {
 		EvaluationType thenEvaluationType = thenExpression.getEvaluationType();
 		EvaluationType elseEvaluationType = elseExpression.getEvaluationType();
@@ -145,7 +160,7 @@ public class ConditionalExpression extends Expression {
 	public void setElseExpression(Expression elseExpression) {
 		this.elseExpression = elseExpression;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return toString().hashCode();

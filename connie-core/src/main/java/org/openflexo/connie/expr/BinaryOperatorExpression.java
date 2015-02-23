@@ -39,6 +39,7 @@
 
 package org.openflexo.connie.expr;
 
+import java.lang.reflect.Type;
 import java.util.Vector;
 
 import org.openflexo.connie.exception.TransformException;
@@ -182,7 +183,7 @@ public class BinaryOperatorExpression extends Expression {
 	public int hashCode() {
 		return toString().hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BinaryOperatorExpression) {
@@ -197,4 +198,15 @@ public class BinaryOperatorExpression extends Expression {
 	public boolean isSettable() {
 		return false;
 	}
+
+	@Override
+	public Type getAccessedType() {
+		try {
+			return getEvaluationType().getType();
+		} catch (TypeMismatchException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }
