@@ -105,8 +105,9 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 				} else {
 					try {
+						System.out.println("Computing checksum for " + f);
 						checksum = new String(FileUtils.getBytes(f, 32)).hashCode();
-						// System.out.println("For file " + f + " checksum=" + checksum);
+						System.out.println("For file " + f + " checksum=" + checksum);
 					} catch (IOException e) {
 						checksum = -1;
 					}
