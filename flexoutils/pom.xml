@@ -9,6 +9,9 @@
 	</parent>
 	<artifactId>flexoutils</artifactId>
 	<name>Utils</name>
+   	<properties>
+		<changes.componentfilter>AND component=connie-core</changes.componentfilter>
+  	 </properties>
 	<build>
 		<plugins>
 			<plugin>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" >
 	<parent>
 		<groupId>org.openflexo</groupId>
 		<artifactId>openflexo-component</artifactId>
@@ -15,10 +15,6 @@
 	<name>Connie</name>
 	<packaging>pom</packaging>
 	<url>https://connie.openflexo.org/</url>
-	<properties>
-		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
-		<guava.version>18.0</guava.version>
-	</properties>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/openflexo-team/connie.git</connection>
 		<url>https://github.com/openflexo-team/connie</url>
@@ -32,6 +28,16 @@
 		<module>flexoutils</module>
 		<module>connie-core</module>
 	</modules>
+	<!-- 
+	Properties
+		-->
+	<properties>
+		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
+		<guava.version>18.0</guava.version>
+		<changes.componentfilter>AND component=*</changes.componentfilter>
+	</properties>
+<!-- Build config
+-->
 	<build>
 		<resources>
 			<resource>

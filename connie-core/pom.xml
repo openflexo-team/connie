@@ -8,6 +8,9 @@
     </parent>
     <artifactId>connie-core</artifactId>
     <name>Connie-core</name>
+   <properties>
+		<changes.componentfilter>AND component=connie-core</changes.componentfilter>
+   </properties>
     <build>
         <plugins>
             <plugin>
@@ -21,13 +24,6 @@
                     </includes>
                 </configuration>
             </plugin>
-            <!--  <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<excludePackageNames>org.openflexo.connie.expr.parser.analysis:org.openflexo.connie.expr.parser.lexer:org.openflexo.connie.expr.parser.node:org.openflexo.connie.expr.parser.parser</excludePackageNames>
-				</configuration>
-			</plugin>-->
         </plugins>
     </build>
     <reporting>
@@ -106,3 +102,6 @@
         </profile>
     </profiles>
 </project>
+   <properties>
+		<changes.componentfilter>AND component=connie-core</changes.componentfilter>
+   </properties>
