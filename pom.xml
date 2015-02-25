@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" >
 	<parent>
 		<groupId>org.openflexo</groupId>
 		<artifactId>openflexo-component</artifactId>
@@ -15,19 +15,28 @@
 	<name>Connie</name>
 	<packaging>pom</packaging>
 	<url>https://connie.openflexo.org/</url>
-	<properties>
-		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
-		<guava.version>18.0</guava.version>
-	</properties>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/openflexo-team/connie.git</connection>
 		<url>https://github.com/openflexo-team/connie</url>
 		<tag>1.2</tag>
 	</scm>
+    	<issueManagement>
+        	<system>JIRA</system>
+       	 	<url>https://bugs.openflexo.org/browse/connie/</url>
+    	</issueManagement>
 	<modules>
 		<module>flexoutils</module>
 		<module>connie-core</module>
 	</modules>
+	<!-- 
+	Properties
+		-->
+	<properties>
+		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
+		<changes.componentfilter>AND component=*</changes.componentfilter>
+	</properties>
+<!-- Build config
+-->
 	<build>
 		<resources>
 			<resource>
@@ -83,11 +92,6 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.10</version>
-			</dependency>
-			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>2.4</version>
@@ -120,7 +124,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.1</version>
+				<version>${apache.commons-lang.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jdom</groupId>
@@ -140,7 +144,7 @@
 			<dependency>
 				<groupId>com.google.code.findbugs</groupId>
 				<artifactId>jsr305</artifactId>
-				<version>2.0.1</version>
+				<version>${jsr305.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.jpathwatch</groupId>
@@ -164,56 +168,55 @@
     <!-- ************
    Specific profiles used to differentiate between snapshot release and release-candidates and official-releases
    -->
-     <profiles>
-          <profile>
-               <id>snapshot-profile</id>
-               <activation>
-	            <activeByDefault>true</activeByDefault>
-               </activation>
-               <!-- ************
+    <profiles>
+        <profile>
+            <id>snapshot-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <!-- ************
    		Places where to upload files for component Maven site
    		-->
-               <distributionManagement>
-                    <site>
-                         <id>connie.website</id>
-                         <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
-                    </site>
-               </distributionManagement>
-          </profile>
-          <profile>
-               <id>RC-profile</id>
-               <activation>
-                    <property>
-                         <name>performRC</name>
-                    </property>
-               </activation>
-               <!-- ************
+            <distributionManagement>
+                <site>
+                    <id>connie.website</id>
+                    <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
+                </site>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>RC-profile</id>
+            <activation>
+                <property>
+                    <name>performRC</name>
+                </property>
+            </activation>
+            <!-- ************
    		Places where to upload files for component Maven site
 		   -->
-               <distributionManagement>
-                    <site>
-                         <id>connie.website</id>
-                         <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
-                    </site>
-               </distributionManagement>
-          </profile>
-          <profile>
-               <id>release-profile</id>
-               <activation>
-                    <property>
-                         <name>performRelease</name>
-                    </property>
-               </activation>
-               <!-- ************
+            <distributionManagement>
+                <site>
+                    <id>connie.website</id>
+                    <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
+                </site>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>release-profile</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                </property>
+            </activation>
+            <!-- ************
    		Places where to upload files for component Maven site
 		   -->
-               <distributionManagement>
-                    <site>
-                         <id>connie.website</id>
-                         <url>scp://server-one.openflexo.org/home/www/sites/connie/${project.version}/</url>
-                    </site>
-               </distributionManagement>
-          </profile>
-     </profiles>
+            <distributionManagement>
+                <site>
+                    <id>connie.website</id>
+                    <url>scp://server-one.openflexo.org/home/www/sites/connie/${project.version}/</url>
+                </site>
+            </distributionManagement>
+        </profile>
+    </profiles>
 </project>
-
