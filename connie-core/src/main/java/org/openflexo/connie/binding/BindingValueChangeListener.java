@@ -260,7 +260,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			if (o.target instanceof HasPropertyChangeSupport) {
 				PropertyChangeSupport pcSupport = ((HasPropertyChangeSupport) o.target).getPropertyChangeSupport();
 				// logger.info("Widget "+getWidget()+" remove property change listener: "+o.target+" property:"+o.propertyName);
-				pcSupport.removePropertyChangeListener(o.propertyName, this);
+				if (pcSupport != null) {
+					pcSupport.removePropertyChangeListener(o.propertyName, this);
+				}
 			} else if (o.target instanceof Observable) {
 				// logger.info("Widget "+getWidget()+" remove observable: "+o);
 				((Observable) o.target).deleteObserver(this);
