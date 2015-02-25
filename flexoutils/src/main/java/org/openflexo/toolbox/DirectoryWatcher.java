@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -105,9 +106,13 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 				} else {
 					try {
-						System.out.println("Computing checksum for " + f);
+						if (logger.isLoggable(Level.FINE)) {
+							logger.fine("Computing checksum for " + f);
+						}
 						checksum = new String(FileUtils.getBytes(f, 32)).hashCode();
-						System.out.println("For file " + f + " checksum=" + checksum);
+						if (logger.isLoggable(Level.FINE)) {
+							logger.fine("For file " + f + " checksum=" + checksum);
+						}
 					} catch (IOException e) {
 						checksum = -1;
 					}
