@@ -175,4 +175,37 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 		return "[ " + getClass().getSimpleName() + ": " + _bindingVariables
 				+ (baseBindingModel != null ? " Combined with: " + baseBindingModel : "") + "]";
 	}
+
+	/**
+	 * Equals method for BindingModel<br>
+	 * Two BindingModel are equals if they have the same number of {@link BindingVariable} and if all {@link BindingVariable} match (peer to
+	 * peer responding to equals method) TODO: implements hashCode() method respecting this semantics
+	 */
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+
+		if (!(obj instanceof BindingModel)) {
+			return false;
+		}
+
+		BindingModel other = (BindingModel) obj;
+
+		if (getBindingVariablesCount() != other.getBindingVariablesCount()) {
+			return false;
+		}
+		for (int i = 0; i < getBindingVariablesCount(); i++) {
+			BindingVariable bv1 = getBindingVariableAt(i);
+			BindingVariable bv2 = other.bindingVariableNamed(bv1.getVariableName());
+			if (!bv1.equals(bv2)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
