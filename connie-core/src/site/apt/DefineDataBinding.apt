@@ -6,7 +6,6 @@
 
 Define DataBinding objects
 
-  We are at the core level of Connie. 
   A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} is the abstraction of an evaluable 
   expression which might be executed in a {{{./apidocs/org/openflexo/connie/BindingEvaluationContext.html}BindingEvaluationContext}}.
   
@@ -44,4 +43,12 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
 
  Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
 
+Reference documentation
 
+  (overview) {{{./index.html}Introduction to CONNIE}}
+  
+  (advanced) {{{./DefineBindingStrategy.html}Defining a binding strategy}}
+
+  (programmer) {{{./DefineBindableContext.html}Defining bindable context}}
+
+  (user) {{{./ExecuteDataBinding.html}Executing DataBinding objects}}
