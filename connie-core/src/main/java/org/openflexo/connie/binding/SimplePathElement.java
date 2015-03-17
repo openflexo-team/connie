@@ -39,7 +39,10 @@
 
 package org.openflexo.connie.binding;
 
+import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
+
+import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
  * Model a simple path element in a binding path, represented by a simple get/set access through a property
@@ -47,20 +50,30 @@ import java.lang.reflect.Type;
  * @author sylvain
  * 
  */
-public abstract class SimplePathElement implements BindingPathElement, SettableBindingPathElement {
+public abstract class SimplePathElement implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
 
-	private final BindingPathElement parent;
+	private BindingPathElement parent;
 	private String propertyName;
 	private Type type;
+	private PropertyChangeSupport pcSupport;
+
+	public static final String NAME_PROPERTY = "propertyName";
+	public static final String TYPE_PROPERTY = "type";
+	public static final String DELETED_PROPERTY = "deleted";
 
 	public SimplePathElement(BindingPathElement parent, String propertyName, Type type) {
 		this.parent = parent;
 		this.propertyName = propertyName;
 		this.type = type;
+		pcSupport = new PropertyChangeSupport(this);
 	}
 
 	public void delete() {
-		// TODO
+		getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+		pcSupport = null;
+		parent = null;
+		propertyName = null;
+		type = null;
 	}
 
 	@Override
@@ -73,7 +86,11 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	}
 
 	public void setPropertyName(String propertyName) {
-		this.propertyName = propertyName;
+		String oldValue = getPropertyName();
+		if (propertyName != null && !propertyName.equals(oldValue)) {
+			this.propertyName = propertyName;
+			getPropertyChangeSupport().firePropertyChange(NAME_PROPERTY, oldValue, propertyName);
+		}
 	}
 
 	@Override
@@ -82,7 +99,11 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	}
 
 	public final void setType(Type type) {
-		this.type = type;
+		Type oldType = getType();
+		if (type != null && !type.equals(oldType)) {
+			this.type = type;
+			getPropertyChangeSupport().firePropertyChange(TYPE_PROPERTY, oldType, type);
+		}
 	}
 
 	@Override
@@ -108,4 +129,15 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	public int hashCode() {
 		return getPropertyName().hashCode();
 	}
+
+	@Override
+	public PropertyChangeSupport getPropertyChangeSupport() {
+		return pcSupport;
+	}
+
+	@Override
+	public String getDeletedProperty() {
+		return DELETED_PROPERTY;
+	}
+
 }

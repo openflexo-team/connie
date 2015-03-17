@@ -133,8 +133,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 			resultingTypeAsString = TypeUtils.simpleRepresentation(getType());
 			resultingTypeAsString = ToolBox.replaceStringByStringInString("<", "&LT;", resultingTypeAsString);
 			resultingTypeAsString = ToolBox.replaceStringByStringInString(">", "&GT;", resultingTypeAsString);
-		}
-		else {
+		} else {
 			resultingTypeAsString = "???";
 		}
 		returned += "<p><b>" + resultingTypeAsString + " " + getVariableName() + "</b></p>";
@@ -160,8 +159,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 			if (vname != null) {
 				return vname.equals(((BindingVariable) obj).getVariableName()) && getType() != null
 						&& getType().equals(((BindingVariable) obj).getType());
-			}
-			else
+			} else
 				return false;
 		}
 		return super.equals(obj);
@@ -197,7 +195,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 
 	@Override
 	public String getDeletedProperty() {
-		return null;
+		return DELETED_PROPERTY;
 	}
 
 	private boolean cacheable = true;
