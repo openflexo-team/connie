@@ -383,6 +383,13 @@ public class FileUtils {
 		}
 	};
 
+	public static final FilenameFilter PropertiesFileNameFilter = new FilenameFilter() {
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.toLowerCase().endsWith(".properties");
+		}
+	};
+
 	public static void saveToFile(File dest, String fileContent) throws IOException {
 		saveToFile(dest, fileContent, null);
 	}
