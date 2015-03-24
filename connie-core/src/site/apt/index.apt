@@ -8,26 +8,83 @@ Introduction to CONNIE
 
   CONNIE is a Java library allowing to define and execute an expression-based language over a generic API.
 
-  This language is generally used to connect heterogeneous technologies with the same API.
+  This language is used to connect <any> technologies (for instance EMF, excel, OWL, etc.) with the common connie API. 
+  It allows to navigate through a graph of objects mixing these heterogeneous technologies.
 
-  The purpose of CONNIE is to offer the ability to:
-
-  * Navigate through a graph of objects mixing heterogeneous technologies.
+  The purpose of the connie API is to offer the ability to:
   
-  * Define strong-typed paths and expressions.
+    * Define strong-typed paths (sequence of names and dots as in <group.persons.first.age>) and expressions (as <group.persons.first.age + 1>).
 
-  * Execute strong-typed paths and expressions.
+    * Execute (evaluate) strong-typed paths and expressions.
+  
+  There are 3 kinds of use:
+  
+    [[1]] Connection developper: defines the binding strategy and develop {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
+  
+    [[1]] Programmer or modeller: uses BindingFactories and defines models and expressions (instances of 
+    {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, {{{./apidocs/org/openflexo/connie/BindingVariable.html}BindingVariable}}, 
+    {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}} and {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}})
+  
+    [[1]] User: populates models and evaluates expressions
+  
+  CONNIE is delivered with an embedded <<<BindingFactory>>> dedicated to handle some kind of Plain Old Java Objects. 
+  It allows to define and evaluate expressions with Java object instances of classes that define accessors (set and get methods) for attributes. 
+  
+Examples
+
+  [[1]] The connection
+  
+    The current implementation proposes a {{{./apidocs/org/openflexo/connie/java/Java/BindingFactory.html}JavaBindingFactory}} that allows to navigate among 
+    Java objects using a (key, value) coding protocol.
+  
+    For instance, in order to define or evaluate <person.age> the JavaBindingFactory assumes that Java objects are instances of classes that offers 
+    getAge() and setAge(int) methods to read and write the property "age".
+  
+    We could have imagine other binding strategies for Java (using annotation or the java reflect interface).
+  
+    For the following examples, we assume that the binding strategy ExcelBindingFactory exists for excel that allows to define expressions like <sheet.row(12).col(4).content>
+    
+  [[1]] The programmer
+  
+    Imagine a programmer wants to allow the computation of <person.age + sheet.row(12).col(4).content>.
+    
+    Assuming the binding strategies are defined, s/he needs a context to be able to define the <<<DataBinding>>> "<person.age + sheet.row(12).col(4).content>".
+    
+    The context is an instance of the interface <<<Bindable>>> that requires the BindingFactories (here JavaBindingFactory and ExcelBindingFactory) and a <<<BindingModel>>>.
+    
+    The <<<BindingModel>>> defines the <<<BindingVariable>>>s used as the roots of paths or expressions (here person of type Person and sheet of type Sheet).
+    No actual instance is needed. Instances are required by the user only at evaluation time.
+    
+    Now, a <<<DataBinding>>> can be defined. The String "person.age + sheet.row(12).col(4).content" can now be check against 
+    the navigability and typing rules to know if it {{{./apidocs/org/openflexo/connie/DataBinding.html#isValid()}isValid()}}.
+  
+  [[1]] The user
+  
+    The user can now define a <<<BindingEvaluationContext>>> where the <<<BindingModel>>> is instantiated with actual objects. 
+    
+    If the <<<DataBinding>>> isValid(), it can be evaluated().
+    
+  Note that, sophisticated observing and notifying services allow re-evaluating of all stages.
+  
+  * If the actual instance changes, the <<<DataBinding>>> is re-evaluated
+  
+  * If the <<<DataBinding>>> changes (to "person.age + sheet.row(12).col(4).content +1"), the <<<DataBinding>>> is re-evaluated
+  
+  * If the accesors are changed, the <<<DataBinding>>> is re-evaluated
 
 Getting started with Connie
 
-* 1. Define a binding strategy
+* 1. Define a binding strategy (advanced)
   
-  You should first think of which binding strategy you apply to objects and types you will connect. 
-  To do so, you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
+  You should first think of how to navigate among objects of the technologies you want connect.
+  
+  To do so, you have to choose an existing {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}} or to define a new one.
+  
+  A good practice is to define a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}} per technology.
 
-  More about defining a BindingStrategy in {{{./DefineBindingStrategy.html}Defining a BindingStrategy}}
+  More about defining a binding strategy in {{{./DefineBindingStrategy.html}Defining a binding strategy}}
 
-* 2. Define Bindable context
+* 2. Define a bindable context (programmer)
   
   A binding is defined in the context of a {{{./apidocs/org/openflexo/connie/Bindable.html}Bindable}}. 
   A <<<Bindable>>> basically references a <<<BindingFactory>>> (which defines how bindings are defined) and a <<<BindingModel>>> (which defines the evaluation context, also called environment).
@@ -35,11 +92,10 @@ Getting started with Connie
   You have to define a {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}, which is the environment beeing considered at run-time.
   A <<<BindingModel>>> defines a list of  {{{./apidocs/org/openflexo/connie/BindingVariable.html}BindingVariable}}. A <<<BindingVariable>>> basically has a name and a type.
   
-  More about defining a Bindable context in {{{./DefineBindableContext.html}Defining Bindable context}}
+  More about defining a Bindable context in {{{./DefineBindableContext.html}Defining a bindable context}}
   
-* 3. Define <<<DataBinding>>> objects
+* 3. Define <<<DataBinding>>> objects (user)
 
-  We are at the core level of Connie. 
   A {{{./apidocs/org/openflexo/connie/DataBinding.html}DataBinding}} is the abstraction of an evaluable 
   expression which might be executed in a {{{./apidocs/org/openflexo/connie/BindingEvaluationContext.html}BindingEvaluationContext}}.
   
@@ -50,7 +106,10 @@ Getting started with Connie
   
 +----------------------------------------------------
 public DataBinding(String unparsed, Bindable owner, Type declaredType, BindingDefinitionType bdType);
-+----------------------------------------------------  
++----------------------------------------------------
+
+  Note that the <<<BindingDefinitionType>>> is an enum (SET, GET, GET_SET, EXECUTE) that 
+  defines the access type of a binding, which is generally related to the purpose of the binding.
 
   For example:
   
@@ -77,7 +136,7 @@ DataBinding<String> myBinding = new DataBinding<String>("person.name",myBindable
 
   Validity of a <<<DataBinding>>> might be tested using <<<isValid()>>> method.
 
-  More about defining <<<DataBinding>>> objects in {{{./DefineDataBinding.html}Defining DataBinding objects}}
+  More about defining <<<DataBinding>>> objects in {{{./DefineDataBinding.html}Defining DataBinding objects}}.
 
 * 4. Execute DataBinding objects
 
@@ -120,11 +179,11 @@ Object value = myBinding.execute(evaluationContext);
    
 Reference documentation
 
-  {{{./DefineBindingStrategy.html}Defining a BindingStrategy}}
+  (advanced) {{{./DefineBindingStrategy.html}Defining a binding strategy}}
 
-  {{{./DefineBindableContext.html}Defining Bindable context}}
+  (programmer) {{{./DefineBindableContext.html}Defining bindable context}}
 
-  {{{./DefineDataBinding.html}Defining DataBinding objects}}
+  (user) {{{./DefineDataBinding.html}Defining DataBinding objects}}
 
-  {{{./ExecuteDataBinding.html}Executing DataBinding objects}}
+  (user) {{{./ExecuteDataBinding.html}Executing DataBinding objects}}
 

@@ -6,7 +6,7 @@
 
 How to define a BindingStrategy
 
-  You should consider at which binding strategy will apply to objects and types you will connect.
+  You should consider which binding strategy will apply to objects and types you will connect.
   This is highly dependant of underlying technology.
   
   This means that you have to choose a {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}
@@ -14,7 +14,8 @@ How to define a BindingStrategy
   You might also define your own BindingStrategy.
   To do so, you have to define your own {{{./apidocs/org/openflexo/connie/BindingFactory.html}BindingFactory}}.
   
-  This is generally performed while declaring you own <<<BindingFactory>>> by implementing the whole interface.
+  This is generally performed with your own implementation of the whole interface of <<<BindingFactory>>>.
+  You can find inspiration and an example in the provided {{{./apidocs/org/openflexo/connie/java/Java/BindingFactory.html}JavaBindingFactory}}.
   
   This interface implies implementing twose 5 methods:
   
@@ -33,6 +34,14 @@ Native JavaBindingFactory
 
   For using with native Java objects, simply use  {{{./apidocs/org/openflexo/connie/JavaBindingFactory.html}JavaBindingFactory}}
   
+Reference documentation
+
+  (overview) {{{./index.html}Introduction to CONNIE}}
   
+  (programmer) {{{./DefineBindableContext.html}Defining bindable context}}
+
+  (user) {{{./DefineDataBinding.html}Defining DataBinding objects}}
+
+  (user) {{{./ExecuteDataBinding.html}Executing DataBinding objects}}
 
   
