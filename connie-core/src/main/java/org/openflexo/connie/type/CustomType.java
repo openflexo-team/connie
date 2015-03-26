@@ -49,12 +49,6 @@ import java.lang.reflect.Type;
  */
 public interface CustomType extends Type {
 
-	public String simpleRepresentation();
-
-	public String fullQualifiedRepresentation();
-
-	public Class getBaseClass();
-
 	/**
 	 * Determines if the class or interface represented by this <code>CustomType</code> object is either the same as, or is a superclass or
 	 * superinterface of, the class or interface represented by the specified <code>anOtherType</code> parameter. It returns
@@ -69,4 +63,48 @@ public interface CustomType extends Type {
 	 * @return
 	 */
 	public boolean isTypeAssignableFrom(Type aType, boolean permissive);
+
+	/**
+	 * Return simple (human understandable) representation for this type
+	 * 
+	 * @return
+	 */
+	public String simpleRepresentation();
+
+	/**
+	 * Return full qualified representation (machine understandable) representation for this type
+	 * 
+	 * @return
+	 */
+	public String fullQualifiedRepresentation();
+
+	/**
+	 * Return base java class
+	 * 
+	 * @return
+	 */
+	public Class<?> getBaseClass();
+
+	/**
+	 * Return a String encoding configuration of this type<br>
+	 * This String might be used to serialize configuration of this type (excluding type name)
+	 * 
+	 * @return
+	 */
+	public String getSerializationRepresentation();
+
+	/**
+	 * Return boolean indicating if this type has been fully resolved
+	 * 
+	 * @return
+	 */
+	public boolean isResolved();
+
+	/**
+	 * Called when a {@link CustomType} is not fully resolved<br>
+	 * The factory must be supplied and should reference required context
+	 * 
+	 * @param factory
+	 */
+	public void resolve(CustomTypeFactory<?> factory);
 }
