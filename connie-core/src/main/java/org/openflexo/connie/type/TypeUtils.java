@@ -110,7 +110,7 @@ public class TypeUtils {
 			// System.out.println("WildcardType: " + aType);
 			Type[] upperBounds = ((WildcardType) aType).getUpperBounds();
 			// Type[] lowerBounds = ((WildcardType) aType).getLowerBounds();
-			if (upperBounds == null) {
+			if (upperBounds == null || upperBounds.length == 0) {
 				return Object.class;
 			}
 			// System.out.println("upper=" + upperBounds + " size=" + upperBounds.length);
