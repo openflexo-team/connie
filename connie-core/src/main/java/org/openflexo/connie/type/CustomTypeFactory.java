@@ -55,4 +55,11 @@ public interface CustomTypeFactory<T extends CustomType> {
 	 * @return
 	 */
 	public T makeCustomType(String stringRepresentation);
+
+	/**
+	 * Use supplied type to configure factory
+	 * 
+	 * @param type
+	 */
+	public void configureFactory(T type);
 }
