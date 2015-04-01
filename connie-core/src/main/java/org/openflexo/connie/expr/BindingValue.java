@@ -57,6 +57,7 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
+import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.JavaMethodPathElement;
 import org.openflexo.connie.binding.JavaPropertyPathElement;
@@ -64,7 +65,6 @@ import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.TargetObject;
-import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NotSettableContextException;
 import org.openflexo.connie.exception.NullReferenceException;
@@ -421,7 +421,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// System.out.println(">>> Detecting that variable " + getBindingVariable().getVariableName() + " change to "
 			// + evt.getNewValue());
 
-			if (getBindingVariable().getVariableName().equals(evt.getNewValue())) {
+			if (getBindingVariable() != null && getBindingVariable().getVariableName() != null
+					&& getBindingVariable().getVariableName().equals(evt.getNewValue())) {
 				// In this case, we detect that our current BindingVariable name has changed
 				// It's really important to also change value in parsed binding path, otherwise if for any reason, the binding
 				// value is set again to be reanalyzed, the binding variable might not be found again
@@ -443,6 +444,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		}
 	}
 
+	@Override
 	public Type getAccessedType() {
 		if (isValid() && getLastBindingPathElement() != null) {
 			return getLastBindingPathElement().getType();

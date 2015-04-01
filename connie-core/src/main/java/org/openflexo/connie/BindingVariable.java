@@ -81,8 +81,10 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	 * Delete this {@link BindingModel}
 	 */
 	public void delete() {
-		getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
-		pcSupport = null;
+		if (pcSupport != null) {
+			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+			pcSupport = null;
+		}
 	}
 
 	@Override
