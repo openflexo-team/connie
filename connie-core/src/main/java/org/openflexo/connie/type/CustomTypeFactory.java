@@ -48,10 +48,18 @@ package org.openflexo.connie.type;
 public interface CustomTypeFactory<T extends CustomType> {
 
 	/**
-	 * Build and return {@link CustomType} given the supplied {@link String} representation
+	 * Build and return {@link CustomType} given the supplied {@link String} representation<br>
+	 * If supplied String representation is null, build a new {@link CustomType} using default configuration
 	 * 
 	 * @param configuration
 	 * @return
 	 */
 	public T makeCustomType(String stringRepresentation);
+
+	/**
+	 * Use supplied type to configure factory
+	 * 
+	 * @param type
+	 */
+	public void configureFactory(T type);
 }
