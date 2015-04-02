@@ -77,7 +77,7 @@ public class TestResourceLocator {
 	@TestOrder(3)
 	public void testLocateResourceInSourceCode() {
 		Resource r = ResourceLocator.locateResource("Config/logging.properties");
-		Resource r2 = ResourceLocator.locateSourceCodeResource(r,".*connie.*");
+		Resource r2 = ResourceLocator.locateSourceCodeResource(r);
 		Resource r3 = ResourceLocator.locateSourceCodeResource("Config/logging.properties");
 
 		assertTrue(r instanceof FileResourceImpl);
