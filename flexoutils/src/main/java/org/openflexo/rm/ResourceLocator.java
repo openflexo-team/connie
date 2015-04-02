@@ -44,6 +44,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * @author c guychard
@@ -104,13 +105,24 @@ final public class ResourceLocator {
 	 * Explicitely locate a Resource in the source code (when source code is available)<br>
 	 * 
 	 * @param resource
+	 * @param an additionial regexFilter for disambiguation when several resources are found.
+	 * @return
+	 */
+	static public Resource locateSourceCodeResource(Resource resource, String  regexFilter) {
+		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath(),  regexFilter);
+
+	}
+
+	/**
+	 * Explicitely locate a Resource in the source code (when source code is available)<br>
+	 * 
+	 * @param resource
 	 * @return
 	 */
 	static public Resource locateSourceCodeResource(Resource resource) {
 		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath());
 
 	}
-
 	/**
 	 * Explicitely locate a Resource in the source code (when source code is available)<br>
 	 * 

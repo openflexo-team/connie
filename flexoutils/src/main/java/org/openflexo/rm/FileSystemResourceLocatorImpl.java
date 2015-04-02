@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
 import org.openflexo.toolbox.FileUtils;
@@ -69,7 +70,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	private static final Logger LOGGER = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
 	private static String PATH_SEP = System.getProperty("file.separator");
 
-	private final Map<File, FileResourceImpl> cache = new HashMap<File, FileResourceImpl>();
+	protected final Map<File, FileResourceImpl> cache = new HashMap<File, FileResourceImpl>();
 
 	@Override
 	public FileResourceImpl locateResource(String relativePathName) {
@@ -291,6 +292,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 			return null;
 		}
 	}
+	
 
 	/**
 	 * Locate and returns file identified by relativePathName<br>
@@ -306,26 +308,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	private File locateFile(String relativePathName, boolean lenient) {
 		final File workingDirectory = new File(System.getProperty("user.dir"));
-		// System.out.println("Searching " + relativePathName + " in " + workingDirectory);
-		List<File> found = new ArrayList<File>();
-		for (File f : getDirectoriesSearchOrder()) {
-			File nextTry = new File(f, relativePathName);
-			if (nextTry.exists()) {
-				if (LOGGER.isLoggable(Level.FINER)) {
-					LOGGER.finer("Found " + nextTry.getAbsolutePath());
-				}
-				try {
-					if (nextTry.getCanonicalFile().getName().equals(nextTry.getName()) || lenient) {
-						found.add(nextTry);
-					}
-				} catch (IOException e1) {
-				}
-			} else {
-				if (LOGGER.isLoggable(Level.FINER)) {
-					LOGGER.finer("Searched for a " + nextTry.getAbsolutePath());
-				}
-			}
-		}
+		List<File> found = locateAllFiles(relativePathName, lenient);
+		
 		if (found.size() == 1) {
 			// System.out.println("Returning " + found.get(0));
 			return found.get(0);
@@ -368,9 +352,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		return locateAllFiles(relativePathName, true);
 	}
 
-	private List<File> locateAllFiles(String relativePathName, boolean lenient) {
-		final File workingDirectory = new File(System.getProperty("user.dir"));
-		// System.out.println("Searching " + relativePathName + " in " + workingDirectory);
+	protected List<File> locateAllFiles(String relativePathName, boolean lenient) {
 		List<File> found = new ArrayList<File>();
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);

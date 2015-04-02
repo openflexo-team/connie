@@ -41,8 +41,17 @@ package org.openflexo.rm;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
+import org.openflexo.toolbox.FileUtils;
 
 /**
  * This {@link ResourceLocatorDelegate} allows to retrieve {@link Resource} from source code repositories
@@ -149,5 +158,97 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 			}
 		}
 	}
+
+	/**
+	 *  Locates the resource given a relative PATH and a filter to avoid ambiguity
+	 * @param relativePath
+	 * @param filter
+	 * @return 
+	 */
+	// TODO: ask if this must not be promoted at ResourceLocator level
+	public Resource locateResource(String relativePathName, String regexFilter) {
+		
+		if (relativePathName == null) {
+			return null;
+		}
+
+		try {
+			File file = locateFile(relativePathName, regexFilter);
+			if (file != null && file.exists()) {
+				FileResourceImpl returned = cache.get(file);
+				if (returned == null) {
+					returned = new FileResourceImpl(this, relativePathName, file.toURI().toURL(), file);
+					cache.put(file, returned);
+				}
+				return returned;
+			}
+		} catch (MalformedURLException e) {
+			LOGGER.severe("Unable to find given file: " + relativePathName);
+			e.printStackTrace();
+		} catch (LocatorNotFoundException e) {
+			LOGGER.severe(" IMPOSSIBLE!  Locator is null for: " + relativePathName);
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Locate and returns file identified by relativePathName<br>
+	 * If many files match supplied relativePathName, then return the one :
+	 *    -- which is most narrow of current dir, relative to the distance between files as defined in {@link FileUtils}.<br>
+	 *    -- which matches the Pattern given as a parameter in case distance is equal
+	 * 
+	 * @param relativePathName
+	 * @return
+	 */
+
+	// TODO: to be re-factored
+	
+	private File locateFile(String relativePathName, String regexFilter) {
+
+		final File workingDirectory = new File(System.getProperty("user.dir"));
+		
+		List<File> found = locateAllFiles(relativePathName, true);
+		List<File> matches = new ArrayList<File>();
+		// Apply Filter
+		if (regexFilter != null){
+			for (File f: found) {
+				if (f.getAbsolutePath().matches(regexFilter)){
+					matches.add(f);
+				}
+					
+			}
+		}
+		
+		if (matches.size() == 1) {
+			// System.out.println("Returning " + found.get(0));
+			return matches.get(0);
+		}
+
+		// In this case, the response is ambigous
+		if (matches.size() > 1) {
+			// We try to privilegiate files that are closer to working dir
+			Collections.sort(matches, new Comparator<File>() {
+				@Override
+				public int compare(File o1, File o2) {
+					return FileUtils.distance(workingDirectory, o1) - FileUtils.distance(workingDirectory, o2);
+				}
+
+			});
+			
+			return matches.get(0);
+		}
+
+		if (LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Could not locate resource " + relativePathName);
+		}
+		return null;
+		// TODO: this should not happen!
+		/* 
+		return new File(userDirectory, relativePathName);
+		 */
+	}
+
+	
 
 }
