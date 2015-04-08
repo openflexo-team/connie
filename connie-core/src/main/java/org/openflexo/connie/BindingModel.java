@@ -117,7 +117,9 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 			bv.delete();
 		}
 
-		getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+		if (pcSupport != null) {
+			pcSupport.firePropertyChange(DELETED_PROPERTY, this, null);
+		}
 		pcSupport = null;
 	}
 
