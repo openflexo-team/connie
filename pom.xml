@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.openflexo</groupId>
 		<artifactId>openflexo-component</artifactId>
-		<version>0.3-SNAPSHOT</version>
+		<version>0.3-RC3</version>
 	</parent>
      <!-- ************
    Component identity and specific information
