@@ -518,7 +518,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	public String getVariableName() {
-		if (getVariableName() != null) {
+		if (getBindingVariable() != null) {
 			return getBindingVariable().getVariableName();
 		}
 		return null;
@@ -809,8 +809,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			BindingPathElement current = bindingVariable;
 			// System.out.println("Found binding variable " + bindingVariable);
 			if (bindingVariable == null) {
-				invalidBindingReason = "cannot find binding variable " + ((NormalBindingPathElement) getParsedBindingPath().get(0)).property
-						+ " BindingModel=" + dataBinding.getOwner().getBindingModel();
+				invalidBindingReason = "cannot find binding variable "
+						+ ((NormalBindingPathElement) getParsedBindingPath().get(0)).property + " BindingModel="
+						+ dataBinding.getOwner().getBindingModel();
 				analysingSuccessfull = false;
 				return false;
 			}
@@ -818,8 +819,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			for (AbstractBindingPathElement pathElement : getParsedBindingPath()) {
 				if (i > 0) {
 					if (pathElement instanceof NormalBindingPathElement) {
-						SimplePathElement newPathElement = dataBinding.getOwner().getBindingFactory().makeSimplePathElement(current,
-								((NormalBindingPathElement) pathElement).property);
+						SimplePathElement newPathElement = dataBinding.getOwner().getBindingFactory()
+								.makeSimplePathElement(current, ((NormalBindingPathElement) pathElement).property);
 						if (newPathElement != null) {
 							bindingPath.add(newPathElement);
 							current = newPathElement;
@@ -853,11 +854,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 							args.add(argDataBinding);
 							argIndex++;
 						}
-						Function function = dataBinding.getOwner().getBindingFactory().retrieveFunction(current.getType(),
-								((MethodCallBindingPathElement) pathElement).method, args);
+						Function function = dataBinding.getOwner().getBindingFactory()
+								.retrieveFunction(current.getType(), ((MethodCallBindingPathElement) pathElement).method, args);
 						if (function != null) {
-							FunctionPathElement newPathElement = dataBinding.getOwner().getBindingFactory().makeFunctionPathElement(current,
-									function, args);
+							FunctionPathElement newPathElement = dataBinding.getOwner().getBindingFactory()
+									.makeFunctionPathElement(current, function, args);
 							if (newPathElement != null) {
 								bindingPath.add(newPathElement);
 								current = newPathElement;
@@ -894,8 +895,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return analysingSuccessfull;
 	}
 
-	public Object getBindingValue(BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
+	public Object getBindingValue(BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
+			InvocationTargetTransformException {
 
 		// System.out.println(" > evaluate BindingValue " + this +
 		// " in context " + context);
@@ -924,8 +925,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return null;
 	}
 
-	public void setBindingValue(Object value, BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException, NotSettableContextException {
+	public void setBindingValue(Object value, BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
+			InvocationTargetTransformException, NotSettableContextException {
 
 		// logger.info("setBindingValue() for " + this + " with " + value +
 		// " context=" + context);
@@ -1041,8 +1042,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	/**
-	 * Build and return a list of target objects involved in the computation of this data binding with supplied binding evaluation context
-	 * <br>
+	 * Build and return a list of target objects involved in the computation of this data binding with supplied binding evaluation context <br>
 	 * Those target objects are the combination of an object and the property name involved by this denoted data binding
 	 * 
 	 * @param context
