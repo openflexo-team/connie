@@ -92,10 +92,11 @@ public class ConcatenedList<E> extends AbstractList<E> {
 				}
 				current += list.size();
 			} else {
-				if (current == index) {
-					embedded.add(i, element);
-					return;
-				}
+				// Fabien: I think the following code is useless as if current == index we have already returned in line 86
+				//if (current == index) {
+				//	embedded.add(i, element);
+				//	return;
+				//}
 				current++;
 			}
 		}

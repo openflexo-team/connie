@@ -54,9 +54,9 @@ public class AlphabeticOrderedRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
-    protected List computeTestMethods() {
-        List list = super.computeTestMethods();
-        List copy = new ArrayList(list);
+    protected List<FrameworkMethod> computeTestMethods() {
+        List<FrameworkMethod> list = super.computeTestMethods();
+        List<FrameworkMethod> copy = new ArrayList<FrameworkMethod>(list);
         Collections.sort(copy, new Comparator<FrameworkMethod>() {
             public int compare(FrameworkMethod o1, FrameworkMethod o2) {
                 return o1.getName().compareTo(o2.getName());
