@@ -1,22 +1,42 @@
-/*
- * (c) Copyright 2010-2011 AgileBirds
+/**
+ * 
+ * Copyright (c) 2013-2014, Openflexo
+ * Copyright (c) 2011-2012, AgileBirds
+ * 
+ * This file is part of Flexoutils, a component of the software infrastructure 
+ * developed at Openflexo.
+ * 
+ * 
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
+ * version 1.1 of the License, or any later version ), which is available at 
+ * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+ * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * later version), which is available at http://www.gnu.org/licenses/gpl.html .
+ * 
+ * You can redistribute it and/or modify under the terms of either of these licenses
+ * 
+ * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
+ * must include the following additional permission.
  *
- * This file is part of OpenFlexo.
+ *          Additional permission under GNU GPL version 3 section 7
  *
- * OpenFlexo is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *          If you modify this Program, or any covered work, by linking or 
+ *          combining it with software containing parts covered by the terms 
+ *          of EPL 1.0, the licensors of this Program grant you additional permission
+ *          to convey the resulting work. * 
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
  *
- * OpenFlexo is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenFlexo. If not, see <http://www.gnu.org/licenses/>.
- *
+ * See http://www.openflexo.org/license.html for details.
+ * 
+ * 
+ * Please contact Openflexo (openflexo-contacts@openflexo.org)
+ * or visit www.openflexo.org if you need additional information.
+ * 
  */
+
 package org.openflexo.toolbox;
 
 import java.io.BufferedInputStream;
@@ -122,6 +142,18 @@ public class FileUtils {
 		return null;
 	}
 
+	public static byte[] getBytes(File f, int nBytes) throws IOException {
+		byte[] b = new byte[nBytes];
+		FileInputStream fis;
+		fis = new FileInputStream(f);
+		try {
+			fis.read(b);
+			return b;
+		} finally {
+			fis.close();
+		}
+	}
+
 	public static void copyDirFromDirToDir(String srcName, File srcParentDir, File destDir) throws IOException {
 		copyDirFromDirToDir(srcName, srcParentDir, destDir, CopyStrategy.REPLACE);
 	}
@@ -145,13 +177,11 @@ public class FileUtils {
 
 		if (src instanceof FileResourceImpl) {
 			return copyDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
-		}
-		else if (src instanceof InJarResourceImpl) {
+		} else if (src instanceof InJarResourceImpl) {
 			for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"))) {
 				copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
 			}
-		}
-		else {
+		} else {
 			LOGGER.severe("Unable to copy resource: " + src.toString());
 			return null;
 		}
@@ -169,8 +199,7 @@ public class FileUtils {
 		File f = new File(dest, rpath.replace("/", PATH_SEP));
 		if (rpath.endsWith("/")) {
 			f.mkdir();
-		}
-		else {
+		} else {
 			f.createNewFile();
 			if (f.exists()) {
 				InputStream in = rsc.openInputStream();
@@ -178,8 +207,7 @@ public class FileUtils {
 				IOUtils.copy(in, out);
 				in.close();
 				out.close();
-			}
-			else {
+			} else {
 				LOGGER.severe("Unable to copy InJarResource: " + rsc);
 			}
 		}
@@ -217,19 +245,18 @@ public class FileUtils {
 			File curFile = fileArray[i];
 			if (curFile.isDirectory() && !curFile.getName().equals("CVS") && fileFilter.accept(curFile)) {
 				copyContentDirToDir(curFile, new File(dest, curFile.getName()), strategy, fileFilter);
-			}
-			else if (curFile.isFile() && fileFilter.accept(curFile)) {
+			} else if (curFile.isFile() && fileFilter.accept(curFile)) {
 				File destFile = new File(dest, curFile.getName());
 				if (destFile.exists()) {
 					switch (strategy) {
-						case IGNORE_EXISTING:
+					case IGNORE_EXISTING:
+						continue;
+					case REPLACE_OLD_ONLY:
+						if (!getDiskLastModifiedDate(curFile).after(getDiskLastModifiedDate(destFile))) {
 							continue;
-						case REPLACE_OLD_ONLY:
-							if (!getDiskLastModifiedDate(curFile).after(getDiskLastModifiedDate(destFile))) {
-								continue;
-							}
-						default:
-							break;
+						}
+					default:
+						break;
 					}
 				}
 				copyFileToFile(curFile, destFile);
@@ -249,8 +276,7 @@ public class FileUtils {
 			File curFile = fileArray[i];
 			if (curFile.isDirectory()) {
 				copyDirFromDirToDirIncludingCVSFiles(curFile.getName(), src, dest);
-			}
-			else if (curFile.isFile()) {
+			} else if (curFile.isFile()) {
 				FileInputStream is = new FileInputStream(curFile);
 				try {
 					copyFileToDir(is, curFile.getName(), dest);
@@ -357,6 +383,13 @@ public class FileUtils {
 		}
 	};
 
+	public static final FilenameFilter PropertiesFileNameFilter = new FilenameFilter() {
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.toLowerCase().endsWith(".properties");
+		}
+	};
+
 	public static void saveToFile(File dest, String fileContent) throws IOException {
 		saveToFile(dest, fileContent, null);
 	}
@@ -445,8 +478,7 @@ public class FileUtils {
 				}
 			}
 			return returned && file.delete();
-		}
-		else {
+		} else {
 			return file.delete();
 		}
 	}
@@ -474,8 +506,7 @@ public class FileUtils {
 				if (recursive) {
 					count += countFilesInDirectory(file, recursive);
 				}
-			}
-			else {
+			} else {
 				count++;
 			}
 		}
@@ -494,8 +525,7 @@ public class FileUtils {
 		}
 		if (file.isFile()) {
 			return new Date(file.lastModified());
-		}
-		else {
+		} else {
 			File[] fileArray = file.listFiles();
 			Date returned = new Date(file.lastModified());
 			if (fileArray == null) {
@@ -570,8 +600,7 @@ public class FileUtils {
 			if (fileName.charAt(fileName.length() - 4) == '.') {
 				extension = fileName.substring(fileName.length() - 4);
 				fileName = fileName.substring(0, fileName.length() - 4);
-			}
-			else if (fileName.charAt(fileName.length() - 5) == '.') {
+			} else if (fileName.charAt(fileName.length() - 5) == '.') {
 				extension = fileName.substring(fileName.length() - 5);
 				fileName = fileName.substring(0, fileName.length() - 5);
 			}
@@ -582,8 +611,7 @@ public class FileUtils {
 		while ((index = fileName.indexOf('/', previous)) > -1) {
 			if (index - previous > 240) {
 				sb.append(fileName.substring(previous, previous + 240)).append('/');
-			}
-			else {
+			} else {
 				sb.append(fileName.substring(previous, index + 1));
 			}
 			previous = index + 1;
@@ -591,8 +619,7 @@ public class FileUtils {
 		index = fileName.length();
 		if (index - previous > 240) {
 			sb.append(fileName.substring(previous, previous + 240));
-		}
-		else {
+		} else {
 			sb.append(fileName.substring(previous, index));
 		}
 		if (extension != null) {
@@ -617,8 +644,7 @@ public class FileUtils {
 			File file = f[i];
 			if (file.isDirectory()) {
 				deleteDir(file);
-			}
-			else {
+			} else {
 				file.delete();
 			}
 		}
@@ -654,8 +680,7 @@ public class FileUtils {
 				if (!file.getName().equals("CVS") || !keepCVSTags) {
 					deleteFilesInDir(file, keepCVSTags);
 				}
-			}
-			else {
+			} else {
 				file.delete();
 			}
 		}
@@ -668,8 +693,7 @@ public class FileUtils {
 		if (file.getParentFile() != null) {
 			if (recursive) {
 				return directoryContainsFile(directory, file.getParentFile(), recursive);
-			}
-			else {
+			} else {
 				return directory.equals(file.getParentFile());
 			}
 		}
@@ -911,8 +935,7 @@ public class FileUtils {
 		File tmpDir = new File(tmp.getAbsolutePath());
 		if (tmp.delete() && tmpDir.mkdirs()) {
 			return tmpDir;
-		}
-		else {
+		} else {
 			tmpDir = new File(System.getProperty("java.io.tmpdir"), prefix + suffix);
 			tmpDir.mkdirs();
 			return tmpDir;
@@ -929,8 +952,7 @@ public class FileUtils {
 			File file = f[i];
 			if (file.isDirectory()) {
 				files.addAll(listFilesRecursively(file, filter));
-			}
-			else if (filter.accept(dir, file.getName())) {
+			} else if (filter.accept(dir, file.getName())) {
 				files.add(file);
 			}
 		}
@@ -1060,8 +1082,7 @@ public class FileUtils {
 						fileContent = FileUtils.fileContents(connection.getInputStream(), "UTF-8");
 						FileUtils.saveToFile(file, fileContent);
 					}
-				}
-				else {
+				} else {
 					if (c.getDate() == 0 || c.getDate() > lastModified) {
 						fileContent = FileUtils.fileContents(c.getInputStream(), "UTF-8");
 						FileUtils.saveToFile(file, fileContent);
@@ -1088,8 +1109,7 @@ public class FileUtils {
 					dir = new File(f, "OpenFlexo");
 				}
 			}
-		}
-		else if (ToolBox.getPLATFORM() == ToolBox.MACOS) {
+		} else if (ToolBox.getPLATFORM() == ToolBox.MACOS) {
 			dir = new File(new File(System.getProperty("user.home")), "Library/OpenFlexo");
 		}
 		return dir;
@@ -1122,8 +1142,7 @@ public class FileUtils {
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 			}
-		}
-		else if (ToolBox.isWindows()) {
+		} else if (ToolBox.isWindows()) {
 			String value = WinRegistryAccess.getRegistryValue(WIN_REGISTRY_DOCUMENTS_KEY_PATH, WIN_REGISTRY_DOCUMENTS_ATTRIBUTE,
 					WinRegistryAccess.REG_EXPAND_SZ_TOKEN);
 			value = WinRegistryAccess.substituteEnvironmentVariable(value);

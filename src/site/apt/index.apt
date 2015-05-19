@@ -1,18 +1,29 @@
  -----
- The Site
+ Openflexo Connie
  -----
- The Maven Team
+ The Openflexo team
  -----
 
-Maven Site for your project
+Introduction to CONNIE
 
- Congratulations! If you are looking at this page then you have successfully generated a
- template site employing the site archetype and you have run:
+  CONNIE is a Java library allowing to define and execute an expression-based language over a generic API.
 
-[https://media.openflexo.org/images/openflexo2.png]
+  This language is generally used to connect heterogeneous technologies with the same API.
 
-+-----+
+  The purpose of CONNIE is to offer the ability to:
 
-mvn site
+  * Navigate through a graph of objects mixing heterogeneous technologies.
+  
+  * Define strong-typed paths and expressions.
 
-+-----+
+  * Execute strong-typed paths and expressions.
+
+Contents of this package
+
+  CONNIE project contains two separate components (defined here as modules):
+  
+  * {{{./connie-core/index.html}Connie-core component}}, which contains the Connie core library itself
+  
+  * {{{./flexoutils/index.html}Some utilities}} which are used in whole Openflexo infrastructure
+    
+  
