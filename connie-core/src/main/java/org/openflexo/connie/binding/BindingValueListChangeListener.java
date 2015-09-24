@@ -83,10 +83,17 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 			newValue = null;
 		}
 
+		if (getDataBinding().toString().equals("data.selectedDocumentElements")) {
+			System.out.println(">>>>>>>>>> fireChange for " + getDataBinding().toString());
+			System.out.println("newValue=" + newValue);
+			System.out.println("lastNotifiedValue=" + lastNotifiedValue);
+			System.out.println("lastKnownValues=" + lastKnownValues);
+		}
+
 		if (newValue != lastNotifiedValue) {
 			lastNotifiedValue = newValue;
 			bindingValueChanged(evt.getSource(), newValue);
-			// refreshObserving(false);
+			refreshObserving(false);
 		} else {
 			// Lists are sames, but values inside lists, may have changed
 			if ((lastKnownValues == null) || (!lastKnownValues.equals(newValue))) {
