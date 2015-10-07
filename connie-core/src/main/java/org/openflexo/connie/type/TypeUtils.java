@@ -91,17 +91,20 @@ public class TypeUtils {
 		if (isResolved(aType)) {
 			if (aType instanceof Class) {
 				return (Class) aType;
-			} else if (aType instanceof ParameterizedType) {
+			}
+			else if (aType instanceof ParameterizedType) {
 				Type rawType = ((ParameterizedType) aType).getRawType();
 				if (rawType instanceof Class) {
 					return (Class) rawType;
 				}
 				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
-			} else if (aType instanceof GenericArrayType) {
+			}
+			else if (aType instanceof GenericArrayType) {
 				Type componentType = ((GenericArrayType) aType).getGenericComponentType();
 				return getBaseClass(componentType);
-			} else {
+			}
+			else {
 				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
 			}
@@ -130,7 +133,8 @@ public class TypeUtils {
 			// logger.warning("Unresolved TypeVariable: " + tv.getName() + " " + tv.getGenericDeclaration() + " bounds=" + upperBounds);
 			if (tv.getBounds().length > 0) {
 				return getBaseClass(tv.getBounds()[0]);
-			} else {
+			}
+			else {
 				return Object.class;
 			}
 
@@ -320,11 +324,14 @@ public class TypeUtils {
 	public static EvaluationType kindOfType(Type type) {
 		if (isBoolean(type)) {
 			return EvaluationType.BOOLEAN;
-		} else if (isInteger(type) || isLong(type) || isShort(type) || isChar(type) || isByte(type)) {
+		}
+		else if (isInteger(type) || isLong(type) || isShort(type) || isChar(type) || isByte(type)) {
 			return EvaluationType.ARITHMETIC_INTEGER;
-		} else if (isFloat(type) || isDouble(type)) {
+		}
+		else if (isFloat(type) || isDouble(type)) {
 			return EvaluationType.ARITHMETIC_FLOAT;
-		} else if (isString(type)) {
+		}
+		else if (isString(type)) {
 			return EvaluationType.STRING;
 		}
 		return EvaluationType.LITERAL;
@@ -375,6 +382,10 @@ public class TypeUtils {
 		}
 
 		if (aType.equals(anOtherType)) {
+			return true;
+		}
+
+		if (anOtherType == ExplicitNullType.INSTANCE) {
 			return true;
 		}
 
@@ -450,7 +461,8 @@ public class TypeUtils {
 			if (anOtherType instanceof GenericArrayType) {
 				return isTypeAssignableFrom(((GenericArrayType) aType).getGenericComponentType(),
 						((GenericArrayType) anOtherType).getGenericComponentType(), permissive);
-			} else if (anOtherType instanceof Class && ((Class) anOtherType).isArray()) {
+			}
+			else if (anOtherType instanceof Class && ((Class) anOtherType).isArray()) {
 				return isTypeAssignableFrom(((GenericArrayType) aType).getGenericComponentType(), ((Class) anOtherType).getComponentType(),
 						permissive);
 			}
@@ -573,7 +585,8 @@ public class TypeUtils {
 		}
 		if (aType instanceof Class) {
 			return ((Class) aType).getSimpleName();
-		} else if (aType instanceof ParameterizedType) {
+		}
+		else if (aType instanceof ParameterizedType) {
 			ParameterizedType t = (ParameterizedType) aType;
 			StringBuilder sb = new StringBuilder();
 			sb.append(simpleRepresentation(t.getRawType())).append("<");
@@ -597,7 +610,8 @@ public class TypeUtils {
 		}
 		if (aType instanceof Class) {
 			return ((Class) aType).getName();
-		} else if (aType instanceof ParameterizedType) {
+		}
+		else if (aType instanceof ParameterizedType) {
 			ParameterizedType t = (ParameterizedType) aType;
 			StringBuilder sb = new StringBuilder();
 			sb.append(fullQualifiedRepresentation(t.getRawType())).append("<");
@@ -732,7 +746,8 @@ public class TypeUtils {
 						contextualizeType = true;
 					}
 					actualTypeArguments[i] = new WilcardTypeImpl(bounds, new Type[0]);
-				} else {
+				}
+				else {
 					actualTypeArguments[i] = currentTypeArgument;
 				}
 			}
@@ -787,14 +802,16 @@ public class TypeUtils {
 									return makeInstantiatedType(type, getSuperType(context));
 								}
 								return ((ParameterizedType) context).getActualTypeArguments()[i];
-							} else {
+							}
+							else {
 								LOGGER.warning(
 										"Could not retrieve parameterized type " + tv + " with context " + simpleRepresentation(context));
 								return type;
 							}
 						}
 					}
-				} else if (context instanceof Class) {
+				}
+				else if (context instanceof Class) {
 					// TODO: instead of returning the first resolved type, we should build a list and return the most specialized type
 					if (((Class) context).getGenericSuperclass() != null) {
 						Type attemptFromSuperClass = makeInstantiatedType(type, ((Class) context).getGenericSuperclass());
@@ -811,13 +828,15 @@ public class TypeUtils {
 					// Could not find any further resolution
 					return type;
 
-				} else if (context instanceof WildcardType) {
+				}
+				else if (context instanceof WildcardType) {
 					if (((WildcardType) context).getUpperBounds() != null && ((WildcardType) context).getUpperBounds().length > 0) {
 						// In this case, we use the default upper bound
 						return makeInstantiatedType(type, ((WildcardType) context).getUpperBounds()[0]);
 					}
 				}
-			} else if (gd instanceof Method) {
+			}
+			else if (gd instanceof Method) {
 				return type;
 			}
 			if (LOGGER.isLoggable(Level.FINE)) {
@@ -860,11 +879,13 @@ public class TypeUtils {
 					actualTypeArguments[i] = makeInstantiatedType(tv2, type);
 				}
 				return new ParameterizedTypeImpl(((Class<?>) ((ParameterizedType) type).getRawType()).getSuperclass(), actualTypeArguments);
-			} else {
+			}
+			else {
 				// System.out.println("super type of " + simpleRepresentation(type) + " is " + simpleRepresentation(superType));
 				return superType;
 			}
-		} else if (type instanceof Class) {
+		}
+		else if (type instanceof Class) {
 			return ((Class) type).getGenericSuperclass();
 		}
 		if (type instanceof CustomType) {
@@ -892,7 +913,8 @@ public class TypeUtils {
 		if (type instanceof ParameterizedType) {
 			ParameterizedType myType = (ParameterizedType) type;
 			return ((Class<?>) myType.getRawType()).getGenericInterfaces();
-		} else if (type instanceof Class) {
+		}
+		else if (type instanceof Class) {
 			return ((Class<?>) type).getGenericInterfaces();
 		}
 		if (type instanceof CustomType) {
@@ -999,7 +1021,8 @@ public class TypeUtils {
 		T returned = storedObjectForClasses.get(aClass);
 		if (returned != null) {
 			return returned;
-		} else {
+		}
+		else {
 
 			// We first check for exact lookup
 
