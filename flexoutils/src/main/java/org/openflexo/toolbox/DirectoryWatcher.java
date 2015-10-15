@@ -329,13 +329,16 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 	@Override
 	public final void run() {
-		isRunning = true;
 		if (waitNextWatchingRequested) {
 			waitNextWatchingDone = true;
 		}
-		// System.err.println("* BEGIN Watch" + rootDirectoryWatcher.directory);
+		if (isRunning) {
+			return;
+		}
+		isRunning = true;
+		//System.err.println("* BEGIN Watch" + rootDirectoryWatcher.directory);
 		rootDirectoryWatcher.watch();
-		// System.err.println("* END Watch" + rootDirectoryWatcher.directory);
+		//System.err.println("* END Watch" + rootDirectoryWatcher.directory);
 		if (waitNextWatchingRequested) {
 			waitNextWatchingRequested = false;
 		}
