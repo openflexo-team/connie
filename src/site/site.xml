@@ -22,38 +22,14 @@
   <custom>
 	<openflexo-skin>
 		<sideMenus>true</sideMenus>
+		<displayBreadCrumbs>true</displayBreadCrumbs>
 		<localMenu>/inc/html/developersMenu.html</localMenu>
+		<includeVersionLinks>true</includeVersionLinks>
 	</openflexo-skin>
-  </custom>
+ </custom>
  
   <body>
-    <links>
-      <item name="Openflexo" href="http://www.openflexo.org"/>
-    </links>
-<!--
-    <menu name="Usage">
-      <item name="Usage simple" href="usage.html" />
-      <item name="FAQ" href="http://maven.apache.org/archetype/maven-archetype-plugin/specification/specification.html"/>
-    </menu>	
--->
-<!--
-    <menu name="Maintenance">
-      <item name="pre-requis" 		href="pre_requis.html" />
-      <item name="structure"    	href="structure.html" />
-      <item name="conception" 		href="conception.html" />
-      <item name="production"   	href="production.html" />
-      <item name="test" 		href="test.html" />
-      <item name="documentation" 	href="documentation_archetype.html" />
-      <item name="maintenance" 		href="maintenance.html" />
-      <item name="gconf" 		href="gconf.html" />
-      <item name="liens" 		href="liens.html" />
-      <item name="TODO" 		href="todo.html" />
-    </menu>	
--->
-
- <!--   <menu ref="parent" /> -->
     <menu ref="modules" />
     <menu ref="reports" />
-<!--    <menu ref="plugins" /> -->
   </body>
 </project>
