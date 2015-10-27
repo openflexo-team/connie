@@ -18,6 +18,8 @@
 [../resources/images/ConnieScreenshot] ConnieScreenshot-9
 [../resources/images/ConnieScreenshot.png] ConnieScreenshot-10
 
+[/images/components/connie/ConnieScreenshot] ConnieScreenshot-5
+
 Introduction to CONNIE
 
   CONNIE is a Java library allowing to define and execute an expression-based language over a generic API.
