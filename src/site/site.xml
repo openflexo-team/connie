@@ -29,6 +29,14 @@
  </custom>
  
   <body>
+  
+    <menu name="Connie">
+      <item name="Home" 		href="index.html" />
+      <item name="Connie-core"    	href="connie-core/index.html" />
+      <item name="Flexo-utils"    	href="flexo-utils/index.html" />
+      <item name="Javadoc"    	href="./apidocs/index.html" />
+    </menu>
+  
     <menu ref="modules" />
     <menu ref="reports" />
   </body>
