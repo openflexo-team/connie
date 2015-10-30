@@ -1,44 +1,50 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project name="Maven" xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
-   
-  <bannerLeft>
-	<name>Connie</name>
-	<src>${connie.logo}</src>
-	<href>https://openflexo.org/tiki/Connie</href>
-  </bannerLeft> 
-  <bannerRight>
-    <name>Openflexo</name>
-    <src>${organization.logo}</src>
-    <href>http://openflexo.org/</href>
-  </bannerRight>
-  <skin>
-    <groupId>org.openflexo</groupId>
-    <artifactId>openflexo-skin</artifactId>
-    <version>1.3-SNAPSHOT</version>
-  </skin>
-  
-  <custom>
-	<openflexo-skin>
-		<sideMenus>true</sideMenus>
-		<displayBreadCrumbs>true</displayBreadCrumbs>
-		<localMenu>/inc/html/developersMenu.html</localMenu>
-		<includeVersionLinks>true</includeVersionLinks>
-	</openflexo-skin>
- </custom>
- 
- 
-  <body>
-    <menu name="Flexo utilities">
-      <item name="Home" 		href="index.html" />
-      <item name="FAQ" 			href="faq.html"/>
-      <item name="Javadoc"    	href="./apidocs/index.html" />
-    </menu>
+<project name="Maven" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
 
-    <menu ref="parent" />
+	<bannerLeft>
+		<name>Connie</name>
+		<src>${connie.logo}</src>
+		<href>https://openflexo.org/tiki/Connie</href>
+	</bannerLeft>
+	<bannerRight>
+		<name>Openflexo</name>
+		<src>${organization.logo}</src>
+		<href>http://openflexo.org/</href>
+	</bannerRight>
+	<skin>
+		<groupId>org.openflexo</groupId>
+		<artifactId>openflexo-skin</artifactId>
+		<version>1.3-SNAPSHOT</version>
+	</skin>
 
-    <menu ref="reports" />
+	<custom>
+		<openflexo-skin>
+			<sideMenus>true</sideMenus>
+			<displayBreadCrumbs>true</displayBreadCrumbs>
+			<localMenu>/inc/html/developersMenu.html</localMenu>
+			<includeVersionLinks>true</includeVersionLinks>
+		</openflexo-skin>
+	</custom>
 
-  </body>
+
+	<body>
+
+		<menu name=""
+			img="https://developers.openflexo.org/images/components/connie/connie_logo.png">
+		</menu>
+
+		<menu name="Flexo utilities">
+			<item name="Home" href="index.html" />
+			<item name="FAQ" href="faq.html" />
+			<item name="Javadoc" href="./apidocs/index.html" />
+		</menu>
+
+		<menu ref="parent" />
+
+		<menu ref="reports" />
+
+	</body>
 </project>
