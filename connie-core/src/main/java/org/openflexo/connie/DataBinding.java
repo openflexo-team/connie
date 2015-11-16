@@ -767,13 +767,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return expression;
 	}
 
-	private void notifyBindingChanged(Expression oldValue, Expression newValue) {
+	public void notifyBindingChanged(Expression oldValue, Expression newValue) {
 		getOwner().notifiedBindingChanged(this);
 		// logger.info("notifyBindingChanged from " + oldValue + " to " +
 		// newValue + " of " + newValue.getClass());
 	}
 
-	private void notifyBindingDecoded() {
+	public void notifyBindingDecoded() {
 		getOwner().notifiedBindingDecoded(this);
 	}
 

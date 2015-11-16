@@ -60,7 +60,8 @@ import org.openflexo.logging.FlexoLogger;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * A listener that tracks evaluated value of a DataBinding, given a run-time context given by a {@link BindingEvaluationContext}
+ * A listener that tracks evaluated value of a DataBinding, given a run-time
+ * context given by a {@link BindingEvaluationContext}
  * 
  * @author sylvain
  * 
@@ -75,7 +76,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	protected T lastNotifiedValue;
 	private boolean deleted = false;
 
-	// Use to prevent initial null value not to be fired (causing listener to not listen this value)
+	// Use to prevent initial null value not to be fired (causing listener to
+	// not listen this value)
 	private boolean lastNotifiedValueWasFired = false;
 
 	public BindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
@@ -88,7 +90,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			newValue = evaluateValue();
 		} catch (NullReferenceException e) {
 			// Don't warn since this may happen
-			// logger.warning("Could not evaluate " + dataBinding + " with context " + context +
+			// logger.warning("Could not evaluate " + dataBinding +
+			// " with context " + context +
 			// " because NullReferenceException has raised");
 			newValue = null;
 		}
@@ -103,7 +106,12 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		deleted = true;
 	}
 
-	private List<TargetObject> getChainedBindings(TargetObject object) { // NOPMD by beugnard on 30/10/14 17:15
+	private List<TargetObject> getChainedBindings(TargetObject object) { // NOPMD
+																			// by
+																			// beugnard
+																			// on
+																			// 30/10/14
+																			// 17:15
 		return null; // local optimization in refreshObserving
 	}
 
@@ -122,10 +130,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	protected synchronized void refreshObserving(boolean debug) {
 
 		// Kept for future debug use
-		/*if (dataBinding.toString().equals("data.canUndo()")) {
-			debug = true;
-			Thread.dumpStack();
-		}*/
+		/*
+		 * if (dataBinding.toString().equals("data.canUndo()")) { debug = true;
+		 * Thread.dumpStack(); }
+		 */
 
 		if (debug) {
 			LOGGER.info("-------------> refreshObserving() for " + dataBinding + " context=" + context);
@@ -196,12 +204,12 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			if (o.target instanceof HasPropertyChangeSupport) {
 				PropertyChangeSupport pcSupport = ((HasPropertyChangeSupport) o.target).getPropertyChangeSupport();
 				if (LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.fine("Observer of " + dataBinding + " remove property change listener: " + o.target + " property:"
-							+ o.propertyName);
+					LOGGER.fine("Observer of " + dataBinding + " remove property change listener: " + o.target
+							+ " property:" + o.propertyName);
 				}
 				if (debug) {
-					LOGGER.info("-------------> Observer of " + dataBinding + " remove property change listener: " + o.target
-							+ " property:" + o.propertyName);
+					LOGGER.info("-------------> Observer of " + dataBinding + " remove property change listener: "
+							+ o.target + " property:" + o.propertyName);
 				}
 				if (pcSupport != null) {
 					pcSupport.removePropertyChangeListener(o.propertyName, this);
@@ -221,12 +229,12 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			if (o.target instanceof HasPropertyChangeSupport) {
 				PropertyChangeSupport pcSupport = ((HasPropertyChangeSupport) o.target).getPropertyChangeSupport();
 				if (LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.fine("-------------> Observer of " + dataBinding + " add property change listener: " + o.target + " property:"
-							+ o.propertyName);
+					LOGGER.fine("-------------> Observer of " + dataBinding + " add property change listener: "
+							+ o.target + " property:" + o.propertyName);
 				}
 				if (debug) {
-					LOGGER.info("-------------> Observer of " + dataBinding + " add property change listener: " + o.target + " property:"
-							+ o.propertyName);
+					LOGGER.info("-------------> Observer of " + dataBinding + " add property change listener: "
+							+ o.target + " property:" + o.propertyName);
 				}
 				if (pcSupport != null) {
 					pcSupport.addPropertyChangeListener(o.propertyName, this);
@@ -236,7 +244,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 					LOGGER.fine("Observer of " + dataBinding + " add observable: " + o.target);
 				}
 				if (debug) {
-					LOGGER.info("Observer of " + dataBinding + " add observable: " + o.target + " for " + o.propertyName);
+					LOGGER.info("Observer of " + dataBinding + " add observable: " + o.target + " for "
+							+ o.propertyName);
 				}
 				((Observable) o.target).addObserver(this);
 			}
@@ -285,10 +294,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		try {
 			return dataBinding.getBindingValue(context);
 		} catch (TypeMismatchException e) {
-			LOGGER.warning("Unexpected exception raised. See logs for details.");
+			LOGGER.warning("Unexpected exception raised while evaluating " + dataBinding + ". See logs for details.");
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			LOGGER.warning("Unexpected exception raised. See logs for details.");
+			LOGGER.warning("Unexpected exception raised while evaluating " + dataBinding + ". See logs for details.");
 			e.printStackTrace();
 		}
 		return null;
@@ -305,17 +314,18 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		// Kept for future debug use
-		/*if (getDataBinding().toString().equals("data.currentStep.issueMessageIcon.image")) {
-			System.out.println("Received propertyChange with " + evt);
-			System.out.println("deleted=" + deleted);
-			// Thread.dumpStack();
-			System.out.println("property: " + evt.getPropertyName());
-			System.out.println("oldValue: " + evt.getOldValue());
-			System.out.println("newValue: " + evt.getNewValue());
-			for (TargetObject o : dependingObjects) {
-				System.out.println("TargetObject " + o.propertyName + " " + o.target);
-			}
-		}*/
+		/*
+		 * if (getDataBinding().toString().equals(
+		 * "data.currentStep.issueMessageIcon.image")) {
+		 * System.out.println("Received propertyChange with " + evt);
+		 * System.out.println("deleted=" + deleted); // Thread.dumpStack();
+		 * System.out.println("property: " + evt.getPropertyName());
+		 * System.out.println("oldValue: " + evt.getOldValue());
+		 * System.out.println("newValue: " + evt.getNewValue()); for
+		 * (TargetObject o : dependingObjects) {
+		 * System.out.println("TargetObject " + o.propertyName + " " +
+		 * o.target); } }
+		 */
 
 		if (!deleted) {
 			fireChange(evt);
@@ -323,7 +333,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	}
 
 	/**
-	 * Return default value to be used when binding not computable (eg when NullReferencedException raised)<br>
+	 * Return default value to be used when binding not computable (eg when
+	 * NullReferencedException raised)<br>
 	 * Please override when required
 	 * 
 	 * @return
@@ -335,10 +346,12 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	protected void fireChange(PropertyChangeEvent evt) {
 
 		// Kept for future debug use
-		/*if (getDataBinding().toString().equals("data.currentStep.issueMessageIcon.image")) {
-			System.out.println(">>>>>>>>>> fireChange for " + getDataBinding().toString());
-			refreshObserving(false);
-		}*/
+		/*
+		 * if (getDataBinding().toString().equals(
+		 * "data.currentStep.issueMessageIcon.image")) {
+		 * System.out.println(">>>>>>>>>> fireChange for " +
+		 * getDataBinding().toString()); refreshObserving(false); }
+		 */
 
 		T newValue;
 		try {
@@ -346,8 +359,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			newValue = evaluateValue();
 		} catch (NullReferenceException e) {
 			if (getDefaultValue() == null) {
-				// When computing the new value, a NullReferenceException has raised:
-				// This might be normal, but we warn it to make the developer think of what should be returned here as default value
+				// When computing the new value, a NullReferenceException has
+				// raised:
+				// This might be normal, but we warn it to make the developer
+				// think of what should be returned here as default value
 				LOGGER.warning("Could not evaluate " + dataBinding + " with context " + context
 						+ " because NullReferenceException has raised");
 			}
@@ -355,19 +370,23 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		}
 
 		// Kept for future debug use
-		/*if (getDataBinding().toString().equals("data.currentStep.issueMessageIcon.image")) {
-			System.out.println("lastNotifiedValue=" + lastNotifiedValue);
-			System.out.println("newValue=" + newValue);
-		}*/
+		/*
+		 * if (getDataBinding().toString().equals(
+		 * "data.currentStep.issueMessageIcon.image")) {
+		 * System.out.println("lastNotifiedValue=" + lastNotifiedValue);
+		 * System.out.println("newValue=" + newValue); }
+		 */
 
-		// Prevent initial null value not to be fired (causing listener to not listen this value)
+		// Prevent initial null value not to be fired (causing listener to not
+		// listen this value)
 		if (newValue != lastNotifiedValue || !lastNotifiedValueWasFired) {
 			lastNotifiedValueWasFired = true;
 			lastNotifiedValue = newValue;
 			bindingValueChanged(evt.getSource(), newValue);
 			refreshObserving(false);
 		} else {
-			// This change will not cause the change of the object, but a different path may lead to the same value
+			// This change will not cause the change of the object, but a
+			// different path may lead to the same value
 			// If we do nothing, we might no longer observe the right objects
 			for (TargetObject o : new ArrayList<TargetObject>(dependingObjects)) {
 				if (evt.getSource() == o.target && evt.getPropertyName().equals(o.propertyName)) {
