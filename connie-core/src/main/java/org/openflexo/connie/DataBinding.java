@@ -83,8 +83,7 @@ import org.openflexo.toolbox.StringUtils;
 
 /**
  * Representation of a data binding.<br>
- * A data binding is defined as a symbolic expression defined on a model
- * abstraction (the binding model), which can be evaluated given a
+ * A data binding is defined as a symbolic expression defined on a model abstraction (the binding model), which can be evaluated given a
  * {@link BindingEvaluationContext}.
  * 
  * @author sylvain
@@ -96,8 +95,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private static final Logger LOGGER = Logger.getLogger(DataBinding.class.getPackage().getName());
 
 	/**
-	 * Defines the access type of a binding, which is generally related to the
-	 * purpose of the binding
+	 * Defines the access type of a binding, which is generally related to the purpose of the binding
 	 * <ul>
 	 * <li>GET: a binding used to retrieve a data</li>
 	 * <li>SET: a binding used to set a data</li>
@@ -250,17 +248,20 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (oldValue == null) {
 			if (value == null) {
 				return; // No change
-			} else {
+			}
+			else {
 				this.expression = value;
 				unparsedBinding = value != null ? value.toString() : null;
 				// analyseExpressionAfterParsing();
 				notifyBindingChanged(oldValue, value);
 				return;
 			}
-		} else {
+		}
+		else {
 			if (oldValue.equals(value)) {
 				return; // No change
-			} else {
+			}
+			else {
 				this.expression = value;
 				unparsedBinding = value != null ? expression.toString() : null;
 				LOGGER.info("Binding takes now value " + value);
@@ -332,13 +333,17 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				// return ((BindingValue)
 				// getExpression()).getAccessedTypeNoValidityCheck();
 				return ((BindingValue) getExpression()).getAccessedType();
-			} else if (getExpression() instanceof CastExpression) {
+			}
+			else if (getExpression() instanceof CastExpression) {
 				return ((CastExpression) getExpression()).getCastType().getType();
-			} else if (expression instanceof Constant) {
+			}
+			else if (expression instanceof Constant) {
 				return ((Constant) expression).getType();
-			} else if (expression instanceof ConditionalExpression) {
+			}
+			else if (expression instanceof ConditionalExpression) {
 				return ((ConditionalExpression) expression).getAccessedType();
-			} else {
+			}
+			else {
 				try {
 					/*
 					 * System.out.println("****** expression=" +
@@ -385,10 +390,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
-	 * Explicitely called when a structural modification of data occurs, and
-	 * when the validity status of the {@link DataBinding} might have changed<br>
-	 * Calling this method will force the next call of isValid() to force
-	 * recompute the {@link DataBinding} validity status and message
+	 * Explicitely called when a structural modification of data occurs, and when the validity status of the {@link DataBinding} might have
+	 * changed<br>
+	 * Calling this method will force the next call of isValid() to force recompute the {@link DataBinding} validity status and message
 	 */
 	// TODO: this should be private
 	@Deprecated
@@ -464,7 +468,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 							if (!((BindingValue) e).isValid(DataBinding.this)) {
 								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
-							} else {
+							}
+							else {
 								// System.out.println("Valid binding " + e);
 							}
 							if (!((BindingValue) e).isCacheable()) {
@@ -501,7 +506,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (!getExpression().isSettable()) {
 				invalidBindingReason = "Invalid binding because binding declared as settable and definition cannot satisfy it";
 				if (LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.fine("Invalid binding because binding definition declared as settable and definition cannot satisfy it (binding variable not settable)");
+					LOGGER.fine(
+							"Invalid binding because binding definition declared as settable and definition cannot satisfy it (binding variable not settable)");
 				}
 				wasValid = false;
 				return false;
@@ -530,11 +536,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return true;
 		}
 
-		invalidBindingReason = "Invalid binding " + this + " because types are not matching searched "
-				+ getDeclaredType() + " having " + getAnalyzedType();
+		invalidBindingReason = "Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
+				+ getAnalyzedType();
 		if (LOGGER.isLoggable(Level.FINE)) {
-			LOGGER.fine("Invalid binding " + this + " because types are not matching searched " + getDeclaredType()
-					+ " having " + getAnalyzedType());
+			LOGGER.fine("Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
+					+ getAnalyzedType());
 		}
 		wasValid = false;
 		return false;
@@ -547,11 +553,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private boolean isCacheable = true;
 
 	/**
-	 * Return boolean indicating if this {@link BindingValue} is
-	 * notification-safe<br>
+	 * Return boolean indicating if this {@link BindingValue} is notification-safe<br>
 	 * 
-	 * A {@link BindingValue} is unsafe when any involved method is annotated
-	 * with {@link NotificationUnsafe} annotation<br>
+	 * A {@link BindingValue} is unsafe when any involved method is annotated with {@link NotificationUnsafe} annotation<br>
 	 * Otherwise return true
 	 * 
 	 * @return
@@ -579,8 +583,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public boolean isExpression() {
-		return getExpression() != null && !(getExpression() instanceof Constant)
-				&& !(getExpression() instanceof BindingValue);
+		return getExpression() != null && !(getExpression() instanceof Constant) && !(getExpression() instanceof BindingValue);
 	}
 
 	public boolean isBindingValue() {
@@ -612,7 +615,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			this.unparsedBinding = null;
 			expression = null;
 			needsParsing = false;
-		} else {
+		}
+		else {
 			this.unparsedBinding = unparsedBinding;
 			expression = null;
 			needsParsing = true;
@@ -639,8 +643,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (owner != null && owner.getPropertyChangeSupport() != null) {
 				owner.getPropertyChangeSupport().addPropertyChangeListener(this);
 			}
-			if (owner != null && owner.getBindingModel() != null
-					&& owner.getBindingModel().getPropertyChangeSupport() != null) {
+			if (owner != null && owner.getBindingModel() != null && owner.getBindingModel().getPropertyChangeSupport() != null) {
 				owner.getBindingModel().getPropertyChangeSupport().addPropertyChangeListener(this);
 			}
 		}
@@ -654,8 +657,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// Track BindingModel changes
 		// We detect here that the owner of this DataBinding has changed its
 		// BindingModel
-		if (evt.getSource() == owner && evt.getPropertyName() != null
-				&& evt.getPropertyName().equals(Bindable.BINDING_MODEL_PROPERTY)) {
+		if (evt.getSource() == owner && evt.getPropertyName() != null && evt.getPropertyName().equals(Bindable.BINDING_MODEL_PROPERTY)) {
 			// System.out.println("BindingModel changed for " + getOwner());
 			// System.out.println("was: " + evt.getOldValue());
 			// System.out.println("now: " + evt.getNewValue());
@@ -674,23 +676,28 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				// We detect here that a BindingVariable was added or removed
 				// from BindingModel
 				markedAsToBeReanalized();
-			} else if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_NAME_CHANGED)) {
+			}
+			else if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_NAME_CHANGED)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
 				markedAsToBeReanalized();
-			} else if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_TYPE_CHANGED)) {
+			}
+			else if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_TYPE_CHANGED)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
 				markedAsToBeReanalized();
-			} else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_NAME_CHANGED)) {
+			}
+			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_NAME_CHANGED)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
 				markedAsToBeReanalized();
-			} else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_TYPE_CHANGED)) {
+			}
+			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_TYPE_CHANGED)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
 				markedAsToBeReanalized();
-			} else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
+			}
+			else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
 				// We detect here that base BindingModel has changed
 				markedAsToBeReanalized();
 			}
@@ -698,10 +705,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
-	 * This method is called whenever we need to parse the binding using string
-	 * encoded in unparsedBinding field.<br>
-	 * Syntaxic checking of the binding is performed here. This phase is
-	 * followed by the semantics analysis as performed by
+	 * This method is called whenever we need to parse the binding using string encoded in unparsedBinding field.<br>
+	 * Syntaxic checking of the binding is performed here. This phase is followed by the semantics analysis as performed by
 	 * {@link #analyseExpressionAfterParsing()} method
 	 * 
 	 * @return
@@ -726,14 +731,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		needsParsing = false;
 
 		if (!isValid()) {
-			LOGGER.warning("Invalid binding "
-					+ getUnparsedBinding()
-					+ " reason: "
-					+ invalidBindingReason()
-					+ " "
-					+ (getOwner() != null ? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory="
-							+ getOwner().getBindingFactory() : ""));
-			// System.out.println("BreakPoint in DataBinding");
+			LOGGER.warning(
+					"Invalid binding " + getUnparsedBinding() + " reason: " + invalidBindingReason() + " "
+							+ (getOwner() != null
+									? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory=" + getOwner().getBindingFactory()
+									: ""));
+			System.out.println("BreakPoint in DataBinding");
 			/*
 			 * Bindable owner = getOwner(); BindingModel bm =
 			 * getOwner().getBindingModel(); BindingFactory bf =
@@ -788,9 +791,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private final Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = new HashMap<BindingEvaluationContext, BindingValueChangeListener<T>>();
 
 	/**
-	 * Evaluate this binding in run-time evaluation context provided by supplied
-	 * {@link BindingEvaluationContext} parameter. This evaluation is performed
-	 * in READ_ONLY mode.
+	 * Evaluate this binding in run-time evaluation context provided by supplied {@link BindingEvaluationContext} parameter. This evaluation
+	 * is performed in READ_ONLY mode.
 	 * 
 	 * @param context
 	 * @return
@@ -799,11 +801,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @throws InvocationTargetException
 	 */
 	@SuppressWarnings("unchecked")
-	public T getBindingValue(final BindingEvaluationContext context) throws TypeMismatchException,
-			NullReferenceException, InvocationTargetException {
+	public T getBindingValue(final BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
 
 		if (((getBindingDefinitionType() == BindingDefinitionType.GET) || (getBindingDefinitionType() == BindingDefinitionType.GET_SET))
-				&& ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE) || (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
+				&& ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE)
+						|| (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
 			// Caching will be done ONLY if:
 			// - Type of binding should have GET feature (EXECUTE bindings
 			// should NEVER be cached, or a new execution will be fired)
@@ -907,8 +910,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				// System.out.println("[EXECUTE] " + this + " value=" + returned
 				// + " for " + context);
 
-				if (((getBindingDefinitionType() == BindingDefinitionType.GET) || (getBindingDefinitionType() == BindingDefinitionType.GET_SET))
-						&& ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE) || (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
+				if (((getBindingDefinitionType() == BindingDefinitionType.GET)
+						|| (getBindingDefinitionType() == BindingDefinitionType.GET_SET))
+						&& ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE)
+								|| (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
 
 					// Caching will be done ONLY if:
 					// - Type of binding should have GET feature (EXECUTE
@@ -952,9 +957,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
-	 * Evaluate this binding in run-time evaluation context provided by supplied
-	 * {@link BindingEvaluationContext} parameter. This evaluation is performed
-	 * in WRITE mode.
+	 * Evaluate this binding in run-time evaluation context provided by supplied {@link BindingEvaluationContext} parameter. This evaluation
+	 * is performed in WRITE mode.
 	 * 
 	 * @param context
 	 * @return
@@ -963,8 +967,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @throws InvocationTargetException
 	 * @throws NotSettableContextException
 	 */
-	public void setBindingValue(Object value, BindingEvaluationContext context) throws TypeMismatchException,
-			NullReferenceException, InvocationTargetException, NotSettableContextException {
+	public void setBindingValue(Object value, BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetException, NotSettableContextException {
 		if (isSettable()) {
 			if (isBindingValue()) {
 				// BindingValue is settable
@@ -973,7 +977,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				} catch (InvocationTargetTransformException e) {
 					throw e.getException();
 				}
-			} else if ((getExpression() instanceof CastExpression)
+			}
+			else if ((getExpression() instanceof CastExpression)
 					&& (((CastExpression) getExpression()).getArgument() instanceof BindingValue)) {
 				// A Cast expression for a BindingValue is also settable
 				try {
@@ -981,22 +986,23 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				} catch (InvocationTargetTransformException e) {
 					throw e.getException();
 				}
-			} else {
+			}
+			else {
 				LOGGER.warning("Don't know how to set binding: " + this);
 			}
-		} else {
+		}
+		else {
 			LOGGER.warning("Not settable binding: " + this);
 		}
 	}
 
-	public void execute(final BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
-			InvocationTargetException {
+	public void execute(final BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
 		getBindingValue(context);
 	}
 
 	/**
-	 * Build and return a list of objects involved in the computation of this
-	 * data binding with supplied binding evaluation context
+	 * Build and return a list of objects involved in the computation of this data binding with supplied binding evaluation context
 	 * 
 	 * @param context
 	 * @return
@@ -1028,10 +1034,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
-	 * Build and return a list of target objects involved in the computation of
-	 * this data binding with supplied binding evaluation context <br>
-	 * Those target objects are the combination of an object and the property
-	 * name involved by this denoted data binding
+	 * Build and return a list of target objects involved in the computation of this data binding with supplied binding evaluation context
+	 * <br>
+	 * Those target objects are the combination of an object and the property name involved by this denoted data binding
 	 * 
 	 * @param context
 	 * @return
