@@ -47,6 +47,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -956,6 +957,24 @@ public class TypeUtils {
 			}
 		}
 		return object;
+	}
+
+	public static void reduceToMostSpecializedClasses(Collection<Class<?>> someClasses) {
+
+		if (someClasses.size() <= 1) {
+			return;
+		}
+
+		for (Class<?> reducedClass : new ArrayList<Class<?>>(someClasses)) {
+			if (someClasses.contains(reducedClass)) {
+				for (Class<?> aClass : new ArrayList<Class<?>>(someClasses)) {
+					if (!aClass.equals(reducedClass) && aClass.isAssignableFrom(reducedClass)) {
+						someClasses.remove(aClass);
+					}
+				}
+			}
+		}
+
 	}
 
 	public static Class<?> getMostSpecializedClass(Collection<Class<?>> someClasses) {
