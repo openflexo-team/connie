@@ -372,6 +372,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		internallySetBindingVariable(bindingVariable);
 		bindingPath.clear();
 		parsedBindingPath.clear();
+		// updateParsedBindingPathFromBindingPath();
 		analysingSuccessfull = _checkBindingPathValid();
 	}
 
