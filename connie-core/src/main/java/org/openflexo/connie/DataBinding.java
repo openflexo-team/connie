@@ -736,7 +736,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 							+ (getOwner() != null
 									? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory=" + getOwner().getBindingFactory()
 									: ""));
-			System.out.println("BreakPoint in DataBinding");
+			// System.out.println("BreakPoint in DataBinding");
 			/*
 			 * Bindable owner = getOwner(); BindingModel bm =
 			 * getOwner().getBindingModel(); BindingFactory bf =
