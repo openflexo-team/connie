@@ -98,92 +98,92 @@ public class StringUtils {
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			switch (c) {
-			case 'Á':
-			case 'À':
-			case 'Â':
-			case 'Ä':
-			case 'Ã':
-			case 'Å':
-				sb.append('A');
-				break;
-			case 'É':
-			case 'È':
-			case 'Ê':
-			case 'Ë':
-				sb.append('E');
-				break;
-			case 'Í':
-			case 'Ì':
-			case 'Î':
-			case 'Ï':
-				sb.append('I');
-				break;
-			case 'Ó':
-			case 'Ò':
-			case 'Ô':
-			case 'Ö':
-			case 'Õ':
-			case 'Ø':
-				sb.append('O');
-				break;
-			case 'Ú':
-			case 'Ù':
-			case 'Û':
-			case 'Ü':
-				sb.append('U');
-				break;
-			case 'Ç':
-				sb.append('C');
-				break;
-			case 'Ñ':
-				sb.append('N');
-				break;
-			case 'á':
-			case 'à':
-			case 'â':
-			case 'ä':
-			case 'ã':
-			case 'å':
-				sb.append('a');
-				break;
-			case 'é':
-			case 'è':
-			case 'ê':
-			case 'ë':
-				sb.append('e');
-				break;
-			case 'í':
-			case 'ì':
-			case 'î':
-			case 'ï':
-				sb.append('i');
-				break;
-			case 'ó':
-			case 'ò':
-			case 'ô':
-			case 'ö':
-			case 'õ':
-			case 'ø':
-				sb.append('o');
-				break;
-			case 'ú':
-			case 'ù':
-			case 'û':
-			case 'ü':
-				sb.append('u');
-				break;
-			case 'ý':
-			case 'ÿ':
-				sb.append('y');
-				break;
-			case 'ç':
-				sb.append('c');
-				break;
-			case 'ñ':
-				sb.append('n');
-				break;
-			default:
-				sb.append(c);
+				case 'Á':
+				case 'À':
+				case 'Â':
+				case 'Ä':
+				case 'Ã':
+				case 'Å':
+					sb.append('A');
+					break;
+				case 'É':
+				case 'È':
+				case 'Ê':
+				case 'Ë':
+					sb.append('E');
+					break;
+				case 'Í':
+				case 'Ì':
+				case 'Î':
+				case 'Ï':
+					sb.append('I');
+					break;
+				case 'Ó':
+				case 'Ò':
+				case 'Ô':
+				case 'Ö':
+				case 'Õ':
+				case 'Ø':
+					sb.append('O');
+					break;
+				case 'Ú':
+				case 'Ù':
+				case 'Û':
+				case 'Ü':
+					sb.append('U');
+					break;
+				case 'Ç':
+					sb.append('C');
+					break;
+				case 'Ñ':
+					sb.append('N');
+					break;
+				case 'á':
+				case 'à':
+				case 'â':
+				case 'ä':
+				case 'ã':
+				case 'å':
+					sb.append('a');
+					break;
+				case 'é':
+				case 'è':
+				case 'ê':
+				case 'ë':
+					sb.append('e');
+					break;
+				case 'í':
+				case 'ì':
+				case 'î':
+				case 'ï':
+					sb.append('i');
+					break;
+				case 'ó':
+				case 'ò':
+				case 'ô':
+				case 'ö':
+				case 'õ':
+				case 'ø':
+					sb.append('o');
+					break;
+				case 'ú':
+				case 'ù':
+				case 'û':
+				case 'ü':
+					sb.append('u');
+					break;
+				case 'ý':
+				case 'ÿ':
+					sb.append('y');
+					break;
+				case 'ç':
+					sb.append('c');
+					break;
+				case 'ñ':
+					sb.append('n');
+					break;
+				default:
+					sb.append(c);
 			}
 		}
 		return sb.toString();
@@ -205,7 +205,8 @@ public class StringUtils {
 				for (int i = last; i < m.start(); i++) {
 					sb.append(replacement);
 				}
-			} else if (last != m.start()) {
+			}
+			else if (last != m.start()) {
 				sb.append(replacement);
 			}
 			sb.append(m.group());
@@ -215,7 +216,8 @@ public class StringUtils {
 			for (int i = last; i < string.length(); i++) {
 				sb.append(replacement);
 			}
-		} else if (last != string.length()) {
+		}
+		else if (last != string.length()) {
 			sb.append(replacement);
 		}
 		return sb.toString();
@@ -259,7 +261,8 @@ public class StringUtils {
 	public static boolean isSame(String str1, String str2) {
 		if (str1 == null) {
 			return str2 == null;
-		} else {
+		}
+		else {
 			return str1.equals(str2);
 		}
 	}
@@ -462,14 +465,17 @@ public class StringUtils {
 			if (firstUpper) {
 				result.append(words[0]);// If the first word is upper case, and first letter must be uppercase, we keep all the word
 										// uppercase.
-			} else {
+			}
+			else {
 				result.append(words[0].toLowerCase());// If the first word is upper case, and first letter must be lowercase, we set all the
 														// word lowercase.
 			}
-		} else {
+		}
+		else {
 			if (firstUpper) {
 				result.append(firstUpper(words[0]));
-			} else {
+			}
+			else {
 				result.append(firstsLower(words[0]));
 			}
 		}
@@ -478,7 +484,8 @@ public class StringUtils {
 		for (int i = 1; i < words.length; i++) {
 			if (words[i].equals(words[i].toUpperCase())) {
 				result.append(words[i]);
-			} else {
+			}
+			else {
 				result.append(firstUpper(words[i]));
 			}
 		}
@@ -534,6 +541,37 @@ public class StringUtils {
 
 		return value.substring(0, indexOfUpperCase).toLowerCase()
 				+ (value.length() > indexOfUpperCase ? value.substring(indexOfUpperCase) : "");
+	}
+
+	public static <E extends Enum<?>> E getBestEnumValue(String valueAsString, Class<? extends E> enumType) {
+		if (StringUtils.isEmpty(valueAsString)) {
+			return null;
+		}
+		String searchedString = JavaUtils.getVariableName(valueAsString.trim()).toUpperCase();
+		int bestMatchingChars = 0;
+		E bestValue = null;
+		for (E e : enumType.getEnumConstants()) {
+			String enumValueAsString = JavaUtils.getVariableName(e.name().trim()).toUpperCase();
+			int matchingChars = matchingChars(searchedString, enumValueAsString);
+			if (matchingChars > bestMatchingChars) {
+				bestMatchingChars = matchingChars;
+				bestValue = e;
+			}
+		}
+		return bestValue;
+	}
+
+	private static int matchingChars(String s1, String s2) {
+		if (s1.length() > s2.length()) {
+			return matchingChars(s2, s1);
+		}
+		int returned = 0;
+		for (int i = 0; i < s1.length(); i++) {
+			if (s1.charAt(i) == s2.charAt(i)) {
+				returned++;
+			}
+		}
+		return returned;
 	}
 
 }
