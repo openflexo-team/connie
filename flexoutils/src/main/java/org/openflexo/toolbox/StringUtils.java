@@ -464,11 +464,11 @@ public class StringUtils {
 		if (words[0].equals(words[0].toUpperCase())) {
 			if (firstUpper) {
 				result.append(words[0]);// If the first word is upper case, and first letter must be uppercase, we keep all the word
-										// uppercase.
+				// uppercase.
 			}
 			else {
 				result.append(words[0].toLowerCase());// If the first word is upper case, and first letter must be lowercase, we set all the
-														// word lowercase.
+				// word lowercase.
 			}
 		}
 		else {
@@ -543,7 +543,15 @@ public class StringUtils {
 				+ (value.length() > indexOfUpperCase ? value.substring(indexOfUpperCase) : "");
 	}
 
-	public static <E extends Enum<?>> E getBestEnumValue(String valueAsString, Class<? extends E> enumType) {
+	/**
+	 * Try to lookup the best enum value for a given string
+	 * 
+	 * @param valueAsString
+	 * @param enumType
+	 * @param minimumMatchingChars
+	 * @return
+	 */
+	public static <E extends Enum<?>> E getBestEnumValue(String valueAsString, Class<? extends E> enumType, int minimumMatchingChars) {
 		if (StringUtils.isEmpty(valueAsString)) {
 			return null;
 		}
@@ -553,7 +561,7 @@ public class StringUtils {
 		for (E e : enumType.getEnumConstants()) {
 			String enumValueAsString = JavaUtils.getVariableName(e.name().trim()).toUpperCase();
 			int matchingChars = matchingChars(searchedString, enumValueAsString);
-			if (matchingChars > bestMatchingChars) {
+			if (matchingChars > bestMatchingChars && matchingChars >= minimumMatchingChars) {
 				bestMatchingChars = matchingChars;
 				bestValue = e;
 			}
@@ -561,17 +569,34 @@ public class StringUtils {
 		return bestValue;
 	}
 
-	private static int matchingChars(String s1, String s2) {
+	/**
+	 * A quick and dirty method used to lookup a string in an other one<br>
+	 * Return number of matchings chars, asserting that first char lookup wil be the optimum (this is generally not the case)
+	 * 
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
+	public static int matchingChars(String s1, String s2) {
 		if (s1.length() > s2.length()) {
 			return matchingChars(s2, s1);
 		}
-		int returned = 0;
-		for (int i = 0; i < s1.length(); i++) {
-			if (s1.charAt(i) == s2.charAt(i)) {
-				returned++;
-			}
+		int s1StartIndex = 0;
+		int s2StartIndex = s2.indexOf(s1.charAt(s1StartIndex));
+		while (s2StartIndex == -1 && s1StartIndex < s1.length()) {
+			s1StartIndex++;
+			s2StartIndex = s2.indexOf(s1.charAt(s1StartIndex));
 		}
-		return returned;
+		if (s2StartIndex > -1) {
+			int returned = 0;
+			for (int i = s1StartIndex; i < s1.length() && i - s1StartIndex + s2StartIndex < s2.length(); i++) {
+				if (s1.charAt(i) == s2.charAt(i - s1StartIndex + s2StartIndex)) {
+					returned++;
+				}
+			}
+			return returned;
+		}
+		return 0;
 	}
 
 }
