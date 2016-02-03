@@ -583,7 +583,7 @@ public class StringUtils {
 		}
 		int s1StartIndex = 0;
 		int s2StartIndex = s2.indexOf(s1.charAt(s1StartIndex));
-		while (s2StartIndex == -1 && s1StartIndex < s1.length()) {
+		while (s2StartIndex == -1 && s1StartIndex < s1.length() - 1) {
 			s1StartIndex++;
 			s2StartIndex = s2.indexOf(s1.charAt(s1StartIndex));
 		}
