@@ -934,7 +934,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			for (BindingPathElement e : getBindingPath()) {
 				if (current == null) {
 					throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + getParsedBindingPath()
-							+ ": null occured when evaluating " + previous);
+					+ ": null occured when evaluating " + previous);
 				}
 				try {
 					current = e.getBindingValue(current, context);
@@ -990,6 +990,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			if (element != getLastBindingPathElement()) {
 				// System.out.println("Apply "+element);
 				lastEvaluatedPathElement = element;
+				if (returned == null) {
+					throw new NullReferenceException("null occured when evaluating " + lastEvaluatedPathElement + " from " + lastEvaluated);
+				}
 				returned = element.getBindingValue(returned, context);
 				if (returned == null) {
 					throw new NullReferenceException("null occured when evaluating " + lastEvaluatedPathElement + " from " + lastEvaluated);
