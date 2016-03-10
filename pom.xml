@@ -33,6 +33,7 @@
 	<properties>
 		<connie.logo>https://media.openflexo.org/images/connie_logo64x64.png</connie.logo>
 		<changes.componentfilter>AND component=*</changes.componentfilter>
+	    <sitedeploy.dir>/home/www/sites/connie</sitedeploy.dir>
 	</properties>
 <!-- Build config
 -->
@@ -179,7 +180,7 @@
             <distributionManagement>
                 <site>
                     <id>connie.website</id>
-                    <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
+                    <url>scp://server-one.openflexo.org${sitedeploy.dir}/SNAPSHOT/</url>
                 </site>
             </distributionManagement>
         </profile>
@@ -196,7 +197,7 @@
             <distributionManagement>
                 <site>
                     <id>connie.website</id>
-                    <url>scp://server-one.openflexo.org/home/www/sites/connie/SNAPSHOT/</url>
+                    <url>scp://server-one.openflexo.org${sitedeploy.dir}/SNAPSHOT/</url>
                 </site>
             </distributionManagement>
         </profile>
@@ -213,7 +214,7 @@
             <distributionManagement>
                 <site>
                     <id>connie.website</id>
-                    <url>scp://server-one.openflexo.org/home/www/sites/connie/${project.version}/</url>
+                    <url>scp://server-one.openflexo.org${sitedeploy.dir}/${project.version}/</url>
                 </site>
             </distributionManagement>
         </profile>
