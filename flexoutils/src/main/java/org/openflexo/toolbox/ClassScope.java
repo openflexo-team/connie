@@ -57,6 +57,8 @@ import java.util.Vector;
  * http://www.javaworld.com/javaworld/javaqa/2003-07/01-qa-0711-classsrc.html
  * 
  * @author (C) <a href="http://www.javaworld.com/columns/jw-qna-index.shtml">Vlad Roubtsov</a>, 2003
+ * 
+ *         TODO: use https://code.google.com/archive/p/reflections/ for example instead
  */
 public class ClassScope {
 	private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
@@ -234,7 +236,8 @@ public class ClassScope {
 					try {
 						if (result.toExternalForm().endsWith(".jar") || result.toExternalForm().endsWith(".zip")) {
 							result = new URL("jar:".concat(result.toExternalForm()).concat("!/").concat(clsAsResource));
-						} else if (new File(result.getFile()).isDirectory()) {
+						}
+						else if (new File(result.getFile()).isDirectory()) {
 							result = new URL(result, clsAsResource);
 						}
 					} catch (MalformedURLException ignore) {
