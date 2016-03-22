@@ -98,7 +98,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	public void delete() {
 		dataBinding = null;
 		context = null;
-		dependingObjects.clear();
+		if (dependingObjects != null) {
+			dependingObjects.clear();
+		}
 		dependingObjects = null;
 		deleted = true;
 	}
@@ -120,6 +122,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	}
 
 	protected synchronized void refreshObserving(boolean debug) {
+
+		if (dataBinding == null) {
+			return;
+		}
 
 		// Kept for future debug use
 		/*if (dataBinding.toString().equals("data.canUndo()")) {
@@ -259,6 +265,9 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	}
 
 	public synchronized void stopObserving() {
+		if (dependingObjects == null) {
+			return;
+		}
 		for (TargetObject o : dependingObjects) {
 			if (o.target instanceof HasPropertyChangeSupport) {
 				PropertyChangeSupport pcSupport = ((HasPropertyChangeSupport) o.target).getPropertyChangeSupport();
