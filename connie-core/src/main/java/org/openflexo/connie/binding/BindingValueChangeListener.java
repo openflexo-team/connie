@@ -78,21 +78,45 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	// Use to prevent initial null value not to be fired (causing listener to not listen this value)
 	private boolean lastNotifiedValueWasFired = false;
 
-	public BindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
+	private T initValue;
+
+	/**
+	 * Build a new {@link BindingValueChangeListener} listening to a {@link DataBinding} in a given {@link BindingEvaluationContext}
+	 * 
+	 * @param dataBinding
+	 * @param context
+	 * @param initAsChange
+	 *            when set to true, call {@link #bindingValueChanged(Object, Object)} at the end of constructor using init value as computed
+	 *            using supplied context
+	 */
+	public BindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context, boolean initAsChange) {
 		super();
 		this.dataBinding = dataBinding;
 		this.context = context;
 		this.dependingObjects = new ArrayList<TargetObject>();
-		T newValue;
 		try {
-			newValue = evaluateValue();
+			initValue = evaluateValue();
 		} catch (NullReferenceException e) {
 			// Don't warn since this may happen
 			// logger.warning("Could not evaluate " + dataBinding + " with context " + context +
 			// " because NullReferenceException has raised");
-			newValue = null;
+			initValue = null;
 		}
 		refreshObserving(false);
+		if (initAsChange) {
+			bindingValueChanged(this, initValue);
+		}
+	}
+
+	/**
+	 * Build a new {@link BindingValueChangeListener} listening to a {@link DataBinding} in a given {@link BindingEvaluationContext}<br>
+	 * Do not call {@link #bindingValueChanged(Object, Object)} at the end of constructor using init value
+	 * 
+	 * @param dataBinding
+	 * @param context
+	 */
+	public BindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
+		this(dataBinding, context, false);
 	}
 
 	public void delete() {
@@ -101,6 +125,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		dependingObjects.clear();
 		dependingObjects = null;
 		deleted = true;
+	}
+
+	public T getInitValue() {
+		return initValue;
 	}
 
 	private List<TargetObject> getChainedBindings(TargetObject object) { // NOPMD by beugnard on 30/10/14 17:15
