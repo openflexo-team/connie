@@ -69,7 +69,8 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 		if (keyValueProperty != null) {
 			setType(keyValueProperty.getType());
-		} else {
+		}
+		else {
 			LOGGER.warning("cannot find property " + propertyName + " for " + parent + " which type is " + parent.getType());
 		}
 
@@ -138,7 +139,8 @@ public class JavaPropertyPathElement extends SimplePathElement {
 			resultingTypeAsString = TypeUtils.simpleRepresentation(resultingType);
 			resultingTypeAsString = ToolBox.replaceStringByStringInString("<", "&LT;", resultingTypeAsString);
 			resultingTypeAsString = ToolBox.replaceStringByStringInString(">", "&GT;", resultingTypeAsString);
-		} else {
+		}
+		else {
 			resultingTypeAsString = "???";
 		}
 		returned += "<p><b>" + resultingTypeAsString + " " + getPropertyName() + "</b></p>";
@@ -161,6 +163,6 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	@Override
 	public String toString() {
-		return "JavaProperty " + getParent().getType() + "#" + getPropertyName();
+		return "JavaPropertyPathElement " + getParent().getType() + "#" + getPropertyName();
 	}
 }
