@@ -113,14 +113,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public static enum CachingStrategy {
 		NO_CACHING, /* Do not cache, execute inconditionaly */
 		OPTIMIST_CACHE, /*
-						 * Always cache executed value, fully rely on
-						 * notification schemes
-						 */
+						* Always cache executed value, fully rely on
+						* notification schemes
+						*/
 		PRAGMATIC_CACHE /*
-						 * Do no cache when a property is declared as not safe
-						 * according to notification schemes, see
-						 * NotificationUnsafe annotation
-						 */
+						* Do no cache when a property is declared as not safe
+						* according to notification schemes, see
+						* NotificationUnsafe annotation
+						*/
 	}
 
 	private static final CachingStrategy DEFAULT_CACHING_STRATEGY = CachingStrategy.NO_CACHING; // CachingStrategy.PRAGMATIC_CACHE;
@@ -736,7 +736,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 							+ (getOwner() != null
 									? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory=" + getOwner().getBindingFactory()
 									: ""));
-			// System.out.println("BreakPoint in DataBinding");
+			System.out.println("BreakPoint in DataBinding");
 			/*
 			 * Bindable owner = getOwner(); BindingModel bm =
 			 * getOwner().getBindingModel(); BindingFactory bf =
@@ -1070,7 +1070,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (isSet()) {
 			returned.setUnparsedBinding(toString());
 		}
-		returned.decode();
+		if (getOwner() != null) {
+			returned.decode();
+		}
 		return returned;
 	}
 
