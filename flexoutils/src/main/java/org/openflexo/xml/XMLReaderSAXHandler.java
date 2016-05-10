@@ -149,18 +149,23 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
 					if (attrQName != null && attrName != null && currentContainer == null) {
 						// we only set prefix if there is no other Root Element
-						NSPrefix = attrQName;
-						NSPrefix = NSPrefix.replace(attrName, "").replace(":", "");
+						NSPrefix = attrQName.split(":")[0];
+						if (NSPrefix.equals(attrQName)) NSPrefix="";
 					}
 
 					if (typeName.equals(XMLCst.CDATA_TYPE_NAME)) {
 						aType = String.class;
-						if (attrName.equals(""))
-							attrName = attrQName;
+						if (attrName.equals("")) 
+							if (NSPrefix.equals(""))
+								attrName = attrQName;
+							else
+								attrName = attrQName.split(":")[1];
 
 					}
-
-					factory.addAttributeValueForObject(currentObject, attrName, attributes.getValue(i));
+					// add anything as attribute except name spaces....
+					if (!NSPrefix.equalsIgnoreCase(XMLCst.XML_NS)){
+						factory.addAttributeValueForObject(currentObject, attrName, attributes.getValue(i));
+					}
 
 				}
 

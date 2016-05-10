@@ -48,4 +48,6 @@ final public class XMLCst {
 
 	public static final String DEFAULT_NS = "ns1";
 	
+	public static final String XML_NS = "xmlns";
+	
 }
