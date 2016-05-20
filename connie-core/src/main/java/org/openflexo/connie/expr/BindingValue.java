@@ -778,13 +778,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// logger.info("buildBindingPathFromParsedBindingPath() for " +
 		// getParsedBindingPath());
 
-		if (dataBinding != null && dataBinding.getBindingName() != null && dataBinding.getBindingName().equals("virtualModelInstance")) {
-			System.out.println("****************** Tiens, on fait buildBindingPathFromParsedBindingPath() avec " + getParsedBindingPath());
-			if (getParsedBindingPath().size() == 0) {
-				Thread.dumpStack();
-			}
-		}
-
 		if (dataBinding.getOwner() == null) {
 			LOGGER.warning("DataBinding has no owner");
 			invalidBindingReason = "DataBinding has no owner";
