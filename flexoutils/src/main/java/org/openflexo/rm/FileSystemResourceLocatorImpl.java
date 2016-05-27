@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.File;
@@ -54,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
 import org.openflexo.toolbox.FileUtils;
@@ -107,7 +105,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		if (file.exists()) {
 			// A absolute file path
 			return file;
-		} else {
+		}
+		else {
 
 			file = locateFile(relativePathName, false);
 
@@ -136,8 +135,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					});
 					if (foundFiles.length == 1) {
 						try {
-							return new FileResourceImpl(this, baseLocation.getRelativePath() + PATH_SEP + relativePath, foundFiles[0]
-									.toURI().toURL(), foundFiles[0]);
+							return new FileResourceImpl(this, baseLocation.getRelativePath() + PATH_SEP + relativePath,
+									foundFiles[0].toURI().toURL(), foundFiles[0]);
 						} catch (MalformedURLException e) {
 							LOGGER.severe("Unable to convert File To ResourceLocation: " + relativePath);
 							e.printStackTrace();
@@ -147,7 +146,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 						}
 					}
 				}
-			} else {
+			}
+			else {
 				return locateResource(baseLocation.getRelativePath() + PATH_SEP + relativePath);
 			}
 		}
@@ -162,7 +162,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 			url = ((BasicResourceImpl) dir).getURL();
 		}
 		if (url != null ){
-
+	
 			if (dir instanceof FileResourceImpl){
 				File file = ((FileResourceImpl) dir).getFile();
 				if (file == null){
@@ -175,11 +175,11 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					}
 				}
 				if (file != null && file.isDirectory()){
-
+	
 					List<Resource> retval = new ArrayList<Resource>();
-
+	
 					FileSystemResourceLocatorImpl.addDirectoryContent(this,file,pattern,retval);
-
+	
 					return retval;
 				}
 			}
@@ -189,19 +189,19 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 			}	
 		}
 		return java.util.Collections.emptyList();
-
-
+	
+	
 	}
 	 */
 	/*
 	@Override
 	public List<Resource> listAllResources(Resource dir) {
-
+	
 		if (dir instanceof FileResourceImpl && dir.isContainer()){
 			File file = ((FileResourceImpl) dir).getFile();
-
+	
 			if (file != null){
-
+	
 				return (List<Resource>) dir.getContents();
 			}
 		}
@@ -209,16 +209,16 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 			logger.warning("Found a File that is not hold by a FileResourceLocation");
 		}	
 		return java.util.Collections.emptyList();
-
+	
 	}
 	 */
 	/*
-
+	
 	@Override
 	public InputStream retrieveResourceAsInputStream(Resource rl) {
-
+	
 		if (rl != null){
-
+	
 			URL url = rl.getURL();
 			try {
 				if (rl instanceof FileResourceImpl){
@@ -239,7 +239,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		}
 		return null;
 	}
-
+	
 	 */
 
 	@Override
@@ -250,7 +250,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		if (rl != null && rl instanceof FileResourceImpl) {
 
 			locateFile = ((FileResourceImpl) rl).getFile();
-		} else {
+		}
+		else {
 			URL url = null;
 			if (rl != null & rl instanceof BasicResourceImpl) {
 				url = ((BasicResourceImpl) rl).getURL();
@@ -288,11 +289,11 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		File f = rl.getFile();
 		if (f.isDirectory()) {
 			return f;
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
-	
 
 	/**
 	 * Locate and returns file identified by relativePathName<br>
@@ -309,7 +310,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	private File locateFile(String relativePathName, boolean lenient) {
 		final File workingDirectory = new File(System.getProperty("user.dir"));
 		List<File> found = locateAllFiles(relativePathName, lenient);
-		
+
 		if (found.size() == 1) {
 			// System.out.println("Returning " + found.get(0));
 			return found.get(0);
@@ -334,6 +335,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 		if (LOGGER.isLoggable(Level.WARNING)) {
 			LOGGER.warning("Could not locate resource " + relativePathName);
+			Thread.dumpStack();
 		}
 		return null;
 		// TODO: this should not happen!
@@ -502,9 +504,10 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	/**
 	 * Append a directory to the file system resource locator, create the locator if it doesn't exist
+	 * 
 	 * @param path
 	 */
-	public static void appendDirectoryToFileSystemResourceLocator(String path){
+	public static void appendDirectoryToFileSystemResourceLocator(String path) {
 		FileSystemResourceLocatorImpl fsrl = (FileSystemResourceLocatorImpl) ResourceLocator
 				.getInstanceForLocatorClass(FileSystemResourceLocatorImpl.class);
 		if (fsrl == null) {
