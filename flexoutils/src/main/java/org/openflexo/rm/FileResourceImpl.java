@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.File;
@@ -241,7 +240,8 @@ public class FileResourceImpl extends BasicResourceImpl {
 					LOGGER.severe("File Not Found : " + getURI());
 					e.printStackTrace();
 				}
-			} else {
+			}
+			else {
 				try {
 					_file.createNewFile();
 					return new FileOutputStream(_file);
@@ -313,12 +313,12 @@ public class FileResourceImpl extends BasicResourceImpl {
 		if (_file == null) {
 			if (other._file != null)
 				return false;
-		} else if (!_file.equals(other._file))
+		}
+		else if (!_file.equals(other._file))
 			return false;
 		return true;
 	}
 
-	
 	@Override
 	public String makePathRelativeToString(String pathRelative) {
 		try {

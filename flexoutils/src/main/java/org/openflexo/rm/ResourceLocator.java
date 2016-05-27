@@ -44,7 +44,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  * @author c guychard
@@ -105,11 +104,12 @@ final public class ResourceLocator {
 	 * Explicitely locate a Resource in the source code (when source code is available)<br>
 	 * 
 	 * @param resource
-	 * @param an additionial regexFilter for disambiguation when several resources are found.
+	 * @param an
+	 *            additionial regexFilter for disambiguation when several resources are found.
 	 * @return
 	 */
-	static public Resource locateSourceCodeResource(Resource resource, String  regexFilter) {
-		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath(),  regexFilter);
+	static public Resource locateSourceCodeResource(Resource resource, String regexFilter) {
+		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath(), regexFilter);
 
 	}
 
@@ -123,6 +123,7 @@ final public class ResourceLocator {
 		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath());
 
 	}
+
 	/**
 	 * Explicitely locate a Resource in the source code (when source code is available)<br>
 	 * 
@@ -161,10 +162,12 @@ final public class ResourceLocator {
 				if (dl.equals(newdelegate)) {
 					_delegatesOrderedList.remove(dl);
 					_delegatesOrderedList.add(dl);
-				} else {
+				}
+				else {
 					LOGGER.severe("The newdelegate is not added as it conflicts with existing one");
 				}
-			} else {
+			}
+			else {
 				_delegatesOrderedList.add(newdelegate);
 				_delegatesListMap.put(newdelegate.getClass(), newdelegate);
 			}
@@ -187,10 +190,12 @@ final public class ResourceLocator {
 				if (dl.equals(newdelegate)) {
 					_delegatesOrderedList.remove(dl);
 					_delegatesOrderedList.add(0, dl);
-				} else {
+				}
+				else {
 					LOGGER.severe("The newdelegate is not added as it conflicts with existing one");
 				}
-			} else {
+			}
+			else {
 				_delegatesOrderedList.add(0, newdelegate);
 				_delegatesListMap.put(newdelegate.getClass(), newdelegate);
 			}
@@ -231,7 +236,8 @@ final public class ResourceLocator {
 	public static File retrieveResourceAsFile(Resource location) {
 		if (location != null) {
 			return location.getLocator().retrieveResourceAsFile(location);
-		} else {
+		}
+		else {
 			LOGGER.warning("Cannot retrieve a File for a null location");
 			return null;
 		}
