@@ -335,7 +335,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 		if (LOGGER.isLoggable(Level.WARNING)) {
 			LOGGER.warning("Could not locate resource " + relativePathName);
-			Thread.dumpStack();
+			// Thread.dumpStack();
 		}
 		return null;
 		// TODO: this should not happen!
