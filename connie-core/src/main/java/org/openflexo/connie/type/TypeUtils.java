@@ -91,12 +91,12 @@ public class TypeUtils {
 		}
 		if (isResolved(aType)) {
 			if (aType instanceof Class) {
-				return (Class) aType;
+				return (Class<?>) aType;
 			}
 			else if (aType instanceof ParameterizedType) {
 				Type rawType = ((ParameterizedType) aType).getRawType();
 				if (rawType instanceof Class) {
-					return (Class) rawType;
+					return (Class<?>) rawType;
 				}
 				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
@@ -468,16 +468,16 @@ public class TypeUtils {
 				return isTypeAssignableFrom(((GenericArrayType) aType).getGenericComponentType(),
 						((GenericArrayType) anOtherType).getGenericComponentType(), permissive);
 			}
-			else if (anOtherType instanceof Class && ((Class) anOtherType).isArray()) {
-				return isTypeAssignableFrom(((GenericArrayType) aType).getGenericComponentType(), ((Class) anOtherType).getComponentType(),
-						permissive);
+			else if (anOtherType instanceof Class && ((Class<?>) anOtherType).isArray()) {
+				return isTypeAssignableFrom(((GenericArrayType) aType).getGenericComponentType(),
+						((Class<?>) anOtherType).getComponentType(), permissive);
 			}
 			return false;
 		}
 
 		// Look if we are on same class
 		if (aType instanceof Class && anOtherType instanceof Class) {
-			return isClassAncestorOf((Class) aType, (Class) anOtherType);
+			return isClassAncestorOf((Class<?>) aType, (Class<?>) anOtherType);
 		}
 
 		if (!isClassAncestorOf(getBaseClass(aType), getBaseClass(anOtherType))) {
@@ -503,15 +503,17 @@ public class TypeUtils {
 			// Now, we have to compare parameter per parameter
 			for (int i = 0; i < t1.getActualTypeArguments().length; i++) {
 				Type st1 = t1.getActualTypeArguments()[i];
-				if (isPureWildCard(st1) && t1.getRawType() instanceof Class && ((Class) t1.getRawType()).getTypeParameters().length > i) {
+				if (isPureWildCard(st1) && t1.getRawType() instanceof Class
+						&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
 					// Fixed assignalibity issue with widcards as natural bounds of generic type
-					TypeVariable TV1 = ((Class) t1.getRawType()).getTypeParameters()[i];
+					TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
 					st1 = new WilcardTypeImpl(TV1.getBounds(), new Type[0]);
 				}
 				Type st2 = t2.getActualTypeArguments()[i];
-				if (isPureWildCard(st2) && t2.getRawType() instanceof Class && ((Class) t2.getRawType()).getTypeParameters().length > i) {
+				if (isPureWildCard(st2) && t2.getRawType() instanceof Class
+						&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
 					// Fixed assignalibity issue with widcards as natural bounds of generic type
-					TypeVariable TV2 = ((Class) t2.getRawType()).getTypeParameters()[i];
+					TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
 					st2 = new WilcardTypeImpl(TV2.getBounds(), new Type[0]);
 				}
 				if (!isTypeAssignableFrom(st1, st2, true)) {
@@ -523,7 +525,7 @@ public class TypeUtils {
 
 		// In this case, the type is not fully resolved, we only consider the first upper bound
 		if (aType instanceof TypeVariable) {
-			TypeVariable tv = (TypeVariable) aType;
+			TypeVariable<?> tv = (TypeVariable<?>) aType;
 			if (tv.getBounds() != null && tv.getBounds().length > 0 && tv.getBounds()[0] != null) {
 				return isTypeAssignableFrom(tv.getBounds()[0], anOtherType);
 			}
@@ -590,7 +592,7 @@ public class TypeUtils {
 			return ((CustomType) aType).simpleRepresentation();
 		}
 		if (aType instanceof Class) {
-			return ((Class) aType).getSimpleName();
+			return ((Class<?>) aType).getSimpleName();
 		}
 		else if (aType instanceof ParameterizedType) {
 			ParameterizedType t = (ParameterizedType) aType;
@@ -615,7 +617,7 @@ public class TypeUtils {
 			return ((CustomType) aType).fullQualifiedRepresentation();
 		}
 		if (aType instanceof Class) {
-			return ((Class) aType).getName();
+			return ((Class<?>) aType).getName();
 		}
 		else if (aType instanceof ParameterizedType) {
 			ParameterizedType t = (ParameterizedType) aType;
@@ -705,12 +707,16 @@ public class TypeUtils {
 		// unresolved type (a class with generic arguments not specified)
 		// We make an indirection with an infered context computed with default bounds
 		// declared in generic type
-		if (aType instanceof Class && ((Class) aType).getTypeParameters().length > 0) {
-			Type[] args = new Type[((Class) aType).getTypeParameters().length];
-			for (int i = 0; i < ((Class) aType).getTypeParameters().length; i++) {
-				args[i] = new WilcardTypeImpl(((Class) aType).getTypeParameters()[i].getBounds(), new Type[0]);
+		if (aType instanceof Class) {
+			Class<?> aClass = (Class<?>) aType;
+			TypeVariable<?>[] params = aClass.getTypeParameters();
+			if (params.length > 0) {
+				Type[] args = new Type[params.length];
+				for (int i = 0; i < params.length; i++) {
+					args[i] = new WilcardTypeImpl(params[i].getBounds(), new Type[0]);
+				}
+				return new ParameterizedTypeImpl(aClass, args);
 			}
-			return new ParameterizedTypeImpl((Class) aType, args);
 		}
 		return aType;
 
@@ -758,7 +764,7 @@ public class TypeUtils {
 				}
 			}
 			if (contextualizeType) {
-				ParameterizedType fullyContextualizedType = new ParameterizedTypeImpl((Class) contextParameterizedType.getRawType(),
+				ParameterizedType fullyContextualizedType = new ParameterizedTypeImpl((Class<?>) contextParameterizedType.getRawType(),
 						actualTypeArguments);
 				// In this case, we use the bounds defined by the TypeVariable, and we recall the method with this most contextualized type
 				return makeInstantiatedType(type, fullyContextualizedType);
@@ -769,7 +775,7 @@ public class TypeUtils {
 		// unresolved type (a class with generic arguments not specified)
 		// We make an indirection with an infered context computed with default bounds
 		// declared in generic type
-		if (context instanceof Class && ((Class) context).getTypeParameters().length > 0) {
+		if (context instanceof Class && ((Class<?>) context).getTypeParameters().length > 0) {
 			return makeInstantiatedType(type, makeInferedType(context));
 		}
 
@@ -778,7 +784,7 @@ public class TypeUtils {
 			for (int i = 0; i < ((ParameterizedType) type).getActualTypeArguments().length; i++) {
 				actualTypeArguments[i] = makeInstantiatedType(((ParameterizedType) type).getActualTypeArguments()[i], context);
 			}
-			return new ParameterizedTypeImpl((Class) ((ParameterizedType) type).getRawType(), actualTypeArguments);
+			return new ParameterizedTypeImpl((Class<?>) ((ParameterizedType) type).getRawType(), actualTypeArguments);
 		}
 
 		if (type instanceof GenericArrayType) {
@@ -793,9 +799,9 @@ public class TypeUtils {
 			if (gd instanceof Class) {
 				if (context instanceof ParameterizedType) {
 					ParameterizedType parameterizedType = (ParameterizedType) context;
-					if (!((ParameterizedType) context).getRawType().equals(gd)) {
+					if (!parameterizedType.getRawType().equals(gd)) {
 						// Searching tv in gd, but this is not the right class, find relevant super type
-						Type relevantSuperType = getSuperInterfaceType(context, (Class) gd);
+						Type relevantSuperType = getSuperInterfaceType(context, (Class<?>) gd);
 						return makeInstantiatedType(type, relevantSuperType);
 					}
 					for (int i = 0; i < gd.getTypeParameters().length; i++) {
@@ -819,13 +825,14 @@ public class TypeUtils {
 				}
 				else if (context instanceof Class) {
 					// TODO: instead of returning the first resolved type, we should build a list and return the most specialized type
-					if (((Class) context).getGenericSuperclass() != null) {
-						Type attemptFromSuperClass = makeInstantiatedType(type, ((Class) context).getGenericSuperclass());
+					Class<?> contextClass = (Class<?>) context;
+					if (contextClass.getGenericSuperclass() != null) {
+						Type attemptFromSuperClass = makeInstantiatedType(type, contextClass.getGenericSuperclass());
 						if (!attemptFromSuperClass.equals(type)) {
 							return attemptFromSuperClass;
 						}
 					}
-					for (Type superInterface : ((Class) context).getGenericInterfaces()) {
+					for (Type superInterface : contextClass.getGenericInterfaces()) {
 						Type attemptFromSuperInterface = makeInstantiatedType(type, superInterface);
 						if (!attemptFromSuperInterface.equals(type)) {
 							return attemptFromSuperInterface;
@@ -892,7 +899,7 @@ public class TypeUtils {
 			}
 		}
 		else if (type instanceof Class) {
-			return ((Class) type).getGenericSuperclass();
+			return ((Class<?>) type).getGenericSuperclass();
 		}
 		if (type instanceof CustomType) {
 			return getSuperType(((CustomType) type).getBaseClass());
@@ -901,7 +908,7 @@ public class TypeUtils {
 		return null;
 	}
 
-	public static Type getSuperInterfaceType(Type type, Class searchedSuperType) {
+	public static Type getSuperInterfaceType(Type type, Class<?> searchedSuperType) {
 		Type superType = getSuperType(type);
 		if (isTypeAssignableFrom(searchedSuperType, superType)) {
 			return superType;
@@ -1122,9 +1129,9 @@ public class TypeUtils {
 
 				// Ambigous, return most specialized
 
-				Class mostSpecialized = null;
+				Class<?> mostSpecialized = null;
 				int bestDistance = 1001;
-				for (Class c : matchingClasses.keySet()) {
+				for (Class<?> c : matchingClasses.keySet()) {
 					if (distance(aClass, c) < bestDistance) {
 						mostSpecialized = c;
 						bestDistance = distance(aClass, c);
@@ -1151,7 +1158,7 @@ public class TypeUtils {
 	 * @param c2
 	 * @return
 	 */
-	private static int distance(Class c1, Class c2) {
+	private static int distance(Class<?> c1, Class<?> c2) {
 		if (c2.equals(c1)) {
 			return 0;
 		}
@@ -1164,7 +1171,7 @@ public class TypeUtils {
 					return d1 + 1;
 				}
 			}
-			for (Class superInterface : c2.getInterfaces()) {
+			for (Class<?> superInterface : c2.getInterfaces()) {
 				int d1 = distance(c1, superInterface);
 				if (d1 < 1000) {
 					return d1 + 1;
@@ -1181,7 +1188,7 @@ public class TypeUtils {
 				}
 			}
 
-			for (Class superInterface : c1.getInterfaces()) {
+			for (Class<?> superInterface : c1.getInterfaces()) {
 				int d2 = distance(c2, superInterface);
 				if (d2 < 1000) {
 					return d2 + 1;

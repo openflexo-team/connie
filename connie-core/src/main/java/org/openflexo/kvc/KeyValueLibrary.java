@@ -220,7 +220,7 @@ public class KeyValueLibrary {
 			}
 		}
 
-		Class theClass = TypeUtils.getBaseClass(declaringType);
+		Class<?> theClass = TypeUtils.getBaseClass(declaringType);
 		if (theClass == null) {
 			LOGGER.warning("Cannot search properties for type: " + declaringType);
 			return null;
@@ -437,7 +437,7 @@ public class KeyValueLibrary {
 	// Not anymore throw SuchMethodException (return null instead)
 	// > performance issue
 	private static Method getMethod(Type type, String methodName, Type... params) /*throws NoSuchMethodException*/ {
-		Class theClass = TypeUtils.getBaseClass(type);
+		Class<?> theClass = TypeUtils.getBaseClass(type);
 		if (theClass == null) {
 			LOGGER.warning("Cannot search properties for type: " + type);
 			return null;

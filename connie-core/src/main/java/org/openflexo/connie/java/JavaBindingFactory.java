@@ -73,8 +73,8 @@ public class JavaBindingFactory implements BindingFactory {
 				return null;
 			}
 			Type currentType = parent.getType();
-			if (currentType instanceof Class && ((Class) currentType).isPrimitive()) {
-				currentType = TypeUtils.fromPrimitive((Class) currentType);
+			if (currentType instanceof Class && ((Class<?>) currentType).isPrimitive()) {
+				currentType = TypeUtils.fromPrimitive((Class<?>) currentType);
 			}
 			if (currentType instanceof WildcardType) {
 				Type[] upperBounds = ((WildcardType) currentType).getUpperBounds();
@@ -98,8 +98,8 @@ public class JavaBindingFactory implements BindingFactory {
 				return null;
 			}
 			Type currentType = parent.getType();
-			if (currentType instanceof Class && ((Class) currentType).isPrimitive()) {
-				currentType = TypeUtils.fromPrimitive((Class) currentType);
+			if (currentType instanceof Class && ((Class<?>) currentType).isPrimitive()) {
+				currentType = TypeUtils.fromPrimitive((Class<?>) currentType);
 			}
 			List<JavaMethodPathElement> returned = new ArrayList<JavaMethodPathElement>();
 			for (MethodDefinition m : KeyValueLibrary.getAccessibleMethods(currentType)) {
@@ -113,8 +113,8 @@ public class JavaBindingFactory implements BindingFactory {
 	@Override
 	public SimplePathElement makeSimplePathElement(BindingPathElement father, String propertyName) {
 		Type fatherType = father.getType();
-		if (fatherType instanceof Class && ((Class) fatherType).isPrimitive()) {
-			fatherType = TypeUtils.fromPrimitive((Class) fatherType);
+		if (fatherType instanceof Class && ((Class<?>) fatherType).isPrimitive()) {
+			fatherType = TypeUtils.fromPrimitive((Class<?>) fatherType);
 		}
 		KeyValueProperty keyValueProperty = KeyValueLibrary.getKeyValueProperty(fatherType, propertyName);
 		if (keyValueProperty != null) {
@@ -172,9 +172,11 @@ public class JavaBindingFactory implements BindingFactory {
 			// Return the first one
 			// TODO: try to find the best one
 			return MethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
-		} else if (possiblyMatchingMethods.size() == 1) {
+		}
+		else if (possiblyMatchingMethods.size() == 1) {
 			return MethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
-		} else {
+		}
+		else {
 			// We dont log it inconditionnaly, because this may happen (while for example inspectors are merged)
 			// logger.warning("Cannot find method named " + functionName + " with args=" + args + "(" + args.size() + ") for type "
 			// + parentType);

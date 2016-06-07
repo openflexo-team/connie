@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.File;
@@ -48,7 +47,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
 import org.openflexo.toolbox.FileUtils;
@@ -87,7 +85,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 			}
 			/*
 			 * File flexoDesktopDirectory = findProjectDirectoryWithName(workingDirectory, "openflexo");
-
+			
 					if (flexoDesktopDirectory != null) {
 						findAllFlexoProjects(flexoDesktopDirectory, directoriesSearchOrder);
 						File technologyadaptersintegrationDirectory = new File(flexoDesktopDirectory.getParentFile(),
@@ -145,9 +143,11 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 				appendAllResourcesDirectories(f, "main", returned);
 				appendAllResourcesDirectories(f, "test", returned);
 				appendAllResourcesDirectories(f, "dev", returned);
-			} else if (searchedToken.equals("main") || searchedToken.equals("test") || searchedToken.equals("dev")) {
+			}
+			else if (searchedToken.equals("main") || searchedToken.equals("test") || searchedToken.equals("dev")) {
 				appendAllResourcesDirectories(f, "resources", returned);
-			} else if (searchedToken.equals("resources")) {
+			}
+			else if (searchedToken.equals("resources")) {
 				// System.out.println("Found " + f);
 				returned.add(f);
 			}
@@ -160,14 +160,15 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 	}
 
 	/**
-	 *  Locates the resource given a relative PATH and a filter to avoid ambiguity
+	 * Locates the resource given a relative PATH and a filter to avoid ambiguity
+	 * 
 	 * @param relativePath
 	 * @param filter
-	 * @return 
+	 * @return
 	 */
 	// TODO: ask if this must not be promoted at ResourceLocator level
 	public Resource locateResource(String relativePathName, String regexFilter) {
-		
+
 		if (relativePathName == null) {
 			return null;
 		}
@@ -194,32 +195,32 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 
 	/**
 	 * Locate and returns file identified by relativePathName<br>
-	 * If many files match supplied relativePathName, then return the one :
-	 *    -- which is most narrow of current dir, relative to the distance between files as defined in {@link FileUtils}.<br>
-	 *    -- which matches the Pattern given as a parameter in case distance is equal
+	 * If many files match supplied relativePathName, then return the one : -- which is most narrow of current dir, relative to the distance
+	 * between files as defined in {@link FileUtils}.<br>
+	 * -- which matches the Pattern given as a parameter in case distance is equal
 	 * 
 	 * @param relativePathName
 	 * @return
 	 */
 
 	// TODO: to be re-factored
-	
+
 	private File locateFile(String relativePathName, String regexFilter) {
 
 		final File workingDirectory = new File(System.getProperty("user.dir"));
-		
+
 		List<File> found = locateAllFiles(relativePathName, true);
 		List<File> matches = new ArrayList<File>();
 		// Apply Filter
-		if (regexFilter != null){
-			for (File f: found) {
-				if (f.getAbsolutePath().matches(regexFilter)){
+		if (regexFilter != null) {
+			for (File f : found) {
+				if (f.getAbsolutePath().matches(regexFilter)) {
 					matches.add(f);
 				}
-					
+
 			}
 		}
-		
+
 		if (matches.size() == 1) {
 			// System.out.println("Returning " + found.get(0));
 			return matches.get(0);
@@ -235,7 +236,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 				}
 
 			});
-			
+
 			return matches.get(0);
 		}
 
@@ -248,7 +249,5 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 		return new File(userDirectory, relativePathName);
 		 */
 	}
-
-	
 
 }

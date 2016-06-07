@@ -36,39 +36,35 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.InputStream;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public interface ResourceLocatorDelegate {
 
 	/**
-	 *  Locates the resource given a relative PATH
+	 * Locates the resource given a relative PATH
+	 * 
 	 * @param relativePath
-	 * @return 
+	 * @return
 	 */
-	public Resource locateResource (String relativePath);
+	public Resource locateResource(String relativePath);
 
 	/**
-	 *  Locates the resource given a relative PATH and a base Location
+	 * Locates the resource given a relative PATH and a base Location
+	 * 
 	 * @param relativePath
-	 * @return 
+	 * @return
 	 */
 	// TODO : voir si on ne peut pas supprimer ça avec le getContents
 	public Resource locateResourceWithBaseLocation(Resource baseLocation, String relativePath);
 
-
 	/**
-	 *  Gets the resource pointed by URL as a File
+	 * Gets the resource pointed by URL as a File
+	 * 
 	 * @param resourceURL
 	 * @return null when resource cannot be converted to File
 	 */
 	public File retrieveResourceAsFile(Resource location);
-	
 
 }

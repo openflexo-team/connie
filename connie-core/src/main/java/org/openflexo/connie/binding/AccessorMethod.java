@@ -37,7 +37,6 @@
  * 
  */
 
-
 package org.openflexo.connie.binding;
 
 import java.lang.reflect.Method;
@@ -58,7 +57,7 @@ import org.openflexo.kvc.KeyValueProperty;
  * @author <a href="mailto:Sylvain.Guerin@enst-bretagne.fr">Sylvain Guerin</a>
  * @see KeyValueProperty
  */
-public class AccessorMethod implements Comparable {
+public class AccessorMethod implements Comparable<Object> {
 
 	/** Stores the related <code>KeyValueProperty</code> */
 	protected KeyValueProperty keyValueProperty;
@@ -110,8 +109,8 @@ public class AccessorMethod implements Comparable {
 
 				for (int i = 0; i < getMethod().getParameterTypes().length; i++) {
 
-					Class localParameterType = getMethod().getParameterTypes()[i];
-					Class comparedParameterType = comparedAccessorMethod.getMethod().getParameterTypes()[i];
+					Class<?> localParameterType = getMethod().getParameterTypes()[i];
+					Class<?> comparedParameterType = comparedAccessorMethod.getMethod().getParameterTypes()[i];
 
 					if (!localParameterType.equals(comparedParameterType)) {
 
@@ -142,12 +141,12 @@ public class AccessorMethod implements Comparable {
 			throw new ClassCastException();
 		}
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return (toString()).hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return this.compareTo(obj) == 0;

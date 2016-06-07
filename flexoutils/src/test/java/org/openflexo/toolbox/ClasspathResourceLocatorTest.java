@@ -38,17 +38,15 @@
 
 package org.openflexo.toolbox;
 
-import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.openflexo.rm.ClasspathResourceLocatorImpl;
-import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
+
+import junit.framework.TestCase;
 
 public class ClasspathResourceLocatorTest extends TestCase {
 
@@ -62,7 +60,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		assertTrue(rloc != null);
 
-		if (rloc != null){
+		if (rloc != null) {
 
 			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"));
 
@@ -83,34 +81,30 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		assertTrue(rloc != null);
 
-
 		rloc = ResourceLocator.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
 
-		assertTrue (rloc != null);
-		assertTrue (rloc instanceof Resource);
-//		System.out.println(rloc.getURI());
+		assertTrue(rloc != null);
+		assertTrue(rloc instanceof Resource);
+		// System.out.println(rloc.getURI());
 
 		assertTrue(rloc != null);
 
-		if (rloc != null){
+		if (rloc != null) {
 
 			Resource container = rloc.getContainer();
 
 			if (container != null) {
 				List<Resource> list = (List<Resource>) rloc.getContainer().getContents(Pattern.compile(".*[.]wav"));
 
-				assertTrue (list.size() > 1);
+				assertTrue(list.size() > 1);
 
-				for (Resource r : list){
+				for (Resource r : list) {
 					System.out.println(r.getURI());
 				}
 			}
 
 		}
 	}
-
-
-
 
 	@Test
 	public void testListResources3() throws Exception {
@@ -124,15 +118,15 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		System.out.println(rloc.getURI());
 
-		if (rloc != null){
+		if (rloc != null) {
 
 			List<? extends Resource> list = rloc.getContents();
 
-			for (Resource r : list){
+			for (Resource r : list) {
 				System.out.println(r.getURI());
 			}
 
-			assertTrue (list.size() == 8);
+			assertTrue(list.size() == 8);
 		}
 	}
 }

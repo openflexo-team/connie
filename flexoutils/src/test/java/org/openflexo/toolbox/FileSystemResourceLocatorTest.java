@@ -42,14 +42,13 @@ import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
-import org.openflexo.rm.ClasspathResourceLocatorImpl;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.FileSystemResourceLocatorImpl;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
+
+import junit.framework.TestCase;
 
 public class FileSystemResourceLocatorTest extends TestCase {
 
@@ -61,7 +60,6 @@ public class FileSystemResourceLocatorTest extends TestCase {
 		File workingDirectory = new File(System.getProperty("user.dir"));
 		rl.prependToDirectories(workingDirectory + PATH_SEP + "src/main/resources");
 		rl.prependToDirectories(workingDirectory + PATH_SEP + "src/test/resources");
-		
 
 		rl.printDirectoriesSearchOrder(System.out);
 
@@ -71,16 +69,15 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 		assertTrue(rloc != null);
 
-		if (rloc != null){
+		if (rloc != null) {
 
 			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"));
 
 			assertTrue(list.size() == 7);
 
-			for (Resource r : list){
+			for (Resource r : list) {
 				System.out.println(r.getURI());
 			}
-
 
 		}
 	}
@@ -94,7 +91,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 		ResourceLocator.prependDelegate(rl);
 
 		rl.printDirectoriesSearchOrder(System.out);
-		
+
 		Resource rloc = null;
 
 		rloc = ResourceLocator.locateResource("META-INF");
@@ -102,21 +99,20 @@ public class FileSystemResourceLocatorTest extends TestCase {
 		assertTrue(rloc != null);
 
 		assertTrue(rloc instanceof FileResourceImpl);
-		
+
 		System.out.println("Found META-INF here: " + (rloc).getURI());
 
-
 		rloc = ResourceLocator.locateResource("TestDiff");
-		
+
 		assertTrue(rloc != null);
 
-		if (rloc != null){
+		if (rloc != null) {
 
 			List<? extends Resource> list = rloc.getContents();
 
-			assertTrue (list.size() == 8);
+			assertTrue(list.size() == 8);
 
-			for (Resource r : list){
+			for (Resource r : list) {
 				System.out.println(r.getURI());
 			}
 
