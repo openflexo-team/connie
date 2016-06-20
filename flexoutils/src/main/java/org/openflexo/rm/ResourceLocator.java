@@ -120,7 +120,10 @@ final public class ResourceLocator {
 	 * @return
 	 */
 	static public Resource locateSourceCodeResource(Resource resource) {
-		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath());
+		if (resource != null) {
+			return getSourceCodeResourceLocator().locateResource(resource.getRelativePath());
+		}
+		return null;
 
 	}
 
