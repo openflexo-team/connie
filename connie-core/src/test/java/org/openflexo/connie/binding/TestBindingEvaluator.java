@@ -37,7 +37,7 @@
  * 
  */
 
-package org.openflexo.antar.binding;
+package org.openflexo.connie.binding;
 
 import java.lang.reflect.InvocationTargetException;
 

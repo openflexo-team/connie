@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.antar.binding;
+package org.openflexo.connie.binding;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
