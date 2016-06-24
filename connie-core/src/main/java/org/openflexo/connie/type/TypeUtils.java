@@ -124,7 +124,7 @@ public class TypeUtils {
 			}
 		}
 		if (aType instanceof TypeVariable) {
-			TypeVariable tv = (TypeVariable) aType;
+			TypeVariable<?> tv = (TypeVariable<?>) aType;
 			StringBuffer upperBounds = new StringBuffer();
 			boolean isFirst = true;
 			for (Type upperBound : tv.getBounds()) {
