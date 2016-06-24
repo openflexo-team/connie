@@ -1,0 +1,13 @@
+apply plugin: 'maven'
+
+archivesBaseName = 'connie'
+group = 'org.openflexo'
+version = '1.4-SNAPSHOT'
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: 'file:./maven')
+    }
+  }
+}
