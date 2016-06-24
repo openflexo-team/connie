@@ -37,7 +37,7 @@
  * 
  */
 
-package org.openflexo.antar.expr.parser;
+package org.openflexo.connie.expr.parser;
 
 import junit.framework.TestCase;
 
