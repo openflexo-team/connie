@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections.iterators.IteratorChain;
+import org.apache.commons.collections4.iterators.IteratorChain;
 
 public class ChainedCollection<T> implements Collection<T> {
 
@@ -59,12 +59,12 @@ public class ChainedCollection<T> implements Collection<T> {
 
 	public ChainedCollection(T... items) {
 		this();
-        Collections.addAll(this.items, items);
+		Collections.addAll(this.items, items);
 	}
 
 	public ChainedCollection(Collection<? extends T>... collections) {
 		this();
-        Collections.addAll(this.collections, collections);
+		Collections.addAll(this.collections, collections);
 	}
 
 	public void add(Collection<? extends T> itemCollection) {
