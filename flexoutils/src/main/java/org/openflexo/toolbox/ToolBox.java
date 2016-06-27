@@ -473,16 +473,14 @@ public class ToolBox {
 		public String response;
 	}
 
-	public static RequestResponse getRequest(Hashtable param, String url) throws IOException {
+	public static RequestResponse getRequest(Hashtable<String,String> param, String url) throws IOException {
 		StringBuffer paramsAsString = new StringBuffer("");
 		if (param != null && param.size() > 0) {
 			// paramsAsString.append("?");
-			Enumeration en = param.keys();
-			String key = null;
-			String value = null;
+			Enumeration<String> en = param.keys();
 			while (en.hasMoreElements()) {
-				key = (String) en.nextElement();
-				value = (String) param.get(key);
+				String key = en.nextElement();
+				String value = (String) param.get(key);
 				try {
 					paramsAsString.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
@@ -522,17 +520,15 @@ public class ToolBox {
 
 	}
 
-	public static RequestResponse postRequest(Hashtable parameters, String url) {
+	public static RequestResponse postRequest(Hashtable<String,String> parameters, String url) {
 		try {
 			// Construct data
 			StringBuffer data = new StringBuffer();
 			if (parameters != null && parameters.size() > 0) {
-				Enumeration en = parameters.keys();
-				String key = null;
-				String value = null;
+				Enumeration<String> en = parameters.keys();
 				while (en.hasMoreElements()) {
-					key = (String) en.nextElement();
-					value = (String) parameters.get(key);
+					String key = (String) en.nextElement();
+					String value = (String) parameters.get(key);
 					data.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
 					if (en.hasMoreElements()) {
 						data.append("&");
@@ -694,10 +690,8 @@ public class ToolBox {
 		try {
 			Desktop.getDesktop().browse(new URI(url));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
