@@ -11,5 +11,6 @@
 /.gitignore
 /.DS_Store
 /basic.xml
+.gradle
 
 *.iml
