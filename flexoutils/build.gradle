@@ -1,0 +1,18 @@
+dependencies {
+  compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+  compile group: 'commons-io', name: 'commons-io', version: '2.5'
+  compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+}
+
+//sourceSets {
+//    main {
+//       output.resourcesDir = "build/classes/main"
+//     }
+//  }
+//sourceSets {
+//  main {
+//    resources {
+//      srcDir 'src/main/resources'
+//    }
+//  }
+//}
