@@ -91,16 +91,19 @@ public class ToolBox {
 	public static final String MACOS = "MACOS";
 
 	public static final String OTHER = "OTHER";
-	
+
 	static {
 		String osName = System.getProperty("os.name");
 		if (osName.indexOf("Mac OS") > -1) {
 			PLATFORM = MACOS;
-		} else if (osName.indexOf("Windows") > -1) {
+		}
+		else if (osName.indexOf("Windows") > -1) {
 			PLATFORM = WINDOWS;
-		} else if (osName.indexOf("Linux") > -1) {
+		}
+		else if (osName.indexOf("Linux") > -1) {
 			PLATFORM = LINUX;
-		} else {
+		}
+		else {
 			PLATFORM = OTHER;
 		}
 	}
@@ -121,9 +124,18 @@ public class ToolBox {
 		return PLATFORM == OTHER;
 	}
 
+	public static String memoryInfo() {
+		StringBuffer returned = new StringBuffer();
+		long maxMemory = Runtime.getRuntime().maxMemory();
+		returned.append("Memory free:" + (Runtime.getRuntime().freeMemory() / 1024 / 1024) + "Mb");
+		returned.append(" max:" + (maxMemory == Long.MAX_VALUE ? "no limit" : maxMemory / 1024 / 1024) + "Mb");
+		returned.append(" total:" + (Runtime.getRuntime().totalMemory() / 1024 / 1024) + "Mb");
+		return returned.toString();
+	}
+
 	/**
-     *
-     */
+	 *
+	 */
 	public ToolBox() {
 		super();
 	}
@@ -234,7 +246,8 @@ public class ToolBox {
 		while (m.find()) {
 			if (sb.length() == 0) {
 				sb.append(m.group());
-			} else {
+			}
+			else {
 				sb.append(capitalize(m.group()));
 			}
 		}
@@ -264,11 +277,8 @@ public class ToolBox {
 		if (comment == null) {
 			return null;
 		}
-		return ToolBox.replaceStringByStringInString(
-				"\r",
-				" ",
-				ToolBox.replaceStringByStringInString("\n", " ",
-						ToolBox.replaceStringByStringInString("\"", " ", ToolBox.replaceStringByStringInString("'", " ", comment))));
+		return ToolBox.replaceStringByStringInString("\r", " ", ToolBox.replaceStringByStringInString("\n", " ",
+				ToolBox.replaceStringByStringInString("\"", " ", ToolBox.replaceStringByStringInString("'", " ", comment))));
 	}
 
 	/**
@@ -304,10 +314,12 @@ public class ToolBox {
 			}
 			if (keepCase) {
 				sb.append(group);
-			} else {
+			}
+			else {
 				if (sb.length() > 0 || !lowerFirstChar) {
 					sb.append(capitalize(group));
-				} else {
+				}
+				else {
 					sb.append(group.substring(0, 1).toLowerCase()).append(group.substring(1, group.length()));
 				}
 			}
@@ -426,21 +438,24 @@ public class ToolBox {
 						sb.append(javaString.substring(index, i).toUpperCase());
 						sb.append("_");
 						index = i;
-					} else {
+					}
+					else {
 						if (i + 1 < javaString.length()) {
 							if (!Character.isUpperCase(javaString.charAt(i + 1))) {
 								sb.append(javaString.substring(index, i).toUpperCase());
 								sb.append("_");
 								index = i;
 							}
-						} else {
+						}
+						else {
 							sb.append(javaString.substring(index, i + 1).toUpperCase());
 							index = i;
 						}
 					}
 				}
 				lastCharIsUpperCase = true;
-			} else {
+			}
+			else {
 				if (i + 1 == javaString.length()) {
 					sb.append(javaString.substring(index, i + 1).toUpperCase());
 				}
@@ -666,7 +681,8 @@ public class ToolBox {
 	}
 
 	public static String stackTraceAsAString(Throwable e) {
-		StringBuilder sb = new StringBuilder("Exception " + e.getClass().getName() + ":\n" + (e.getMessage() != null ? e.getMessage() : ""));
+		StringBuilder sb = new StringBuilder(
+				"Exception " + e.getClass().getName() + ":\n" + (e.getMessage() != null ? e.getMessage() : ""));
 		stackTraceAsAString(e, sb);
 		return sb.toString();
 	}
@@ -681,7 +697,8 @@ public class ToolBox {
 				sb.append("Caused by ").append(e.getCause().getClass().getName()).append('\n');
 				stackTraceAsAString(e.getCause(), sb);
 			}
-		} else {
+		}
+		else {
 			sb.append("StackTrace not available\n");
 		}
 	}
@@ -703,7 +720,8 @@ public class ToolBox {
 			command[0] = "explorer";
 			command[1] = "/select,";
 			command[2] = fileToOpen.getAbsolutePath();
-		} else {
+		}
+		else {
 			command = new String[2];
 			command[0] = "open";
 			command[1] = fileToOpen.isDirectory() ? fileToOpen.getCanonicalPath() : fileToOpen.getParentFile().getCanonicalPath();
@@ -731,19 +749,24 @@ public class ToolBox {
 			if (Character.isUpperCase(name.charAt(i))) {
 				if (i == 0) {
 					sb.append(name.charAt(i));
-				} else if (i + 1 == name.length()) {
+				}
+				else if (i + 1 == name.length()) {
 					sb.append(name.charAt(i));
-				} else if (previousCharIsUpperCase) {
+				}
+				else if (previousCharIsUpperCase) {
 					if (Character.isUpperCase(name.charAt(i + 1))) {
 						sb.append(name.charAt(i));
-					} else {
+					}
+					else {
 						sb.append('_').append(name.charAt(i));
 					}
-				} else {
+				}
+				else {
 					sb.append('_').append(name.charAt(i));
 				}
 				previousCharIsUpperCase = true;
-			} else {
+			}
+			else {
 				sb.append(Character.toUpperCase(name.charAt(i)));
 				previousCharIsUpperCase = false;
 			}
@@ -767,7 +790,8 @@ public class ToolBox {
 				if (javaVersion.indexOf('_') > 0) {
 					version = javaVersion.substring(0, javaVersion.indexOf('_'));
 					release = javaVersion.substring(javaVersion.indexOf('_') + 1);
-				} else {
+				}
+				else {
 					version = javaVersion;
 				}
 				try {
@@ -776,7 +800,8 @@ public class ToolBox {
 					e.printStackTrace();
 					fileChooserRequiresFix = true;
 				}
-			} else {
+			}
+			else {
 				fileChooserRequiresFix = false;
 			}
 		}
@@ -785,25 +810,23 @@ public class ToolBox {
 
 	// A deadlock can occurs with windows when retrieving an icon. It seems that it occurs on remote folders only
 	// The following fixes that:
-	//  - check a user defined icon doesn't exists in the view,
-	//  - check if the folder is a drive 
-	//  If this is true then return an icon, otherwise return null;
-	public static Icon getIconFileChooserWithFix(File f, FileView view){
-		if(getIconFileChooserRequiresFix(f,view)){
+	// - check a user defined icon doesn't exists in the view,
+	// - check if the folder is a drive
+	// If this is true then return an icon, otherwise return null;
+	public static Icon getIconFileChooserWithFix(File f, FileView view) {
+		if (getIconFileChooserRequiresFix(f, view)) {
 			return UIManager.getDefaults().getIcon("FileView.computerIcon");
 		}
 		return null;
 	}
-	
-	public static boolean getIconFileChooserRequiresFix(File f, FileView view){
-		if(ToolBox.isWindows() 
-				&& FileSystemView.getFileSystemView().isDrive(f)
-				&& (view==null || view.getIcon(f)==null)){
+
+	public static boolean getIconFileChooserRequiresFix(File f, FileView view) {
+		if (ToolBox.isWindows() && FileSystemView.getFileSystemView().isDrive(f) && (view == null || view.getIcon(f) == null)) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public static void fixFileChooser() {
 		String[] cmd = new String[] { "regsvr32", "/u", "/s", System.getenv("windir") + "\\system32\\zipfldr.dll" };
 		try {
@@ -812,7 +835,7 @@ public class ToolBox {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void fixFileChooserDeadlock() {
 		String[] cmd = new String[] { "regsvr32", "/u", "/s", System.getenv("windir") + "\\system32\\zipfldr.dll" };
 		try {
@@ -909,7 +932,8 @@ public class ToolBox {
 		char separator;
 		if (csvString.indexOf(';') == -1 && csvString.indexOf(',') > -1) {
 			separator = ',';
-		} else {
+		}
+		else {
 			separator = ';';
 		}
 
@@ -921,16 +945,19 @@ public class ToolBox {
 			if (!wasInsideQuote && csvString.charAt(i) == '"' && (isInsideQuote || currentValue.toString().trim().length() == 0)) {
 				if (i + 1 < csvString.length() && csvString.charAt(i + 1) == '"') { // Double quote, escape
 					i++;
-				} else {
+				}
+				else {
 					if (isInsideQuote) {
 						wasInsideQuote = true;
-					} else {
+					}
+					else {
 						currentValue = new StringBuilder();
 					}
 					isInsideQuote = !isInsideQuote;
 					continue;
 				}
-			} else if ((csvString.charAt(i) == separator || csvString.charAt(i) == '\n') && !isInsideQuote) {
+			}
+			else if ((csvString.charAt(i) == separator || csvString.charAt(i) == '\n') && !isInsideQuote) {
 				line.add(currentValue.toString());
 				currentValue = new StringBuilder();
 				wasInsideQuote = false;
@@ -981,7 +1008,8 @@ public class ToolBox {
 			if (hex.length() == 1) {
 				hashString.append('0');
 				hashString.append(hex.charAt(hex.length() - 1));
-			} else {
+			}
+			else {
 				hashString.append(hex.substring(hex.length() - 2));
 			}
 		}
@@ -992,7 +1020,8 @@ public class ToolBox {
 		int hostPortSepIndex = hostPort.indexOf(":");
 		if (hostPortSepIndex > -1) {
 			return new String[] { hostPort.substring(0, hostPortSepIndex), hostPort.substring(hostPortSepIndex + 1) };
-		} else {
+		}
+		else {
 			return new String[] { hostPort, String.valueOf(defaultPort) };
 		}
 	}
@@ -1000,9 +1029,11 @@ public class ToolBox {
 	public static String getContentAtURL(URL url) throws UnsupportedEncodingException, IOException {
 		if (url.getProtocol().toLowerCase().startsWith("http")) {
 			return getContentAtHTTPURL(url);
-		} else if (url.getProtocol().toLowerCase().startsWith("file")) {
+		}
+		else if (url.getProtocol().toLowerCase().startsWith("file")) {
 			return getContentAtFileURL(url);
-		} else {
+		}
+		else {
 			System.err.println("Can't handle prototcol: " + url.getProtocol());
 			return null;
 		}
@@ -1014,7 +1045,8 @@ public class ToolBox {
 		if (httpStatus > 199 && httpStatus < 300) {
 			InputStream is = conn.getInputStream();
 			return getContentFromInputStream(is);
-		} else if (httpStatus > 299 && httpStatus < 400) {
+		}
+		else if (httpStatus > 299 && httpStatus < 400) {
 			return getContentAtHTTPURL(new URL(conn.getHeaderField("Location")));
 		}
 		return null;
@@ -1047,11 +1079,13 @@ public class ToolBox {
 				nl = nl.replace("\r", "\\r");
 				nl = nl.replace("\n", "\\n");
 				sb.append(key).append(" = ").append(nl).append('\n');
-			} else if ("java.class.path".equals(key)) {
+			}
+			else if ("java.class.path".equals(key)) {
 				String nl = (String) e.getValue();
 				nl = nl.replace('\\', '/');
 				sb.append(key).append(" = ").append(nl).append('\n');
-			} else {
+			}
+			else {
 				sb.append(key).append(" = ").append(e.getValue()).append('\n');
 			}
 		}
