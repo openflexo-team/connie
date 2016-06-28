@@ -12,5 +12,6 @@
 /.DS_Store
 /basic.xml
 .gradle
+target
 
 *.iml
