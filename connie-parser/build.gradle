@@ -6,5 +6,6 @@ dependencies {
 
 sablecc {
   inputDir = "src/main/resources/grammar"
-  //  outputDir = "src/main/java"
+  intermediateDir = "target/generated-sources/grammar"
+  outputDir = "target/generated-sources/sablecc"  //  outputDir = "src/main/java"
 }
