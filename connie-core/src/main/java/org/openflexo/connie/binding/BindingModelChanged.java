@@ -42,7 +42,7 @@ package org.openflexo.connie.binding;
 /**
  * Represents notification thrown when BindingModel has changed
  * 
- * @author sguerin
+ * @author sylvain
  * 
  */
 public class BindingModelChanged {

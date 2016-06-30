@@ -434,13 +434,13 @@ public class StringUtils {
 	}
 
 	/**
-	 * Returns the specified string into "camel case" : each word are appended without white-spaces, but with a capital letter.<br/>
-	 * Note that, except for the first word, if the whole word is uppurcase, it will be converted into lowercase.
+	 * Returns the specified string into "camel case" : each word are appended without white-spaces, but with a capital letter.<br>
+	 * Note that, except for the first word, if the whole word is uppercase, it will be converted into lowercase.
 	 * 
-	 * Example : "Todo list" => "TodoList"; "DAO controller" => "daoController".
+	 * Example : "Todo list" =&gt; "TodoList"; "DAO controller" =&gt; "daoController".
 	 * 
 	 * @param firstUpper
-	 *            <code>true</code> if the first letter has to be uppercase.
+	 *            {@code true} if the first letter has to be uppercase.
 	 * @param string
 	 *            the string to transform into camel case
 	 * @return the camel case string
@@ -511,7 +511,7 @@ public class StringUtils {
 	}
 
 	/**
-	 * Sets the first char into lower case.<br/>
+	 * Sets the first char into lower case.<br>
 	 * If the word has more than its first letter in upper case, the consecutive next upper case letters are also converted into lower case.
 	 * 
 	 * @param value

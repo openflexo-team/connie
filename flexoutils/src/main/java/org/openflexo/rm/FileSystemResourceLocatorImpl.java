@@ -58,7 +58,7 @@ import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
 import org.openflexo.toolbox.FileUtils;
 
 /**
- * @author bmangez, sguerin, xtof
+ * @author bmangez, sylvain, xtof
  * 
  *         <B>Locates resources on the FileSystem, given a collection of directories to search in</B>
  */

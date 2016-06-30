@@ -78,7 +78,7 @@ import org.openflexo.rm.Resource;
 /**
  * Some File utilities
  * 
- * @author sguerin
+ * @author sylvain
  */
 public class FileUtils {
 
@@ -586,7 +586,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * @param componentName
+	 * @param fileName
 	 * @return
 	 */
 	public static String getValidFileName(String fileName) {
@@ -773,7 +773,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * @param desktopIni
+	 * @param f
 	 */
 	public static void makeFileSystem(File f) {
 		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
@@ -788,7 +788,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * @param desktopIni
+	 * @param f
 	 */
 	public static void unmakeFileSystem(File f) {
 		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
@@ -857,7 +857,7 @@ public class FileUtils {
 		return canonicalPath.split(regex);
 	}
 
-	/**
+	/*
 	 * @param file
 	 * @param wd
 	 * @return

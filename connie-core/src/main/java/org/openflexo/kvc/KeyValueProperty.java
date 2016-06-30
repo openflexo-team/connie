@@ -491,7 +491,7 @@ public class KeyValueProperty extends Observable {
 	 * Returns Object value, asserting that this property represents an Object property (if not, throw an InvalidKeyValuePropertyException
 	 * exception)
 	 * 
-	 * @return an <code>Object</code> value
+	 * @return an {@code Object} value
 	 * @exception InvalidKeyValuePropertyException
 	 *                if an error occurs
 	 */
@@ -551,7 +551,7 @@ public class KeyValueProperty extends Observable {
 	 * exception)
 	 * 
 	 * @param aValue
-	 *            an <code>Object</code> value
+	 *            an {@code Object} value
 	 * @exception InvalidKeyValuePropertyException
 	 *                if an error occurs
 	 */
@@ -561,7 +561,7 @@ public class KeyValueProperty extends Observable {
 	 * exception)
 	 * 
 	 * @param aValue
-	 *            an <code>Object</code> value
+	 *            an {@code Object} value
 	 * @exception InvalidKeyValuePropertyException
 	 *                if an error occurs
 	 */

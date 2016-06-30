@@ -162,8 +162,8 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 	/**
 	 * Locates the resource given a relative PATH and a filter to avoid ambiguity
 	 * 
-	 * @param relativePath
-	 * @param filter
+	 * @param relativePathName
+	 * @param regexFilter
 	 * @return
 	 */
 	// TODO: ask if this must not be promoted at ResourceLocator level

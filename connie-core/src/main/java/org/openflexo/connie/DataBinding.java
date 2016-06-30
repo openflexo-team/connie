@@ -966,7 +966,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * is performed in WRITE mode.
 	 * 
 	 * @param context
-	 * @return
 	 * @throws TypeMismatchException
 	 * @throws NullReferenceException
 	 * @throws InvocationTargetException

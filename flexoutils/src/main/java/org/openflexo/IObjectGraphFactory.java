@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo;
 
 import java.io.IOException;
@@ -52,60 +51,60 @@ import java.lang.reflect.Type;
 
 public interface IObjectGraphFactory {
 
-    // ***************************************************
-    // Methods concerning the resulting Object graph
+	// ***************************************************
+	// Methods concerning the resulting Object graph
 
-    /**
-     * Sets the context that contains the graph to be built
-     * 
-     * @param objectGraph
-     */
-    public void setContext(Object objectGraph);
+	/**
+	 * Sets the context that contains the graph to be built
+	 * 
+	 * @param objectGraph
+	 */
+	public void setContext(Object objectGraph);
 
-    /**
-     * Resets The Context, enables re-use of the same Factory in various
-     * contexts
-     * 
-     * @param objectGraph
-     */
-    public void resetContext();
+	/**
+	 * Resets The Context, enables re-use of the same Factory in various contexts
+	 */
+	public void resetContext();
 
-    public void addToRootNodes(Object anObject);
+	public void addToRootNodes(Object anObject);
 
-    public void setContextProperty(String propertyName, Object value);
+	public void setContextProperty(String propertyName, Object value);
 
-    /**
-     * Retuns the type of Object corresponding to the given URI, it must be a
-     * type of object relevant in the context of the current graph to be built
-     * 
-     * @param typeURI => URI of the type
-     * @param objectName => the name of the object to be typed
-     * @param container => the object containing the object to be typed
-     * @return the relevant Type
-     */
-    public Type getTypeForObject(String typeURI, Object container, String objectName);
+	/**
+	 * Retuns the type of Object corresponding to the given URI, it must be a type of object relevant in the context of the current graph to
+	 * be built
+	 * 
+	 * @param typeURI
+	 *            =&gt; URI of the type
+	 * @param objectName
+	 *            =&gt; the name of the object to be typed
+	 * @param container
+	 *            =&gt; the object containing the object to be typed
+	 * @return the relevant Type
+	 */
+	public Type getTypeForObject(String typeURI, Object container, String objectName);
 
-    // ***************************************************
-    // Methods concerning Objects in the graph
+	// ***************************************************
+	// Methods concerning Objects in the graph
 
-    public Object getInstanceOf(Type aType, String name);
+	public Object getInstanceOf(Type aType, String name);
 
-    //
-    // public boolean objectHasAttributeNamed(Object object, Type attrType,
-    // String attrName);
-    public boolean objectHasAttributeNamed(Object object, String attrName);
+	//
+	// public boolean objectHasAttributeNamed(Object object, Type attrType,
+	// String attrName);
+	public boolean objectHasAttributeNamed(Object object, String attrName);
 
-    public Type getAttributeType(Object currentContainer, String localName);
+	public Type getAttributeType(Object currentContainer, String localName);
 
-    public void addAttributeValueForObject(Object object, String attrName, Object value);
+	public void addAttributeValueForObject(Object object, String attrName, Object value);
 
-    public void addChildToObject(Object child, Object container);
+	public void addChildToObject(Object child, Object container);
 
-    // ***************************************************
-    // Methods concerning deserialization
+	// ***************************************************
+	// Methods concerning deserialization
 
-    public Object deserialize(String input) throws Exception, IOException;
+	public Object deserialize(String input) throws Exception, IOException;
 
-    public Object deserialize(InputStream input) throws Exception, IOException;
+	public Object deserialize(InputStream input) throws Exception, IOException;
 
 }

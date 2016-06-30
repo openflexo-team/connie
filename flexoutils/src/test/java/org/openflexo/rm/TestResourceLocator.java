@@ -62,7 +62,7 @@ public class TestResourceLocator {
 		Resource r = ResourceLocator.locateResource("Config/logging.properties");
 		assertNotNull(r);
 		assertTrue(r instanceof FileResourceImpl);
-		assertTrue(((FileResourceImpl) r).getFile().getAbsolutePath().contains("target"));
+		assertTrue(((FileResourceImpl) r).getFile().getAbsolutePath().contains("Config"));
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class TestResourceLocator {
 		assertTrue(r2 instanceof FileResourceImpl);
 		assertTrue(r3 instanceof FileResourceImpl);
 
-		assertTrue(((FileResourceImpl) r).getFile().getAbsolutePath().contains("target"));
+		assertTrue(((FileResourceImpl) r).getFile().getAbsolutePath().contains("Config"));
 		assertTrue(((FileResourceImpl) r2).getFile().getAbsolutePath().contains("src/main/resources"));
 
 		assertSame(r2, r3);

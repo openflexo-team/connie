@@ -72,7 +72,7 @@ public class TypeUtils {
 	 * Transforms the passed in type to a {@code Class} object. Type-checking method of convenience.
 	 * </p>
 	 * 
-	 * @param parameterizedType
+	 * @param aType
 	 *            the type to be converted
 	 * @return the corresponding {@code Class} object
 	 * @throws IllegalStateException
@@ -361,9 +361,9 @@ public class TypeUtils {
 	}
 
 	/**
-	 * Determines if the class or interface represented by supplied <code>aType</code> object is either the same as, or is a superclass or
-	 * superinterface of, the class or interface represented by the specified <code>anOtherType</code> parameter. It returns
-	 * <code>true</code> if so; otherwise false<br>
+	 * Determines if the class or interface represented by supplied {@code aType} object is either the same as, or is a superclass or
+	 * superinterface of, the class or interface represented by the specified {@code anOtherType} parameter. It returns {@code true} if so;
+	 * otherwise false<br>
 	 * This method also tried to resolve generics before to perform the assignability test
 	 * 
 	 * @param aType
@@ -1201,8 +1201,8 @@ public class TypeUtils {
 
 	/**
 	 * <p>
-	 * Retrieves all the type arguments for this parameterized type including owner hierarchy arguments such as <code>
-	 * Outer<K,V>.Inner<T>.DeepInner<E></code> . The arguments are returned in a {@link Map} specifying the argument type for each
+	 * Retrieves all the type arguments for this parameterized type including owner hierarchy arguments such as {@code 
+	 * Outer<K,V>.Inner<T>.DeepInner<E>} . The arguments are returned in a {@link Map} specifying the argument type for each
 	 * {@link TypeVariable}.
 	 * </p>
 	 * 

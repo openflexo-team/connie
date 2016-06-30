@@ -44,7 +44,7 @@ import java.util.logging.Handler;
 /**
  * Flexo logging handler for dynamic logging
  * 
- * @author sguerin
+ * @author sylvain
  */
 public class FlexoLoggingHandler extends Handler {
 

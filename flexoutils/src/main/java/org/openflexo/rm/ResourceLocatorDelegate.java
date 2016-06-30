@@ -62,7 +62,7 @@ public interface ResourceLocatorDelegate {
 	/**
 	 * Gets the resource pointed by URL as a File
 	 * 
-	 * @param resourceURL
+	 * @param location
 	 * @return null when resource cannot be converted to File
 	 */
 	public File retrieveResourceAsFile(Resource location);

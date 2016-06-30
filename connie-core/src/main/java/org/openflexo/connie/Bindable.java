@@ -46,7 +46,7 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  * 
  * Any Bindable implementation must implements {@link HasPropertyChangeSupport} and should notify BindingModel changes
  * 
- * @author sguerin
+ * @author sylvain
  * 
  */
 public interface Bindable extends HasPropertyChangeSupport {

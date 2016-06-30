@@ -9,3 +9,18 @@ sablecc {
   intermediateDir = "target/generated-sources/grammar"
   outputDir = "target/generated-sources/sablecc"  //  outputDir = "src/main/java"
 }
+
+sourceSets {
+ main {
+   java {
+     srcDir 'target/generated-sources/sablecc'
+   }
+   resources {
+     srcDir 'target/generated-sources/sablecc'
+     includes = [ "**/*.dat" ]
+   }
+ }
+}
+
+//println "Writing to $project.sourceSets.main.output.resourcesDir"
+//sourceSets.main.resources.

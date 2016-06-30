@@ -45,7 +45,7 @@ import java.util.logging.XMLFormatter;
 /**
  * Overrides default java.util.logging.XMLFormatter by removing link to default DTD
  * 
- * @author sguerin
+ * @author sylvain
  */
 public class FlexoLoggingXMLFormatter extends XMLFormatter {
 

@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * @author c guychard
+ * @author xtof
  * 
  *         A Flexible Resource Locator that enables to get resources from multiple locations using delegates A single deletage per
  *         ResourceDelegateLocator implementing class is authorized
@@ -101,11 +101,11 @@ final public class ResourceLocator {
 	}
 
 	/**
-	 * Explicitely locate a Resource in the source code (when source code is available)<br>
+	 * Explicitly locate a Resource in the source code (when source code is available)<br>
 	 * 
 	 * @param resource
-	 * @param an
-	 *            additionial regexFilter for disambiguation when several resources are found.
+	 * @param regexFilter
+	 *            an additional regexFilter for disambiguation when several resources are found.
 	 * @return
 	 */
 	static public Resource locateSourceCodeResource(Resource resource, String regexFilter) {
@@ -114,7 +114,7 @@ final public class ResourceLocator {
 	}
 
 	/**
-	 * Explicitely locate a Resource in the source code (when source code is available)<br>
+	 * Explicitly locate a Resource in the source code (when source code is available)<br>
 	 * 
 	 * @param resource
 	 * @return

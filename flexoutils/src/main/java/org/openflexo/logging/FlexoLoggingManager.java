@@ -52,7 +52,7 @@ import org.openflexo.rm.ResourceLocator;
  * Flexo logging manager: manages logs for the application above java.util.logging<br>
  * Also read and parse logs of an expired session of Flexo
  * 
- * @author sguerin
+ * @author sylvain
  */
 
 // TODO: we can now no more save or load a log file: proceed as a service in flexofoundation layer
@@ -118,7 +118,8 @@ public class FlexoLoggingManager {
 		try {
 			if (configurationFile != null) {
 				LogManager.getLogManager().readConfiguration(configurationFile.openInputStream());
-			} else {
+			}
+			else {
 				LOGGER.warning("Unable to initialize LogginManager with NULL configurationFile...");
 			}
 		} catch (SecurityException e) {
@@ -155,7 +156,8 @@ public class FlexoLoggingManager {
 		if (flexoLoggingHandler != null) {
 			flexoLoggingHandler.publishUnhandledException(new java.util.logging.LogRecord(java.util.logging.Level.WARNING,
 					"Unhandled exception occured: " + e.getClass().getName()), e);
-		} else {
+		}
+		else {
 			Logger.global.warning("Unexpected exception occured: " + e.getClass().getName());
 		}
 	}

@@ -78,7 +78,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 /**
- * @author bmangez <B>Class Description</B>
+ * @author bmangez
  */
 public class ToolBox {
 
@@ -283,7 +283,8 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param name
+	 * @param keepCase
 	 * @return
 	 */
 	@Deprecated
@@ -336,7 +337,7 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param name
 	 * @return
 	 */
 	@Deprecated
@@ -375,7 +376,7 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param name
 	 * @return
 	 */
 	@Deprecated
@@ -385,7 +386,7 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param name
 	 * @return
 	 */
 	@Deprecated
@@ -395,7 +396,7 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param stringToConvert
 	 * @return
 	 */
 	@Deprecated
@@ -488,7 +489,7 @@ public class ToolBox {
 		public String response;
 	}
 
-	public static RequestResponse getRequest(Hashtable<String,String> param, String url) throws IOException {
+	public static RequestResponse getRequest(Hashtable<String, String> param, String url) throws IOException {
 		StringBuffer paramsAsString = new StringBuffer("");
 		if (param != null && param.size() > 0) {
 			// paramsAsString.append("?");
@@ -535,7 +536,7 @@ public class ToolBox {
 
 	}
 
-	public static RequestResponse postRequest(Hashtable<String,String> parameters, String url) {
+	public static RequestResponse postRequest(Hashtable<String, String> parameters, String url) {
 		try {
 			// Construct data
 			StringBuffer data = new StringBuffer();
@@ -740,7 +741,7 @@ public class ToolBox {
 	}
 
 	/**
-	 * @param newNalme
+	 * @param name
 	 */
 	public static String getDBTableNameFromPropertyName(String name) {
 		StringBuffer sb = new StringBuffer();

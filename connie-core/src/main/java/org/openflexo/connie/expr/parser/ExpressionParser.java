@@ -44,22 +44,19 @@ import java.io.StringReader;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.expr.ArithmeticUnaryOperator;
-import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.expr.Constant.ArithmeticConstant;
 import org.openflexo.connie.expr.Constant.FloatConstant;
 import org.openflexo.connie.expr.Constant.IntegerConstant;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.expr.parser.lexer.Lexer;
 import org.openflexo.connie.expr.parser.node.Start;
 import org.openflexo.connie.expr.parser.parser.Parser;
 
 /**
- * This class provides the parsing service for AnTAR expressions and bindings. This includes syntaxic and semantics analyzer.<br>
+ * This class provides the parsing service for Connie expressions and bindings. This includes syntactic and semantics analyzer.<br>
  * 
- * SableCC is extensively used to perform this. To compile and generate the grammar, please invoke {@link CompileAntarExpressionParser}
- * located in src/dev/java. The grammar is located in src/main/resources/antar_expr.grammar.<br>
- * Generated code is located in org.openflexo.connie.expr.parser.analysis, org.openflexo.connie.expr.parser.lexer,
- * org.openflexo.connie.expr.parser.node, org.openflexo.connie.expr.parser.parser
+ * SableCC is used to generate the grammar located in connie-parser.<br>
  * 
  * @author sylvain
  */
@@ -68,13 +65,13 @@ public class ExpressionParser {
 	private static final Logger LOGGER = Logger.getLogger(ExpressionParser.class.getPackage().getName());
 
 	/**
-	 * This is the method to invoke to perform a parsing. Syntaxic and (some) semantics analyzer are performed and returned value is an
-	 * Expression conform to AnTAR expression abstract syntaxic tree
+	 * This is the method to invoke to perform a parsing. Syntactic and (some) semantics analyzer are performed and returned value is an
+	 * Expression conform to AnTAR expression abstract syntactic tree
 	 * 
 	 * @param anExpression
 	 * @return
 	 * @throws ParseException
-	 *             if expression was not parsable
+	 *             if expression was not parseable
 	 */
 	public static Expression parse(String anExpression) throws ParseException {
 		try {
@@ -110,9 +107,11 @@ public class ExpressionParser {
 			ArithmeticConstant<?> c = (ArithmeticConstant<?>) ((UnaryOperatorExpression) e).getArgument();
 			if (c instanceof IntegerConstant) {
 				return new IntegerConstant(-((IntegerConstant) c).getValue());
-			} else if (c instanceof FloatConstant) {
+			}
+			else if (c instanceof FloatConstant) {
 				return new FloatConstant(-((FloatConstant) c).getValue());
-			} else {
+			}
+			else {
 				LOGGER.warning("Unexpected " + c);
 			}
 		}

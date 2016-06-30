@@ -45,33 +45,32 @@ import org.openflexo.kvc.KeyValueProperty;
 
 /**
  * <p>
- * <code>AccessorMethod</code> is a class representing a KeyValueProperty accessor method.
+ * {@code AccessorMethod} is a class representing a KeyValueProperty accessor method.
  * </p>
  * <p>
  * Because many differents accessors could be defined in a class, all implementing different class-specific levels (more or less
- * specialized, regarding parameters classes), we store these <code>AccessorMethods</code> in a particular order depending on the parameters
+ * specialized, regarding parameters classes), we store these {@code AccessorMethods} in a particular order depending on the parameters
  * specialization. This order is implemented in this class through {@link Comparable} interface implementation. Note: this class has a
- * natural ordering that is inconsistent with equals, which means that <code>(x.compareTo(y)==0) == (x.equals(y))</code> condition is
- * violated.
+ * natural ordering that is inconsistent with equals, which means that {@code (x.compareTo(y)==0) == (x.equals(y))} condition is violated.
  * 
- * @author <a href="mailto:Sylvain.Guerin@enst-bretagne.fr">Sylvain Guerin</a>
+ * @author sylvain
  * @see KeyValueProperty
  */
 public class AccessorMethod implements Comparable<Object> {
 
-	/** Stores the related <code>KeyValueProperty</code> */
+	/** Stores the related {@code KeyValueProperty} */
 	protected KeyValueProperty keyValueProperty;
 
-	/** Stores the related <code>Method</code> */
+	/** Stores the related {@code Method} */
 	protected Method method;
 
 	/**
-	 * Creates a new <code>AccessorMethod</code> instance.
+	 * Creates a new {@code AccessorMethod} instance.
 	 * 
 	 * @param aKeyValueProperty
-	 *            a <code>KeyValueProperty</code> value
+	 *            a {@code KeyValueProperty} value
 	 * @param aMethod
-	 *            a <code>Method</code> value
+	 *            a {@code Method} value
 	 */
 	public AccessorMethod(KeyValueProperty aKeyValueProperty, Method aMethod) {
 
@@ -85,8 +84,8 @@ public class AccessorMethod implements Comparable<Object> {
 	 * less than, equal to, or greater than the specified object.
 	 * 
 	 * @param object
-	 *            an <code>Object</code> value
-	 * @return an <code>int</code> value
+	 *            an {@code Object} value
+	 * @return an {@code int} value
 	 * @exception ClassCastException
 	 *                if an error occurs
 	 */
@@ -153,7 +152,7 @@ public class AccessorMethod implements Comparable<Object> {
 	}
 
 	/**
-	 * Return the related <code>Method</code>
+	 * Return the related {@code Method}
 	 */
 	public Method getMethod() {
 

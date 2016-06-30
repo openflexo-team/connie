@@ -226,7 +226,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	/**
 	 * @param element
-	 * @param i
 	 */
 	public Type addBindingPathElement(BindingPathElement element) {
 		int index = bindingPath.size();
@@ -485,8 +484,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * A {@link BindingValue} is cacheable if
 	 * <ul>
 	 * <li>related {@link BindingVariable} is cacheable</li>
-	 * <li>this {@link BindingValue} should be notification-safe
-	 * 
+	 * <li>this {@link BindingValue} should be notification-safe</li>
+	 * </ul>
 	 * 
 	 * @return
 	 */

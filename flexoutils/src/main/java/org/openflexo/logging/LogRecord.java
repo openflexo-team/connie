@@ -47,7 +47,7 @@ import java.util.logging.Level;
 /**
  * This class is used to encode a simple log record in Flexo
  * 
- * @author sguerin
+ * @author sylvain
  */
 public class LogRecord {
 
@@ -156,12 +156,14 @@ public class LogRecord {
 	public String getStackTraceAsString() {
 		if (_stackTraceAsString != null) {
 			return _stackTraceAsString;
-		} else if (stackTrace != null) {
+		}
+		else if (stackTrace != null) {
 			StringBuilder returned = new StringBuilder();
 			int beginAt;
 			if (isUnhandledException) {
 				beginAt = 0;
-			} else {
+			}
+			else {
 				beginAt = 6;
 			}
 			for (int i = beginAt; i < stackTrace.length; i++) {
@@ -169,7 +171,8 @@ public class LogRecord {
 				returned.append("\t").append("at ").append(stackTrace[i]).append('\n');
 			}
 			return returned.toString();
-		} else {
+		}
+		else {
 			return "StackTrace not available";
 		}
 	}
