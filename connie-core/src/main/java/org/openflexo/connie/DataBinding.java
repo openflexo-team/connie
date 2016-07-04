@@ -776,13 +776,17 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void notifyBindingChanged(Expression oldValue, Expression newValue) {
-		getOwner().notifiedBindingChanged(this);
-		// logger.info("notifyBindingChanged from " + oldValue + " to " +
-		// newValue + " of " + newValue.getClass());
+		if (getOwner() != null) {
+			getOwner().notifiedBindingChanged(this);
+			// logger.info("notifyBindingChanged from " + oldValue + " to " +
+			// newValue + " of " + newValue.getClass());
+		}
 	}
 
 	public void notifyBindingDecoded() {
-		getOwner().notifiedBindingDecoded(this);
+		if (getOwner() != null) {
+			getOwner().notifiedBindingDecoded(this);
+		}
 	}
 
 	// DONT DO THIS, since it is really dangerous !!!
