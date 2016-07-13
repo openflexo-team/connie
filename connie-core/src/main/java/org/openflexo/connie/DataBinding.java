@@ -471,7 +471,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
 							if (!((BindingValue) e).isValid(DataBinding.this)) {
-								// System.out.println("Invalid binding " + e);
+								((BindingValue) e).markedAsToBeReanalized();
+							}
+							if (!((BindingValue) e).isValid(DataBinding.this)) {
+								System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
 							}
 							else {
