@@ -474,7 +474,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 								((BindingValue) e).markedAsToBeReanalized();
 							}
 							if (!((BindingValue) e).isValid(DataBinding.this)) {
-								System.out.println("Invalid binding " + e);
+								//System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
 							}
 							else {
