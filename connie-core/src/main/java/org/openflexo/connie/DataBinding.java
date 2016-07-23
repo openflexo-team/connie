@@ -474,7 +474,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 								((BindingValue) e).markedAsToBeReanalized();
 							}
 							if (!((BindingValue) e).isValid(DataBinding.this)) {
-								//System.out.println("Invalid binding " + e);
+								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
 							}
 							else {
@@ -1065,7 +1065,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				@Override
 				public void visit(Expression e) {
 					if (e instanceof BindingValue) {
-						returned.addAll(((BindingValue) e).getTargetObjects(context));
+						List<TargetObject> targetObjects = ((BindingValue) e).getTargetObjects(context);
+						if (targetObjects != null) {
+							returned.addAll(targetObjects);
+						}
 					}
 				}
 			});
