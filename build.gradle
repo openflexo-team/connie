@@ -5,11 +5,13 @@ buildscript {
  
   dependencies {
     classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.0.4,)'
+    classpath "com.prezi.pride:gradle-pride-plugin:0.11"
   }
 }
 
 subprojects {
   apply plugin: 'java'
+  apply plugin: "pride"
   //  apply plugin: 'checkstyle'
   //  apply plugin: 'pmd'
   //  apply plugin: 'findbugs'
