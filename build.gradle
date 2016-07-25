@@ -10,8 +10,9 @@ buildscript {
 }
 
 subprojects {
+  group='org.openflexo'
   apply plugin: 'java'
-  apply plugin: "pride"
+  apply plugin: 'pride'
   //  apply plugin: 'checkstyle'
   //  apply plugin: 'pmd'
   //  apply plugin: 'findbugs'
