@@ -1,13 +1,12 @@
 buildscript {
   repositories {
-    mavenCentral()
+    jcenter()
   }
  
   dependencies {
     classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.0.4,)'
   }
 }
-
 
 subprojects {
   apply plugin: 'java'
@@ -22,7 +21,11 @@ subprojects {
   project.buildDir = 'target'
   
   repositories {
-    mavenCentral()
+    jcenter()
+    //    mavenCentral()
+    //    maven {
+    //        url "http://repo.mycompany.com/maven2"
+    //    }
   }
  
   dependencies {
@@ -68,6 +71,11 @@ subprojects {
 }
 
 apply plugin: 'maven'
+apply plugin: 'project-report'
+
+htmlDependencyReport {
+    projects = project.allprojects
+}
 
 archivesBaseName = 'connie'
 group = 'org.openflexo'
