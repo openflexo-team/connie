@@ -287,7 +287,7 @@ public class KeyValueProperty extends Observable {
 	protected Method searchMatchingSetMethod(Class<?> aDeclaringClass, String propertyName, Type aType) {
 		String propertyNameWithFirstCharToUpperCase = propertyName.substring(0, 1).toUpperCase()
 				+ propertyName.substring(1, propertyName.length());
-		List<String> tries = new ArrayList<String>();
+		List<String> tries = new ArrayList<>();
 		tries.add("set" + propertyNameWithFirstCharToUpperCase);
 		tries.add("_set" + propertyNameWithFirstCharToUpperCase);
 		if (TypeUtils.isBoolean(aType)) {
@@ -409,7 +409,7 @@ public class KeyValueProperty extends Observable {
 	 */
 	protected TreeSet<AccessorMethod> searchMethodsWithNameAndParamsNumber(String[] searchedNames, int paramNumber) {
 
-		TreeSet<AccessorMethod> returnedTreeSet = new TreeSet<AccessorMethod>();
+		TreeSet<AccessorMethod> returnedTreeSet = new TreeSet<>();
 		Method[] allMethods = declaringClass.getMethods();
 
 		for (int i = 0; i < allMethods.length; i++) {

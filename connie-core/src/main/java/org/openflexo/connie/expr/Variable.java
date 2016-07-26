@@ -59,7 +59,7 @@ public class Variable extends BindingValue {
 	}
 
 	private static List<AbstractBindingPathElement> makeSingleton(String aVariableName) {
-		List<AbstractBindingPathElement> returned = new ArrayList<BindingValue.AbstractBindingPathElement>();
+		List<AbstractBindingPathElement> returned = new ArrayList<>();
 		returned.add(new NormalBindingPathElement(aVariableName));
 		return returned;
 	}

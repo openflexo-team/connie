@@ -87,7 +87,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private static final Logger LOGGER = Logger.getLogger(BindingValue.class.getPackage().getName());
 
-	private final ArrayList<Object> EMPTY_LIST = new ArrayList<Object>();
+	private final ArrayList<Object> EMPTY_LIST = new ArrayList<>();
 
 	public static abstract class AbstractBindingPathElement {
 	}
@@ -178,7 +178,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		this.parsedBindingPath = aBindingPath;
 		bindingVariable = null;
-		bindingPath = new ArrayList<BindingPathElement>();
+		bindingPath = new ArrayList<>();
 		needsAnalysing = true;
 		analysingSuccessfull = true;
 	}
@@ -284,7 +284,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			else if (e instanceof FunctionPathElement) {
 				FunctionPathElement fpe = (FunctionPathElement) e;
-				List<Expression> argList = new ArrayList<Expression>();
+				List<Expression> argList = new ArrayList<>();
 				for (FunctionArgument fa : fpe.getArguments()) {
 					DataBinding<?> db = fpe.getParameter(fa);
 					if (db != null) {
@@ -569,13 +569,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 
 		boolean hasBeenTransformed = false;
-		ArrayList<AbstractBindingPathElement> newBindingPath = new ArrayList<AbstractBindingPathElement>();
+		ArrayList<AbstractBindingPathElement> newBindingPath = new ArrayList<>();
 		for (AbstractBindingPathElement e : getParsedBindingPath()) {
 			if (e instanceof NormalBindingPathElement) {
 				newBindingPath.add(new NormalBindingPathElement(((NormalBindingPathElement) e).property));
 			}
 			else if (e instanceof MethodCallBindingPathElement) {
-				ArrayList<Expression> newArgs = new ArrayList<Expression>();
+				ArrayList<Expression> newArgs = new ArrayList<>();
 				for (Expression arg : ((MethodCallBindingPathElement) e).args) {
 					Expression transformedExpression = arg.transform(transformer);
 					newArgs.add(transformedExpression);
@@ -846,10 +846,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					}
 					else if (pathElement instanceof MethodCallBindingPathElement) {
 						MethodCallBindingPathElement methodCall = (MethodCallBindingPathElement) pathElement;
-						List<DataBinding<?>> args = new ArrayList<DataBinding<?>>();
+						List<DataBinding<?>> args = new ArrayList<>();
 						int argIndex = 0;
 						for (Expression arg : methodCall.args) {
-							DataBinding<?> argDataBinding = new DataBinding<Object>(dataBinding.getOwner(), Object.class,
+							DataBinding<?> argDataBinding = new DataBinding<>(dataBinding.getOwner(), Object.class,
 									DataBinding.BindingDefinitionType.GET);
 							argDataBinding.setBindingName("arg" + argIndex);
 							argDataBinding.setExpression(arg);
@@ -1032,7 +1032,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return EMPTY_LIST;
 		}
 
-		List<Object> returned = new ArrayList<Object>();
+		List<Object> returned = new ArrayList<>();
 
 		Object current = context.getValue(getBindingVariable());
 		returned.add(current);
@@ -1087,7 +1087,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return null;
 		}
 
-		ArrayList<TargetObject> returned = new ArrayList<TargetObject>();
+		ArrayList<TargetObject> returned = new ArrayList<>();
 
 		Object current = context.getValue(getBindingVariable());
 		returned.add(new TargetObject(context, getBindingVariable().getVariableName()));

@@ -44,8 +44,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.BindingModel;
@@ -59,6 +57,8 @@ import org.openflexo.connie.type.TypeUtils;
 
 import com.google.common.reflect.TypeToken;
 
+import junit.framework.TestCase;
+
 public class TestBinding extends TestCase {
 
 	private static final BindingFactory BINDING_FACTORY = new JavaBindingFactory();
@@ -70,7 +70,7 @@ public class TestBinding extends TestCase {
 		public static String aString = "this is a test";
 		public static boolean aBoolean = false;
 		public static int anInt = 7;
-		public static List<String> aList = new ArrayList<String>();
+		public static List<String> aList = new ArrayList<>();
 
 		static {
 			aList.add("this");
@@ -94,11 +94,14 @@ public class TestBinding extends TestCase {
 
 			if (variable.getVariableName().equals("aString")) {
 				return aString;
-			} else if (variable.getVariableName().equals("aBoolean")) {
+			}
+			else if (variable.getVariableName().equals("aBoolean")) {
 				return aBoolean;
-			} else if (variable.getVariableName().equals("anInt")) {
+			}
+			else if (variable.getVariableName().equals("anInt")) {
 				return anInt;
-			} else if (variable.getVariableName().equals("aList")) {
+			}
+			else if (variable.getVariableName().equals("aList")) {
 				return aList;
 			}
 			return null;
@@ -133,11 +136,11 @@ public class TestBinding extends TestCase {
 	}
 
 	/*public static class TestObject implements Bindable, BindingEvaluationContext {
-
+	
 		private Object object;
 		private BindingDefinition bindingDefinition;
 		private BindingModel bindingModel;
-
+	
 		private BindingEvaluator(Object object) {
 			this.object = object;
 			bindingDefinition = new BindingDefinition("object", object.getClass(), BindingDefinitionType.GET, true);
@@ -145,7 +148,7 @@ public class TestBinding extends TestCase {
 			bindingModel.addToBindingVariables(new BindingVariableImpl(this, "object", object.getClass()));
 			BINDING_FACTORY.setBindable(this);
 		}
-
+	
 		private static String normalizeBindingPath(String bindingPath) {
 			DefaultExpressionParser parser = new DefaultExpressionParser();
 			Expression expression = null;
@@ -168,7 +171,7 @@ public class TestBinding extends TestCase {
 						return e;
 					}
 				});
-
+	
 				return expression.toString();
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
@@ -179,69 +182,69 @@ public class TestBinding extends TestCase {
 			}
 			return expression.toString();
 		}
-
+	
 		@Override
 		public BindingModel getBindingModel() {
 			return bindingModel;
 		}
-
+	
 		@Override
 		public BindingFactory getBindingFactory() {
 			return BINDING_FACTORY;
 		}
-
+	
 		@Override
 		public Object getValue(BindingVariable variable) {
 			return object;
 		}
-
+	
 	}
-
-
+	
+	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
-
+	
 	public void test1() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("toString", thisIsATest, thisIsATest);
 	}
-
+	
 	public void test2() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("toString()", thisIsATest, thisIsATest);
 	}
-
+	
 	public void test3() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("substring(2,8)", thisIsATest, "llo wo");
 	}
-
+	
 	public void test4() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("substring(2,5*2-2)", thisIsATest, "llo wo");
 	}
-
+	
 	public void test5() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("toString()+toString()", thisIsATest, "Hello world, this is a testHello world, this is a test");
 	}
-
+	
 	public void test6() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("toString()+' hash='+object.hashCode()", thisIsATest, thisIsATest + " hash=" + thisIsATest.hashCode());
 	}
-
+	
 	public void test7() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("substring(0,5)+' '+substring(23,27).toUpperCase()", thisIsATest, "Hello TEST");
 	}
-
+	
 	public void test8() {
 		genericTest("object*2-7", 10, 13);
 	}
-
+	
 	public void test9() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("substring(3,length()-2)+' hash='+hashCode()", thisIsATest, "lo world, this is a te hash=" + thisIsATest.hashCode());
@@ -251,8 +254,7 @@ public class TestBinding extends TestCase {
 
 		System.out.println("Evaluate " + bindingPath);
 
-		DataBinding<?> dataBinding = new DataBinding<Object>(bindingPath, BINDING_CONTEXT, expectedType,
-				DataBinding.BindingDefinitionType.GET);
+		DataBinding<?> dataBinding = new DataBinding<>(bindingPath, BINDING_CONTEXT, expectedType, DataBinding.BindingDefinitionType.GET);
 
 		/*	BINDING_FACTORY.setBindable(BINDING_CONTEXT);
 			AbstractBinding binding = BINDING_FACTORY.convertFromString(bindingPath);
@@ -297,7 +299,7 @@ public class TestBinding extends TestCase {
 			fail();
 		}
 		System.out.println("Evaluated as " + evaluatedResult);
-
+		
 		if (expectedResult instanceof Number) {
 			if (evaluatedResult instanceof Number) {
 				assertEquals(((Number) expectedResult).doubleValue(), ((Number) evaluatedResult).doubleValue());

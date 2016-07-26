@@ -210,7 +210,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 		final File workingDirectory = new File(System.getProperty("user.dir"));
 
 		List<File> found = locateAllFiles(relativePathName, true);
-		List<File> matches = new ArrayList<File>();
+		List<File> matches = new ArrayList<>();
 		// Apply Filter
 		if (regexFilter != null) {
 			for (File f : found) {
@@ -226,7 +226,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 			return matches.get(0);
 		}
 
-		// In this case, the response is ambigous
+		// In this case, the response is ambiguous
 		if (matches.size() > 1) {
 			// We try to privilegiate files that are closer to working dir
 			Collections.sort(matches, new Comparator<File>() {

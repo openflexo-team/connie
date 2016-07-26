@@ -977,9 +977,9 @@ public class TypeUtils {
 			return;
 		}
 
-		for (Class<?> reducedClass : new ArrayList<Class<?>>(someClasses)) {
+		for (Class<?> reducedClass : new ArrayList<>(someClasses)) {
 			if (someClasses.contains(reducedClass)) {
-				for (Class<?> aClass : new ArrayList<Class<?>>(someClasses)) {
+				for (Class<?> aClass : new ArrayList<>(someClasses)) {
 					if (!aClass.equals(reducedClass) && aClass.isAssignableFrom(reducedClass)) {
 						someClasses.remove(aClass);
 					}
@@ -1057,7 +1057,7 @@ public class TypeUtils {
 
 			// We first check for exact lookup
 
-			Map<Class<?>, T> matchingClasses = new HashMap<Class<?>, T>();
+			Map<Class<?>, T> matchingClasses = new HashMap<>();
 
 			// First on super class
 			Class<?> superclass = aClass.getSuperclass();

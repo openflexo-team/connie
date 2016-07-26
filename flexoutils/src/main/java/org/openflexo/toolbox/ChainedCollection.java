@@ -53,8 +53,8 @@ public class ChainedCollection<T> implements Collection<T> {
 	private List<T> items;
 
 	public ChainedCollection() {
-		collections = new ArrayList<Collection<? extends T>>();
-		items = new ArrayList<T>();
+		collections = new ArrayList<>();
+		items = new ArrayList<>();
 	}
 
 	public ChainedCollection(T... items) {
@@ -78,7 +78,7 @@ public class ChainedCollection<T> implements Collection<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		List<Iterator<? extends T>> allIterators = new ArrayList<Iterator<? extends T>>();
+		List<Iterator<? extends T>> allIterators = new ArrayList<>();
 		for (Collection<? extends T> collection : collections) {
 			if (collection.size() > 0) {
 				allIterators.add(collection.iterator());
@@ -87,7 +87,7 @@ public class ChainedCollection<T> implements Collection<T> {
 		if (items.size() > 0) {
 			allIterators.add(items.iterator());
 		}
-		return new IteratorChain(allIterators);
+		return new IteratorChain<>(allIterators);
 	}
 
 	@Override
@@ -207,19 +207,19 @@ public class ChainedCollection<T> implements Collection<T> {
 
 	// TODO: make JUnit tests
 	public static void main(String[] args) {
-		List<String> l1 = new ArrayList<String>();
+		List<String> l1 = new ArrayList<>();
 		l1.add("String1");
 		l1.add("String2");
 		l1.add("String3");
-		List<String> l2 = new ArrayList<String>();
+		List<String> l2 = new ArrayList<>();
 		l2.add("String4");
 		l2.add("String5");
 		System.out.println("ChainedCollection1=");
-		ChainedCollection<String> cc1 = new ChainedCollection<String>(l1, l2);
+		ChainedCollection<String> cc1 = new ChainedCollection<>(l1, l2);
 		for (String s : cc1) {
 			System.out.println("> " + s);
 		}
-		ChainedCollection<String> cc2 = new ChainedCollection<String>(cc1);
+		ChainedCollection<String> cc2 = new ChainedCollection<>(cc1);
 		cc2.add("String6");
 		cc2.add(l1);
 		System.out.println("ChainedCollection2=");

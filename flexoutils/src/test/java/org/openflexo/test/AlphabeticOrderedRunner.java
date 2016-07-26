@@ -49,20 +49,20 @@ import org.junit.runners.model.InitializationError;
 
 public class AlphabeticOrderedRunner extends BlockJUnit4ClassRunner {
 
-    public AlphabeticOrderedRunner(Class klass) throws InitializationError {
-        super(klass);
-    }
+	public AlphabeticOrderedRunner(Class<?> klass) throws InitializationError {
+		super(klass);
+	}
 
-    @Override
-    protected List<FrameworkMethod> computeTestMethods() {
-        List<FrameworkMethod> list = super.computeTestMethods();
-        List<FrameworkMethod> copy = new ArrayList<FrameworkMethod>(list);
-        Collections.sort(copy, new Comparator<FrameworkMethod>() {
-            public int compare(FrameworkMethod o1, FrameworkMethod o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
-        return copy;
-    }
-    
+	@Override
+	protected List<FrameworkMethod> computeTestMethods() {
+		List<FrameworkMethod> list = super.computeTestMethods();
+		List<FrameworkMethod> copy = new ArrayList<>(list);
+		Collections.sort(copy, new Comparator<FrameworkMethod>() {
+			public int compare(FrameworkMethod o1, FrameworkMethod o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		return copy;
+	}
+
 }

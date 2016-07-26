@@ -169,7 +169,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	@Override
 	public List<Resource> getContents() {
-		List<Resource> retval = new ArrayList<Resource>();
+		List<Resource> retval = new ArrayList<>();
 
 		addDirectoryContent(this.getLocator(), getFile(), retval);
 
@@ -192,7 +192,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 		}
 		if (file != null && file.isDirectory()) {
 
-			List<Resource> retval = new ArrayList<Resource>();
+			List<Resource> retval = new ArrayList<>();
 
 			addDirectoryContent(getLocator(), file, pattern, retval);
 

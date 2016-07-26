@@ -161,7 +161,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 		// System.out.println("Evaluating " + bindingPath);
 		String normalizedBindingPath = normalizeBindingPath(bindingPath);
 		// System.out.println("Normalize " + bindingPath + " to " + normalizedBindingPath);
-		DataBinding<?> binding = new DataBinding<Object>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
+		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 		binding.setDeclaredType(Object.class);
 		binding.setBindingDefinitionType(BindingDefinitionType.GET);
 

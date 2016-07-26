@@ -77,7 +77,7 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	}
 
 	public BindingModel(BindingModel baseBindingModel) {
-		_bindingVariables = new Vector<BindingVariable>();
+		_bindingVariables = new Vector<>();
 		pcSupport = new PropertyChangeSupport(this);
 		setBaseBindingModel(baseBindingModel);
 	}

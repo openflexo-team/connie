@@ -64,11 +64,11 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	private final Map<String, Resource> JarResourcesList;
 
-	private final Map<String, Resource> cache = new HashMap<String, Resource>();
+	private final Map<String, Resource> cache = new HashMap<>();
 
 	public ClasspathResourceLocatorImpl() {
 
-		JarResourcesList = new Hashtable<String, Resource>();
+		JarResourcesList = new Hashtable<>();
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 			return null;
 		}
 
-		ArrayList<Resource> returned = new ArrayList<Resource>();
+		ArrayList<Resource> returned = new ArrayList<>();
 
 		Resource resourceLocation = null;
 

@@ -225,9 +225,9 @@ public class StringUtils {
 
 	public static Hashtable<String, String> getQueryFromURL(URL url) {
 		if (url == null || url.getQuery() == null) {
-			return new Hashtable<String, String>();
+			return new Hashtable<>();
 		}
-		Hashtable<String, String> returned = new Hashtable<String, String>();
+		Hashtable<String, String> returned = new Hashtable<>();
 		StringTokenizer st = new StringTokenizer(url.getQuery(), "&");
 		while (st.hasMoreTokens()) {
 			StringTokenizer subSt = new StringTokenizer(st.nextToken(), "=");

@@ -37,7 +37,6 @@
  * 
  */
 
-
 package org.openflexo.diff;
 
 import java.io.File;
@@ -183,9 +182,11 @@ public class ComputeDiff {
 
 			if (inserts == 0) {
 				change = new RemovalChange();
-			} else if (deletes == 0) {
+			}
+			else if (deletes == 0) {
 				change = new AdditionChange();
-			} else {
+			}
+			else {
 				change = new ModificationChange();
 			}
 
@@ -303,7 +304,8 @@ public class ComputeDiff {
 		if (script == null) {
 			// No differences
 			return new DiffReport(source0, source1);
-		} else {
+		}
+		else {
 			Base p = null;
 			p = new Base(source0.getSignificativeTokens(), source1.getSignificativeTokens());
 			return p.buildDiffReport(script, source0, source1);
@@ -326,7 +328,7 @@ public class ComputeDiff {
 		}
 
 		protected DiffReport(DiffSource source0, DiffSource source1) {
-			changes = new Vector<DiffChange>();
+			changes = new Vector<>();
 			this.source0 = source0;
 			this.source1 = source1;
 		}
@@ -343,7 +345,8 @@ public class ComputeDiff {
 		public String toString() {
 			if (changes.size() == 0) {
 				return "DiffReport: no changes";
-			} else {
+			}
+			else {
 				StringBuffer returned = new StringBuffer();
 				for (DiffChange c : getChanges()) {
 					returned.append(c + "\n");
@@ -469,7 +472,8 @@ public class ComputeDiff {
 	public static class ModificationChange extends DiffChange {
 		@Override
 		public String toString() {
-			return ">>>>>> MODIFICATION " + first0 + "," + last0 + " " + first1 + "," + last1/*+" of TEXT:\n"+removedString+"BY:\n"+addedString*/;
+			return ">>>>>> MODIFICATION " + first0 + "," + last0 + " " + first1 + ","
+					+ last1/*+" of TEXT:\n"+removedString+"BY:\n"+addedString*/;
 		}
 
 		@Override

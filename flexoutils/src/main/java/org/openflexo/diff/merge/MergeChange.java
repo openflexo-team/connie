@@ -58,11 +58,35 @@ public class MergeChange {
 	}
 
 	public enum MergeChangeAction {
-		AutomaticMergeResolving, KeepChange, IgnoreChange, ChooseLeft, ChooseRight, ChooseBothLeftFirst, ChooseBothRightFirst, ChooseNone, CustomEditing, Undecided
+		AutomaticMergeResolving,
+		KeepChange,
+		IgnoreChange,
+		ChooseLeft,
+		ChooseRight,
+		ChooseBothLeftFirst,
+		ChooseBothRightFirst,
+		ChooseNone,
+		CustomEditing,
+		Undecided
 	}
 
 	public enum ChangeCategory {
-		LEFT_ADDITION, LEFT_MODIFICATION, LEFT_REMOVAL, SMART_CONFLICT_RESOLVED, SMART_CONFLICT_UNRESOLVED, CUSTOM_EDITING_RESOLVED, CUSTOM_EDITING_UNRESOLVED, ADD_CONFLICT_RESOLVED, ADD_CONFLICT_UNRESOLVED, CONFLICT_RESOLVED, CONFLICT_UNRESOLVED, DEL_CONFLICT_RESOLVED, DEL_CONFLICT_UNRESOLVED, RIGHT_ADDITION, RIGHT_MODIFICATION, RIGHT_REMOVAL
+		LEFT_ADDITION,
+		LEFT_MODIFICATION,
+		LEFT_REMOVAL,
+		SMART_CONFLICT_RESOLVED,
+		SMART_CONFLICT_UNRESOLVED,
+		CUSTOM_EDITING_RESOLVED,
+		CUSTOM_EDITING_UNRESOLVED,
+		ADD_CONFLICT_RESOLVED,
+		ADD_CONFLICT_UNRESOLVED,
+		CONFLICT_RESOLVED,
+		CONFLICT_UNRESOLVED,
+		DEL_CONFLICT_RESOLVED,
+		DEL_CONFLICT_UNRESOLVED,
+		RIGHT_ADDITION,
+		RIGHT_MODIFICATION,
+		RIGHT_REMOVAL
 	}
 
 	public static final ChangeCategory[] CONFLICT_RESOLVED_CATEGORIES = new ChangeCategory[] { ChangeCategory.SMART_CONFLICT_RESOLVED,
@@ -162,13 +186,13 @@ public class MergeChange {
 
 	protected static MergeChange makeLeftMergeChange(Vector<DiffChange> changes, int originalToRight, Vector<DiffChange> oppositeChanges,
 			int leftToOriginal, MergeChangeAction defaultAction) {
-		Vector<MergeChange> changesToMerge = new Vector<MergeChange>();
+		Vector<MergeChange> changesToMerge = new Vector<>();
 		for (DiffChange diffChange : changes) {
 			MergeChange change = makeLeftMergeChange(diffChange, originalToRight);
 			changesToMerge.add(change);
 		}
 		MergeChange returned = makeMergeChange(changesToMerge, defaultAction);
-		changesToMerge = new Vector<MergeChange>();
+		changesToMerge = new Vector<>();
 		for (DiffChange diffChange : oppositeChanges) {
 			MergeChange change = makeRightMergeChange(diffChange, leftToOriginal);
 			changesToMerge.add(change);
@@ -189,13 +213,13 @@ public class MergeChange {
 
 	protected static MergeChange makeRightMergeChange(Vector<DiffChange> changes, int leftToOriginal, Vector<DiffChange> oppositeChanges,
 			int originalToRight, MergeChangeAction defaultAction) {
-		Vector<MergeChange> changesToMerge = new Vector<MergeChange>();
+		Vector<MergeChange> changesToMerge = new Vector<>();
 		for (DiffChange diffChange : changes) {
 			MergeChange change = makeRightMergeChange(diffChange, leftToOriginal);
 			changesToMerge.add(change);
 		}
 		MergeChange returned = makeMergeChange(changesToMerge, defaultAction);
-		changesToMerge = new Vector<MergeChange>();
+		changesToMerge = new Vector<>();
 		for (DiffChange diffChange : oppositeChanges) {
 			MergeChange change = makeLeftMergeChange(diffChange, originalToRight);
 			changesToMerge.add(change);
@@ -240,8 +264,8 @@ public class MergeChange {
 	private String _debug;
 
 	public String toNiceString() {
-		return getMergeChangeTypeAsString() + " " + getMergeChangeSourceAsString() + " " + first0 + "," + last0 + "/" + first1 + ","
-				+ last1 + "/" + first2 + "," + last2;
+		return getMergeChangeTypeAsString() + " " + getMergeChangeSourceAsString() + " " + first0 + "," + last0 + "/" + first1 + "," + last1
+				+ "/" + first2 + "," + last2;
 	}
 
 	public String toDebugString() {
@@ -259,9 +283,11 @@ public class MergeChange {
 	private String getMergeChangeTypeAsString() {
 		if (getMergeChangeType() == MergeChangeType.Addition) {
 			return "ADDITION";
-		} else if (getMergeChangeType() == MergeChangeType.Removal) {
+		}
+		else if (getMergeChangeType() == MergeChangeType.Removal) {
 			return "REMOVAL";
-		} else if (getMergeChangeType() == MergeChangeType.Modification) {
+		}
+		else if (getMergeChangeType() == MergeChangeType.Modification) {
 			return "MODIFICATION";
 		}
 		return "???";
@@ -270,9 +296,11 @@ public class MergeChange {
 	private String getMergeChangeSourceAsString() {
 		if (getMergeChangeSource() == MergeChangeSource.Left) {
 			return "LEFT";
-		} else if (getMergeChangeSource() == MergeChangeSource.Right) {
+		}
+		else if (getMergeChangeSource() == MergeChangeSource.Right) {
 			return "RIGHT";
-		} else if (getMergeChangeSource() == MergeChangeSource.Conflict) {
+		}
+		else if (getMergeChangeSource() == MergeChangeSource.Conflict) {
 			return "CONFLICT";
 		}
 		return "???";
@@ -437,38 +465,50 @@ public class MergeChange {
 		if (mergeChangeSource == MergeChangeSource.Left) {
 			if (mergeChangeAction == MergeChangeAction.KeepChange) {
 				return new MergeChangeResult(getLeftText(), getLast0() - getFirst0() + 1);
-			} else if (mergeChangeAction == MergeChangeAction.IgnoreChange) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.IgnoreChange) {
 				return new MergeChangeResult(getRightText(), getLast2() - getFirst2() + 1);
-			} else {
+			}
+			else {
 				System.err.println("Inconsistent data in Merge " + this + " action:" + mergeChangeAction);
 				return null;
 			}
-		} else if (mergeChangeSource == MergeChangeSource.Right) {
+		}
+		else if (mergeChangeSource == MergeChangeSource.Right) {
 			if (mergeChangeAction == MergeChangeAction.KeepChange) {
 				return new MergeChangeResult(getRightText(), getLast2() - getFirst2() + 1);
-			} else if (mergeChangeAction == MergeChangeAction.IgnoreChange) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.IgnoreChange) {
 				return new MergeChangeResult(getLeftText(), getLast0() - getFirst0() + 1);
-			} else {
+			}
+			else {
 				System.err.println("Inconsistent data in Merge " + this + " action:" + mergeChangeAction);
 				return null;
 			}
-		} else if (mergeChangeSource == MergeChangeSource.Conflict) {
+		}
+		else if (mergeChangeSource == MergeChangeSource.Conflict) {
 			if (mergeChangeAction == MergeChangeAction.ChooseLeft) {
 				return new MergeChangeResult(getLeftText(), getLast0() - getFirst0() + 1);
-			} else if (mergeChangeAction == MergeChangeAction.ChooseRight) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.ChooseRight) {
 				return new MergeChangeResult(getRightText(), getLast2() - getFirst2() + 1);
-			} else if (mergeChangeAction == MergeChangeAction.ChooseNone) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.ChooseNone) {
 				return new MergeChangeResult("", 0);
-			} else if (mergeChangeAction == MergeChangeAction.ChooseBothLeftFirst) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.ChooseBothLeftFirst) {
 				return new MergeChangeResult(getLeftText() + getRightText(), getLast0() - getFirst0() + 1 + getLast2() - getFirst2() + 1);
-			} else if (mergeChangeAction == MergeChangeAction.ChooseBothRightFirst) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.ChooseBothRightFirst) {
 				return new MergeChangeResult(getRightText() + getLeftText(), getLast0() - getFirst0() + 1 + getLast2() - getFirst2() + 1);
-			} else if (mergeChangeAction == MergeChangeAction.CustomEditing) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.CustomEditing) {
 				if (customHandEdition != null) {
 					return customHandEdition;
 				}
 				return new MergeChangeResult("", 0);
-			} else if (mergeChangeAction == MergeChangeAction.AutomaticMergeResolving) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.AutomaticMergeResolving) {
 				if (getAutomaticResolvedMerge() != null) {
 					return getAutomaticResolvedMerge();
 				}
@@ -481,9 +521,11 @@ public class MergeChange {
 						getLeftText()
 						+getRightText(),
 						getLast0()-getFirst0()+1+getLast2()-getFirst2()+1);	*/
-			} else if (mergeChangeAction == MergeChangeAction.Undecided) {
+			}
+			else if (mergeChangeAction == MergeChangeAction.Undecided) {
 				return new MergeChangeResult("", 0);
-			} else {
+			}
+			else {
 				System.err.println("Inconsistent data in Merge " + this + " action:" + mergeChangeAction);
 				return null;
 			}
@@ -607,50 +649,64 @@ public class MergeChange {
 		if (getMergeChangeSource() == MergeChange.MergeChangeSource.Left) {
 			if (getMergeChangeType() == MergeChange.MergeChangeType.Addition) {
 				return ChangeCategory.LEFT_ADDITION;
-			} else if (getMergeChangeType() == MergeChange.MergeChangeType.Modification) {
+			}
+			else if (getMergeChangeType() == MergeChange.MergeChangeType.Modification) {
 				return ChangeCategory.LEFT_MODIFICATION;
-			} else if (getMergeChangeType() == MergeChange.MergeChangeType.Removal) {
+			}
+			else if (getMergeChangeType() == MergeChange.MergeChangeType.Removal) {
 				return ChangeCategory.LEFT_REMOVAL;
 			}
-		} else if (getMergeChangeSource() == MergeChange.MergeChangeSource.Conflict) {
+		}
+		else if (getMergeChangeSource() == MergeChange.MergeChangeSource.Conflict) {
 			if (getMergeChangeAction() == MergeChangeAction.AutomaticMergeResolving) {
 				if (isResolved()) {
 					return ChangeCategory.SMART_CONFLICT_RESOLVED;
-				} else {
+				}
+				else {
 					return ChangeCategory.SMART_CONFLICT_UNRESOLVED;
 				}
-			} else if (getMergeChangeAction() == MergeChangeAction.CustomEditing) {
+			}
+			else if (getMergeChangeAction() == MergeChangeAction.CustomEditing) {
 				if (isResolved()) {
 					return ChangeCategory.CUSTOM_EDITING_RESOLVED;
-				} else {
+				}
+				else {
 					return ChangeCategory.CUSTOM_EDITING_UNRESOLVED;
 				}
 			}
 			if (getMergeChangeType() == MergeChange.MergeChangeType.Addition) {
 				if (isResolved()) {
 					return ChangeCategory.ADD_CONFLICT_RESOLVED;
-				} else {
+				}
+				else {
 					return ChangeCategory.ADD_CONFLICT_UNRESOLVED;
 				}
-			} else if (getMergeChangeType() == MergeChange.MergeChangeType.Modification) {
+			}
+			else if (getMergeChangeType() == MergeChange.MergeChangeType.Modification) {
 				if (isResolved()) {
 					return ChangeCategory.CONFLICT_RESOLVED;
-				} else {
+				}
+				else {
 					return ChangeCategory.CONFLICT_UNRESOLVED;
 				}
-			} else if (getMergeChangeType() == MergeChange.MergeChangeType.Removal) {
+			}
+			else if (getMergeChangeType() == MergeChange.MergeChangeType.Removal) {
 				if (isResolved()) {
 					return ChangeCategory.DEL_CONFLICT_RESOLVED;
-				} else {
+				}
+				else {
 					return ChangeCategory.DEL_CONFLICT_UNRESOLVED;
 				}
 			}
-		} else if (getMergeChangeSource() == MergeChange.MergeChangeSource.Right) {
+		}
+		else if (getMergeChangeSource() == MergeChange.MergeChangeSource.Right) {
 			if (getMergeChangeType() == MergeChange.MergeChangeType.Addition) {
 				return ChangeCategory.RIGHT_ADDITION;
-			} else if (getMergeChangeType() == MergeChange.MergeChangeType.Modification) {
+			}
+			else if (getMergeChangeType() == MergeChange.MergeChangeType.Modification) {
 				return ChangeCategory.RIGHT_MODIFICATION;
-			} else if (getMergeChangeType() == MergeChange.MergeChangeType.Removal) {
+			}
+			else if (getMergeChangeType() == MergeChange.MergeChangeType.Removal) {
 				return ChangeCategory.RIGHT_REMOVAL;
 			}
 		}

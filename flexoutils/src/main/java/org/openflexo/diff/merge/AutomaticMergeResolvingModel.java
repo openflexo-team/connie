@@ -49,8 +49,8 @@ public class AutomaticMergeResolvingModel implements AutomaticMergeResolvingMode
 
 	public AutomaticMergeResolvingModel() {
 		super();
-		_primaryRules = new Vector<AutomaticMergeResolvingRule>();
-		_detailedRules = new Vector<AutomaticMergeResolvingRule>();
+		_primaryRules = new Vector<>();
+		_detailedRules = new Vector<>();
 	}
 
 	public void addToPrimaryRules(AutomaticMergeResolvingRule aRule) {
@@ -80,7 +80,8 @@ public class AutomaticMergeResolvingModel implements AutomaticMergeResolvingMode
 				// Not resolvable
 				return false;
 				// return null;
-			} else {
+			}
+			else {
 				// This is a change that might be tokenized
 				// Before to analyse deeply, look if a primary
 				// rule may resolve conflict
@@ -107,7 +108,8 @@ public class AutomaticMergeResolvingModel implements AutomaticMergeResolvingMode
 				change.setAutomaticMergeReason(localizedForKey("all_changes_are_resolved_by_detailed_analysis"));
 				return true;
 			}
-		} else {
+		}
+		else {
 			return true;
 			// return change.getMergeChangeResult().merge;
 		}

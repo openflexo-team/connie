@@ -122,7 +122,7 @@ public class FlexoProperties extends Properties implements Comparator<Object> {
 
 		public PropsEnum() {
 			index = 0;// Resets the enumeration
-			Enumeration en = unsortedKeys();
+			Enumeration<Object> en = unsortedKeys();
 			objects = new Object[size()];
 			int i = 0;
 			while (en.hasMoreElements()) {

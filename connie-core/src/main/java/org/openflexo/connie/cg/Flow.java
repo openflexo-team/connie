@@ -55,7 +55,7 @@ public class Flow extends ControlGraph implements Cloneable {
 
 	public Flow() {
 		super();
-		statements = new Vector<ControlGraph>();
+		statements = new Vector<>();
 	}
 
 	public Flow(Vector<ControlGraph> statements) {

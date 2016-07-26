@@ -57,7 +57,7 @@ public final class MethodDefinition extends Observable implements Function {
 	private final Type declaringType;
 	private final Method method;
 	private final ArrayList<Function.FunctionArgument> arguments;
-	private static Hashtable<Method, MethodDefinition> cache = new Hashtable<Method, MethodDefinition>();
+	private static Hashtable<Method, MethodDefinition> cache = new Hashtable<>();
 
 	public static MethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
 		MethodDefinition returned = cache.get(method);
@@ -72,7 +72,7 @@ public final class MethodDefinition extends Observable implements Function {
 		super();
 		this.method = method;
 		this.declaringType = aDeclaringType;
-		arguments = new ArrayList<FunctionArgument>();
+		arguments = new ArrayList<>();
 		int i = 0;
 		for (Type t : method.getGenericParameterTypes()) {
 			String argName = "arg" + i;
@@ -136,7 +136,7 @@ public final class MethodDefinition extends Observable implements Function {
 		signature.append(")");
 		return signature.toString();
 	}
-
+	
 	public String getSignatureInContext(Type context)
 	{
 		StringBuffer signature = new StringBuffer();
@@ -154,14 +154,14 @@ public final class MethodDefinition extends Observable implements Function {
 			boolean isFirst = true;
 			for (Type p : method.getGenericParameterTypes()) {
 				Type contextualParamType = TypeUtils.makeInstantiatedType(p, declaringType);
-				returned.append((isFirst ? "" : ",")
-						+ (fullyQualified ? TypeUtils.fullQualifiedRepresentation(contextualParamType) : TypeUtils
-								.simpleRepresentation(contextualParamType)));
+				returned.append((isFirst ? "" : ",") + (fullyQualified ? TypeUtils.fullQualifiedRepresentation(contextualParamType)
+						: TypeUtils.simpleRepresentation(contextualParamType)));
 				isFirst = false;
 			}
 			if (fullyQualified) {
 				_parameterListAsStringFQ = returned.toString();
-			} else {
+			}
+			else {
 				_parameterListAsString = returned.toString();
 			}
 		}
@@ -211,7 +211,8 @@ public final class MethodDefinition extends Observable implements Function {
 			resultingTypeAsString = TypeUtils.simpleRepresentation(resultingType);
 			resultingTypeAsString = ToolBox.replaceStringByStringInString("<", "&LT;", resultingTypeAsString);
 			resultingTypeAsString = ToolBox.replaceStringByStringInString(">", "&GT;", resultingTypeAsString);
-		} else {
+		}
+		else {
 			resultingTypeAsString = "???";
 		}
 		returned += "<p><b>" + resultingTypeAsString + " " + getSimplifiedSignature() + "</b></p>";

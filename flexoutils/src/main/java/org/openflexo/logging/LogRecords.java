@@ -57,7 +57,7 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
 public class LogRecords implements HasPropertyChangeSupport {
 
 	private final LinkedList<LogRecord> allRecords;
-	private final ArrayList<LogRecord> filteredRecords = new ArrayList<LogRecord>();
+	private final ArrayList<LogRecord> filteredRecords = new ArrayList<>();
 	private List<LogRecord> records;
 
 	private int totalLogs = 0;
@@ -76,7 +76,7 @@ public class LogRecords implements HasPropertyChangeSupport {
 	public LogRecords() {
 		super();
 		pcSupport = new PropertyChangeSupport(this);
-		allRecords = new LinkedList<LogRecord>();
+		allRecords = new LinkedList<>();
 		records = allRecords;
 	}
 
@@ -315,7 +315,7 @@ public class LogRecords implements HasPropertyChangeSupport {
 		warningCount = 0;
 		severeCount = 0;
 		textSearchApplied = true;
-		records = new ArrayList<LogRecord>();
+		records = new ArrayList<>();
 		LoggingFilter f = new LoggingFilter("search");
 		f.setHasFilteredMessage(true);
 		f.filteredContent = someText;

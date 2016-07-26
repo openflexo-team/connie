@@ -68,7 +68,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	private static final Logger LOGGER = Logger.getLogger(FileSystemResourceLocatorImpl.class.getPackage().getName());
 	private static String PATH_SEP = System.getProperty("file.separator");
 
-	protected final Map<File, FileResourceImpl> cache = new HashMap<File, FileResourceImpl>();
+	protected final Map<File, FileResourceImpl> cache = new HashMap<>();
 
 	@Override
 	public FileResourceImpl locateResource(String relativePathName) {
@@ -355,7 +355,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	}
 
 	protected List<File> locateAllFiles(String relativePathName, boolean lenient) {
-		List<File> found = new ArrayList<File>();
+		List<File> found = new ArrayList<>();
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
 			if (nextTry.exists()) {
@@ -444,7 +444,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					if (LOGGER.isLoggable(Level.INFO)) {
 						LOGGER.info("Initializing directories search order");
 					}
-					directoriesSearchOrder = new ArrayList<File>();
+					directoriesSearchOrder = new ArrayList<>();
 					if (preferredResourcePath != null) {
 						/*if (logger.isLoggable(Level.INFO)) {
 							logger.info("Adding directory " + preferredResourcePath.getAbsolutePath());

@@ -37,7 +37,6 @@
  * 
  */
 
-
 package org.openflexo.diff;
 
 import java.util.Hashtable;
@@ -47,8 +46,8 @@ import java.util.Hashtable;
  * objects compared are traditionally lines of text from two files. Comparison options such as "ignore whitespace" are implemented by
  * modifying the <code>equals</code> and <code>hashcode</code> methods for the objects compared.
  * <p>
- * The basic algorithm is described in: </br> "An O(ND) Difference Algorithm and its Variations", Eugene Myers, Algorithmica Vol. 1 No. 2,
- * 1986, p 251.
+ * The basic algorithm is described in: </br>
+ * "An O(ND) Difference Algorithm and its Variations", Eugene Myers, Algorithmica Vol. 1 No. 2, 1986, p 251.
  * <p>
  * This class outputs different results from GNU diff 1.15 on some inputs. Our results are actually better (smaller change list, smaller
  * total size of changes), but it would be nice to know why. Perhaps there is a memory overwrite bug in GNU diff 1.15.
@@ -73,7 +72,7 @@ public class Diff {
 	 * again later to print the results of the comparison as an edit script, if desired.
 	 */
 	public Diff(Object[] a, Object[] b) {
-		Hashtable<Object, Integer> h = new Hashtable<Object, Integer>(a.length + b.length);
+		Hashtable<Object, Integer> h = new Hashtable<>(a.length + b.length);
 		filevec[0] = new FileData(a, h);
 		filevec[1] = new FileData(b, h);
 	}
@@ -159,12 +158,14 @@ public class Diff {
 			/* Extend the top-down search by an edit step in each diagonal. */
 			if (fmin > dmin) {
 				fd[fdiagoff + --fmin - 1] = -1;
-			} else {
+			}
+			else {
 				++fmin;
 			}
 			if (fmax < dmax) {
 				fd[fdiagoff + ++fmax + 1] = -1;
-			} else {
+			}
+			else {
 				--fmax;
 			}
 			for (d = fmax; d >= fmin; d -= 2) {
@@ -172,7 +173,8 @@ public class Diff {
 
 				if (tlo >= thi) {
 					x = tlo + 1;
-				} else {
+				}
+				else {
 					x = thi;
 				}
 				oldx = x;
@@ -194,12 +196,14 @@ public class Diff {
 			/* Similar extend the bottom-up search. */
 			if (bmin > dmin) {
 				bd[bdiagoff + --bmin - 1] = Integer.MAX_VALUE;
-			} else {
+			}
+			else {
 				++bmin;
 			}
 			if (bmax < dmax) {
 				bd[bdiagoff + ++bmax + 1] = Integer.MAX_VALUE;
-			} else {
+			}
+			else {
 				--bmax;
 			}
 			for (d = bmax; d >= bmin; d -= 2) {
@@ -207,7 +211,8 @@ public class Diff {
 
 				if (tlo < thi) {
 					x = tlo;
-				} else {
+				}
+				else {
 					x = thi - 1;
 				}
 				oldx = x;
@@ -230,7 +235,7 @@ public class Diff {
 			   lots of progress compared with the edit distance.
 			   If we have any such, find the one that has made the most
 			   progress and return it as if it had succeeded.
-
+			
 			   With this heuristic, for files with a constant small density
 			   of changes, the algorithm is linear in the file size.  */
 
@@ -269,7 +274,8 @@ public class Diff {
 				for (d = bmax; d >= bmin; d -= 2) {
 					int dd = d - bmid;
 					if ((xlim - bd[bdiagoff + d]) * 2 + dd > 12 * (c + (dd > 0 ? dd : -dd))) {
-						if ((xlim - bd[bdiagoff + d]) * 2 + dd > best && xlim - bd[bdiagoff + d] > 20 && ylim - (bd[bdiagoff + d] - d) > 20) {
+						if ((xlim - bd[bdiagoff + d]) * 2 + dd > best && xlim - bd[bdiagoff + d] > 20
+								&& ylim - (bd[bdiagoff + d] - d) > 20) {
 							/* We have a good enough best diagonal;
 							   now insist that it end with a significant snake.  */
 							int k;
@@ -323,11 +329,13 @@ public class Diff {
 			while (yoff < ylim) {
 				filevec[1].changed_flag[1 + filevec[1].realindexes[yoff++]] = true;
 			}
-		} else if (yoff == ylim) {
+		}
+		else if (yoff == ylim) {
 			while (xoff < xlim) {
 				filevec[0].changed_flag[1 + filevec[0].realindexes[xoff++]] = true;
 			}
-		} else {
+		}
+		else {
 			/* Find a point of correspondence in the middle of the files.  */
 
 			int d = diag(xoff, xlim, yoff, ylim);
@@ -340,7 +348,8 @@ public class Diff {
 				   and that case was handled above without calling `diag'.
 				   Let's verify that this is true.  */
 				throw new IllegalArgumentException("Empty subsequence");
-			} else {
+			}
+			else {
 				/* Use that point to split this problem into two subproblems.  */
 				compareseq(xoff, b, yoff, b - d);
 				/* This used to use f instead of b,
@@ -488,7 +497,8 @@ public class Diff {
 
 		if (reverse) {
 			return build_reverse_script();
-		} else {
+		}
+		else {
 			return build_script();
 		}
 	}
@@ -617,7 +627,8 @@ public class Diff {
 				nmatch = counts[equivs2[i]];
 				if (nmatch == 0) {
 					discards[i] = 1;
-				} else if (nmatch > many) {
+				}
+				else if (nmatch > many) {
 					discards[i] = 2;
 				}
 			}
@@ -636,7 +647,8 @@ public class Diff {
 				/* Cancel provisional discards not in middle of run of discards.  */
 				if (discards[i] == 2) {
 					discards[i] = 0;
-				} else if (discards[i] != 0) {
+				}
+				else if (discards[i] != 0) {
 					/* We have found a nonprovisional discard.  */
 					int j;
 					int length;
@@ -671,7 +683,8 @@ public class Diff {
 								discards[j] = 0;
 							}
 						}
-					} else {
+					}
+					else {
 						int consec;
 						int minimum = 1;
 						int tem = length / 4;
@@ -690,10 +703,12 @@ public class Diff {
 						for (j = 0, consec = 0; j < length; j++) {
 							if (discards[i + j] != 2) {
 								consec = 0;
-							} else if (minimum == ++consec) {
+							}
+							else if (minimum == ++consec) {
 								/* Back up to start of subrun, to cancel it all.  */
 								j -= consec;
-							} else if (minimum < consec) {
+							}
+							else if (minimum < consec) {
 								discards[i + j] = 0;
 							}
 						}
@@ -709,9 +724,11 @@ public class Diff {
 							if (discards[i + j] == 2) {
 								consec = 0;
 								discards[i + j] = 0;
-							} else if (discards[i + j] == 0) {
+							}
+							else if (discards[i + j] == 0) {
 								consec = 0;
-							} else {
+							}
+							else {
 								consec++;
 							}
 							if (consec == 3) {
@@ -730,9 +747,11 @@ public class Diff {
 							if (discards[i - j] == 2) {
 								consec = 0;
 								discards[i - j] = 0;
-							} else if (discards[i - j] == 0) {
+							}
+							else if (discards[i - j] == 0) {
 								consec = 0;
-							} else {
+							}
+							else {
 								consec++;
 							}
 							if (consec == 3) {
@@ -757,7 +776,8 @@ public class Diff {
 				if (no_discards || discards[i] == 0) {
 					undiscarded[j] = equivs[i];
 					realindexes[j++] = i;
-				} else {
+				}
+				else {
 					changed_flag[1 + i] = true;
 				}
 			}
@@ -775,7 +795,8 @@ public class Diff {
 				Integer ir = h.get(data[i]);
 				if (ir == null) {
 					h.put(data[i], new Integer(equivs[i] = equiv_max++));
-				} else {
+				}
+				else {
 					equivs[i] = ir.intValue();
 				}
 			}
@@ -850,7 +871,8 @@ public class Diff {
 						   instead of after, we must advance in the other file
 						   to keep in synch.  */
 						++j;
-					} else {
+					}
+					else {
 						break;
 					}
 				}

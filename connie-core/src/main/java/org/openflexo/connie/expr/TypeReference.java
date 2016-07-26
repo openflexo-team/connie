@@ -62,13 +62,13 @@ public class TypeReference {
 	public TypeReference(String baseType) {
 		super();
 		this.baseType = baseType;
-		parameters = new ArrayList<TypeReference>();
+		parameters = new ArrayList<>();
 	}
 
 	public TypeReference(String baseType, List<TypeReference> someParameters) {
 		super();
 		this.baseType = baseType;
-		parameters = new ArrayList<TypeReference>(someParameters);
+		parameters = new ArrayList<>(someParameters);
 	}
 
 	public String getBaseType() {

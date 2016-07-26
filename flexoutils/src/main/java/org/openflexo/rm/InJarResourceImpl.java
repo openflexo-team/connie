@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.IOException;
@@ -59,36 +58,32 @@ import java.util.regex.Pattern;
  */
 public class InJarResourceImpl extends BasicResourceImpl {
 
-
 	private static final Logger LOGGER = Logger.getLogger(InJarResourceImpl.class.getPackage().getName());
-	
+
 	private JarEntry entry = null;
-	
-	public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath,
-			URL url) throws LocatorNotFoundException {
+
+	public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath, URL url) throws LocatorNotFoundException {
 		super(delegate, initialPath, url);
 	}
 
-
 	public InJarResourceImpl(String initialPath, URL url) throws LocatorNotFoundException {
 		super(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), initialPath, url);
-		((ClasspathResourceLocatorImpl)this.getLocator()).getJarResourcesList().put(initialPath, this);
-		
+		((ClasspathResourceLocatorImpl) this.getLocator()).getJarResourcesList().put(initialPath, this);
+
 		// Add the InJarResource in the locator resource list if not contained
-		ClasspathResourceLocatorImpl locator = (ClasspathResourceLocatorImpl) ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class);
-		if(locator.getJarResourcesList().get(this)==null){
+		ClasspathResourceLocatorImpl locator = (ClasspathResourceLocatorImpl) ResourceLocator
+				.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class);
+		if (locator.getJarResourcesList().get(this) == null) {
 			locator.getJarResourcesList().put(initialPath, this);
 		}
 	}
 
-
-
 	@Override
 	public InputStream openInputStream() {
-		if (entry != null && _parent != null){
+		if (entry != null && _parent != null) {
 			return ((JarResourceImpl) _parent).openInputStream(entry);
 		}
-		if (_url != null){
+		if (_url != null) {
 			try {
 				return _url.openStream();
 			} catch (IOException e) {
@@ -99,65 +94,65 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		return null;
 	}
 
-	
 	@Override
 	public List<Resource> getContents() {
-		List<Resource> resources = new ArrayList<Resource>();
-		
+		List<Resource> resources = new ArrayList<>();
+
 		if (entry != null && entry.isDirectory()) {
 			// Browser the resource of the container
-			for(Resource resource : getContainer().getContents()){
-				String parentFolderPath=resource.getRelativePath();
-				//If it is a folder end with "/" then remove the "/" to find the parent path
-				if(parentFolderPath.endsWith("/")){
+			for (Resource resource : getContainer().getContents()) {
+				String parentFolderPath = resource.getRelativePath();
+				// If it is a folder end with "/" then remove the "/" to find the parent path
+				if (parentFolderPath.endsWith("/")) {
 					int lastSeparator = parentFolderPath.lastIndexOf("/");
 					parentFolderPath = parentFolderPath.substring(0, lastSeparator);
 				}
 				// Find the last separation
-				if(parentFolderPath.contains("/")){
+				if (parentFolderPath.contains("/")) {
 					int lastSeparator = parentFolderPath.lastIndexOf("/");
-					parentFolderPath = parentFolderPath.substring(0, lastSeparator+1);
+					parentFolderPath = parentFolderPath.substring(0, lastSeparator + 1);
 				}
 				// Check it corresponds to this in jar resource
-				if(parentFolderPath.equals(getRelativePath())){
+				if (parentFolderPath.equals(getRelativePath())) {
 					resources.add(resource);
 				}
 			}
 			// TODO some day ...
-			
+
 		}
-			
+
 		return resources;
-		
+
 	}
 
 	@Override
 	public boolean isContainer() {
 		return entry.isDirectory();
-		
+
 	};
-	
-	
+
 	@Override
 	public Resource getContainer() {
-		if(super.getContainer()!=null){
+		if (super.getContainer() != null) {
 			return super.getContainer();
-		} else{
+		}
+		else {
 			URL url = getURL();
-			
+
 			JarResourceImpl container = (JarResourceImpl) this._parent;
-			
+
 			if (container == null) {
 				// finds the container
 				String jarPath = null;
 				try {
-					jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),"UTF-8");
+					jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"), "UTF-8");
 				} catch (UnsupportedEncodingException e1) {
 					LOGGER.severe("Unable to decode given PATH");
 					e1.printStackTrace();
 				}
 				try {
-					container = new JarResourceImpl(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), jarPath);
+					container = new JarResourceImpl(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class),
+							jarPath);
 				} catch (MalformedURLException e) {
 					LOGGER.severe("Unable to retrieve containing JarFile: " + jarPath);
 					e.printStackTrace();
@@ -169,16 +164,15 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		}
 
 	}
-	
+
 	@Override
 	public List<? extends Resource> getContents(Pattern pattern) {
 		String startpath = getRelativePath();
-		return ((JarResourceImpl)getContainer()).getContents(startpath, pattern);
+		return ((JarResourceImpl) getContainer()).getContents(startpath, pattern);
 	}
 
-
 	public void setEntry(JarEntry current) {
-		entry = current;		
+		entry = current;
 	}
 
 }

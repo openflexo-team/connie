@@ -42,14 +42,14 @@ package org.openflexo.connie.binding;
 import java.util.Hashtable;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.Variable;
 import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
+
+import junit.framework.TestCase;
 
 public class TestExpression extends TestCase {
 
@@ -169,7 +169,7 @@ public class TestExpression extends TestCase {
 	public void testEvaluate1() {
 		try {
 			Expression e = ExpressionParser.parse("a+(b-c)/2");
-			Hashtable<String, Object> variables = new Hashtable<String, Object>();
+			Hashtable<String, Object> variables = new Hashtable<>();
 			variables.put("a", 1);
 			variables.put("b", 10);
 			variables.put("c", 3);
@@ -188,7 +188,7 @@ public class TestExpression extends TestCase {
 	public void testEvaluate2() {
 		try {
 			Expression e = ExpressionParser.parse("a+(b-2-c)/2");
-			Hashtable<String, Object> variables = new Hashtable<String, Object>();
+			Hashtable<String, Object> variables = new Hashtable<>();
 			variables.put("a", 1);
 			variables.put("b", 10);
 			Expression evaluated = e.evaluate(variables);

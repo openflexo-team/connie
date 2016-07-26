@@ -38,9 +38,8 @@
 
 package org.openflexo.test;
 
-import junit.framework.Assert;
-
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,32 +51,33 @@ public class OrderedRunnerTest {
 
 	@BeforeClass
 	public static void setupClass() {
-		RESULT="";
+		RESULT = "";
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
-		Assert.assertEquals("CBA",RESULT);;
+		Assert.assertEquals("CBA", RESULT);
+		;
 	}
 
-	@Test 
+	@Test
 	@TestOrder(3)
-	public void testA() { 
-		System.out.println("A"); 
+	public void testA() {
+		System.out.println("A");
 		RESULT += "A";
 	}
 
-	@Test 
+	@Test
 	@TestOrder(1)
-	public void testC() { 
-		System.out.println("C"); 
+	public void testC() {
+		System.out.println("C");
 		RESULT += "C";
 	}
 
-	@Test  
+	@Test
 	@TestOrder(2)
-	public void testB() { 
-		System.out.println("B"); 
+	public void testB() {
+		System.out.println("B");
 		RESULT += "B";
 	}
 

@@ -49,14 +49,14 @@ import org.junit.runners.model.InitializationError;
 
 public class OrderedRunner extends BlockJUnit4ClassRunner {
 
-	public OrderedRunner(Class klass) throws InitializationError {
+	public OrderedRunner(Class<?> klass) throws InitializationError {
 		super(klass);
 	}
 
 	@Override
-	protected List computeTestMethods() {
-		List list = super.computeTestMethods();
-		List copy = new ArrayList(list);
+	protected List<FrameworkMethod> computeTestMethods() {
+		List<FrameworkMethod> list = super.computeTestMethods();
+		List<FrameworkMethod> copy = new ArrayList<>(list);
 		Collections.sort(copy, new Comparator<FrameworkMethod>() {
 			@Override
 			public int compare(FrameworkMethod o1, FrameworkMethod o2) {

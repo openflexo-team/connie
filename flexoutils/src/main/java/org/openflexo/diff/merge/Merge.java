@@ -78,7 +78,7 @@ public class Merge extends Observable implements IMerge {
 		_original = original;
 		_left = left;
 		_right = right;
-		changes = new Vector<MergeChange>();
+		changes = new Vector<>();
 		computeChanges();
 	}
 
@@ -198,7 +198,8 @@ public class Merge extends Observable implements IMerge {
 	public String toString() {
 		if (changes.size() == 0) {
 			return "Merge: no changes";
-		} else {
+		}
+		else {
 			StringBuffer returned = new StringBuffer();
 			for (MergeChange c : getChanges()) {
 				returned.append(c);
@@ -294,7 +295,7 @@ public class Merge extends Observable implements IMerge {
 
 		int currentLineNb = 0;
 		int last = -1;
-		processedChanges = new Vector<DiffChange>();
+		processedChanges = new Vector<>();
 		int lastProcessedChange = processedChanges.size();
 
 		boolean originalIsEmpty = _original.getTextTokens().length == 0;
@@ -307,7 +308,8 @@ public class Merge extends Observable implements IMerge {
 				new Exception().printStackTrace();
 				System.err.println("Current:" + currentLineNb + " stopped on infinite loop");
 				return;
-			} else {
+			}
+			else {
 				last = currentLineNb;
 				lastProcessedChange = processedChanges.size();
 			}
@@ -316,7 +318,8 @@ public class Merge extends Observable implements IMerge {
 			DiffChange leftChange = getNextLeftChangesFromLine(currentLineNb, leftReport);
 			if (rightChange == null && leftChange == null) {
 				currentLineNb = _original.getTextTokens().length;
-			} else {
+			}
+			else {
 				if (debug) {
 					System.out.println("=============================");
 				}
@@ -343,21 +346,23 @@ public class Merge extends Observable implements IMerge {
 					if (debug) {
 						System.out.println("ADD LEFT CHANGE: " + leftChange + " > " + newChange);
 					}
-				} else if (leftChange == null) {
+				}
+				else if (leftChange == null) {
 					// Add right one
 					MergeChange newChange = addRightChange(rightChange);
 					currentLineNb = newChange.getLast1() + 1;
 					if (debug) {
 						System.out.println("ADD RIGHT CHANGE: " + rightChange + " > " + newChange);
 					}
-				} else {
+				}
+				else {
 					// Still both side
 					if (intersect(leftChange, rightChange)) {
 						if (debug) {
 							System.out.println("Begin MERGING : " + leftChange + " and " + rightChange);
 						}
-						Vector<DiffChange> leftChangesToMerge = new Vector<DiffChange>();
-						Vector<DiffChange> rightChangesToMerge = new Vector<DiffChange>();
+						Vector<DiffChange> leftChangesToMerge = new Vector<>();
+						Vector<DiffChange> rightChangesToMerge = new Vector<>();
 						leftChangesToMerge.add(leftChange);
 						if (debug) {
 							System.out.println("Add LEFT : " + leftChange);
@@ -429,14 +434,16 @@ public class Merge extends Observable implements IMerge {
 						if (debug) {
 							System.out.println("ADD MERGED CHANGES:  > " + newChange);
 						}
-					} else {
+					}
+					else {
 						if (leftChange.getFirst1() <= rightChange.getFirst0()) {
 							MergeChange newChange = addLeftChange(leftChange);
 							currentLineNb = newChange.getLast1() + 1;
 							if (debug) {
 								System.out.println("ADD LEFT CHANGE: " + leftChange + " > " + newChange);
 							}
-						} else {
+						}
+						else {
 							MergeChange newChange = addRightChange(rightChange);
 							currentLineNb = newChange.getLast1() + 1;
 							if (debug) {
@@ -477,8 +484,8 @@ public class Merge extends Observable implements IMerge {
 		newChange.setMergeChangeSource(MergeChange.MergeChangeSource.Left);
 		addChange(newChange);
 		leftToOriginal += leftChange.getLast1() - leftChange.getFirst1() - (leftChange.getLast0() - leftChange.getFirst0());
-		newChange.setDebug("[" + leftChange.toNiceString(false) + "], leftToOriginal=" + leftToOriginal + " originalToRight="
-				+ originalToRight);
+		newChange.setDebug(
+				"[" + leftChange.toNiceString(false) + "], leftToOriginal=" + leftToOriginal + " originalToRight=" + originalToRight);
 		// return leftChange.getLast1()+1/*-leftToOriginal*/;
 		return newChange;
 	}
@@ -489,8 +496,8 @@ public class Merge extends Observable implements IMerge {
 		newChange.setMergeChangeSource(MergeChange.MergeChangeSource.Right);
 		addChange(newChange);
 		originalToRight += rightChange.getLast0() - rightChange.getFirst0() - (rightChange.getLast1() - rightChange.getFirst1());
-		newChange.setDebug("[" + rightChange.toNiceString(false) + "], leftToOriginal=" + leftToOriginal + " originalToRight="
-				+ originalToRight);
+		newChange.setDebug(
+				"[" + rightChange.toNiceString(false) + "], leftToOriginal=" + leftToOriginal + " originalToRight=" + originalToRight);
 		// return rightChange.getLast0()+1/*-originalToRight*/;
 		return newChange;
 	}
@@ -502,7 +509,8 @@ public class Merge extends Observable implements IMerge {
 		MergeChangeAction defaultAction;
 		if (getDocumentType() != null && getDocumentType().getAutomaticMergeResolvingModel() != null) {
 			defaultAction = MergeChangeAction.AutomaticMergeResolving;
-		} else {
+		}
+		else {
 			defaultAction = DEFAULT_ACTION;
 		}
 
@@ -540,7 +548,7 @@ public class Merge extends Observable implements IMerge {
 			rightMerges.setLast0(leftMerges.getLast0());
 		}
 
-		Vector<MergeChange> both = new Vector<MergeChange>();
+		Vector<MergeChange> both = new Vector<>();
 		both.add(leftMerges);
 		both.add(rightMerges);
 		MergeChange newChange = MergeChange.makeMergeChange(both, defaultAction);
@@ -588,7 +596,8 @@ public class Merge extends Observable implements IMerge {
 		// System.out.println("mergeAsString="+mergeAsString);
 		if (_merge == null) {
 			_merge = new DiffSource(mergeAsString, getDelimitingMethod());
-		} else {
+		}
+		else {
 			_merge.updateWith(mergeAsString);
 		}
 		mergeNeedsRecomputing = false;
@@ -606,7 +615,8 @@ public class Merge extends Observable implements IMerge {
 			addedLines += change.getFirst1() - currentLine;
 			MergeChangeResult changeResult = change.getMergeChangeResult();
 			sb.append(changeResult.merge);
-			// System.out.println("change.getMergeChangeResult():================\n"+"Tokens: "+changeResult.tokensNb+"\n"+changeResult.merge);
+			// System.out.println("change.getMergeChangeResult():================\n"+"Tokens:
+			// "+changeResult.tokensNb+"\n"+changeResult.merge);
 			/*String[] changeResult = change.getMergeChangeResult();
 			appendLines (sb,changeResult);*/
 			change.setFirstMergeIndex(addedLines);
@@ -636,7 +646,7 @@ public class Merge extends Observable implements IMerge {
 
 	@Override
 	public Vector<MergeChange> filteredChangeList(List<ChangeCategory> selectedCategories) {
-		Vector<MergeChange> reply = new Vector<MergeChange>();
+		Vector<MergeChange> reply = new Vector<>();
 		for (MergeChange item : changes) {
 			if (selectedCategories.contains(item.category())) {
 				reply.add(item);
@@ -645,6 +655,7 @@ public class Merge extends Observable implements IMerge {
 		return reply;
 	}
 
+	// TODO transform to test?
 	public static void main(String[] args) {
 		DiffSource orig = new DiffSource("{\n" + "        \"WebObjects Release\" = \"WebObjects 5.0\";\n"
 				+ "        encoding = NSUTF8StringEncoding;\n" + "        variables = {};\n" + "}", DelimitingMethod.PLIST);
@@ -652,6 +663,7 @@ public class Merge extends Observable implements IMerge {
 				+ "        encoding = NSUTF8StringEncoding;\n" + "        variables = {};\n" + "}", DelimitingMethod.PLIST);
 		DiffSource right = new DiffSource("{\n" + "        \"WebObjects Release\" = \"WebObjects 5.0\";\n"
 				+ "        encoding = NSUTF8StringEncoding;\n" + "        variables = {};\n" + "}", DelimitingMethod.PLIST);
-		Merge merge = new Merge(orig, left, right, DefaultMergedDocumentType.PLIST);
+		// Unused var Merge merge =
+		new Merge(orig, left, right, DefaultMergedDocumentType.PLIST);
 	}
 }

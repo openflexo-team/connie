@@ -962,7 +962,7 @@ public class FileUtils {
 		if (!dir.isDirectory()) {
 			return null;
 		}
-		Vector<File> files = new Vector<File>();
+		Vector<File> files = new Vector<>();
 		File[] f = dir.listFiles();
 		for (int i = 0; i < f.length; i++) {
 			File file = f[i];

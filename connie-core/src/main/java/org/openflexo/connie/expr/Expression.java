@@ -123,7 +123,7 @@ public abstract class Expression {
 	 */
 	public List<BindingValue> getAllBindingValues() {
 
-		final List<BindingValue> returned = new ArrayList<BindingValue>();
+		final List<BindingValue> returned = new ArrayList<>();
 
 		try {
 			visit(new ExpressionVisitor() {
@@ -154,7 +154,7 @@ public abstract class Expression {
 	 * expressions (an atomic expression is a constant or a binding value, or a variable). An atomic expression has no child.
 	 */
 	public Vector<Expression> getAllAtomicExpressions() {
-		Vector<Expression> returned = new Vector<Expression>();
+		Vector<Expression> returned = new Vector<>();
 		appendAllAtomicExpressions(returned, this);
 		return returned;
 	}

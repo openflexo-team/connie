@@ -47,7 +47,7 @@ import java.util.HashSet;
 @Deprecated
 public class ReservedKeyword {
 
-	private static final HashSet<String> reservedSet = new HashSet<String>();
+	private static final HashSet<String> reservedSet = new HashSet<>();
 
 	public static boolean contains(String word) {
 		if (word == null) {
@@ -64,16 +64,16 @@ public class ReservedKeyword {
 			"_CookieParser", "_WODocumentType", "_WOMessageHelper", "_WORunLoop", "_WOSimpleApplication", "EOAccessArrayFaultHandler",
 			"EOAccessDeferredFaultHandler", "EOAccessFaultHandler", "EOAccessGenericFaultHandler", "EOAdaptor", "EOAdaptorChannel",
 			"EOAdaptorContext", "EOAdaptorOpComparator", "EOAdaptorOperation", "EOAttribute", "EOAttributeNameComparator", "EODatabase",
-			"EODatabaseChannel", "EODatabaseContext", "EODatabaseDataSource", "EODatabaseOperation", "EOEntity",
-			"EOEntityClassDescription", "EOGeneralAdaptorException", "EOJoin", "EOModel", "EOModelGroup", "EOModelPrivate",
-			"EOObjectNotAvailableException", "EOProperty", "EOPropertyListEncoding", "EOQualifierSQLGeneration", "EORelationship",
-			"EORelationshipComparator", "EOSQLExpression", "EOSQLExpressionFactory", "EOSQLQualifier", "EOSchemaGeneration",
-			"EOSchemaSynchronization", "EOStoredProcedure", "EOSynchronizationFactory", "EOUtilities", "_EOCheapCopyHandler",
-			"_EODBCtxEntityInfo", "_EOExpressionArray", "_EOPrivate", "_EOStringUtil", "EOAccountEvent", "EOAggregateEvent",
-			"EOAndQualifier", "EOArrayDataSource", "EOClassDescription", "EOCooperatingObjectStore", "EOCustomObject", "EODataSource",
-			"EODeferredFaulting", "EODelayedObserver", "EODelayedObserverQueue", "EODetailDataSource", "EOEditingContext",
-			"EOEnterpriseObject", "EOEvent", "EOEventCenter", "EOFaultHandler", "EOFaulting", "EOFetchSpecification", "EOGenericRecord",
-			"EOGlobalID", "EOKeyComparisonQualifier", "EOKeyGlobalID", "EOKeyValueArchiver", "EOKeyValueArchiving", "EOKeyValueCoding",
+			"EODatabaseChannel", "EODatabaseContext", "EODatabaseDataSource", "EODatabaseOperation", "EOEntity", "EOEntityClassDescription",
+			"EOGeneralAdaptorException", "EOJoin", "EOModel", "EOModelGroup", "EOModelPrivate", "EOObjectNotAvailableException",
+			"EOProperty", "EOPropertyListEncoding", "EOQualifierSQLGeneration", "EORelationship", "EORelationshipComparator",
+			"EOSQLExpression", "EOSQLExpressionFactory", "EOSQLQualifier", "EOSchemaGeneration", "EOSchemaSynchronization",
+			"EOStoredProcedure", "EOSynchronizationFactory", "EOUtilities", "_EOCheapCopyHandler", "_EODBCtxEntityInfo",
+			"_EOExpressionArray", "_EOPrivate", "_EOStringUtil", "EOAccountEvent", "EOAggregateEvent", "EOAndQualifier",
+			"EOArrayDataSource", "EOClassDescription", "EOCooperatingObjectStore", "EOCustomObject", "EODataSource", "EODeferredFaulting",
+			"EODelayedObserver", "EODelayedObserverQueue", "EODetailDataSource", "EOEditingContext", "EOEnterpriseObject", "EOEvent",
+			"EOEventCenter", "EOFaultHandler", "EOFaulting", "EOFetchSpecification", "EOGenericRecord", "EOGlobalID",
+			"EOKeyComparisonQualifier", "EOKeyGlobalID", "EOKeyValueArchiver", "EOKeyValueArchiving", "EOKeyValueCoding",
 			"EOKeyValueCodingAdditions", "EOKeyValueQualifier", "EOKeyValueUnarchiver", "EONotQualifier", "EOObjectStore",
 			"EOObjectStoreCoordinator", "EOObserverCenter", "EOObserverProxy", "EOObserving", "EOOrQualifier", "EOQualifier",
 			"EOQualifierEvaluation", "EOQualifierVariable", "EOQualifierVisitor", "EORelationshipManipulation", "EOSharedEditingContext",
@@ -82,10 +82,10 @@ public class ReservedKeyword {
 			"_EOMutableDefaultValueDictionary", "_EOMutableKnownKeyDictionary", "_EOPrivateMemento", "_EOVectorKeyGlobalID",
 			"_EOWeakReference", "NSArray", "NSBundle", "NSCoder", "NSCoding", "NSComparator", "NSData", "NSDelayedCallbackCenter",
 			"NSDictionary", "NSDisposable", "NSDisposableRegistry", "NSForwardException", "NSKeyValueCoding", "NSKeyValueCodingAdditions",
-			"NSLock", "NSLocking", "NSLog", "NSMultiReaderLock", "NSMutableArray", "NSMutableData", "NSMutableDictionary",
-			"NSMutableRange", "NSMutableSet", "NSNotification", "NSNotificationCenter", "NSNumberFormatter", "NSPathUtilities",
-			"NSProperties", "NSPropertyListSerialization", "NSRange", "NSRecursiveLock", "NSSelector", "NSSet", "NSSocketUtilities",
-			"NSTimeZone", "NSTimestamp", "NSTimestampFormatter", "NSUndoManager", "NSValidation", "_NSArrayUtilities", "_NSBase64",
+			"NSLock", "NSLocking", "NSLog", "NSMultiReaderLock", "NSMutableArray", "NSMutableData", "NSMutableDictionary", "NSMutableRange",
+			"NSMutableSet", "NSNotification", "NSNotificationCenter", "NSNumberFormatter", "NSPathUtilities", "NSProperties",
+			"NSPropertyListSerialization", "NSRange", "NSRecursiveLock", "NSSelector", "NSSet", "NSSocketUtilities", "NSTimeZone",
+			"NSTimestamp", "NSTimestampFormatter", "NSUndoManager", "NSValidation", "_NSArrayUtilities", "_NSBase64",
 			"_NSCollectionEnumerator", "_NSCollectionPrimitives", "_NSCollectionReaderWriterLock", "_NSDelegate", "_NSDictionaryUtilities",
 			"_NSFoundationCollection", "_NSGregorianCalendar", "_NSIntegerDictionary", "_NSIntegerKeyDictionary", "_NSJavaArrayEnumerator",
 			"_NSJavaArrayWrapper", "_NSMutableIntegerDictionary", "_NSMutableIntegerKeyDictionary", "_NSObjectStreamClass",
@@ -104,21 +104,21 @@ public class ReservedKeyword {
 			"NoSuchMethodException", "NullPointerException", "Number", "NumberFormatException", "Object", "OutOfMemoryError", "Package",
 			"Process", "Runnable", "Runtime", "RuntimeException", "RuntimePermission", "SecurityException", "SecurityManager", "Short",
 			"Shutdown", "StackOverflowError", "StackTraceElement", "StrictMath", "String", "StringBuffer", "StringCoding",
-			"StringIndexOutOfBoundsException", "System", "Thread", "ThreadDeath", "ThreadGroup", "ThreadLocal", "Throwable",
-			"UnknownError", "UnsatisfiedLinkError", "UnsupportedClassVersionError", "UnsupportedOperationException", "VerifyError",
-			"VirtualMachineError", "Void", "Application", "Session", "DirectAction", "abstract", "continue", "for", "new", "switch",
-			"assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double",
-			"implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
-			"transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class", "finally",
-			"long", "strictfp", "volatile", "const", "float", "native", "super", "while", "AbstractCollection", "AbstractList",
-			"AbstractMap", "AbstractSequentialList", "AbstractSet", "ArrayList", "Arrays", "BitSet", "Calendar", "Collection",
-			"Collections", "Comparator", "ConcurrentModificationException", "Currency", "Date", "Dictionary", "EmptyStackException",
-			"Enumeration", "EventListener", "EventListenerProxy", "EventObject", "GregorianCalendar", "HashMap", "HashSet", "Hashtable",
-			"IdentityHashMap", "Iterator", "LinkedHashMap", "LinkedHashSet", "LinkedList", "List", "ListIterator", "ListResourceBundle",
-			"Locale", "Map", "MissingResourceException", "NoSuchElementException", "Observable", "Observer", "Properties",
-			"PropertyPermission", "PropertyResourceBundle", "Random", "RandomAccess", "ResourceBundle", "ResourceBundleEnumeration", "Set",
-			"SimpleTimeZone", "SortedMap", "SortedSet", "Stack", "StringTokenizer", "TimeZone", "Timer", "TimerTask",
-			"TooManyListenersException", "TreeMap", "TreeSet", "Vector", "WeakHashMap", "WDLComponent" };
+			"StringIndexOutOfBoundsException", "System", "Thread", "ThreadDeath", "ThreadGroup", "ThreadLocal", "Throwable", "UnknownError",
+			"UnsatisfiedLinkError", "UnsupportedClassVersionError", "UnsupportedOperationException", "VerifyError", "VirtualMachineError",
+			"Void", "Application", "Session", "DirectAction", "abstract", "continue", "for", "new", "switch", "assert", "default", "goto",
+			"package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "protected", "throw",
+			"byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int",
+			"short", "try", "char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
+			"float", "native", "super", "while", "AbstractCollection", "AbstractList", "AbstractMap", "AbstractSequentialList",
+			"AbstractSet", "ArrayList", "Arrays", "BitSet", "Calendar", "Collection", "Collections", "Comparator",
+			"ConcurrentModificationException", "Currency", "Date", "Dictionary", "EmptyStackException", "Enumeration", "EventListener",
+			"EventListenerProxy", "EventObject", "GregorianCalendar", "HashMap", "HashSet", "Hashtable", "IdentityHashMap", "Iterator",
+			"LinkedHashMap", "LinkedHashSet", "LinkedList", "List", "ListIterator", "ListResourceBundle", "Locale", "Map",
+			"MissingResourceException", "NoSuchElementException", "Observable", "Observer", "Properties", "PropertyPermission",
+			"PropertyResourceBundle", "Random", "RandomAccess", "ResourceBundle", "ResourceBundleEnumeration", "Set", "SimpleTimeZone",
+			"SortedMap", "SortedSet", "Stack", "StringTokenizer", "TimeZone", "Timer", "TimerTask", "TooManyListenersException", "TreeMap",
+			"TreeSet", "Vector", "WeakHashMap", "WDLComponent" };
 
 	static {
 		for (int i = 0; i < reserved.length; i++) {

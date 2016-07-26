@@ -589,7 +589,7 @@ public class ToolBox {
 	}
 
 	public static <E> Enumeration<E> getEnumeration(E[] o) {
-		return new ArrayEnumeration<E>(o);
+		return new ArrayEnumeration<>(o);
 	}
 
 	private static class ArrayEnumeration<E> implements Enumeration<E> {
@@ -881,7 +881,7 @@ public class ToolBox {
 	}
 
 	public static String getCsvLine(List<String> list) {
-		List<List<String>> tmp = new ArrayList<List<String>>();
+		List<List<String>> tmp = new ArrayList<>();
 		tmp.add(list);
 		return getCsv(tmp);
 	}
@@ -919,12 +919,12 @@ public class ToolBox {
 			return result.get(0);
 		}
 
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	public static List<List<String>> parseCsv(String csvString) {
 		csvString = csvString != null ? csvString.trim() : null;
-		List<List<String>> result = new ArrayList<List<String>>();
+		List<List<String>> result = new ArrayList<>();
 
 		if (StringUtils.isEmpty(csvString)) {
 			return result;
@@ -938,7 +938,7 @@ public class ToolBox {
 			separator = ';';
 		}
 
-		List<String> line = new ArrayList<String>();
+		List<String> line = new ArrayList<>();
 		StringBuilder currentValue = new StringBuilder();
 		boolean isInsideQuote = false;
 		boolean wasInsideQuote = false;
@@ -964,7 +964,7 @@ public class ToolBox {
 				wasInsideQuote = false;
 				if (csvString.charAt(i) == '\n') {
 					result.add(line);
-					line = new ArrayList<String>();
+					line = new ArrayList<>();
 				}
 				continue;
 			}
@@ -1073,7 +1073,7 @@ public class ToolBox {
 
 	public static String getSystemProperties(boolean replaceBackslashInClasspath) {
 		StringBuilder sb = new StringBuilder();
-		for (Entry<Object, Object> e : new TreeMap<Object, Object>(System.getProperties()).entrySet()) {
+		for (Entry<Object, Object> e : new TreeMap<>(System.getProperties()).entrySet()) {
 			String key = (String) e.getKey();
 			if ("line.separator".equals(key)) {
 				String nl = (String) e.getValue();
@@ -1114,14 +1114,14 @@ public class ToolBox {
 			return new ArrayList<Object>((Collection<?>) iterable);
 		}
 		if (iterable instanceof Iterable) {
-			List<Object> list = new ArrayList<Object>();
+			List<Object> list = new ArrayList<>();
 			for (Object o : (Iterable<?>) iterable) {
 				list.add(o);
 			}
 			return list;
 		}
 		if (iterable instanceof Enumeration) {
-			List<Object> list = new ArrayList<Object>();
+			List<Object> list = new ArrayList<>();
 			for (Enumeration<?> en = (Enumeration<?>) iterable; en.hasMoreElements();) {
 				list.add(en.nextElement());
 			}

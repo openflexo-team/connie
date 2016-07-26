@@ -64,7 +64,7 @@ public class JavaUtils {
 	public static final String JAVA_CLASS_NAME_REGEXP = "[_A-Za-z][_A-Za-z0-9]*";
 	public static final Pattern JAVA_CLASS_NAME_PATTERN = Pattern.compile(JAVA_CLASS_NAME_REGEXP);
 
-	public static final Set<String> JAVA_RESERVED_KEYWORDS = new HashSet<String>(
+	public static final Set<String> JAVA_RESERVED_KEYWORDS = new HashSet<>(
 			Arrays.asList("abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean",
 					"do", "if", "private", "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import",
 					"public", "throws", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class",
