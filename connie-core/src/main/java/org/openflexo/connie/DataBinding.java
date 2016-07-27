@@ -471,6 +471,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
 							if (!((BindingValue) e).isValid(DataBinding.this)) {
+								((BindingValue) e).markedAsToBeReanalized();
+							}
+							if (!((BindingValue) e).isValid(DataBinding.this)) {
 								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
 							}
@@ -773,13 +776,17 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void notifyBindingChanged(Expression oldValue, Expression newValue) {
-		getOwner().notifiedBindingChanged(this);
-		// logger.info("notifyBindingChanged from " + oldValue + " to " +
-		// newValue + " of " + newValue.getClass());
+		if (getOwner() != null) {
+			getOwner().notifiedBindingChanged(this);
+			// logger.info("notifyBindingChanged from " + oldValue + " to " +
+			// newValue + " of " + newValue.getClass());
+		}
 	}
 
 	public void notifyBindingDecoded() {
-		getOwner().notifiedBindingDecoded(this);
+		if (getOwner() != null) {
+			getOwner().notifiedBindingDecoded(this);
+		}
 	}
 
 	// DONT DO THIS, since it is really dangerous !!!
@@ -1054,7 +1061,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				@Override
 				public void visit(Expression e) {
 					if (e instanceof BindingValue) {
-						returned.addAll(((BindingValue) e).getTargetObjects(context));
+						List<TargetObject> targetObjects = ((BindingValue) e).getTargetObjects(context);
+						if (targetObjects != null) {
+							returned.addAll(targetObjects);
+						}
 					}
 				}
 			});
