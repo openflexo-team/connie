@@ -5,6 +5,9 @@ dependencies {
   compile group: 'junit', name: 'junit', version: '4.+'
 }
 
+test {
+  exclude '**/TestDirectoryWatcher*'
+}
 //sourceSets {
 //    main {
 //       output.resourcesDir = "build/classes/main"

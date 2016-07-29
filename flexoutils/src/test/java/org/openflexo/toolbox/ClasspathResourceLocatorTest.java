@@ -120,6 +120,10 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		if (rloc != null) {
 
+			// This test tend to fail in eclipse because of the way eclipse manage resources
+			// Here we have resources that are java files! My solution is to tweak the run
+			// configuration for tests adding explicitly the folder containing the java files
+			// first in the classpath
 			List<? extends Resource> list = rloc.getContents();
 
 			for (Resource r : list) {
