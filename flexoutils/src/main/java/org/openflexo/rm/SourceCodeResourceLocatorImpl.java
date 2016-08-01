@@ -148,7 +148,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 				appendAllResourcesDirectories(f, "resources", returned);
 			}
 			else if (searchedToken.equals("resources")) {
-				System.out.println("==>  Found " + f);
+				// System.out.println("==> Found " + f);
 				returned.add(f);
 			}
 		}
