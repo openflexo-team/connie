@@ -1,2 +1,2 @@
 rootProject.name = 'connie'
-include 'flexoutils', 'connie-parser', 'connie-core'
+include 'testutils', 'flexoutils', 'connie-parser', 'connie-core'
