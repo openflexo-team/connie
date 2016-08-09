@@ -151,7 +151,6 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 						}
 					}
 					if (resourceLocation != null) {
-						System.out.println("----- FOUND : " + resourceLocation.getURI());
 						returned.add(resourceLocation);
 					}
 				}
