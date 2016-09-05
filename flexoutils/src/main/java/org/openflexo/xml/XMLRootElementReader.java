@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.xml;
 
 import java.io.File;
@@ -63,149 +62,146 @@ import org.xml.sax.ext.DefaultHandler2;
 
 public class XMLRootElementReader {
 
-    protected static final Logger LOGGER = Logger.getLogger(XMLRootElementReader.class.getPackage().getName());
+	protected static final Logger LOGGER = Logger.getLogger(XMLRootElementReader.class.getPackage().getName());
 
-    private final LocalHandler    handler;
+	private final LocalHandler handler;
 
-    private SAXParser             saxParser;
+	private SAXParser saxParser;
 
-    public XMLRootElementReader() {
-        super();
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setNamespaceAware(true);
-        factory.setXIncludeAware(true);
+	public XMLRootElementReader() {
+		super();
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		factory.setNamespaceAware(true);
+		factory.setXIncludeAware(true);
 
-        handler = new LocalHandler();
+		handler = new LocalHandler();
 
-        try {
-            factory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-            saxParser = factory.newSAXParser();
+		try {
+			factory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+			saxParser = factory.newSAXParser();
 
-        } catch (Exception e) {
-            LOGGER.warning("Cannot create PARSER: " + e.getMessage());
-        }
+		} catch (Exception e) {
+			LOGGER.warning("Cannot create PARSER: " + e.getMessage());
+		}
 
-    }
+	}
 
-    /**
-     * Parses only the first root element of an XML File and returns info in
-     * XMLRootElementInfo instance
-     * 
-     * @param rsc
-     * @return
-     * @throws IOException
-     */
-    synchronized public XMLRootElementInfo readRootElement(Resource rsc) throws IOException {
+	/**
+	 * Parses only the first root element of an XML File and returns info in XMLRootElementInfo instance
+	 * 
+	 * @param rsc
+	 * @return
+	 * @throws IOException
+	 */
+	synchronized public XMLRootElementInfo readRootElement(Resource rsc) throws IOException {
 
-        InputStream input = rsc.openInputStream();
-        return readRootElement(input);
-    }
+		InputStream input = rsc.openInputStream();
+		return readRootElement(input);
+	}
 
-    synchronized public XMLRootElementInfo readRootElement(File virtualModelFile) throws IOException {
-        InputStream input = new FileInputStream(virtualModelFile);
-        return readRootElement(input);
-    }
+	synchronized public XMLRootElementInfo readRootElement(File xmlFile) throws IOException {
+		InputStream input = new FileInputStream(xmlFile);
+		return readRootElement(input);
+	}
 
-    synchronized public XMLRootElementInfo readRootElement(InputStream input) throws IOException {
+	synchronized public XMLRootElementInfo readRootElement(InputStream input) throws IOException {
 
-        XMLRootElementInfo info = new XMLRootElementInfo();
+		XMLRootElementInfo info = new XMLRootElementInfo();
 
-        if (info != null && input != null) {
+		if (info != null && input != null) {
 
-            try {
-                handler.setInfo(info);
-                saxParser.parse(input, handler);
-                input.close();
-            } catch (stopParsingException e) {
-                // Stop the parser after parsing first element
-            } catch (SAXException e) {
-                LOGGER.warning("Cannot parse document: " + e.getMessage());
-                throw new IOException(e.getMessage());
-            }
-        }
-        else {
-            LOGGER.warning("Unable to parse root element for document");
-        }
-        return info;
+			try {
+				handler.setInfo(info);
+				saxParser.parse(input, handler);
+				input.close();
+			} catch (stopParsingException e) {
+				// Stop the parser after parsing first element
+			} catch (SAXException e) {
+				LOGGER.warning("Cannot parse document: " + e.getMessage());
+				throw new IOException(e.getMessage());
+			}
+		}
+		else {
+			LOGGER.warning("Unable to parse root element for document");
+		}
+		return info;
 
-    }
-    
-    
-    
-    
-    public class stopParsingException extends SAXException {
-        // an Exception used only to break parsing
-    }
+	}
 
-    /**
-     * SAX handler used to only read the first XML tag
-     * @author xtof
-     *
-     */
-    class LocalHandler extends DefaultHandler2 {
+	public class stopParsingException extends SAXException {
+		// an Exception used only to break parsing
+	}
 
-        private XMLRootElementInfo _info;
+	/**
+	 * SAX handler used to only read the first XML tag
+	 * 
+	 * @author xtof
+	 *
+	 */
+	class LocalHandler extends DefaultHandler2 {
 
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+		private XMLRootElementInfo _info;
 
-            String NSPrefix = "xmlns:p"; // default
+		@Override
+		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-            try {
-                _info.setName(localName);
-                _info.setQName(qName);
-                _info.setURI(uri);
+			String NSPrefix = "xmlns:p"; // default
 
-                if (qName != null && localName != null) {
-                    NSPrefix = qName;
-                    NSPrefix = NSPrefix.replace(localName, "").replace(":", "");
-                    if (!NSPrefix.isEmpty() && !uri.isEmpty())
-                        _info.addNamespace(NSPrefix, uri);
-                }
+			try {
+				_info.setName(localName);
+				_info.setQName(qName);
+				_info.setURI(uri);
 
-                // ************************************
-                // processing Attributes
+				if (qName != null && localName != null) {
+					NSPrefix = qName;
+					NSPrefix = NSPrefix.replace(localName, "").replace(":", "");
+					if (!NSPrefix.isEmpty() && !uri.isEmpty())
+						_info.addNamespace(NSPrefix, uri);
+				}
 
-                int len = attributes.getLength();
+				// ************************************
+				// processing Attributes
 
-                for (int i = 0; i < len; i++) {
+				int len = attributes.getLength();
 
-                    Type aType = null;
-                    String typeName = attributes.getType(i);
-                    String attrQName = attributes.getQName(i);
-                    String attrName = attributes.getLocalName(i);
-                    String attrURI = attributes.getURI(i);
-                    NSPrefix = "xmlns:p"; // default
+				for (int i = 0; i < len; i++) {
 
-                    if (qName != null && localName != null) {
-                        NSPrefix = attrQName;
-                        NSPrefix = NSPrefix.replace(attrName, "").replace(":", "");
-                    }
-                    if (!attrURI.isEmpty()) {
-                        _info.addNamespace(NSPrefix, attrURI);
-                    }
+					Type aType = null;
+					String typeName = attributes.getType(i);
+					String attrQName = attributes.getQName(i);
+					String attrName = attributes.getLocalName(i);
+					String attrURI = attributes.getURI(i);
+					NSPrefix = "xmlns:p"; // default
 
-                    if (attrName.equals(""))
-                        attrName = attrQName;
+					if (qName != null && localName != null) {
+						NSPrefix = attrQName;
+						NSPrefix = NSPrefix.replace(attrName, "").replace(":", "");
+					}
+					if (!attrURI.isEmpty()) {
+						_info.addNamespace(NSPrefix, attrURI);
+					}
 
-                    if (!attrName.isEmpty()) {
-                        _info.addAttribute(attrName, attributes.getValue(i));
-                    }
+					if (attrName.equals(""))
+						attrName = attrQName;
 
-                }
+					if (!attrName.isEmpty()) {
+						_info.addAttribute(attrName, attributes.getValue(i));
+					}
 
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+				}
 
-            throw new stopParsingException();
-        }
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-        public void setInfo(XMLRootElementInfo info) {
-            _info = info;
+			throw new stopParsingException();
+		}
 
-        }
-    }
+		public void setInfo(XMLRootElementInfo info) {
+			_info = info;
+
+		}
+	}
 
 }

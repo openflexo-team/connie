@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.IOException;
@@ -46,7 +45,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
@@ -62,41 +63,36 @@ import java.util.regex.Pattern;
 
 public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
-
 	private static final Logger LOGGER = Logger.getLogger(JarResourceImpl.class.getPackage().getName());
 
-	private List<Resource> contents;
+	private Map<JarEntry, InJarResourceImpl> contents;
 	private JarFile jarfile = null;
-	public JarFile getJarfile() {
-		return jarfile;
-	}
+	private InJarResourceImpl rootEntry;
 
 	private String jarfilename = null;
 
-
-	public JarResourceImpl(ResourceLocatorDelegate locator, String filename)
-			throws MalformedURLException {
+	public JarResourceImpl(ResourceLocatorDelegate locator, String filename) throws MalformedURLException {
 		super(locator);
 		this._relativePath = filename;
 		jarfile = null;
 		try {
 			jarfile = new JarFile(filename);
 		} catch (UnsupportedEncodingException e) {
-			LOGGER.severe("Unable to create JarResource with filename: " +filename);
+			LOGGER.severe("Unable to create JarResource with filename: " + filename);
 			e.printStackTrace();
 		} catch (IOException e) {
-			LOGGER.severe("Unable to create JarResource with filename: " +filename);
+			LOGGER.severe("Unable to create JarResource with filename: " + filename);
 			e.printStackTrace();
 		}
-		if (jarfile != null){
-			_url = new URL("file:"+filename);
+		if (jarfile != null) {
+			_url = new URL("file:" + filename);
 			jarfilename = filename;
 		}
 		else {
-			LOGGER.severe("Unable to create JarResource with filename: " +filename);
+			LOGGER.severe("Unable to create JarResource with filename: " + filename);
 			return;
 		}
-		
+
 		// Add the jarResource in the locator resource list if not contained
 		/*if(locator instanceof ClasspathResourceLocatorImpl){
 			ClasspathResourceLocatorImpl classPathLocator = (ClasspathResourceLocatorImpl)locator;
@@ -104,21 +100,42 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 				classPathLocator.getJarResourcesList().put(this.getRelativePath(), this);
 			}
 		}*/
+
+		try {
+			loadJarFile();
+		} catch (LocatorNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public JarResourceImpl(ResourceLocatorDelegate locator, JarFile jarFile)
-			throws MalformedURLException {
+	public JarResourceImpl(ResourceLocatorDelegate locator, JarFile jarFile) throws MalformedURLException {
 		super(locator);
 		this._relativePath = jarFile.getName();
 		this.jarfile = jarFile;
-		if (jarfile != null){
-			_url = new URL("file:"+jarFile.getName());
+		if (jarfile != null) {
+			_url = new URL("file:" + jarFile.getName());
 			jarfilename = jarFile.getName();
 		}
 		else {
-			LOGGER.severe("Unable to create JarResource with filename: " +jarFile.getName());
+			LOGGER.severe("Unable to create JarResource with filename: " + jarFile.getName());
 			return;
 		}
+
+		try {
+			loadJarFile();
+		} catch (LocatorNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public JarFile getJarfile() {
+		return jarfile;
+	}
+
+	public InJarResourceImpl getRootEntry() {
+		return rootEntry;
 	}
 
 	@Override
@@ -136,100 +153,134 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		return true;
 	}
 
-	@Override
-	public List<? extends Resource> getContents() {
+	// private Map<>
+
+	private void loadJarFile() throws MalformedURLException, LocatorNotFoundException {
+
+		System.out.println("Loading " + jarfile);
+
+		contents = new HashMap<JarEntry, InJarResourceImpl>();
 		URL url = getURL();
 
-		if (jarfile != null) {
-			try{
-				Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
-				List<Resource> retval = new ArrayList<Resource>();
-				while(entries.hasMoreElements()) {
+		rootEntry = new InJarResourceImpl("/", new URL("jar", url.getHost(), "file:" + jarfilename + "!/"));
+		rootEntry.setName("");
 
+		Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
+		while (entries.hasMoreElements()) {
+			JarEntry current = entries.nextElement();
+			String name = current.getName();
+			if (name.endsWith("/")) {
+				name = name.substring(0, name.length() - 1);
+			}
+			String shortName = name.substring(name.lastIndexOf("/") + 1);
+			System.out.println("> " + name + " [" + shortName + "]");
+			InJarResourceImpl inJarResource = new InJarResourceImpl(name,
+					new URL("jar", url.getHost(), "file:" + jarfilename + "!/" + name));
+			inJarResource.setEntry(current);
+			contents.put(current, inJarResource);
+			if (name.equals(rootEntry.getName() + shortName)) {
+				// System.out.println("Trouve le parent " + potentialParent + " pour " + current);
+				inJarResource.setContainer(rootEntry);
+			}
+			for (JarEntry potentialParent : contents.keySet()) {
+				if (name.equals(potentialParent.getName() + shortName)) {
+					// System.out.println("Trouve le parent " + potentialParent + " pour " + current);
+					inJarResource.setContainer(contents.get(potentialParent));
+				}
+			}
+		}
+
+		System.out.println("DONE. Loaded " + jarfile);
+	}
+
+	@Override
+	public List<? extends Resource> getContents() {
+
+		return new ArrayList<Resource>(contents.values());
+
+		/*URL url = getURL();
+		
+		if (jarfile != null) {
+			try {
+				Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
+				List<Resource> retval = new ArrayList<Resource>();
+				while (entries.hasMoreElements()) {
+		
 					JarEntry current = entries.nextElement();
 					String name = current.getName();
-
-					InJarResourceImpl inJarResource = new InJarResourceImpl(name, new URL("jar", url.getHost(),"file:"+jarfilename +"!/"+name));
+		
+					InJarResourceImpl inJarResource = new InJarResourceImpl(name,
+							new URL("jar", url.getHost(), "file:" + jarfilename + "!/" + name));
 					inJarResource.setEntry(current);
 					retval.add(inJarResource);
 				}
-
+		
 				return retval;
-			}
-			catch (Exception e){
+			} catch (Exception e) {
 				LOGGER.severe("Unable to look for resources in URL : " + url);
 				e.printStackTrace();
 			}
-
+		
 			return java.util.Collections.emptyList();
 		}
-
-		return super.getContents();
+		
+		return super.getContents();*/
 	}
 
 	@Override
 	public List<? extends Resource> getContents(Pattern pattern) {
-		URL url = getURL();
-		try{
-			Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
-			List<Resource> retval = new ArrayList<Resource>();
-			while(entries.hasMoreElements()) {
-				JarEntry current = entries.nextElement();
-				String name = current.getName();
-				boolean accept = pattern.matcher(name).matches();
-				if (accept) {
-					InJarResourceImpl res = new InJarResourceImpl(name, new URL("jar", url.getHost(),"file:"+jarfilename +"!/"+name));
-					res.setEntry(current);
-					retval.add(res);
-				}
+		List<Resource> retval = new ArrayList<Resource>();
+		for (JarEntry current : contents.keySet()) {
+			String name = current.getName();
+			boolean accept = pattern.matcher(name).matches();
+			if (accept) {
+				retval.add(contents.get(current));
 			}
-
-			return retval;
 		}
-		catch (Exception e){
-			LOGGER.severe("Unable to look for resources in URL : " + url);
-			e.printStackTrace();
-		}
-
-		return java.util.Collections.emptyList();
+		return retval;
 	}
 
-
 	public List<? extends Resource> getContents(String startpath, Pattern pattern) {
+		List<Resource> retval = new ArrayList<Resource>();
+		for (JarEntry current : contents.keySet()) {
+			String name = current.getName();
+			boolean accept = pattern.matcher(name).matches();
+			if (name.startsWith(startpath) && accept) { // filter according to the path
+				retval.add(contents.get(current));
+			}
+		}
+		return retval;
 
-		URL url = getURL();
-		try{
-			Enumeration<JarEntry> entries = jarfile.entries(); //gives ALL entries in jar
+		/*URL url = getURL();
+		try {
+			Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
 			List<Resource> retval = new ArrayList<Resource>();
-			while(entries.hasMoreElements()) {
+			while (entries.hasMoreElements()) {
 				JarEntry current = entries.nextElement();
 				String name = current.getName();
 				boolean accept = pattern.matcher(name).matches();
-				if (name.startsWith(startpath) && accept) { //filter according to the path
+				if (name.startsWith(startpath) && accept) { // filter according to the path
 					String entry = name.substring(startpath.length());
 					int checkSubdir = entry.indexOf("/");
 					if (checkSubdir >= 0) {
 						// if it is a subdirectory, we just return the directory name
 						entry = entry.substring(0, checkSubdir);
 					}
-					InJarResourceImpl res = new InJarResourceImpl(name, new URL("jar", url.getHost(),"file:"+jarfilename +"!/"+name));
+					InJarResourceImpl res = new InJarResourceImpl(name, new URL("jar", url.getHost(), "file:" + jarfilename + "!/" + name));
 					res.setEntry(current);
 					retval.add(res);
 				}
 			}
-
+		
 			return retval;
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 			LOGGER.severe("Unable to look for resources in URL : " + url);
 			e.printStackTrace();
 		}
-
-		return java.util.Collections.emptyList();
+		
+		return java.util.Collections.emptyList();*/
 
 	}
-
-
 
 	@Override
 	public void setURI(String anURI) {
@@ -239,11 +290,11 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	@Override
 	public String getRelativePath() {
 		return jarfilename;
-		
+
 	}
 
-	public InputStream openInputStream(JarEntry entry){
-		if (jarfile != null){
+	public InputStream openInputStream(JarEntry entry) {
+		if (jarfile != null) {
 			try {
 				return jarfile.getInputStream(entry);
 			} catch (IOException e) {
