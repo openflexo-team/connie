@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.File;
@@ -98,7 +97,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 						if (parent == null) {
 							parent = new JarResourceImpl(this, jarPath);
 							if (parent != null) {
-								resourceLocation.setContainer(parent);
+								// resourceLocation.setContainer(parent);
 								JarResourcesList.put(jarPath, parent);
 							}
 						}
@@ -170,15 +169,15 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 		return locateResource(baseLocation.getRelativePath() + PATH_SEP + relativePath);
 
 	}
-	
+
 	/**
 	 * Return the lit of jar resources stored in this Locator
+	 * 
 	 * @return
 	 */
 	public Map<String, Resource> getJarResourcesList() {
 		return JarResourcesList;
 	}
-
 
 	@Override
 	public File retrieveResourceAsFile(Resource rl) {
@@ -205,7 +204,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 		}
 		return locateFile;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName();

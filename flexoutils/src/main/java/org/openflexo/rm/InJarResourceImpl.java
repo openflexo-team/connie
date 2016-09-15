@@ -143,8 +143,10 @@ public class InJarResourceImpl extends BasicResourceImpl {
 
 	@Override
 	public void setContainer(Resource container) {
-		this.container = (InJarResourceImpl) container;
-		this.container.contents.add(this);
+		if (container instanceof InJarResourceImpl) {
+			this.container = (InJarResourceImpl) container;
+			this.container.contents.add(this);
+		}
 	}
 
 	@Override
