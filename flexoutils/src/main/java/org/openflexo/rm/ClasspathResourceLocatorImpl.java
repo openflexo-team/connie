@@ -97,7 +97,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 						if (parent == null) {
 							parent = new JarResourceImpl(this, jarPath);
 							if (parent != null) {
-								resourceLocation.setContainer(parent);
+								// resourceLocation.setContainer(parent);
 								JarResourcesList.put(jarPath, parent);
 							}
 						}
@@ -150,7 +150,6 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 						}
 					}
 					if (resourceLocation != null) {
-						System.out.println("----- FOUND : " + resourceLocation.getURI());
 						returned.add(resourceLocation);
 					}
 				}

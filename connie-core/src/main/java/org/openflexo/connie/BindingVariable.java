@@ -57,7 +57,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	private static final Logger LOGGER = Logger.getLogger(BindingVariable.class.getPackage().getName());
 
 	private String variableName;
-	private Type type;
+	protected Type type;
 	private boolean settable = false;
 	private PropertyChangeSupport pcSupport;
 
@@ -135,7 +135,8 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 			resultingTypeAsString = TypeUtils.simpleRepresentation(getType());
 			resultingTypeAsString = ToolBox.replaceStringByStringInString("<", "&LT;", resultingTypeAsString);
 			resultingTypeAsString = ToolBox.replaceStringByStringInString(">", "&GT;", resultingTypeAsString);
-		} else {
+		}
+		else {
 			resultingTypeAsString = "???";
 		}
 		returned += "<p><b>" + resultingTypeAsString + " " + getVariableName() + "</b></p>";
@@ -161,7 +162,8 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 			if (vname != null) {
 				return vname.equals(((BindingVariable) obj).getVariableName()) && getType() != null
 						&& getType().equals(((BindingVariable) obj).getType());
-			} else
+			}
+			else
 				return false;
 		}
 		return super.equals(obj);
@@ -178,8 +180,8 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	}
 
 	@Override
-	public void setBindingValue(Object value, Object target, BindingEvaluationContext context) throws TypeMismatchException,
-			NullReferenceException {
+	public void setBindingValue(Object value, Object target, BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException {
 		if (isSettable() && context instanceof SettableBindingEvaluationContext) {
 			((SettableBindingEvaluationContext) context).setValue(value, this);
 		}

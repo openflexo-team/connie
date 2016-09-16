@@ -741,7 +741,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (!isValid()) {
 			LOGGER.warning("Invalid binding " + getUnparsedBinding() + " reason: " + invalidBindingReason() + " " + (getOwner() != null
 					? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory=" + getOwner().getBindingFactory() : ""));
-			System.out.println("BreakPoint in DataBinding");
 			/*
 			 * Bindable owner = getOwner(); BindingModel bm =
 			 * getOwner().getBindingModel(); BindingFactory bf =

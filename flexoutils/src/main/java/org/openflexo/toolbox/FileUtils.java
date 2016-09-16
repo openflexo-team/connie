@@ -701,6 +701,9 @@ public class FileUtils {
 	}
 
 	public static boolean directoryContainsFile(File directory, File file, boolean recursive) {
+		if (file == null) {
+			return false;
+		}
 		if (file.equals(directory)) {
 			return true;
 		}

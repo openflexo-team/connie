@@ -40,10 +40,7 @@ package org.openflexo.rm;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -60,7 +57,12 @@ public class InJarResourceImpl extends BasicResourceImpl {
 
 	private static final Logger LOGGER = Logger.getLogger(InJarResourceImpl.class.getPackage().getName());
 
+	public static final String JAR_SEPARATOR = "/";
+
 	private JarEntry entry = null;
+
+	private InJarResourceImpl container;
+	private List<InJarResourceImpl> contents = new ArrayList<>();
 
 	public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath, URL url) throws LocatorNotFoundException {
 		super(delegate, initialPath, url);
@@ -94,15 +96,21 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public List<Resource> getContents() {
 		List<Resource> resources = new ArrayList<>();
-
+	
+		List<Resource> resources = new ArrayList<Resource>();
+	
 		if (entry != null && entry.isDirectory()) {
 			// Browser the resource of the container
 			for (Resource resource : getContainer().getContents()) {
 				String parentFolderPath = resource.getRelativePath();
 				// If it is a folder end with "/" then remove the "/" to find the parent path
+				if (parentFolderPath.endsWith("/")) {
+			for (Resource resource :  getContainer().getContents()) {
+				String parentFolderPath = resource.getRelativePath();
+				// If it is a folder end with JAR_SEPARATOR then remove the "/" to find the parent path
 				if (parentFolderPath.endsWith("/")) {
 					int lastSeparator = parentFolderPath.lastIndexOf("/");
 					parentFolderPath = parentFolderPath.substring(0, lastSeparator);
@@ -115,15 +123,22 @@ public class InJarResourceImpl extends BasicResourceImpl {
 				// Check it corresponds to this in jar resource
 				if (parentFolderPath.equals(getRelativePath())) {
 					resources.add(resource);
+					resource.setContainer(resource);
 				}
 			}
 			// TODO some day ...
-
+	
+	
 		}
-
+	
+	
+		System.out.println("Les contents de " + this + " c'est " + resources);
+	
 		return resources;
-
+	
 	}
+	
+	}*/
 
 	@Override
 	public boolean isContainer() {
@@ -132,15 +147,35 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	};
 
 	@Override
+	public InJarResourceImpl getContainer() {
+		return container;
+	}
+
+	@Override
+	public void setContainer(Resource container) {
+		if (container instanceof InJarResourceImpl) {
+			this.container = (InJarResourceImpl) container;
+			this.container.contents.add(this);
+		}
+	}
+
+	@Override
+	public List<InJarResourceImpl> getContents() {
+		return contents;
+	}
+
+	/*@Override
 	public Resource getContainer() {
 		if (super.getContainer() != null) {
 			return super.getContainer();
 		}
 		else {
 			URL url = getURL();
-
+	
+	
 			JarResourceImpl container = (JarResourceImpl) this._parent;
-
+	
+	
 			if (container == null) {
 				// finds the container
 				String jarPath = null;
@@ -162,17 +197,40 @@ public class InJarResourceImpl extends BasicResourceImpl {
 			}
 			return container;
 		}
-
-	}
+	
+	}*/
 
 	@Override
 	public List<? extends Resource> getContents(Pattern pattern) {
-		String startpath = getRelativePath();
-		return ((JarResourceImpl) getContainer()).getContents(startpath, pattern);
+		// String startpath = getRelativePath();
+		// return ((JarResourceImpl) getContainer()).getContents(startpath, pattern);
+		// TODO implement this
+		return getContents();
+	}
+
+	public JarEntry getEntry() {
+		return entry;
 	}
 
 	public void setEntry(JarEntry current) {
 		entry = current;
+		entry = current;
 	}
 
+	private String name;
+
+	public String getName() {
+		if (entry != null) {
+			String fullName = entry.getName();
+			if (fullName.endsWith(JAR_SEPARATOR)) {
+				fullName = fullName.substring(0, fullName.length() - 1);
+			}
+			return fullName.substring(fullName.lastIndexOf(JAR_SEPARATOR) + 1);
+		}
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

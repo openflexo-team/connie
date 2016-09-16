@@ -109,6 +109,10 @@ public class BasicResourceImpl implements Resource {
 
 	}
 
+	public Resource getParent() {
+		return _parent;
+	}
+
 	@Override
 	public ResourceLocatorDelegate getLocator() {
 		return _locator;
