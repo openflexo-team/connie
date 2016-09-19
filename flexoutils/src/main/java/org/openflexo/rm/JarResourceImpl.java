@@ -157,12 +157,13 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
 	private void loadJarFile() throws MalformedURLException, LocatorNotFoundException {
 
-		//System.out.println("Loading " + jarfile);
+		// System.out.println("Loading " + jarfile);
 
 		contents = new HashMap<JarEntry, InJarResourceImpl>();
 		URL url = getURL();
 
 		rootEntry = new InJarResourceImpl("/", new URL("jar", url.getHost(), "file:" + jarfilename + "!/"));
+		rootEntry.setJarResource(this);
 		rootEntry.setName("");
 
 		Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
@@ -173,9 +174,10 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 				name = name.substring(0, name.length() - 1);
 			}
 			String shortName = name.substring(name.lastIndexOf("/") + 1);
-			//System.out.println("> " + name + " [" + shortName + "]");
+			// System.out.println("> " + name + " [" + shortName + "]");
 			InJarResourceImpl inJarResource = new InJarResourceImpl(name,
 					new URL("jar", url.getHost(), "file:" + jarfilename + "!/" + name));
+			inJarResource.setJarResource(this);
 			inJarResource.setEntry(current);
 			contents.put(current, inJarResource);
 			if (name.equals(rootEntry.getName() + shortName)) {
