@@ -164,6 +164,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		URL url = getURL();
 
 		rootEntry = new InJarResourceImpl("/", new URL("jar", url.getHost(), "file:" + jarfilename + "!/"));
+		rootEntry.setJarResource(this);
 		rootEntry.setName("");
 
 		Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
@@ -177,6 +178,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			// System.out.println("> " + name + " [" + shortName + "]");
 			InJarResourceImpl inJarResource = new InJarResourceImpl(name,
 					new URL("jar", url.getHost(), "file:" + jarfilename + "!/" + name));
+			inJarResource.setJarResource(this);
 			inJarResource.setEntry(current);
 			contents.put(current, inJarResource);
 			if (name.equals(rootEntry.getName() + shortName)) {

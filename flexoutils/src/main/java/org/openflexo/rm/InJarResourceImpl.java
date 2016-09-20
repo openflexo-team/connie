@@ -61,6 +61,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 
 	private JarEntry entry = null;
 
+	private JarResourceImpl jarResource;
 	private InJarResourceImpl container;
 	private List<InJarResourceImpl> contents = new ArrayList<>();
 
@@ -232,5 +233,13 @@ public class InJarResourceImpl extends BasicResourceImpl {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public JarResourceImpl getJarResource() {
+		return jarResource;
+	}
+
+	public void setJarResource(JarResourceImpl jarResource) {
+		this.jarResource = jarResource;
 	}
 }
