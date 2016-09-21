@@ -53,11 +53,16 @@ import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingUtilities;
+
 /**
  * 
- * This Resource Impl represents a Jar File Containing other files
+ * Implementation of a {@link Resource} representing contents stored in a Jar file<br>
+ * Contents of a {@link JarResourceImpl} are instantiated as {@link InJarResourceImpl}<br>
+ * Use {@link #getInJarResource(String)} to retrieve an {@link InJarResourceImpl} contained in this resource
  * 
- * @author xtof
+ * 
+ * @author xtof, sylvain
  *
  */
 
@@ -65,6 +70,9 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
 	private static final Logger LOGGER = Logger.getLogger(JarResourceImpl.class.getPackage().getName());
 
+	// Stores contained InJarResourceImpl where key is the relative path name
+	private Map<String, InJarResourceImpl> cache;
+	// Stores contained InJarResourceImpl where key is the jar entry
 	private Map<JarEntry, InJarResourceImpl> contents;
 	private JarFile jarfile = null;
 	private InJarResourceImpl rootEntry;
@@ -153,13 +161,12 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		return true;
 	}
 
-	// private Map<>
-
 	private void loadJarFile() throws MalformedURLException, LocatorNotFoundException {
 
-		// System.out.println("Loading " + jarfile);
+		//System.out.println("Loading " + jarfile+" fileName="+jarfilename);
 
-		contents = new HashMap<JarEntry, InJarResourceImpl>();
+		cache = new HashMap<>();
+		contents = new HashMap<>();
 		URL url = getURL();
 
 		rootEntry = new InJarResourceImpl("/", new URL("jar", url.getHost(), "file:" + jarfilename + "!/"));
@@ -167,66 +174,52 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		rootEntry.setName("");
 
 		Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
+		
 		while (entries.hasMoreElements()) {
+			
 			JarEntry current = entries.nextElement();
 			String name = current.getName();
 			if (name.endsWith("/")) {
 				name = name.substring(0, name.length() - 1);
 			}
 			String shortName = name.substring(name.lastIndexOf("/") + 1);
-			// System.out.println("> " + name + " [" + shortName + "]");
+
 			InJarResourceImpl inJarResource = new InJarResourceImpl(name,
 					new URL("jar", url.getHost(), "file:" + jarfilename + "!/" + name));
 			inJarResource.setJarResource(this);
 			inJarResource.setEntry(current);
 			contents.put(current, inJarResource);
 			if (name.equals(rootEntry.getName() + shortName)) {
-				// System.out.println("Trouve le parent " + potentialParent + " pour " + current);
 				inJarResource.setContainer(rootEntry);
 			}
+			// We build the hierarchy of InJarResourceImpl, inside the jar file
 			for (JarEntry potentialParent : contents.keySet()) {
 				if (name.equals(potentialParent.getName() + shortName)) {
-					// System.out.println("Trouve le parent " + potentialParent + " pour " + current);
 					inJarResource.setContainer(contents.get(potentialParent));
 				}
 			}
+
+			// Register the inJarResource in the cache of the locator, when relevant
+			/*if (getLocator() instanceof ClasspathResourceLocatorImpl) {
+				((ClasspathResourceLocatorImpl)getLocator()).registerResource(inJarResource);
+			}*/
+
+			// Put the InJarResourceImpl in the cache of the JarResourceImpl
+			cache.put(inJarResource.getRelativePath(), inJarResource);
+
 		}
 
-		System.out.println("DONE. Loaded " + jarfile);
+		//System.out.println("DONE. Loaded " + jarfile+" fileName="+jarfilename);
+
+	}
+
+	public InJarResourceImpl getInJarResource(String relativePath) {
+		return cache.get(relativePath);
 	}
 
 	@Override
 	public List<? extends Resource> getContents() {
-
 		return new ArrayList<Resource>(contents.values());
-
-		/*URL url = getURL();
-		
-		if (jarfile != null) {
-			try {
-				Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
-				List<Resource> retval = new ArrayList<Resource>();
-				while (entries.hasMoreElements()) {
-		
-					JarEntry current = entries.nextElement();
-					String name = current.getName();
-		
-					InJarResourceImpl inJarResource = new InJarResourceImpl(name,
-							new URL("jar", url.getHost(), "file:" + jarfilename + "!/" + name));
-					inJarResource.setEntry(current);
-					retval.add(inJarResource);
-				}
-		
-				return retval;
-			} catch (Exception e) {
-				LOGGER.severe("Unable to look for resources in URL : " + url);
-				e.printStackTrace();
-			}
-		
-			return java.util.Collections.emptyList();
-		}
-		
-		return super.getContents();*/
 	}
 
 	@Override
@@ -252,36 +245,6 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 			}
 		}
 		return retval;
-
-		/*URL url = getURL();
-		try {
-			Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
-			List<Resource> retval = new ArrayList<Resource>();
-			while (entries.hasMoreElements()) {
-				JarEntry current = entries.nextElement();
-				String name = current.getName();
-				boolean accept = pattern.matcher(name).matches();
-				if (name.startsWith(startpath) && accept) { // filter according to the path
-					String entry = name.substring(startpath.length());
-					int checkSubdir = entry.indexOf("/");
-					if (checkSubdir >= 0) {
-						// if it is a subdirectory, we just return the directory name
-						entry = entry.substring(0, checkSubdir);
-					}
-					InJarResourceImpl res = new InJarResourceImpl(name, new URL("jar", url.getHost(), "file:" + jarfilename + "!/" + name));
-					res.setEntry(current);
-					retval.add(res);
-				}
-			}
-		
-			return retval;
-		} catch (Exception e) {
-			LOGGER.severe("Unable to look for resources in URL : " + url);
-			e.printStackTrace();
-		}
-		
-		return java.util.Collections.emptyList();*/
-
 	}
 
 	@Override

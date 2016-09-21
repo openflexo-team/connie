@@ -65,20 +65,20 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	private InJarResourceImpl container;
 	private List<InJarResourceImpl> contents = new ArrayList<>();
 
-	public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath, URL url) throws LocatorNotFoundException {
+	/*public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath, URL url) throws LocatorNotFoundException {
 		super(delegate, initialPath, url);
-	}
+	}*/
 
-	public InJarResourceImpl(String initialPath, URL url) throws LocatorNotFoundException {
+	protected InJarResourceImpl(String initialPath, URL url) throws LocatorNotFoundException {
 		super(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), initialPath, url);
-		((ClasspathResourceLocatorImpl) this.getLocator()).getJarResourcesList().put(initialPath, this);
+		//((ClasspathResourceLocatorImpl) this.getLocator()).getJarResourcesList().put(initialPath, this);
 
 		// Add the InJarResource in the locator resource list if not contained
-		ClasspathResourceLocatorImpl locator = (ClasspathResourceLocatorImpl) ResourceLocator
-				.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class);
-		if (locator.getJarResourcesList().get(this) == null) {
+		//ClasspathResourceLocatorImpl locator = (ClasspathResourceLocatorImpl) ResourceLocator
+		//		.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class);
+		/*if (locator.getJarResourcesList().get(this) == null) {
 			locator.getJarResourcesList().put(initialPath, this);
-		}
+		}*/
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	/*@Override
 	public List<Resource> getContents() {
 		List<Resource> resources = new ArrayList<Resource>();
-	
+
 		if (entry != null && entry.isDirectory()) {
 			// Browser the resource of the container
 			for (Resource resource :  getContainer().getContents()) {
@@ -122,13 +122,13 @@ public class InJarResourceImpl extends BasicResourceImpl {
 				}
 			}
 			// TODO some day ...
-	
+
 		}
-	
+
 		System.out.println("Les contents de " + this + " c'est " + resources);
-	
+
 		return resources;
-	
+
 	}*/
 
 	@Override
@@ -162,9 +162,9 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		}
 		else {
 			URL url = getURL();
-	
+
 			JarResourceImpl container = (JarResourceImpl) this._parent;
-	
+
 			if (container == null) {
 				// finds the container
 				String jarPath = null;
@@ -186,15 +186,22 @@ public class InJarResourceImpl extends BasicResourceImpl {
 			}
 			return container;
 		}
-	
+
 	}*/
 
 	@Override
-	public List<? extends Resource> getContents(Pattern pattern) {
-		// String startpath = getRelativePath();
-		// return ((JarResourceImpl) getContainer()).getContents(startpath, pattern);
-		// TODO implement this
-		return getContents();
+	public List<InJarResourceImpl> getContents(Pattern pattern) {
+		List<InJarResourceImpl> retval = new ArrayList<>();
+		List<InJarResourceImpl> allContents = getContents();
+		for (InJarResourceImpl current : allContents) {
+			String name = current.getRelativePath();
+			boolean accept = pattern.matcher(name).matches();
+			if (accept) {
+				retval.add(current);
+			}
+		}
+
+		return retval;
 	}
 
 	public JarEntry getEntry() {
