@@ -203,7 +203,13 @@ public class FileUtils {
 			f.mkdir();
 		}
 		else {
-			f.createNewFile();
+			f.getParentFile().mkdirs();
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				LOGGER.warning("Cannot create file " + f.getAbsolutePath());
+				throw e;
+			}
 			if (f.exists()) {
 				InputStream in = rsc.openInputStream();
 				OutputStream out = new FileOutputStream(f);
