@@ -39,16 +39,31 @@
 package org.openflexo.rm;
 
 import java.io.File;
+import java.util.List;
 
+/**
+ * API of a software component who is able to retrieve {@link Resource}
+ * 
+ * @author sylvain
+ *
+ */
 public interface ResourceLocatorDelegate {
 
 	/**
-	 * Locates the resource given a relative PATH
+	 * Locates the resource given a relative path
 	 * 
 	 * @param relativePath
 	 * @return
 	 */
 	public Resource locateResource(String relativePath);
+
+	/**
+	 * Locates all resources found from this ResourceLocatorDelegate matching supplied relative PATH
+	 * 
+	 * @param relativePath
+	 * @return
+	 */
+	public List<? extends Resource> locateAllResources(String relativePath);
 
 	/**
 	 * Locates the resource given a relative PATH and a base Location

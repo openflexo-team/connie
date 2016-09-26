@@ -42,6 +42,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,30 +74,62 @@ final public class ResourceLocator {
 
 	/**
 	 * Locate a Resource<br>
-	 * This lookup is performed according to the order in which all {@link ResourceLocatorDelegate} are registered.
+	 * Return first found resource according to the order in which all {@link ResourceLocatorDelegate} are registered.
 	 * 
 	 * @param relativePath
 	 * @return
 	 */
-	static public Resource locateResource(String relativePath) {
+	public static Resource locateResource(String relativePath) {
 		if (relativePath == null) {
 			return null;
 		}
-		Resource location = null;
+		Resource foundResource = null;
 		Iterator<ResourceLocatorDelegate> delegateIt = _delegatesOrderedList.iterator();
-		while (delegateIt.hasNext() && location == null) {
+		while (delegateIt.hasNext() && foundResource == null) {
 			ResourceLocatorDelegate del = delegateIt.next();
-			location = del.locateResource(relativePath);
-			//System.out.println("> Searched "+relativePath+" in " + del + " found " + location);
-		}
-		if (location == null) {
-			if (LOGGER.isLoggable(Level.WARNING)) {
-				LOGGER.warning("Could not locate resource " + relativePath);
-				Thread.dumpStack();
+			// System.out.println("> Searching " + relativePath + " in " + del);
+			foundResource = del.locateResource(relativePath);
+			if (foundResource != null) {
+				return foundResource;
 			}
+			// System.out.println("> Searched " + relativePath + " in " + del + " found " + foundResource);
+		}
+		if (LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Could not locate resource " + relativePath);
+			Thread.dumpStack();
 		}
 
-		return location;
+		return null;
+	}
+
+	/**
+	 * Locate some {@link Resource}<br>
+	 * Return list of Resource of the first {@link ResourceLocatorDelegate} which contains at least one {@link Resource} matching supplied
+	 * relative path. Computation is performed according to the order in which all {@link ResourceLocatorDelegate} are registered.
+	 * 
+	 * @param relativePath
+	 * @return
+	 */
+	public static List<Resource> locateAllResources(String relativePath) {
+		if (relativePath == null) {
+			return null;
+		}
+		List<Resource> foundResources = new ArrayList<>();
+		Iterator<ResourceLocatorDelegate> delegateIt = _delegatesOrderedList.iterator();
+		while (delegateIt.hasNext()) {
+			ResourceLocatorDelegate del = delegateIt.next();
+			List<? extends Resource> foundResourcesInDelegate = del.locateAllResources(relativePath);
+			if (foundResourcesInDelegate != null && foundResourcesInDelegate.size() > 0) {
+				foundResources.addAll(foundResourcesInDelegate);
+			}
+			// System.out.println("> Searched "+relativePath+" in " + del + " found " + location);
+		}
+		if (foundResources.size() == 0 && LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Could not locate resource " + relativePath);
+			Thread.dumpStack();
+		}
+
+		return foundResources;
 	}
 
 	private static SourceCodeResourceLocatorImpl sourceCodeResourceLocator;

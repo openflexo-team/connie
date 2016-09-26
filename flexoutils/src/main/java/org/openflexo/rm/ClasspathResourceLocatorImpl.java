@@ -77,59 +77,16 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 	@Override
 	public Resource locateResource(String relativePathName) {
 
+		if (relativePathName == null) {
+			return null;
+		}
+
 		List<Resource> foundResources = locateAllResources(relativePathName);
 		if (foundResources.size() > 0) {
 			return foundResources.get(0);
 		}
-		
+
 		return null;
-		
-		/*if (relativePathName == null) {
-			return null;
-		}
-
-		// First look in the cache
-		List<Resource> resourceLocations = cache.get(relativePathName);
-
-
-
-		if (resourceLocation == null) {
-
-			// When not found, perform search in the whole classpath
-			try {
-				// First, use the ClassLoader to lookup the resource
-				// An URL is returned
-				URL url = cl.getResource(relativePathName);
-
-				if (url != null) {
-					if (url.getProtocol().equals("file")) {
-						// If protocol is file, just instanciate the FileResourceImpl
-						resourceLocation = new FileResourceImpl(this, relativePathName, url);
-					}
-					else if (url.getProtocol().equals("jar")) {
-						// If protocol is jar, we have to lookup an InJarResourceImpl in a JarResourceImpl
-						String jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),
-								"UTF-8");
-						JarResourceImpl jarResource = jarResources.get(jarPath);
-						if (jarResource == null) {
-							jarResource = new JarResourceImpl(this, jarPath);
-							if (jarResource != null) {
-								jarResources.put(jarPath, jarResource);
-							}
-						}
-						// Retrieve right InJarResourceImpl from the JarResourceImpl
-						resourceLocation = jarResource.getInJarResource(relativePathName);
-					}
-				}
-			} catch (Exception e) {
-				LOGGER.severe("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
-				e.printStackTrace();
-			}
-
-			cache.put(relativePathName, resourceLocation);
-		}
-
-		return resourceLocation;*/
 
 	}
 
@@ -195,8 +152,6 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	}
 
-
-
 	@Override
 	public Resource locateResourceWithBaseLocation(Resource baseLocation, String relativePath) {
 
@@ -250,6 +205,5 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 		}
 		cache.put(resource.getRelativePath(), resource);
 	}*/
-
 
 }

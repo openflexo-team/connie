@@ -176,10 +176,10 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 		try {
 			File file = locateFile(relativePathName, regexFilter);
 			if (file != null && file.exists()) {
-				FileResourceImpl returned = cache.get(file);
+				FileResourceImpl returned = filesCache.get(file);
 				if (returned == null) {
 					returned = new FileResourceImpl(this, relativePathName, file.toURI().toURL(), file);
-					cache.put(file, returned);
+					filesCache.put(file, returned);
 				}
 				return returned;
 			}
