@@ -51,9 +51,12 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * @author xtof
+ * An implementation of {@link ResourceLocatorDelegate} that looks for resources in the ClassPath<br>
+ * Only one instance of this class should be instantiated in the application, generally in the {@link ResourceLocator}
  * 
- *         ResourceLocator that looks for resources in the ClassPath
+ * @see ResourceLocator
+ * @author C. Guychard, Sylvain
+ * 
  */
 
 public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
@@ -62,45 +65,60 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
 	public static final String PATH_SEP = "/";
 
-	private final Map<String, Resource> JarResourcesList;
+	private final Map<String, JarResourceImpl> jarResources;
 
-	private final Map<String, Resource> cache = new HashMap<>();
+	private final Map<String, List<Resource>> cache = new HashMap<>();
 
 	public ClasspathResourceLocatorImpl() {
 
-		JarResourcesList = new Hashtable<>();
+		jarResources = new Hashtable<String, JarResourceImpl>();
 	}
 
 	@Override
 	public Resource locateResource(String relativePathName) {
 
-		if (relativePathName == null) {
+		List<Resource> foundResources = locateAllResources(relativePathName);
+		if (foundResources.size() > 0) {
+			return foundResources.get(0);
+		}
+		
+		return null;
+		
+		/*if (relativePathName == null) {
 			return null;
 		}
 
-		Resource resourceLocation = cache.get(relativePathName);
+		// First look in the cache
+		List<Resource> resourceLocations = cache.get(relativePathName);
+
+
 
 		if (resourceLocation == null) {
 
+			// When not found, perform search in the whole classpath
 			try {
+				// First, use the ClassLoader to lookup the resource
+				// An URL is returned
 				URL url = cl.getResource(relativePathName);
+
 				if (url != null) {
 					if (url.getProtocol().equals("file")) {
+						// If protocol is file, just instanciate the FileResourceImpl
 						resourceLocation = new FileResourceImpl(this, relativePathName, url);
-
 					}
-					else {
+					else if (url.getProtocol().equals("jar")) {
+						// If protocol is jar, we have to lookup an InJarResourceImpl in a JarResourceImpl
 						String jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),
 								"UTF-8");
-						resourceLocation = new InJarResourceImpl(this, relativePathName, url);
-						Resource parent = JarResourcesList.get(jarPath);
-						if (parent == null) {
-							parent = new JarResourceImpl(this, jarPath);
-							if (parent != null) {
-								// resourceLocation.setContainer(parent);
-								JarResourcesList.put(jarPath, parent);
+						JarResourceImpl jarResource = jarResources.get(jarPath);
+						if (jarResource == null) {
+							jarResource = new JarResourceImpl(this, jarPath);
+							if (jarResource != null) {
+								jarResources.put(jarPath, jarResource);
 							}
 						}
+						// Retrieve right InJarResourceImpl from the JarResourceImpl
+						resourceLocation = jarResource.getInJarResource(relativePathName);
 					}
 				}
 			} catch (Exception e) {
@@ -111,7 +129,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 			cache.put(relativePathName, resourceLocation);
 		}
 
-		return resourceLocation;
+		return resourceLocation;*/
 
 	}
 
@@ -121,47 +139,63 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 			return null;
 		}
 
-		ArrayList<Resource> returned = new ArrayList<>();
+		// First look in the cache
+		List<Resource> resourceLocations = cache.get(relativePathName);
 
-		Resource resourceLocation = null;
+		if (resourceLocations != null) {
+			return resourceLocations;
+		}
+
+		// When not found, perform search in the whole classpath
+		ArrayList<Resource> returned = new ArrayList<>();
+		cache.put(relativePathName, returned);
 
 		try {
+			// First, use the ClassLoader to lookup the resource
+			// List of URLs are returned
 			Enumeration<URL> urlList = cl.getResources(relativePathName);
 
 			if (urlList != null && urlList.hasMoreElements()) {
+
 				while (urlList.hasMoreElements()) {
 					URL url = urlList.nextElement();
 
-					if (url.getProtocol().equals("file")) {
-						resourceLocation = new FileResourceImpl(this, relativePathName, url);
+					Resource resourceLocation = null;
 
+					if (url.getProtocol().equals("file")) {
+						// If protocol is file, just instanciate the FileResourceImpl
+						resourceLocation = new FileResourceImpl(this, relativePathName, url);
 					}
-					else {
+					else if (url.getProtocol().equals("jar")) {
+						// If protocol is jar, we have to lookup an InJarResourceImpl in a JarResourceImpl
 						String jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"),
 								"UTF-8");
-						resourceLocation = new InJarResourceImpl(this, relativePathName, url);
-						Resource parent = JarResourcesList.get(jarPath);
-						if (parent == null) {
-							parent = new JarResourceImpl(this, jarPath);
-							if (parent != null) {
-								resourceLocation.setContainer(parent);
-								JarResourcesList.put(jarPath, parent);
+						JarResourceImpl jarResource = jarResources.get(jarPath);
+						if (jarResource == null) {
+							jarResource = new JarResourceImpl(this, jarPath);
+							if (jarResource != null) {
+								jarResources.put(jarPath, jarResource);
 							}
 						}
+						// Retrieve right InJarResourceImpl from the JarResourceImpl
+						resourceLocation = jarResource.getInJarResource(relativePathName);
 					}
 					if (resourceLocation != null) {
 						returned.add(resourceLocation);
 					}
+
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.severe("Did Not find Resource in classpath " + relativePathName + " got: " + resourceLocation);
+			LOGGER.warning("Did Not find Resource in classpath " + relativePathName);
 			e.printStackTrace();
 		}
 
 		return returned;
 
 	}
+
+
 
 	@Override
 	public Resource locateResourceWithBaseLocation(Resource baseLocation, String relativePath) {
@@ -175,8 +209,8 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 	 * 
 	 * @return
 	 */
-	public Map<String, Resource> getJarResourcesList() {
-		return JarResourcesList;
+	public Map<String, JarResourceImpl> getJarResourcesList() {
+		return jarResources;
 	}
 
 	@Override
@@ -209,5 +243,13 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 	public String toString() {
 		return this.getClass().getSimpleName();
 	}
+
+	/*protected void registerResource(InJarResourceImpl resource) {
+		if (cache.get(resource.getRelativePath()) != null) {
+			LOGGER.warning("Duplicated resource "+resource.getRelativePath()+" registered in the classpath");
+		}
+		cache.put(resource.getRelativePath(), resource);
+	}*/
+
 
 }

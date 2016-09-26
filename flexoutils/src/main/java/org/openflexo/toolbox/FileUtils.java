@@ -180,7 +180,9 @@ public class FileUtils {
 		}
 		else if (src instanceof InJarResourceImpl) {
 			for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"))) {
-				copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
+				if (!rsc.isContainer()) {
+					copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
+				}
 			}
 		}
 		else {
@@ -203,17 +205,27 @@ public class FileUtils {
 			f.mkdir();
 		}
 		else {
-			f.createNewFile();
-			if (f.exists()) {
-				InputStream in = rsc.openInputStream();
-				OutputStream out = new FileOutputStream(f);
-				IOUtils.copy(in, out);
-				in.close();
-				out.close();
+			f.getParentFile().mkdirs();
+			try {
+				f.createNewFile();
+				if (f.exists()) {
+					InputStream in = rsc.openInputStream();
+					OutputStream out = new FileOutputStream(f);
+					IOUtils.copy(in, out);
+					in.close();
+					out.close();
+				}
+				else {
+					LOGGER.severe("Unable to copy InJarResource: " + rsc);
+				}
+			} catch (IOException e) {
+				LOGGER.warning("Cannot create file " + f.getAbsolutePath());
+				throw e;
+			} catch (Exception e) {
+				LOGGER.warning("Cannot copy file " + f.getAbsolutePath());
+				throw e;
 			}
-			else {
-				LOGGER.severe("Unable to copy InJarResource: " + rsc);
-			}
+
 		}
 
 	}

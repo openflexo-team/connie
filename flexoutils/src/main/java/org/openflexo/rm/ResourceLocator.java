@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -86,8 +87,15 @@ final public class ResourceLocator {
 		while (delegateIt.hasNext() && location == null) {
 			ResourceLocatorDelegate del = delegateIt.next();
 			location = del.locateResource(relativePath);
-			// System.out.println("> Searched in " + del + " found " + location);
+			//System.out.println("> Searched "+relativePath+" in " + del + " found " + location);
 		}
+		if (location == null) {
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Could not locate resource " + relativePath);
+				Thread.dumpStack();
+			}
+		}
+
 		return location;
 	}
 
