@@ -108,16 +108,16 @@ public class BinaryOperatorExpression extends Expression {
 		_checkSemanticallyAcceptable();
 		// System.out.println("left="+leftArgument+" of "+leftArgument.getClass().getSimpleName()+" as "+leftArgument.evaluate(context)+" of "+leftArgument.evaluate(context).getClass().getSimpleName());
 		// System.out.println("right="+rightArgument+" of "+rightArgument.getClass().getSimpleName()+" as "+rightArgument.evaluate(context)+" of "+rightArgument.evaluate(context).getClass().getSimpleName());
-
+	
 		Expression evaluatedLeftArgument = leftArgument.evaluate(context, bindable);
-
+	
 		// special case for AND operator, lazy evaluation
 		if (operator == BooleanBinaryOperator.AND && evaluatedLeftArgument == BooleanConstant.FALSE) {
 			return BooleanConstant.FALSE; // No need to analyze further
 		}
-
+	
 		Expression evaluatedRightArgument = rightArgument.evaluate(context, bindable);
-
+	
 		if (evaluatedLeftArgument instanceof Constant && evaluatedRightArgument instanceof Constant) {
 			Constant returned = operator.evaluate((Constant) evaluatedLeftArgument, (Constant) evaluatedRightArgument);
 			return returned;
@@ -139,6 +139,7 @@ public class BinaryOperatorExpression extends Expression {
 		try {
 			transformedLeftArgument = leftArgument.transform(transformer);
 		} catch (Exception e) {
+			e.printStackTrace();
 			transformedLeftArgument = Constant.BooleanConstant.FALSE;
 		}
 		Expression transformedRightArgument;
