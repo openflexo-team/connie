@@ -115,6 +115,33 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	
 	}*/
 
+	/**
+	 * 
+	 * Retrieve resource representing supplied file
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public FileResourceImpl retrieveResource(File file) {
+		if (file != null && file.exists()) {
+			FileResourceImpl foundResource = filesCache.get(file);
+			if (foundResource == null) {
+				try {
+					foundResource = new FileResourceImpl(this, file);
+					filesCache.put(file, foundResource);
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (LocatorNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return foundResource;
+		}
+		return null;
+	}
+
 	@Override
 	public List<FileResourceImpl> locateAllResources(String relativePathName) {
 
