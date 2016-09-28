@@ -139,6 +139,7 @@ public class BinaryOperatorExpression extends Expression {
 		try {
 			transformedLeftArgument = leftArgument.transform(transformer);
 		} catch (Exception e) {
+			e.printStackTrace();
 			transformedLeftArgument = Constant.BooleanConstant.FALSE;
 		}
 		Expression transformedRightArgument;
