@@ -277,7 +277,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	public String computeRelativePath(Resource resource) {
 		if (resource instanceof InJarResourceImpl) {
 			try {
-				return makePathRelativeTo(this, ((InJarResourceImpl) resource));
+				return makePathRelativeTo(((InJarResourceImpl) resource), this);
 			} catch (IOException e) {
 				e.printStackTrace();
 				LOGGER.warning("Could not compute relative path from " + this + " for " + resource);

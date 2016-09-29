@@ -319,7 +319,6 @@ public class FileResourceImpl extends BasicResourceImpl {
 		return true;
 	}
 
-
 	/**
 	 * Compute relative path to access supplied {@link Resource}, asserting this relative path is expressed relatively of this resource
 	 * 
@@ -330,7 +329,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 	public String computeRelativePath(Resource resource) {
 		if (resource instanceof FileResourceImpl) {
 			try {
-				return FileUtils.makeFilePathRelativeToDir(getFile(), ((FileResourceImpl) resource).getFile());
+				return FileUtils.makeFilePathRelativeToDir(((FileResourceImpl) resource).getFile(), getFile());
 			} catch (IOException e) {
 				e.printStackTrace();
 				LOGGER.warning("Could not compute relative path from " + this + " for " + resource);
