@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-public class BasicResourceImpl implements Resource {
+public abstract class BasicResourceImpl implements Resource {
 
 	private static final Logger LOGGER = Logger.getLogger(BasicResourceImpl.class.getPackage().getName());
 	protected static final Date _dateZero = new Date(0);
@@ -61,7 +61,7 @@ public class BasicResourceImpl implements Resource {
 	// Location of the resource for the given Delegate
 	protected URL _url;
 	// The Delegate that can resolve this location
-	private ResourceLocatorDelegate _locator;
+	private final ResourceLocatorDelegate _locator;
 	// Parent Resource
 	protected Resource _parent;
 
@@ -205,9 +205,5 @@ public class BasicResourceImpl implements Resource {
 
 	}
 
-	@Override
-	public String makePathRelativeToString(String pathRelative) {
-		return pathRelative;
-	}
 
 }

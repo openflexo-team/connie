@@ -82,7 +82,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 				e.printStackTrace();
 			}
 		}
-		return null;
+		return _parent;
 
 	}
 
@@ -319,13 +319,56 @@ public class FileResourceImpl extends BasicResourceImpl {
 		return true;
 	}
 
+
+	/**
+	 * Compute relative path to access supplied {@link Resource}, asserting this relative path is expressed relatively of this resource
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	@Override
-	public String makePathRelativeToString(String pathRelative) {
-		try {
-			return FileUtils.makeFilePathRelativeToDir(getFile(), new File(pathRelative));
-		} catch (IOException e) {
-			e.printStackTrace();
+	public String computeRelativePath(Resource resource) {
+		if (resource instanceof FileResourceImpl) {
+			try {
+				return FileUtils.makeFilePathRelativeToDir(getFile(), ((FileResourceImpl) resource).getFile());
+			} catch (IOException e) {
+				e.printStackTrace();
+				LOGGER.warning("Could not compute relative path from " + this + " for " + resource);
+				return ((FileResourceImpl) resource).getFile().getAbsolutePath();
+			}
 		}
-		return getFile().getAbsolutePath();
+		LOGGER.warning("Could not compute relative path from a File for a non-file resource: " + resource);
+		return resource.getURI();
 	}
+
+	/**
+	 * Retrieve resource using supplied relative path name, asserting this relative path name represent a relative path from this resource
+	 * 
+	 * @param relativePathName
+	 * @return
+	 */
+	@Override
+	public FileResourceImpl locateResource(String relativePathName) {
+		File locatedFile = new File(getFile(), relativePathName);
+		if (!locatedFile.exists()) {
+			return null;
+		}
+		if (getLocator() instanceof FileSystemResourceLocatorImpl) {
+			return ((FileSystemResourceLocatorImpl) getLocator()).retrieveResource(locatedFile);
+		}
+		else {
+			try {
+				return new FileResourceImpl(getLocator(), locatedFile);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (LocatorNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		LOGGER.warning("Could not locate a resource relatively to a resource (resource=" + this + " locator=" + getLocator() + ")");
+		return null;
+	}
+
 }

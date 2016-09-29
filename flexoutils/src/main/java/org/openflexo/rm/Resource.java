@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.InputStream;
@@ -61,19 +60,19 @@ public interface Resource {
 	 * @return
 	 */
 	public String getURI();
+
 	public void setURI(String anURI);
 
 	/**
-	 * A Resource is retrieved using a ResourceLocator, so each Resource should point to a unique
-	 * {@link ResourceLocatorDelegate} that was used to find it.
+	 * A Resource is retrieved using a ResourceLocator, so each Resource should point to a unique {@link ResourceLocatorDelegate} that was
+	 * used to find it.
 	 * 
 	 */
 	// TODO : check how it will applied for FlexoResources
 	public ResourceLocatorDelegate getLocator();
-	
+
 	/**
-	 * Path relative to parent, or the relative path initially used by the ResourceLocator to
-	 * find the Resource
+	 * Path relative to parent, or the relative path initially used by the ResourceLocator to find the Resource
 	 * 
 	 * @return
 	 */
@@ -82,9 +81,11 @@ public interface Resource {
 	/**
 	 * A Resource may be contained in another one, e.g., a directory
 	 * 
-	 */	
+	 */
 	public Resource getContainer();
+
 	void setContainer(Resource parent);
+
 	public boolean isContainer();
 
 	/**
@@ -93,48 +94,55 @@ public interface Resource {
 	 * @return the list of contained resources.
 	 */
 	public List<? extends Resource> getContents();
+
 	public List<? extends Resource> getContents(Pattern pattern);
 
-	
 	/**
-	 * A Resource is a Placeholder for a location storing information, so it can be used to get data
-	 * from an InputStream, and write to an OutputStream when Resource si modifiable.
+	 * A Resource is a Placeholder for a location storing information, so it can be used to get data from an InputStream, and write to an
+	 * OutputStream when Resource si modifiable.
 	 * 
-	 */	
+	 */
 	// TODO : check how it will applied for FlexoResources
 	public InputStream openInputStream();
 
 	/**
-	 * A Resource is a Placeholder for a location storing information, so it can be used to get data
-	 * from an InputStream, and write to an OutputStream when Resource si modifiable.
+	 * A Resource is a Placeholder for a location storing information, so it can be used to get data from an InputStream, and write to an
+	 * OutputStream when Resource si modifiable.
 	 * 
 	 * @return null when not Editable
 	 * 
-	 */	
+	 */
 	// TODO : check how it will applied for FlexoResources
 	public OutputStream openOutputStream();
-	
 
 	/**
 	 * Not all Resource are editable, so Modification time maybe not be relevant
 	 * 
-	 */	
+	 */
 	public boolean isReadOnly();
 
 	/**
 	 * Not all Resource are editable, so Modification time maybe not be relevant
 	 * 
 	 * @return Date(0), when not editable
-	 */		
+	 */
 	public Date getLastUpdate();
 
+
 	/**
+	 * Compute relative path to access supplied {@link Resource}, asserting this relative path is expressed relatively of this resource
 	 * 
-	 * Make a relative path to a given resource, relative to a specified path.
-	 *
-	 * @param pathRelative
+	 * @param resource
 	 * @return
 	 */
-	public String makePathRelativeToString(String pathRelative);
-	
+	public String computeRelativePath(Resource resource);
+
+	/**
+	 * Retrieve resource using supplied relative path name, asserting this relative path name represent a relative path from this resource
+	 * 
+	 * @param relativePathName
+	 * @return
+	 */
+	public Resource locateResource(String relativePathName);
+
 }

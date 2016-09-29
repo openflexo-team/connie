@@ -123,7 +123,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	 * @return
 	 */
 	public FileResourceImpl retrieveResource(File file) {
-		if (file != null && file.exists()) {
+		if (file != null) {
 			FileResourceImpl foundResource = filesCache.get(file);
 			if (foundResource == null) {
 				try {
