@@ -39,12 +39,7 @@
 
 package org.openflexo.toolbox;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -597,6 +592,27 @@ public class StringUtils {
 			return returned;
 		}
 		return 0;
+	}
+
+	/**
+	 * Returns true if the name have one of the given extensions. It supports multiple extensions ('.foo.bar').
+	 * @param name the name to test
+	 * @param possibleExtensions the possible extensions in <b>lower case</b>.
+	 * @return true if one extension is found, false otherwise.
+	 */
+	public static boolean hasExtension(String name, String ... possibleExtensions) {
+		name = name.toLowerCase();
+
+		int dotIndex = name.indexOf('.');
+		while (dotIndex >= 0) {
+
+			String extension = name.substring(dotIndex);
+			for (String possibleExtension : possibleExtensions) {
+				if (possibleExtension.equals(extension)) return true;
+			}
+			dotIndex = name.indexOf('.', dotIndex+1);
+		}
+		return false;
 	}
 
 }
