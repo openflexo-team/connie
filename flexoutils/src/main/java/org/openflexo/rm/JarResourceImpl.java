@@ -53,8 +53,6 @@ import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import javax.swing.SwingUtilities;
-
 /**
  * 
  * Implementation of a {@link Resource} representing contents stored in a Jar file<br>
@@ -164,7 +162,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
 	private void loadJarFile() throws MalformedURLException, LocatorNotFoundException {
 
-		//System.out.println("Loading " + jarfile+" fileName="+jarfilename);
+		// System.out.println("Loading " + jarfile+" fileName="+jarfilename);
 
 		cache = new HashMap<>();
 		contents = new HashMap<>();
@@ -175,9 +173,9 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		rootEntry.setName("");
 
 		Enumeration<JarEntry> entries = jarfile.entries(); // gives ALL entries in jar
-		
+
 		while (entries.hasMoreElements()) {
-			
+
 			JarEntry current = entries.nextElement();
 			String name = current.getName();
 			if (name.endsWith("/")) {
@@ -210,7 +208,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
 		}
 
-		//System.out.println("DONE. Loaded " + jarfile+" fileName="+jarfilename);
+		// System.out.println("DONE. Loaded " + jarfile+" fileName="+jarfilename);
 
 	}
 
@@ -271,4 +269,15 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		return null;
 	}
 
+	@Override
+	public String computeRelativePath(Resource resource) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Resource locateResource(String relativePathName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
