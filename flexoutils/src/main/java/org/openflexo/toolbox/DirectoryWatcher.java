@@ -124,6 +124,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 		}
 
 		private void watch() {
+
 			Set<File> checkedFiles = new HashSet<File>();
 
 			List<File> modifiedFiles = new ArrayList<File>();
@@ -147,7 +148,6 @@ public abstract class DirectoryWatcher extends TimerTask {
 					modifiedFiles.add(f);
 				}
 			}
-
 
 			// now check for deleted files
 			Set<File> ref = new HashMap<File, Long>(lastModified).keySet();
@@ -349,6 +349,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 	@Override
 	public final void run() {
+
 		if (isWaitingCurrentExecution) {
 			return;
 		}
@@ -366,16 +367,24 @@ public abstract class DirectoryWatcher extends TimerTask {
 		else if (status == Status.IDLE) {
 			status = Status.RUNNING;
 		}
-		performRun();
+		try {
+			performRun();
+		} catch (Exception e) {
+			logger.warning("Unexpected exception in DirectoryWatcher " + e);
+			e.printStackTrace();
+		}
 		if (waitNextWatchingRequested) {
 			waitNextWatchingRequested = false;
 		}
 		isRunning = false;
 		status = Status.IDLE;
+
 	}
 
 	protected void performRun() {
+		// logger.info("********** START performWatching NOW " + rootDirectoryWatcher.directory);
 		rootDirectoryWatcher.watch();
+		// logger.info("********** FINISHED performWatching");
 	}
 
 	public boolean isRunning() {
