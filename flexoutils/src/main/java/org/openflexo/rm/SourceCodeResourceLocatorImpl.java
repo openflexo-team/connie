@@ -38,6 +38,9 @@
 
 package org.openflexo.rm;
 
+import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
+import org.openflexo.toolbox.FileUtils;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
@@ -47,9 +50,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
-import org.openflexo.toolbox.FileUtils;
 
 /**
  * This {@link ResourceLocatorDelegate} allows to retrieve {@link Resource} from source code repositories
@@ -71,6 +71,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 				// We gets one level further to handle multiple repositories
 				appendAllResourcesDirectories(gitRoot.getParentFile(), directoriesSearchOrder);
 			}
+
 			File workingDirectory = new File(System.getProperty("user.dir"));
 			// System.out.println("********** userDirectory = " + workingDirectory);
 			directoriesSearchOrder.add(workingDirectory);
@@ -83,18 +84,10 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 				}
 				current = current.getParentFile();
 			}
-			/*
-			 * File flexoDesktopDirectory = findProjectDirectoryWithName(workingDirectory, "openflexo");
-			
-					if (flexoDesktopDirectory != null) {
-						findAllFlexoProjects(flexoDesktopDirectory, directoriesSearchOrder);
-						File technologyadaptersintegrationDirectory = new File(flexoDesktopDirectory.getParentFile(),
-								"packaging/technologyadaptersintegration");
-						if (technologyadaptersintegrationDirectory != null) {
-							findAllFlexoProjects(technologyadaptersintegrationDirectory, directoriesSearchOrder);
-						}
-					}
-					directoriesSearchOrder.add(workingDirectory);*/
+			if (directoriesSearchOrder.size() == 1) {
+				appendAllResourcesDirectories(workingDirectory, directoriesSearchOrder);
+			}
+
 		}
 		return directoriesSearchOrder;
 	}
