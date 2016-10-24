@@ -119,6 +119,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	public JarResourceImpl(ResourceLocatorDelegate locator, JarFile jarFile) throws MalformedURLException {
 		super(locator);
 		this._relativePath = jarFile.getName();
+		jarfilename = jarFile.getName();
 		this.jarfile = jarFile;
 		if (jarfile != null) {
 			_url = new URL("file:" + jarFile.getName());
@@ -139,6 +140,17 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 
 	public JarFile getJarfile() {
 		return jarfile;
+	}
+
+	public String getJarFileName() {
+		if (jarfilename != null && jarfilename.contains("/")) {
+			return jarfilename.substring(jarfilename.lastIndexOf("/") + 1);
+		}
+		return jarfilename;
+	}
+
+	public String getFullQualifiedJarFileName() {
+		return jarfilename;
 	}
 
 	public InJarResourceImpl getRootEntry() {

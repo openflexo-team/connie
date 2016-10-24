@@ -258,6 +258,10 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		InJarResourceImpl current = this;
 		StringTokenizer st = new StringTokenizer(relativePathName, "/\\");
 		while (st.hasMoreElements()) {
+			if (current == null) {
+				LOGGER.warning("Could not find resource " + relativePathName + " in " + getJarResource());
+				return null;
+			}
 			String pathElement = st.nextToken();
 			if (pathElement.equals("..")) {
 				current = current.getContainer();

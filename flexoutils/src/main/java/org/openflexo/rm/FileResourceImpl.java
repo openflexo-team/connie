@@ -113,6 +113,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	public FileResourceImpl(ResourceLocatorDelegate locator, File file) throws MalformedURLException, LocatorNotFoundException {
 		super(locator, file.getPath(), file.toURI().toURL());
+		_file = file;
 	}
 
 	public FileResourceImpl(ResourceLocatorDelegate locator) {
