@@ -117,7 +117,6 @@ public class XMLRootElementReader {
 			} catch (stopParsingException e) {
 				// Stop the parser after parsing first element
 			} catch (SAXException e) {
-				LOGGER.warning("Cannot parse document: " + e.getMessage());
 				throw new IOException(e.getMessage());
 			}
 		}
