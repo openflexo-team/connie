@@ -1,9 +1,8 @@
 /**
  * 
- * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2012-2012, AgileBirds
+ * Copyright (c) 2014, Openflexo
  * 
- * This file is part of Connie-core, a component of the software infrastructure 
+ * This file is part of Gina-swing, a component of the software infrastructure 
  * developed at Openflexo.
  * 
  * 
@@ -39,36 +38,21 @@
 
 package org.openflexo.connie.type;
 
-import org.openflexo.toolbox.HasPropertyChangeSupport;
+import java.util.Map;
 
 /**
- * A factory for {@link CustomType}
+ * A CustomTypeManager is responsible of providing custom type factories
  * 
  * @author sylvain
- * 
+ *
  */
-public interface CustomTypeFactory<T extends CustomType> extends HasPropertyChangeSupport {
+public interface CustomTypeManager {
 
 	/**
-	 * Build and return {@link CustomType} given the supplied {@link String} representation<br>
-	 * If supplied String representation is null, build a new {@link CustomType} using default configuration
-	 * 
-	 * @param configuration
-	 * @return
-	 */
-	public T makeCustomType(String stringRepresentation);
-
-	/**
-	 * Return class of custom type beeing handled by this factory
+	 * Return all {@link CustomType} factories defined for all known technologies
 	 * 
 	 * @return
 	 */
-	public Class<T> getCustomType();
+	public Map<Class<? extends CustomType>, CustomTypeFactory<?>> getCustomTypeFactories();
 
-	/**
-	 * Use supplied type to configure factory
-	 * 
-	 * @param type
-	 */
-	public void configureFactory(T type);
 }
