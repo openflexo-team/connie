@@ -50,6 +50,7 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -325,6 +326,20 @@ public class TypeUtils {
 			return false;
 		}
 		return type.equals(Character.class) || type.equals(Character.TYPE);
+	}
+
+	public static boolean isList(Type type) {
+		if (type == null) {
+			return false;
+		}
+		if (type.equals(List.class)) {
+			return true;
+		}
+		Class<?> baseClass = getBaseClass(type);
+		if (baseClass != null && baseClass.equals(List.class)) {
+			return true;
+		}
+		return false;
 	}
 
 	public static EvaluationType kindOfType(Type type) {

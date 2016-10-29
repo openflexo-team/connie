@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2012-2012, AgileBirds
+ * Copyright (c) 2011-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -36,39 +36,48 @@
  * or visit www.openflexo.org if you need additional information.
  * 
  */
-
 package org.openflexo.connie.type;
 
-import org.openflexo.toolbox.HasPropertyChangeSupport;
+import java.lang.reflect.Type;
 
 /**
- * A factory for {@link CustomType}
+ * All primitives managed by CONNIE-CORE
  * 
  * @author sylvain
- * 
+ *
  */
-public interface CustomTypeFactory<T extends CustomType> extends HasPropertyChangeSupport {
+public enum PrimitiveType {
+	Boolean {
+		@Override
+		public Type getType() {
+			return Boolean.class;
+		}
+	},
+	String {
+		@Override
+		public Type getType() {
+			return String.class;
+		}
+	},
+	Integer {
+		@Override
+		public Type getType() {
+			return Integer.class;
+		}
+	},
+	Float {
+		@Override
+		public Type getType() {
+			return Float.class;
+		}
+	},
+	Double {
+		@Override
+		public Type getType() {
+			return Double.class;
+		}
+	};
 
-	/**
-	 * Build and return {@link CustomType} given the supplied {@link String} representation<br>
-	 * If supplied String representation is null, build a new {@link CustomType} using default configuration
-	 * 
-	 * @param stringRepresentation
-	 * @return
-	 */
-	public T makeCustomType(String stringRepresentation);
+	public abstract Type getType();
 
-	/**
-	 * Return class of custom type beeing handled by this factory
-	 * 
-	 * @return
-	 */
-	public Class<T> getCustomType();
-
-	/**
-	 * Use supplied type to configure factory
-	 * 
-	 * @param type
-	 */
-	public void configureFactory(T type);
 }
