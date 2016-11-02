@@ -38,6 +38,8 @@
 
 package org.openflexo.rm;
 
+import org.openflexo.toolbox.FileUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -51,8 +53,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import org.openflexo.toolbox.FileUtils;
 
 /**
  * Represents a {@link Resource} which is explicitely stored (serialized) in a {@link File}
@@ -328,13 +328,22 @@ public class FileResourceImpl extends BasicResourceImpl {
 	 */
 	@Override
 	public String computeRelativePath(Resource resource) {
+		ResourceLocatorDelegate locator = getLocator();
+		if (locator != null) {
+			Resource relocatedResource = locator.locateResource(resource.getRelativePath());
+			if (relocatedResource != null) {
+				resource = relocatedResource;
+			}
+		}
+
 		if (resource instanceof FileResourceImpl) {
+			FileResourceImpl fileResource = (FileResourceImpl) resource;
 			try {
-				return FileUtils.makeFilePathRelativeToDir(((FileResourceImpl) resource).getFile(), getFile());
+				return FileUtils.makeFilePathRelativeToDir(fileResource.getFile(), getFile());
 			} catch (IOException e) {
 				e.printStackTrace();
 				LOGGER.warning("Could not compute relative path from " + this + " for " + resource);
-				return ((FileResourceImpl) resource).getFile().getAbsolutePath();
+				return fileResource.getFile().getAbsolutePath();
 			}
 		}
 		LOGGER.warning("Could not compute relative path from a File for a non-file resource: " + resource);
