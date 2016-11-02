@@ -39,14 +39,14 @@
 
 package org.openflexo.connie.binding;
 
-import java.lang.reflect.Type;
-import java.util.Comparator;
-
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.type.Typed;
+
+import java.lang.reflect.Type;
+import java.util.Comparator;
 
 /**
  * This interface is implemented by all classes modeling an element of a formal binding path, whichever type it is.
@@ -56,7 +56,7 @@ import org.openflexo.connie.type.Typed;
  */
 public interface BindingPathElement extends Typed {
 
-	public static final Comparator<BindingPathElement> COMPARATOR = new Comparator<BindingPathElement>() {
+	Comparator<BindingPathElement> COMPARATOR = new Comparator<BindingPathElement>() {
 
 		@Override
 		public int compare(BindingPathElement o1, BindingPathElement o2) {
@@ -74,24 +74,24 @@ public interface BindingPathElement extends Typed {
 	};
 
 	@Override
-	public Type getType();
+	Type getType();
 
 	// public void addObserver(Observer o);
 
 	// public void deleteObserver(Observer o);
 
-	public String getSerializationRepresentation();
+	String getSerializationRepresentation();
 
 	// public boolean isBindingValid();
 
-	public String getLabel();
+	String getLabel();
 
-	public String getTooltipText(Type resultingType);
+	String getTooltipText(Type resultingType);
 
 	/**
 	 * Return a flag indicating if this path element is settable or not (settable indicates that a new value can be set)
 	 */
-	public boolean isSettable();
+	boolean isSettable();
 
 	/**
 	 * Evaluate and return value for related path element, given a binding evaluation context
@@ -104,9 +104,9 @@ public interface BindingPathElement extends Typed {
 	 * @throws NullReferenceException
 	 * @throws TypeMismatchException
 	 */
-	public Object getBindingValue(Object target, BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
+	Object getBindingValue(Object target, BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
 			InvocationTargetTransformException;
 
-	public BindingPathElement getParent();
+	BindingPathElement getParent();
 
 }

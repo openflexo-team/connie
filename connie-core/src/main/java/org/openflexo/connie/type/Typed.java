@@ -43,5 +43,5 @@ import java.lang.reflect.Type;
 
 public interface Typed {
 
-	public Type getType();
+	Type getType();
 }
