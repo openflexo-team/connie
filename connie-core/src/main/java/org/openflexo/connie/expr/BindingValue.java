@@ -506,7 +506,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		if (bindingVariable == null) {
 			return false;
 		}
-		for (BindingPathElement pathElement : getBindingPath()) {
+		for (BindingPathElement pathElement : new ArrayList<>(getBindingPath())) {
 			if (pathElement instanceof JavaPropertyPathElement) {
 				JavaPropertyPathElement propertyPathElement = (JavaPropertyPathElement) pathElement;
 				KeyValueProperty kvProperty = propertyPathElement.getKeyValueProperty();
