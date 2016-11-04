@@ -43,6 +43,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openflexo.test.AlphabeticOrderedRunner;
 
 @RunWith(AlphabeticOrderedRunner.class)
 public class AlphabeticOrderedRunnerTest {
