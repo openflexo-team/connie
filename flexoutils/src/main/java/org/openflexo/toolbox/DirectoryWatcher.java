@@ -123,7 +123,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 			return checksum;
 		}
 
-		private void watch() {
+		private boolean watch() {
 
 			Set<File> checkedFiles = new HashSet<File>();
 
@@ -131,8 +131,8 @@ public abstract class DirectoryWatcher extends TimerTask {
 			List<File> addedFiles = new ArrayList<File>();
 			List<File> deletedFiles = new ArrayList<File>();
 
-			if (directory == null) {
-				return;
+			if (directory == null || !directory.exists()) {
+				return false;
 			}
 
 			// scan the files and check for modification/addition
@@ -221,11 +221,15 @@ public abstract class DirectoryWatcher extends TimerTask {
 				watcher.fileModified(f);
 			}
 
-			for (NodeDirectoryWatcher w : subNodes.values()) {
+			for (File k : subNodes.keySet()) {
+				NodeDirectoryWatcher w = subNodes.get(k);
 				// System.out.println("now watch for " + w.directory);
-				w.watch();
+				if (!w.watch()) {
+					subNodes.remove(k);
+				}
 			}
 
+			return true;
 		}
 
 		private void detectRenamedFiles(List<File> addedFiles, List<File> deletedFiles, List<File> renamedFiles,
