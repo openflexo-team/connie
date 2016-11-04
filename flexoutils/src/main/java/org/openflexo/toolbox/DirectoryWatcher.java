@@ -131,6 +131,10 @@ public abstract class DirectoryWatcher extends TimerTask {
 			List<File> addedFiles = new ArrayList<File>();
 			List<File> deletedFiles = new ArrayList<File>();
 
+			if (directory == null) {
+				return;
+			}
+
 			// scan the files and check for modification/addition
 			for (File f : directory.listFiles()) {
 				Long current = lastModified.get(f);
