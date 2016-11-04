@@ -42,24 +42,24 @@
 
 package org.openflexo.connie;
 
-import java.lang.reflect.Type;
-import java.util.List;
-
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
 public interface BindingFactory {
 
-	public List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent);
+	List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent);
 
-	public List<? extends FunctionPathElement> getAccessibleFunctionPathElements(BindingPathElement parent);
+	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(BindingPathElement parent);
 
-	public SimplePathElement makeSimplePathElement(BindingPathElement father, String propertyName);
+	SimplePathElement makeSimplePathElement(BindingPathElement father, String propertyName);
 
-	public Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
+	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
 
-	public FunctionPathElement makeFunctionPathElement(BindingPathElement father, Function function, List<DataBinding<?>> args);
+	FunctionPathElement makeFunctionPathElement(BindingPathElement father, Function function, List<DataBinding<?>> args);
 
 }

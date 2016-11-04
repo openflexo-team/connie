@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -41,7 +41,13 @@ package org.openflexo.connie.type;
 
 import java.lang.reflect.Type;
 
-public interface Typed {
+/**
+ * A {@link CustomType} which has a Java type representation
+ * 
+ * @author sylvain
+ * 
+ */
+public interface JavaCustomType extends CustomType {
 
-	Type getType();
+	public Type getJavaType();
 }

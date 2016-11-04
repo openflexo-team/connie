@@ -39,20 +39,6 @@
 
 package org.openflexo.connie;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingDefinition;
 import org.openflexo.connie.binding.BindingValueChangeListener;
@@ -80,6 +66,20 @@ import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.StringUtils;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Representation of a data binding.<br>
@@ -345,29 +345,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 			else {
 				try {
-					/*
-					 * System.out.println("****** expression=" +
-					 * getExpression()); System.out.println("****** eval type="
-					 * + getExpression().getEvaluationType()); if
-					 * (getExpression() instanceof BinaryOperatorExpression) {
-					 * BinaryOperatorExpression bope =
-					 * (BinaryOperatorExpression) getExpression();
-					 * System.out.println("**** left=" + bope.getLeftArgument()
-					 * + " of " + bope.getLeftArgument().getEvaluationType());
-					 * System.out.println("**** right=" +
-					 * bope.getRightArgument() + " of " +
-					 * bope.getRightArgument().getEvaluationType());
-					 * BindingValueAsExpression left =
-					 * (BindingValueAsExpression) bope.getLeftArgument();
-					 * BindingValueAsExpression right =
-					 * (BindingValueAsExpression) bope.getRightArgument(); //
-					 * left.isValid(this); // right.isValid(this);
-					 * System.out.println("**** a gauche, " +
-					 * left.getAccessedType());
-					 * System.out.println("**** a droite, " +
-					 * right.getAccessedType()); }
-					 */
-
 					return getExpression().getEvaluationType().getType();
 				} catch (TypeMismatchException e) {
 					return Object.class;

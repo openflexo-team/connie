@@ -51,17 +51,17 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  */
 public interface Bindable extends HasPropertyChangeSupport {
 
-	public static final String BINDING_MODEL_PROPERTY = "bindingModel";
+	String BINDING_MODEL_PROPERTY = "bindingModel";
 
 	/**
 	 * Return the Binding model for the current object.
 	 */
-	public BindingModel getBindingModel();
+	BindingModel getBindingModel();
 
 	/**
 	 * Return the factory used to build bindings related to this bindable
 	 */
-	public BindingFactory getBindingFactory();
+	BindingFactory getBindingFactory();
 
 	/**
 	 * Called when supplied data binding changed its value
@@ -69,7 +69,7 @@ public interface Bindable extends HasPropertyChangeSupport {
 	 * @param dataBinding
 	 *            new data binding value.
 	 */
-	public void notifiedBindingChanged(DataBinding<?> dataBinding);
+	void notifiedBindingChanged(DataBinding<?> dataBinding);
 
 	/**
 	 * Called when supplied data binding has been decoded (syntaxic and semantics analysis performed)
@@ -77,5 +77,5 @@ public interface Bindable extends HasPropertyChangeSupport {
 	 * @param dataBinding
 	 *            new data binding value.
 	 */
-	public void notifiedBindingDecoded(DataBinding<?> dataBinding);
+	void notifiedBindingDecoded(DataBinding<?> dataBinding);
 }
