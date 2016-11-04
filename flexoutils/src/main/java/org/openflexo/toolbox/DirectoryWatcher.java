@@ -123,7 +123,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 			return checksum;
 		}
 
-		private boolean watch() {
+		private synchronized boolean watch() {
 
 			Set<File> checkedFiles = new HashSet<File>();
 
