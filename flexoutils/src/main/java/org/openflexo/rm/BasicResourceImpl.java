@@ -178,11 +178,16 @@ public abstract class BasicResourceImpl implements Resource {
 
 	@Override
 	public List<? extends Resource> getContents() {
+		return getContents(false);
+	}
+
+	@Override
+	public List<? extends Resource> getContents(boolean deep) {
 		return java.util.Collections.emptyList();
 	}
 
 	@Override
-	public List<? extends Resource> getContents(Pattern pattern) {
+	public List<? extends Resource> getContents(Pattern pattern, boolean deep) {
 		return java.util.Collections.emptyList();
 	}
 
@@ -204,6 +209,5 @@ public abstract class BasicResourceImpl implements Resource {
 		private static final long serialVersionUID = -3102784112143915911L;
 
 	}
-
 
 }

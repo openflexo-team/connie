@@ -227,13 +227,14 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		return cache.get(relativePath);
 	}
 
+	// TODO: manage recursive / not recursive
 	@Override
-	public List<? extends Resource> getContents() {
-		return new ArrayList<Resource>(contents.values());
+	public List<InJarResourceImpl> getContents(boolean deep) {
+		return new ArrayList<InJarResourceImpl>(contents.values());
 	}
 
-	@Override
-	public List<? extends Resource> getContents(Pattern pattern) {
+	/*@Override
+	public List<? extends Resource> getContents(Pattern pattern, boolean deep) {
 		List<Resource> retval = new ArrayList<Resource>();
 		for (JarEntry current : contents.keySet()) {
 			String name = current.getName();
@@ -242,6 +243,21 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 				retval.add(contents.get(current));
 			}
 		}
+		return retval;
+	}*/
+
+	@Override
+	public List<InJarResourceImpl> getContents(Pattern pattern, boolean deep) {
+		List<InJarResourceImpl> retval = new ArrayList<>();
+		List<InJarResourceImpl> allContents = getContents(deep);
+		for (InJarResourceImpl current : allContents) {
+			String name = current.getRelativePath();
+			boolean accept = pattern.matcher(name).matches();
+			if (accept) {
+				retval.add(current);
+			}
+		}
+
 		return retval;
 	}
 

@@ -179,7 +179,7 @@ public class FileUtils {
 			return copyDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
 		}
 		else if (src instanceof InJarResourceImpl) {
-			for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"))) {
+			for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"), false)) {
 				if (!rsc.isContainer()) {
 					copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
 				}

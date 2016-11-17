@@ -89,13 +89,31 @@ public interface Resource {
 	public boolean isContainer();
 
 	/**
-	 * Returns a list of resources contained by this resource.
+	 * Returns a list of resources contained by this resource. (non-recursive method)
 	 * 
 	 * @return the list of contained resources.
 	 */
 	public List<? extends Resource> getContents();
 
-	public List<? extends Resource> getContents(Pattern pattern);
+	/**
+	 * Returns a list of resources contained by this resource.
+	 * 
+	 * @param deep
+	 *            when set to true, recursively return all contained resources in sub-folders
+	 * 
+	 * @return the list of contained resources.
+	 */
+	public List<? extends Resource> getContents(boolean deep);
+
+	/**
+	 * Returns a list of resources contained by this resource matching supplied pattern
+	 * 
+	 * @param deep
+	 *            when set to true, recursively return all contained resources in sub-folders
+	 * 
+	 * @return the list of contained resources.
+	 */
+	public List<? extends Resource> getContents(Pattern pattern, boolean deep);
 
 	/**
 	 * A Resource is a Placeholder for a location storing information, so it can be used to get data from an InputStream, and write to an
@@ -127,7 +145,6 @@ public interface Resource {
 	 * @return Date(0), when not editable
 	 */
 	public Date getLastUpdate();
-
 
 	/**
 	 * Compute relative path to access supplied {@link Resource}, asserting this relative path is expressed relatively of this resource

@@ -154,48 +154,30 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	}
 
 	@Override
-	public List<InJarResourceImpl> getContents() {
-		return contents;
-	}
-
-	/*@Override
-	public Resource getContainer() {
-		if (super.getContainer() != null) {
-			return super.getContainer();
+	public List<InJarResourceImpl> getContents(boolean deep) {
+		if (deep) {
+			List<InJarResourceImpl> returned = new ArrayList<>();
+			recursivelyAppendContents(returned);
+			return returned;
 		}
 		else {
-			URL url = getURL();
-	
-			JarResourceImpl container = (JarResourceImpl) this._parent;
-	
-			if (container == null) {
-				// finds the container
-				String jarPath = null;
-				try {
-					jarPath = URLDecoder.decode(url.getPath().substring(5, url.getPath().indexOf("!")).replace("+", "%2B"), "UTF-8");
-				} catch (UnsupportedEncodingException e1) {
-					LOGGER.severe("Unable to decode given PATH");
-					e1.printStackTrace();
-				}
-				try {
-					container = new JarResourceImpl(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class),
-							jarPath);
-				} catch (MalformedURLException e) {
-					LOGGER.severe("Unable to retrieve containing JarFile: " + jarPath);
-					e.printStackTrace();
-					return (Resource) java.util.Collections.emptyList();
-				}
-				this.setContainer(container);
-			}
-			return container;
+			return contents;
 		}
-	
-	}*/
+	}
+
+	private void recursivelyAppendContents(List<InJarResourceImpl> list) {
+		list.addAll(contents);
+		for (InJarResourceImpl child : contents) {
+			if (child.isContainer()) {
+				child.recursivelyAppendContents(list);
+			}
+		}
+	}
 
 	@Override
-	public List<InJarResourceImpl> getContents(Pattern pattern) {
+	public List<InJarResourceImpl> getContents(Pattern pattern, boolean deep) {
 		List<InJarResourceImpl> retval = new ArrayList<>();
-		List<InJarResourceImpl> allContents = getContents();
+		List<InJarResourceImpl> allContents = getContents(deep);
 		for (InJarResourceImpl current : allContents) {
 			String name = current.getRelativePath();
 			boolean accept = pattern.matcher(name).matches();
@@ -255,7 +237,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 			}
 			else {
 				boolean foundChild = false;
-				for (InJarResourceImpl child : current.getContents()) {
+				for (InJarResourceImpl child : current.getContents(false)) {
 					if (child.getName().equals(pathElement)) {
 						current = child;
 						foundChild = true;
