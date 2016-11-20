@@ -39,8 +39,6 @@
 
 package org.openflexo.toolbox;
 
-import org.apache.commons.collections.iterators.IteratorChain;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,16 +65,39 @@ public class ChainedCollection<T> implements Collection<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		List<Iterator<? extends T>> allIterators = new ArrayList<Iterator<? extends T>>();
+
+		final List<Iterator<? extends T>> allIterators = new ArrayList<Iterator<? extends T>>();
 		for (Collection<? extends T> collection : collections) {
-			if (collection.size() > 0) {
-				allIterators.add(collection.iterator());
+			if (!collection.isEmpty()) allIterators.add(collection.iterator());
+		}
+		if (!items.isEmpty()) allIterators.add(items.iterator());
+
+		if (allIterators.isEmpty()) return Collections.emptyIterator();
+
+		return new Iterator<T>() {
+
+			final Iterator<Iterator<? extends T>> iteratorIterator = allIterators.iterator();
+			// there is at least one iterator with one item inside
+			Iterator<? extends T> currentIterator = iteratorIterator.next();
+
+			@Override
+			public boolean hasNext() {
+				return currentIterator.hasNext() || iteratorIterator.hasNext();
 			}
-		}
-		if (items.size() > 0) {
-			allIterators.add(items.iterator());
-		}
-		return new IteratorChain(allIterators);
+
+			@Override
+			public T next() {
+				if (!currentIterator.hasNext()) {
+					currentIterator = iteratorIterator.next();
+				}
+				return currentIterator.next();
+			}
+
+			@Override
+			public void remove() {
+				currentIterator.remove();
+			}
+		};
 	}
 
 	@Override
