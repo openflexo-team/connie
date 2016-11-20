@@ -39,31 +39,20 @@
 
 package org.openflexo.toolbox;
 
+import org.apache.commons.collections.iterators.IteratorChain;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections.iterators.IteratorChain;
-
 public class ChainedCollection<T> implements Collection<T> {
 
-	private List<Collection<? extends T>> collections;
-	private List<T> items;
-
-	public ChainedCollection() {
-		collections = new ArrayList<Collection<? extends T>>();
-		items = new ArrayList<T>();
-	}
-
-	public ChainedCollection(T... items) {
-		this();
-        Collections.addAll(this.items, items);
-	}
+	private final List<Collection<? extends T>> collections = new ArrayList<>();
+	private final List<T> items = new ArrayList<>();
 
 	public ChainedCollection(Collection<? extends T>... collections) {
-		this();
         Collections.addAll(this.collections, collections);
 	}
 
@@ -205,27 +194,5 @@ public class ChainedCollection<T> implements Collection<T> {
 		items.clear();
 	}
 
-	// TODO: make JUnit tests
-	public static void main(String[] args) {
-		List<String> l1 = new ArrayList<String>();
-		l1.add("String1");
-		l1.add("String2");
-		l1.add("String3");
-		List<String> l2 = new ArrayList<String>();
-		l2.add("String4");
-		l2.add("String5");
-		System.out.println("ChainedCollection1=");
-		ChainedCollection<String> cc1 = new ChainedCollection<String>(l1, l2);
-		for (String s : cc1) {
-			System.out.println("> " + s);
-		}
-		ChainedCollection<String> cc2 = new ChainedCollection<String>(cc1);
-		cc2.add("String6");
-		cc2.add(l1);
-		System.out.println("ChainedCollection2=");
-		for (String s : cc2) {
-			System.out.println("> " + s);
-		}
-	}
 
 }
