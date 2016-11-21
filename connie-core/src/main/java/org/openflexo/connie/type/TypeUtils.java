@@ -39,6 +39,9 @@
 
 package org.openflexo.connie.type;
 
+import com.google.common.primitives.Primitives;
+import org.openflexo.connie.expr.EvaluationType;
+
 import java.io.File;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
@@ -54,12 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
-
-import org.openflexo.connie.expr.EvaluationType;
-
-import com.google.common.primitives.Primitives;
 
 /**
  * Utility methods focusing on types introspection
@@ -236,11 +233,11 @@ public class TypeUtils {
 		return aClass;
 	}
 
-	public static boolean isPrimitive(@Nullable Type type) {
+	public static boolean isPrimitive(Type type) {
 		return type != null && Primitives.allPrimitiveTypes().contains(type);
 	}
 
-	public static boolean isWrapperClass(@Nullable Class<?> klass) {
+	public static boolean isWrapperClass(Class<?> klass) {
 		return klass != null && Primitives.isWrapperType(klass);
 	}
 
