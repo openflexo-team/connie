@@ -71,7 +71,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 		if (rloc != null) {
 
-			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"));
+			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"), false);
 
 			assertTrue(list.size() == 7);
 
@@ -108,7 +108,7 @@ public class FileSystemResourceLocatorTest extends TestCase {
 
 		if (rloc != null) {
 
-			List<? extends Resource> list = rloc.getContents();
+			List<? extends Resource> list = rloc.getContents(false);
 
 			assertTrue(list.size() == 8);
 

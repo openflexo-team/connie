@@ -45,25 +45,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections4.iterators.IteratorChain;
-
 public class ChainedCollection<T> implements Collection<T> {
 
-	private List<Collection<? extends T>> collections;
-	private List<T> items;
-
-	public ChainedCollection() {
-		collections = new ArrayList<>();
-		items = new ArrayList<>();
-	}
-
-	public ChainedCollection(T... items) {
-		this();
-		Collections.addAll(this.items, items);
-	}
+	private final List<Collection<? extends T>> collections = new ArrayList<>();
+	private final List<T> items = new ArrayList<>();
 
 	public ChainedCollection(Collection<? extends T>... collections) {
-		this();
 		Collections.addAll(this.collections, collections);
 	}
 
@@ -78,16 +65,41 @@ public class ChainedCollection<T> implements Collection<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		List<Iterator<? extends T>> allIterators = new ArrayList<>();
+		final List<Iterator<? extends T>> allIterators = new ArrayList<Iterator<? extends T>>();
 		for (Collection<? extends T> collection : collections) {
-			if (collection.size() > 0) {
+			if (!collection.isEmpty())
 				allIterators.add(collection.iterator());
-			}
 		}
-		if (items.size() > 0) {
+		if (!items.isEmpty())
 			allIterators.add(items.iterator());
-		}
-		return new IteratorChain<>(allIterators);
+
+		if (allIterators.isEmpty())
+			return Collections.emptyIterator();
+
+		return new Iterator<T>() {
+
+			final Iterator<Iterator<? extends T>> iteratorIterator = allIterators.iterator();
+			// there is at least one iterator with one item inside
+			Iterator<? extends T> currentIterator = iteratorIterator.next();
+
+			@Override
+			public boolean hasNext() {
+				return currentIterator.hasNext() || iteratorIterator.hasNext();
+			}
+
+			@Override
+			public T next() {
+				if (!currentIterator.hasNext()) {
+					currentIterator = iteratorIterator.next();
+				}
+				return currentIterator.next();
+			}
+
+			@Override
+			public void remove() {
+				currentIterator.remove();
+			}
+		};
 	}
 
 	@Override
@@ -204,28 +216,4 @@ public class ChainedCollection<T> implements Collection<T> {
 		collections.clear();
 		items.clear();
 	}
-
-	// TODO: make JUnit tests
-	public static void main(String[] args) {
-		List<String> l1 = new ArrayList<>();
-		l1.add("String1");
-		l1.add("String2");
-		l1.add("String3");
-		List<String> l2 = new ArrayList<>();
-		l2.add("String4");
-		l2.add("String5");
-		System.out.println("ChainedCollection1=");
-		ChainedCollection<String> cc1 = new ChainedCollection<>(l1, l2);
-		for (String s : cc1) {
-			System.out.println("> " + s);
-		}
-		ChainedCollection<String> cc2 = new ChainedCollection<>(cc1);
-		cc2.add("String6");
-		cc2.add(l1);
-		System.out.println("ChainedCollection2=");
-		for (String s : cc2) {
-			System.out.println("> " + s);
-		}
-	}
-
 }

@@ -38,8 +38,6 @@
 
 package org.openflexo.rm;
 
-import org.openflexo.toolbox.FileUtils;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -53,6 +51,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import org.openflexo.toolbox.FileUtils;
 
 /**
  * Represents a {@link Resource} which is explicitely stored (serialized) in a {@link File}
@@ -169,16 +169,16 @@ public class FileResourceImpl extends BasicResourceImpl {
 	}
 
 	@Override
-	public List<Resource> getContents() {
+	public List<Resource> getContents(boolean deep) {
 		List<Resource> retval = new ArrayList<>();
 
-		addDirectoryContent(this.getLocator(), getFile(), retval);
+		addDirectoryContent(this.getLocator(), getFile(), retval, deep);
 
 		return retval;
 	}
 
 	@Override
-	public List<Resource> getContents(Pattern pattern) {
+	public List<Resource> getContents(Pattern pattern, boolean deep) {
 
 		File file = getFile();
 		if (file == null) {
@@ -205,7 +205,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	// Additional methods not in Resource API
 
-	public static void addDirectoryContent(ResourceLocatorDelegate dl, File file, List<Resource> list) {
+	public static void addDirectoryContent(ResourceLocatorDelegate dl, File file, List<Resource> list, boolean recursive) {
 
 		File[] fileList = file.listFiles();
 		for (final File f : fileList) {
@@ -224,8 +224,8 @@ public class FileResourceImpl extends BasicResourceImpl {
 				}
 			}
 			// Recursive search
-			else {
-				addDirectoryContent(dl, f, list);
+			else if (recursive) {
+				addDirectoryContent(dl, f, list, recursive);
 			}
 		}
 

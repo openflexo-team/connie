@@ -62,7 +62,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		if (rloc != null) {
 
-			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"));
+			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"), false);
 
 			assertTrue(list.size() == 7);
 
@@ -94,7 +94,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 			Resource container = rloc.getContainer();
 
 			if (container != null) {
-				List<Resource> list = (List<Resource>) rloc.getContainer().getContents(Pattern.compile(".*[.]wav"));
+				List<Resource> list = (List<Resource>) rloc.getContainer().getContents(Pattern.compile(".*[.]wav"), false);
 
 				assertTrue(list.size() > 1);
 
@@ -124,7 +124,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 			// Here we have resources that are java files! My solution is to tweak the run
 			// configuration for tests adding explicitly the folder containing the java files
 			// first in the classpath
-			List<? extends Resource> list = rloc.getContents();
+			List<? extends Resource> list = rloc.getContents(false);
 
 			for (Resource r : list) {
 				System.out.println(r.getURI());
