@@ -71,7 +71,8 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		parameters = new HashMap<Function.FunctionArgument, DataBinding<?>>();
 		if (function == null) {
 			LOGGER.warning("FunctionPathElement called with null function");
-		} else {
+		}
+		else {
 			this.type = function.getReturnType();
 			if (paramValues != null) {
 				int i = 0;
@@ -94,7 +95,8 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 				parameter.setBindingName(arg.getArgumentName());
 				parameter.setUnparsedBinding("");
 				setParameter(arg, parameter);
-			} else {
+			}
+			else {
 				parameter.setOwner(bindable);
 				parameter.setDeclaredType(arg.getArgumentType());
 				parameter.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
@@ -135,7 +137,8 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 					isFirst = false;
 				}
 				returned.append(")");
-			} else {
+			}
+			else {
 				returned.append("unknown_function()");
 			}
 			serializationRepresentation = returned.toString();
@@ -167,4 +170,8 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + "/" + getSerializationRepresentation();
 	}
 
+	@Override
+	public boolean isNotifyingBindingPathChanged() {
+		return false;
+	}
 }

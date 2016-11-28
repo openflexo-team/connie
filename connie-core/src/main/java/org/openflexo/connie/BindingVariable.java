@@ -223,4 +223,9 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		this.cacheable = cacheable;
 	}
 
+	@Override
+	public boolean isNotifyingBindingPathChanged() {
+		return false;
+	}
+
 }

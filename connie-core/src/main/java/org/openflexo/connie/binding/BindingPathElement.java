@@ -39,14 +39,15 @@
 
 package org.openflexo.connie.binding;
 
+import java.lang.reflect.Type;
+import java.util.Comparator;
+
 import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.type.Typed;
-
-import java.lang.reflect.Type;
-import java.util.Comparator;
 
 /**
  * This interface is implemented by all classes modeling an element of a formal binding path, whichever type it is.
@@ -56,6 +57,8 @@ import java.util.Comparator;
  */
 public interface BindingPathElement extends Typed {
 
+	public final String BINDING_PATH_CHANGED = "BindingPathChanged";
+
 	Comparator<BindingPathElement> COMPARATOR = new Comparator<BindingPathElement>() {
 
 		@Override
@@ -63,10 +66,12 @@ public interface BindingPathElement extends Typed {
 			if (o1.getLabel() == null) {
 				if (o2.getLabel() == null) {
 					return 0;
-				} else {
+				}
+				else {
 					return -1;
 				}
-			} else if (o2.getLabel() == null) {
+			}
+			else if (o2.getLabel() == null) {
 				return 1;
 			}
 			return o1.getLabel().compareTo(o2.getLabel());
@@ -104,9 +109,18 @@ public interface BindingPathElement extends Typed {
 	 * @throws NullReferenceException
 	 * @throws TypeMismatchException
 	 */
-	Object getBindingValue(Object target, BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
-			InvocationTargetTransformException;
+	Object getBindingValue(Object target, BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException;
 
 	BindingPathElement getParent();
+
+	/**
+	 * When set to true, means that this path element is beeing changing, and that available accessible path elements following this path
+	 * element are to be recomputed<br>
+	 * This method is generally called from {@link BindingFactory}
+	 * 
+	 * @return
+	 */
+	public boolean isNotifyingBindingPathChanged();
 
 }
