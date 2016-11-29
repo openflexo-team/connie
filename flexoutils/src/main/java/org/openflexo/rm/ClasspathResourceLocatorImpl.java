@@ -90,6 +90,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	}
 
+	@Override
 	public List<Resource> locateAllResources(String relativePathName) {
 
 		if (relativePathName == null) {
@@ -180,7 +181,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 					locateFile = new File(url.toURI());
 				}
 				else {
-					LOGGER.warning("Resource found is not convertible to a File " + url.toString());
+					LOGGER.info("Resource found is not convertible to a File " + url.toString());
 					locateFile = null;
 				}
 			} catch (URISyntaxException e) {
