@@ -219,4 +219,5 @@
             </distributionManagement>
         </profile>
     </profiles>
+    <description>Connie is a Java Library allowing to define and execute an expression-based language over a generic API. This language is commonly used to connect various technologies. </description>
 </project>
