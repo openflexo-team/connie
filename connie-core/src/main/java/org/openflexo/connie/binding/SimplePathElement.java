@@ -42,6 +42,7 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.BindingVariable;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
@@ -173,4 +174,17 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		return getPropertyName().hashCode();
 	}*/
 
+	public boolean isNotifyingBindingPathChanged() {
+		return false;
+	}
+
+	public String getBindingPath() {
+		if (getParent() instanceof SimplePathElement) {
+			return ((SimplePathElement) getParent()).getBindingPath() + "." + getLabel();
+		}
+		if (getParent() instanceof BindingVariable) {
+			return ((BindingVariable) getParent()).getVariableName() + "." + getLabel();
+		}
+		return getLabel();
+	}
 }

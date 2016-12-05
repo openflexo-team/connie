@@ -70,6 +70,7 @@ import org.openflexo.connie.exception.NotSettableContextException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.Constant.ObjectSymbolicConstant;
 import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.TypeUtils;
@@ -852,7 +853,12 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 							DataBinding<?> argDataBinding = new DataBinding<>(dataBinding.getOwner(), Object.class,
 									DataBinding.BindingDefinitionType.GET);
 							argDataBinding.setBindingName("arg" + argIndex);
-							argDataBinding.setExpression(arg);
+							if (arg != null) {
+								argDataBinding.setExpression(arg);
+							}
+							else {
+								argDataBinding.setExpression(ObjectSymbolicConstant.NULL);
+							}
 							// argDataBinding.setDeclaredType(Object.class);
 							// IMPORTANT/HACK: following statement (call to
 							// isValid()) is required to get access to analyzed
@@ -879,14 +885,14 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 							}
 							else {
 								invalidBindingReason = "(2) cannot find method " + ((MethodCallBindingPathElement) pathElement).method
-										+ " for type " + TypeUtils.simpleRepresentation(current.getType());
+										+ " for type " + TypeUtils.simpleRepresentation(current.getType()) + " and args=" + args;
 								analysingSuccessfull = false;
 								return false;
 							}
 						}
 						else {
 							invalidBindingReason = "(1) cannot find method " + ((MethodCallBindingPathElement) pathElement).method
-									+ " for type " + TypeUtils.simpleRepresentation(current.getType());
+									+ " for type " + TypeUtils.simpleRepresentation(current.getType()) + " and args=" + args;
 							analysingSuccessfull = false;
 							return false;
 						}

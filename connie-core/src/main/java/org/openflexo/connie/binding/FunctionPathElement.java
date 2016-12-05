@@ -170,4 +170,8 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + "/" + getSerializationRepresentation();
 	}
 
+	@Override
+	public boolean isNotifyingBindingPathChanged() {
+		return false;
+	}
 }
