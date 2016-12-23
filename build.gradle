@@ -93,7 +93,7 @@ version = '1.4-SNAPSHOT'
 uploadArchives {
   repositories {
     mavenDeployer {
-      repository(url: 'file:./maven')
+      repository(url: "https://maven.openflexo.org/artifactory/openflexo-snapshot/")
     }
   }
 }
