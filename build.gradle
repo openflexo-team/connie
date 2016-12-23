@@ -5,14 +5,15 @@ buildscript {
  
   dependencies {
     classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.0.4,)'
-    classpath "com.prezi.pride:gradle-pride-plugin:0.11"
   }
 }
 
 subprojects {
   group='org.openflexo'
   apply plugin: 'java'
-  apply plugin: 'pride'
+
+  apply plugin: 'maven'
+
   //  apply plugin: 'checkstyle'
   //  apply plugin: 'pmd'
   //  apply plugin: 'findbugs'
@@ -26,10 +27,9 @@ subprojects {
   
   repositories {
     jcenter()
-    //    mavenCentral()
-    //    maven {
-    //        url "http://repo.mycompany.com/maven2"
-    //    }
+    maven {
+      url "https://maven.openflexo.org/artifactory/openflexo-snapshot/"
+    }
   }
  
   dependencies {
