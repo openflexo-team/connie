@@ -39,7 +39,17 @@
 
 package org.openflexo.toolbox;
 
-import java.awt.Color;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.filter.ElementFilter;
+import org.jdom2.input.SAXBuilder;
+
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.html.HTML.Tag;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.parser.ParserDelegator;
+import java.awt.*;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -47,17 +57,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParsePosition;
 import java.util.regex.Pattern;
-
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML.Tag;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.parser.ParserDelegator;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.filter.ElementFilter;
-import org.jdom2.input.SAXBuilder;
 
 public class HTMLUtils {
 	private static final String START_HTML_TAG = "<HTML>";
@@ -259,6 +258,7 @@ public class HTMLUtils {
 					break;
 				case '\r':
 					break;
+					/*
 				case 'à':
 					sb.append("&agrave;");
 					break;
@@ -373,6 +373,7 @@ public class HTMLUtils {
 				case '€':
 					sb.append("&euro;");
 					break;
+					*/
 				default:
 					sb.append(c);
 					break;
