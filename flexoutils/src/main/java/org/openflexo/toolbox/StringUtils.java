@@ -39,7 +39,12 @@
 
 package org.openflexo.toolbox;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -93,6 +98,7 @@ public class StringUtils {
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			switch (c) {
+				/*
 				case 'Á':
 				case 'À':
 				case 'Â':
@@ -177,6 +183,7 @@ public class StringUtils {
 				case 'ñ':
 					sb.append('n');
 					break;
+				*/
 				default:
 					sb.append(c);
 			}
