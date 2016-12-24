@@ -7,17 +7,26 @@ buildscript {
 }
 
 allprojects {
-  apply plugin: 'maven-publish'
-
-  group='org.openflexo'
-  version = '1.4-SNAPSHOT'
-
   apply plugin: 'project-report'
+
 
   htmlDependencyReport {
     projects = project.allprojects
   }
+}
 
+
+subprojects {
+  apply plugin: 'maven-publish'
+  apply plugin: 'java'
+
+  //  apply plugin: 'checkstyle'
+  //  apply plugin: 'pmd'
+  //  apply plugin: 'findbugs'
+  //  apply plugin: 'Site'
+
+  group='org.openflexo'
+  version = '1.4-SNAPSHOT'
 
   publishing {
     publications {
@@ -25,26 +34,11 @@ allprojects {
         from components.java
       }
     }
-  }
 
-  publishing {
     repositories {
       maven { url "https://maven.openflexo.org/artifactory/openflexo-snapshot/" }
     }
   }
-}
-
-
-subprojects {
-  apply plugin: 'java'
-
-  //  apply plugin: 'checkstyle'
-  //  apply plugin: 'pmd'
-  //  apply plugin: 'findbugs'
-  //  apply plugin: 'Site'
-  
-  //  sourceCompatibility = 1.7
-  //  targetCompatibility = 1.7
 
   compileJava.options.encoding = 'UTF-8'
 
@@ -52,8 +46,6 @@ subprojects {
     options.encoding = 'UTF-8'
   }
 
-  //project.buildDir = 'target'
-  
   repositories {
     jcenter()
     maven {
@@ -73,7 +65,6 @@ subprojects {
     }
   }
 
-  /*
   if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
       tasks.withType(Javadoc) {
@@ -81,28 +72,4 @@ subprojects {
       }
     }
   }
-  */
-
-  /*
-  task testJar(type: Jar) {
-    classifier = 'tests'
-    from sourceSets.test.output
-  }
-
-  task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-  }
-
-  task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-  }
-
-  artifacts {
-    archives sourcesJar
-    archives javadocJar
-    archives testJar
-  }
-  */
 }
