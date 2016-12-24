@@ -1,18 +1,42 @@
 buildscript {
-  repositories {
-    jcenter()
-  }
- 
+  repositories { jcenter() }
+
   dependencies {
     classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.0.4,)'
   }
 }
 
-subprojects {
-  group='org.openflexo'
-  apply plugin: 'java'
+allprojects {
+  apply plugin: 'maven-publish'
 
-  apply plugin: 'maven'
+  group='org.openflexo'
+  version = '1.4-SNAPSHOT'
+
+  apply plugin: 'project-report'
+
+  htmlDependencyReport {
+    projects = project.allprojects
+  }
+
+
+  publishing {
+    publications {
+      mavenJava(MavenPublication) {
+        from components.java
+      }
+    }
+  }
+
+  publishing {
+    repositories {
+      maven { url "https://maven.openflexo.org/artifactory/openflexo-snapshot/" }
+    }
+  }
+}
+
+
+subprojects {
+  apply plugin: 'java'
 
   //  apply plugin: 'checkstyle'
   //  apply plugin: 'pmd'
@@ -28,7 +52,7 @@ subprojects {
     options.encoding = 'UTF-8'
   }
 
-  project.buildDir = 'target'
+  //project.buildDir = 'target'
   
   repositories {
     jcenter()
@@ -49,6 +73,7 @@ subprojects {
     }
   }
 
+  /*
   if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
       tasks.withType(Javadoc) {
@@ -56,7 +81,9 @@ subprojects {
       }
     }
   }
+  */
 
+  /*
   task testJar(type: Jar) {
     classifier = 'tests'
     from sourceSets.test.output
@@ -77,23 +104,5 @@ subprojects {
     archives javadocJar
     archives testJar
   }
-}
-
-apply plugin: 'maven'
-apply plugin: 'project-report'
-
-htmlDependencyReport {
-    projects = project.allprojects
-}
-
-archivesBaseName = 'connie'
-group = 'org.openflexo'
-version = '1.4-SNAPSHOT'
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      repository(url: "https://maven.openflexo.org/artifactory/openflexo-snapshot/")
-    }
-  }
+  */
 }
