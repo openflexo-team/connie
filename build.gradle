@@ -6,16 +6,6 @@ buildscript {
   }
 }
 
-allprojects {
-  apply plugin: 'project-report'
-
-
-  htmlDependencyReport {
-    projects = project.allprojects
-  }
-}
-
-
 subprojects {
   apply plugin: 'maven-publish'
   apply plugin: 'java'
@@ -24,9 +14,6 @@ subprojects {
   //  apply plugin: 'pmd'
   //  apply plugin: 'findbugs'
   //  apply plugin: 'Site'
-
-  group='org.openflexo'
-  version = '1.4-SNAPSHOT'
 
   publishing {
     publications {
@@ -48,9 +35,9 @@ subprojects {
 
   repositories {
     jcenter()
-    maven {
-      url "https://maven.openflexo.org/artifactory/openflexo-snapshot/"
-    }
+    maven { url "https://maven.openflexo.org/artifactory/openflexo-release/" }
+    maven { url "https://maven.openflexo.org/artifactory/openflexo-snapshot/" }
+    maven { url "https://maven.openflexo.org/artifactory/openflexo-deps/" }
   }
  
   dependencies {
@@ -71,5 +58,17 @@ subprojects {
 	options.addBooleanOption('Xdoclint:none', true)
       }
     }
+  }
+}
+
+
+allprojects {
+  apply plugin: 'project-report'
+
+  group='org.openflexo'
+  version = '1.4-SNAPSHOT'
+
+  htmlDependencyReport {
+    projects = project.allprojects
   }
 }
