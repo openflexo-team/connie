@@ -39,17 +39,6 @@
 
 package org.openflexo.connie.expr;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
@@ -76,6 +65,17 @@ import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 import org.openflexo.kvc.KeyValueProperty;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a binding path, as formed by an access to a binding variable and a path of BindingPathElement<br>
@@ -384,44 +384,20 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private void internallySetBindingVariable(BindingVariable aBindingVariable) {
 		if (bindingVariable != aBindingVariable) {
-			// logger.info("Ici pour " + this + " with " + aBindingVariable +
-			// " (was " + bindingVariable + ")");
-			// if (false) {
-			// logger.info("Ici ");
-			// Thread.dumpStack();
-			// }
-			if (bindingVariable != null) {
+			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
 				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
 				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
 			}
 			bindingVariable = aBindingVariable;
-			if (bindingVariable != null) {
+			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
 				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
 				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
 			}
-			// System.out.println("Pour " + bindingVariable +
-			// " j'ai comme listeners: "
-			// +
-			// bindingVariable.getPropertyChangeSupport().getPropertyChangeListeners(BindingVariable.VARIABLE_NAME).length);
-			// if
-			// (bindingVariable.getPropertyChangeSupport().getPropertyChangeListeners(BindingVariable.VARIABLE_NAME).length
-			// > 1000) {
-			// System.out.println("OK, on arrete la");
-			// PropertyChangeListener[] all =
-			// bindingVariable.getPropertyChangeSupport().getPropertyChangeListeners(
-			// BindingVariable.VARIABLE_NAME);
-			// System.out.println("Hop");
-			// }
-			// }
 		}
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		// if (false) {
-		// logger.info("Et la avec " + evt);
-		// Thread.dumpStack();
-		// }
 		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 
 			// System.out.println(">>> In binding value " + this);
