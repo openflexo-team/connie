@@ -6,17 +6,17 @@ dependencies {
 
 sablecc {
   inputDir = "src/main/resources/grammar"
-  intermediateDir = "target/generated-sources/grammar"
-  outputDir = "target/generated-sources/sablecc"  //  outputDir = "src/main/java"
+  intermediateDir = "build/generated-sources/grammar"
+  outputDir = "build/generated-sources/sablecc"  //  outputDir = "src/main/java"
 }
 
 sourceSets {
  main {
    java {
-     srcDir 'target/generated-sources/sablecc'
+     srcDir 'build/generated-sources/sablecc'
    }
    resources {
-     srcDir 'target/generated-sources/sablecc'
+     srcDir 'build/generated-sources/sablecc'
      includes = [ "**/*.dat" ]
    }
  }
