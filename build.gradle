@@ -7,7 +7,7 @@ buildscript {
 }
 
 subprojects {
-  apply plugin: 'maven-publish'
+  apply plugin: 'maven'
   apply plugin: 'java'
 
   //  apply plugin: 'checkstyle'
@@ -15,17 +15,14 @@ subprojects {
   //  apply plugin: 'findbugs'
   //  apply plugin: 'Site'
 
-  publishing {
-    publications {
-      mavenJava(MavenPublication) {
-        from components.java
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        repository(url: "https://maven.openflexo.org/artifactory/openflexo-snapshot/")
       }
     }
-
-    repositories {
-      maven { url "https://maven.openflexo.org/artifactory/openflexo-snapshot/" }
-    }
   }
+
 
   compileJava.options.encoding = 'UTF-8'
 
