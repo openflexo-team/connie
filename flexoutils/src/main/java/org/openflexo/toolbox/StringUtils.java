@@ -98,7 +98,6 @@ public class StringUtils {
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			switch (c) {
-				/*
 				case 'Á':
 				case 'À':
 				case 'Â':
@@ -183,7 +182,6 @@ public class StringUtils {
 				case 'ñ':
 					sb.append('n');
 					break;
-				*/
 				default:
 					sb.append(c);
 			}

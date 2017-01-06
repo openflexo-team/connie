@@ -258,7 +258,6 @@ public class HTMLUtils {
 					break;
 				case '\r':
 					break;
-					/*
 				case 'à':
 					sb.append("&agrave;");
 					break;
@@ -373,7 +372,6 @@ public class HTMLUtils {
 				case '€':
 					sb.append("&euro;");
 					break;
-					*/
 				default:
 					sb.append(c);
 					break;

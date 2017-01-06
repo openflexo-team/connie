@@ -23,10 +23,9 @@ subprojects {
     }
   }
 
-
   compileJava.options.encoding = 'UTF-8'
 
-  tasks.withType(JavaCompile) {
+  tasks.withType(Compile) {
     options.encoding = 'UTF-8'
   }
 
