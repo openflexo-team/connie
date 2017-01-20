@@ -38,8 +38,11 @@
 
 package org.openflexo.toolbox;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.openflexo.test.OrderedRunner;
+import org.openflexo.test.TestOrder;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,11 +50,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.Vector;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openflexo.test.OrderedRunner;
-import org.openflexo.test.TestOrder;
+import static org.junit.Assert.*;
 
 @RunWith(OrderedRunner.class)
 public class TestDirectoryWatcher {
@@ -69,6 +68,11 @@ public class TestDirectoryWatcher {
 		System.out.println("Deleting " + tempDirectory);
 		FileUtils.recursiveDeleteFile(tempDirectory);
 	}*/
+
+	private static void checkEventFile(File file, DirectoryWatcherEvent event) throws IOException {
+		assertNotNull(event.getFile());
+		assertEquals(file.getCanonicalPath(), event.getFile().getCanonicalPath());
+	}
 
 	@BeforeClass
 	public static void setup() throws IOException {
@@ -178,7 +182,7 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileAddedEvent);
 		FileAddedEvent event = (FileAddedEvent) events.lastElement();
-		assertEquals(file2, event.getFile());
+		checkEventFile(file2, event);
 		assertEquals(1, events.size());
 	}
 
@@ -192,7 +196,7 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileDeletedEvent);
 		FileDeletedEvent event = (FileDeletedEvent) events.lastElement();
-		assertEquals(file2, event.getFile());
+		checkEventFile(file2, event);
 		assertEquals(2, events.size());
 	}
 
@@ -206,7 +210,7 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileModifiedEvent);
 		FileModifiedEvent event = (FileModifiedEvent) events.lastElement();
-		assertEquals(file1, event.getFile());
+		checkEventFile(file1, event);
 		assertEquals(3, events.size());
 	}
 
@@ -221,7 +225,7 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileRenamedEvent);
 		FileRenamedEvent event = (FileRenamedEvent) events.lastElement();
-		assertEquals(renamedFile, event.getFile());
+		checkEventFile(renamedFile, event);
 		assertEquals(4, events.size());
 	}
 
@@ -263,10 +267,10 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileAddedEvent);
 		FileAddedEvent event = (FileAddedEvent) events.lastElement();
-		assertEquals(file6, event.getFile());
+		checkEventFile(file6, event);
 		assertTrue(events.get(events.size() - 2) instanceof FileModifiedEvent);
 		FileModifiedEvent event2 = (FileModifiedEvent) events.get(events.size() - 2);
-		assertEquals(directory2, event2.getFile());
+		checkEventFile(directory2, event2);
 		assertEquals(11, events.size());
 	}
 
@@ -280,10 +284,10 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileDeletedEvent);
 		FileDeletedEvent event = (FileDeletedEvent) events.lastElement();
-		assertEquals(file6, event.getFile());
+		checkEventFile(file6, event);
 		assertTrue(events.get(events.size() - 2) instanceof FileModifiedEvent);
 		FileModifiedEvent event2 = (FileModifiedEvent) events.get(events.size() - 2);
-		assertEquals(directory2, event2.getFile());
+		checkEventFile(directory2, event2);
 		assertEquals(13, events.size());
 	}
 
@@ -297,7 +301,7 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileModifiedEvent);
 		FileModifiedEvent event = (FileModifiedEvent) events.lastElement();
-		assertEquals(file5, event.getFile());
+		checkEventFile(file5, event);
 		assertEquals(14, events.size());
 	}
 
@@ -312,10 +316,10 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileRenamedEvent);
 		FileRenamedEvent event = (FileRenamedEvent) events.lastElement();
-		assertEquals(renamedFile, event.getFile());
+		checkEventFile(renamedFile, event);
 		assertTrue(events.get(events.size() - 2) instanceof FileModifiedEvent);
 		FileModifiedEvent event2 = (FileModifiedEvent) events.get(events.size() - 2);
-		assertEquals(directory2, event2.getFile());
+		checkEventFile(directory2, event2);
 		assertEquals(16, events.size());
 	}
 
@@ -330,10 +334,10 @@ public class TestDirectoryWatcher {
 		// Thread.sleep(1000);
 		assertTrue(events.lastElement() instanceof FileRenamedEvent);
 		FileRenamedEvent event = (FileRenamedEvent) events.lastElement();
-		assertEquals(renamedDirectory, event.getFile());
+		checkEventFile(renamedDirectory, event);
 		assertTrue(events.get(events.size() - 2) instanceof FileModifiedEvent);
 		FileModifiedEvent event2 = (FileModifiedEvent) events.get(events.size() - 2);
-		assertEquals(directory1, event2.getFile());
+		checkEventFile(directory1, event2);
 		assertEquals(18, events.size());
 	}
 
