@@ -446,17 +446,20 @@ public abstract class DirectoryWatcher extends TimerTask {
 	}
 
 	/**
-	 * Wait for the next watching to be performed
+	 * Wait for the next watching to be performed (with a default timeout of 5 seconds)
 	 */
-	public void waitNextWatching() {
+	public void waitNextWatching() throws InterruptedException {
+		waitNextWatching(5000);
+	}
+
+	public void waitNextWatching(long timeout) throws InterruptedException {
 		waitNextWatchingRequested = true;
 		waitNextWatchingDone = false;
+		int count = 0;
 		while (isRunning || !waitNextWatchingDone) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				return;
-			}
+			if (count > timeout) throw new InterruptedException();
+			Thread.sleep(100);
+			count += 100;
 		}
 	}
 
