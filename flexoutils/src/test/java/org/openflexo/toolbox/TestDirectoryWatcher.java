@@ -39,6 +39,7 @@
 package org.openflexo.toolbox;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.test.OrderedRunner;
@@ -52,6 +53,7 @@ import java.util.Vector;
 
 import static org.junit.Assert.*;
 
+@Ignore
 @RunWith(OrderedRunner.class)
 public class TestDirectoryWatcher {
 
