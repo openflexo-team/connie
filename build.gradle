@@ -1,6 +1,5 @@
 buildscript {
   repositories {
-    jcenter()
     maven { url uri('https://maven.openflexo.org/artifactory/openflexo-deps/') }
   }
   dependencies {
