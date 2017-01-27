@@ -47,10 +47,10 @@ import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.java.JavaBindingFactory;
@@ -142,7 +142,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 	public Object getValue(BindingVariable variable) {
 		return object;
 	}
-	
+
 	@Override
 	public String getDeletedProperty() {
 		return null;
@@ -156,26 +156,26 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
 	}
 
-	private Object evaluate(String bindingPath) throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException,
-			InvocationTargetException {
+	private Object evaluate(String bindingPath)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 		// System.out.println("Evaluating " + bindingPath);
 		String normalizedBindingPath = normalizeBindingPath(bindingPath);
 		// System.out.println("Normalize " + bindingPath + " to " + normalizedBindingPath);
-		DataBinding<?> binding = new DataBinding<Object>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
+		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 		binding.setDeclaredType(Object.class);
 		binding.setBindingDefinitionType(BindingDefinitionType.GET);
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {
 			// System.out.println("not valid: " + binding.invalidBindingReason());
-			throw new InvalidKeyValuePropertyException("Cannot interpret " + normalizedBindingPath + " for object of type "
-					+ object.getClass());
+			throw new InvalidKeyValuePropertyException(
+					"Cannot interpret " + normalizedBindingPath + " for object of type " + object.getClass());
 		}
 		return binding.getBindingValue(this);
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object) throws InvalidKeyValuePropertyException, TypeMismatchException,
-			NullReferenceException, InvocationTargetException {
+	public static Object evaluateBinding(String bindingPath, Object object)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 
 		BindingEvaluator evaluator = new BindingEvaluator(object);
 		Object returned = evaluator.evaluate(bindingPath);

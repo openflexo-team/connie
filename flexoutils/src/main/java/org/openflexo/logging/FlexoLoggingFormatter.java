@@ -50,7 +50,7 @@ import org.openflexo.toolbox.ToolBox;
 /**
  * Utility class used to format logs of Flexo
  * 
- * @author sguerin
+ * @author sylvain
  */
 public class FlexoLoggingFormatter extends Formatter {
 
@@ -61,8 +61,8 @@ public class FlexoLoggingFormatter extends Formatter {
 	@Override
 	public String format(LogRecord log) {
 		StringBuffer sb = new StringBuffer();
-		sb.append(formatString(logDate ? 30 : 10, log.getLevel().toString()
-				+ (logDate ? " " + dateFormat.format(new Date(log.getMillis())) : "")));
+		sb.append(formatString(logDate ? 30 : 10,
+				log.getLevel().toString() + (logDate ? " " + dateFormat.format(new Date(log.getMillis())) : "")));
 		sb.append(formatString(100, log.getMessage()));
 		sb.append(formatString(50, "[" + log.getSourceClassName() + "." + log.getSourceMethodName() + "]"));
 		sb.append("\n");
@@ -83,7 +83,8 @@ public class FlexoLoggingFormatter extends Formatter {
 				blank[i] = ' ';
 			}
 			return aString + new String(blank);
-		} else {
+		}
+		else {
 			return aString;
 		}
 	}

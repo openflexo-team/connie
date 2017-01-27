@@ -52,12 +52,12 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  * This class is used to encode all log records of a session (current or expired) of Flexo.<br>
  * An instance of LogRecords can be represented in a FlexoLoggingViewer.
  * 
- * @author sguerin
+ * @author sylvain
  */
 public class LogRecords implements HasPropertyChangeSupport {
 
 	private final LinkedList<LogRecord> allRecords;
-	private final ArrayList<LogRecord> filteredRecords = new ArrayList<LogRecord>();
+	private final ArrayList<LogRecord> filteredRecords = new ArrayList<>();
 	private List<LogRecord> records;
 
 	private int totalLogs = 0;
@@ -76,7 +76,7 @@ public class LogRecords implements HasPropertyChangeSupport {
 	public LogRecords() {
 		super();
 		pcSupport = new PropertyChangeSupport(this);
-		allRecords = new LinkedList<LogRecord>();
+		allRecords = new LinkedList<>();
 		records = allRecords;
 	}
 
@@ -126,12 +126,12 @@ public class LogRecords implements HasPropertyChangeSupport {
 	public int getRowCount() {
 		return allRecords.size();
 	}
-
+	
 	@Override
 	public int getColumnCount() {
 		return 9;
 	}
-
+	
 	@Override
 	public String getColumnName(int arg0) {
 		switch (arg0) {
@@ -157,17 +157,17 @@ public class LogRecords implements HasPropertyChangeSupport {
 			return "";
 		}
 	}
-
+	
 	@Override
 	public Class<String> getColumnClass(int arg0) {
 		return String.class;
 	}
-
+	
 	@Override
 	public boolean isCellEditable(int arg0, int arg1) {
 		return false;
 	}
-
+	
 	@Override
 	public Object getValueAt(int row, int col) {
 		LogRecord record = allRecords.get(row);
@@ -194,18 +194,18 @@ public class LogRecords implements HasPropertyChangeSupport {
 			return "";
 		}
 	}
-
+	
 	@Override
 	public void setValueAt(Object arg0, int arg1, int arg2) {
 		// do nothing : a log record is not editable
-
+	
 	}
-
+	
 	@Override
 	public void addTableModelListener(TableModelListener arg0) {
 		model.addTableModelListener(arg0);
 	}
-
+	
 	@Override
 	public void removeTableModelListener(TableModelListener arg0) {
 		model.removeTableModelListener(arg0);
@@ -294,7 +294,8 @@ public class LogRecords implements HasPropertyChangeSupport {
 				logCount++;
 				if (r.level == Level.WARNING) {
 					warningCount++;
-				} else if (r.level == Level.SEVERE) {
+				}
+				else if (r.level == Level.SEVERE) {
 					severeCount++;
 				}
 			}
@@ -314,7 +315,7 @@ public class LogRecords implements HasPropertyChangeSupport {
 		warningCount = 0;
 		severeCount = 0;
 		textSearchApplied = true;
-		records = new ArrayList<LogRecord>();
+		records = new ArrayList<>();
 		LoggingFilter f = new LoggingFilter("search");
 		f.setHasFilteredMessage(true);
 		f.filteredContent = someText;
@@ -324,7 +325,8 @@ public class LogRecords implements HasPropertyChangeSupport {
 				logCount++;
 				if (r.level == Level.WARNING) {
 					warningCount++;
-				} else if (r.level == Level.SEVERE) {
+				}
+				else if (r.level == Level.SEVERE) {
 					severeCount++;
 				}
 			}
@@ -337,7 +339,8 @@ public class LogRecords implements HasPropertyChangeSupport {
 		if (filtersApplied()) {
 			records = filteredRecords;
 			notifyFilteringChange();
-		} else {
+		}
+		else {
 			records = allRecords;
 			notifyFilteringChange();
 		}

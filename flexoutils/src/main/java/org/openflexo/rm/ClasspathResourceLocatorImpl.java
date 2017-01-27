@@ -107,7 +107,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 		}
 
 		// When not found, perform search in the whole classpath
-		ArrayList<Resource> returned = new ArrayList<Resource>();
+		ArrayList<Resource> returned = new ArrayList<>();
 		cache.put(relativePathName, returned);
 
 		try {

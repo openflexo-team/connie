@@ -54,7 +54,7 @@ public class Sequence extends ControlGraph {
 
 	public Sequence() {
 		super();
-		statements = new Vector<ControlGraph>();
+		statements = new Vector<>();
 	}
 
 	public Sequence(Vector<ControlGraph> statements) {
@@ -131,13 +131,13 @@ public class Sequence extends ControlGraph {
 
 	@Override
 	public final ControlGraph normalize() {
-		Vector<ControlGraph> normalizedList = new Vector<ControlGraph>();
+		Vector<ControlGraph> normalizedList = new Vector<>();
 
 		for (ControlGraph statement : getStatements()) {
 			if (statement != null && !(statement instanceof Nop)) {
 				ControlGraph normalizedStatement = statement.normalize();
 				if (normalizedStatement instanceof Sequence) {
-					Vector<ControlGraph> listOfNormalizedStatements = new Vector<ControlGraph>();
+					Vector<ControlGraph> listOfNormalizedStatements = new Vector<>();
 					for (ControlGraph s : ((Sequence) normalizedStatement).getStatements()) {
 						listOfNormalizedStatements.add(s.normalize());
 					}
@@ -146,24 +146,29 @@ public class Sequence extends ControlGraph {
 							ControlGraph firstStatement = listOfNormalizedStatements.firstElement();
 							if (firstStatement.getHeaderComment() == null) {
 								firstStatement.setHeaderComment(normalizedStatement.getHeaderComment());
-							} else {
+							}
+							else {
 								firstStatement.appendHeaderComment(normalizedStatement.getHeaderComment(), true);
 							}
-						} else {
+						}
+						else {
 							LOGGER.warning("Forgetting comment " + normalizedStatement.getHeaderComment() + ". Implement this.");
 							// TODO: implement header comment recovery in this case
 						}
 						normalizedStatement.setHeaderComment(null);
-					} else if (normalizedStatement.getInlineComment() != null) {
+					}
+					else if (normalizedStatement.getInlineComment() != null) {
 						LOGGER.warning("Forgetting comment " + normalizedStatement.getInlineComment() + ". Implement this.");
 						// TODO: implement inline comment recovery in this case
 					}
 					normalizedList.addAll(listOfNormalizedStatements);
 
-				} else {
+				}
+				else {
 					normalizedList.add(normalizedStatement);
 				}
-			} else if (statement instanceof Nop && statement.hasComment()) {
+			}
+			else if (statement instanceof Nop && statement.hasComment()) {
 				normalizedList.add(statement);
 			}
 		}
@@ -171,9 +176,11 @@ public class Sequence extends ControlGraph {
 		ControlGraph returned;
 		if (normalizedList.size() == 0) {
 			returned = new Nop();
-		} else if (normalizedList.size() == 1) {
+		}
+		else if (normalizedList.size() == 1) {
 			returned = normalizedList.firstElement();
-		} else {
+		}
+		else {
 			returned = new Sequence(normalizedList);
 		}
 		returned.setInlineComment(getInlineComment());

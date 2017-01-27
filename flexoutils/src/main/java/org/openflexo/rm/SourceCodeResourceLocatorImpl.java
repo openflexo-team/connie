@@ -141,12 +141,12 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 				appendAllResourcesDirectories(f, "resources", returned);
 			}
 			else if (searchedToken.equals("resources")) {
-				// System.out.println("Found " + f);
+				// System.out.println("==> Found " + f);
 				returned.add(f);
 			}
 		}
 		for (File d : root.listFiles()) {
-			if (d.isDirectory() && (new File(d, "pom.xml").exists())) {
+			if (d.isDirectory() && (new File(d, "pom.xml").exists() || new File(d, "build.gradle").exists())) {
 				appendAllResourcesDirectories(d, returned);
 			}
 		}
@@ -155,8 +155,8 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 	/**
 	 * Locates the resource given a relative PATH and a filter to avoid ambiguity
 	 * 
-	 * @param relativePath
-	 * @param filter
+	 * @param relativePathName
+	 * @param regexFilter
 	 * @return
 	 */
 	// TODO: ask if this must not be promoted at ResourceLocator level
@@ -203,7 +203,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 		final File workingDirectory = new File(System.getProperty("user.dir"));
 
 		List<File> found = locateAllFiles(relativePathName, true);
-		List<File> matches = new ArrayList<File>();
+		List<File> matches = new ArrayList<>();
 		// Apply Filter
 		if (regexFilter != null) {
 			for (File f : found) {
@@ -219,7 +219,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 			return matches.get(0);
 		}
 
-		// In this case, the response is ambigous
+		// In this case, the response is ambiguous
 		if (matches.size() > 1) {
 			// We try to privilegiate files that are closer to working dir
 			Collections.sort(matches, new Comparator<File>() {

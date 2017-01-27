@@ -48,15 +48,15 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 /**
- * @author gpolet Created on 28 sept. 2005
+ * @author gpolet
  */
 public class FlexoProperties extends Properties implements Comparator<Object> {
 
 	private boolean isStoring = false;
 
 	/**
-     * 
-     */
+	 * 
+	 */
 	public FlexoProperties() {
 		super();
 	}
@@ -90,7 +90,8 @@ public class FlexoProperties extends Properties implements Comparator<Object> {
 	public Enumeration<Object> keys() {
 		if (isStoring) {
 			return sortedKeys();
-		} else {
+		}
+		else {
 			return super.keys();
 		}
 	}
@@ -121,7 +122,7 @@ public class FlexoProperties extends Properties implements Comparator<Object> {
 
 		public PropsEnum() {
 			index = 0;// Resets the enumeration
-			Enumeration en = unsortedKeys();
+			Enumeration<Object> en = unsortedKeys();
 			objects = new Object[size()];
 			int i = 0;
 			while (en.hasMoreElements()) {

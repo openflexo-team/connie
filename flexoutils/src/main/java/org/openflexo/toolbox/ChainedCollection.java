@@ -51,7 +51,7 @@ public class ChainedCollection<T> implements Collection<T> {
 	private final List<T> items = new ArrayList<>();
 
 	public ChainedCollection(Collection<? extends T>... collections) {
-        Collections.addAll(this.collections, collections);
+		Collections.addAll(this.collections, collections);
 	}
 
 	public void add(Collection<? extends T> itemCollection) {
@@ -65,14 +65,16 @@ public class ChainedCollection<T> implements Collection<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-
 		final List<Iterator<? extends T>> allIterators = new ArrayList<Iterator<? extends T>>();
 		for (Collection<? extends T> collection : collections) {
-			if (!collection.isEmpty()) allIterators.add(collection.iterator());
+			if (!collection.isEmpty())
+				allIterators.add(collection.iterator());
 		}
-		if (!items.isEmpty()) allIterators.add(items.iterator());
+		if (!items.isEmpty())
+			allIterators.add(items.iterator());
 
-		if (allIterators.isEmpty()) return Collections.emptyIterator();
+		if (allIterators.isEmpty())
+			return Collections.emptyIterator();
 
 		return new Iterator<T>() {
 
@@ -214,6 +216,4 @@ public class ChainedCollection<T> implements Collection<T> {
 		collections.clear();
 		items.clear();
 	}
-
-
 }

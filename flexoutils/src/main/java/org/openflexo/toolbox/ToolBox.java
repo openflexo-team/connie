@@ -78,7 +78,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 /**
- * @author bmangez <B>Class Description</B>
+ * @author bmangez
  */
 public class ToolBox {
 
@@ -283,7 +283,8 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param name
+	 * @param keepCase
 	 * @return
 	 */
 	@Deprecated
@@ -336,7 +337,7 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param name
 	 * @return
 	 */
 	@Deprecated
@@ -375,7 +376,7 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param name
 	 * @return
 	 */
 	@Deprecated
@@ -385,7 +386,7 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param name
 	 * @return
 	 */
 	@Deprecated
@@ -395,7 +396,7 @@ public class ToolBox {
 
 	/**
 	 * @deprecated use methods from JavaUtils
-	 * @param s
+	 * @param stringToConvert
 	 * @return
 	 */
 	@Deprecated
@@ -488,16 +489,14 @@ public class ToolBox {
 		public String response;
 	}
 
-	public static RequestResponse getRequest(Hashtable param, String url) throws IOException {
+	public static RequestResponse getRequest(Hashtable<String, String> param, String url) throws IOException {
 		StringBuffer paramsAsString = new StringBuffer("");
 		if (param != null && param.size() > 0) {
 			// paramsAsString.append("?");
-			Enumeration en = param.keys();
-			String key = null;
-			String value = null;
+			Enumeration<String> en = param.keys();
 			while (en.hasMoreElements()) {
-				key = (String) en.nextElement();
-				value = (String) param.get(key);
+				String key = en.nextElement();
+				String value = (String) param.get(key);
 				try {
 					paramsAsString.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
@@ -537,17 +536,15 @@ public class ToolBox {
 
 	}
 
-	public static RequestResponse postRequest(Hashtable parameters, String url) {
+	public static RequestResponse postRequest(Hashtable<String, String> parameters, String url) {
 		try {
 			// Construct data
 			StringBuffer data = new StringBuffer();
 			if (parameters != null && parameters.size() > 0) {
-				Enumeration en = parameters.keys();
-				String key = null;
-				String value = null;
+				Enumeration<String> en = parameters.keys();
 				while (en.hasMoreElements()) {
-					key = (String) en.nextElement();
-					value = (String) parameters.get(key);
+					String key = (String) en.nextElement();
+					String value = (String) parameters.get(key);
 					data.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
 					if (en.hasMoreElements()) {
 						data.append("&");
@@ -592,7 +589,7 @@ public class ToolBox {
 	}
 
 	public static <E> Enumeration<E> getEnumeration(E[] o) {
-		return new ArrayEnumeration<E>(o);
+		return new ArrayEnumeration<>(o);
 	}
 
 	private static class ArrayEnumeration<E> implements Enumeration<E> {
@@ -711,10 +708,8 @@ public class ToolBox {
 		try {
 			Desktop.getDesktop().browse(new URI(url));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -746,7 +741,7 @@ public class ToolBox {
 	}
 
 	/**
-	 * @param newNalme
+	 * @param name
 	 */
 	public static String getDBTableNameFromPropertyName(String name) {
 		StringBuffer sb = new StringBuffer();
@@ -886,7 +881,7 @@ public class ToolBox {
 	}
 
 	public static String getCsvLine(List<String> list) {
-		List<List<String>> tmp = new ArrayList<List<String>>();
+		List<List<String>> tmp = new ArrayList<>();
 		tmp.add(list);
 		return getCsv(tmp);
 	}
@@ -924,12 +919,12 @@ public class ToolBox {
 			return result.get(0);
 		}
 
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	public static List<List<String>> parseCsv(String csvString) {
 		csvString = csvString != null ? csvString.trim() : null;
-		List<List<String>> result = new ArrayList<List<String>>();
+		List<List<String>> result = new ArrayList<>();
 
 		if (StringUtils.isEmpty(csvString)) {
 			return result;
@@ -943,7 +938,7 @@ public class ToolBox {
 			separator = ';';
 		}
 
-		List<String> line = new ArrayList<String>();
+		List<String> line = new ArrayList<>();
 		StringBuilder currentValue = new StringBuilder();
 		boolean isInsideQuote = false;
 		boolean wasInsideQuote = false;
@@ -969,7 +964,7 @@ public class ToolBox {
 				wasInsideQuote = false;
 				if (csvString.charAt(i) == '\n') {
 					result.add(line);
-					line = new ArrayList<String>();
+					line = new ArrayList<>();
 				}
 				continue;
 			}
@@ -1078,7 +1073,7 @@ public class ToolBox {
 
 	public static String getSystemProperties(boolean replaceBackslashInClasspath) {
 		StringBuilder sb = new StringBuilder();
-		for (Entry<Object, Object> e : new TreeMap<Object, Object>(System.getProperties()).entrySet()) {
+		for (Entry<Object, Object> e : new TreeMap<>(System.getProperties()).entrySet()) {
 			String key = (String) e.getKey();
 			if ("line.separator".equals(key)) {
 				String nl = (String) e.getValue();
@@ -1119,14 +1114,14 @@ public class ToolBox {
 			return new ArrayList<Object>((Collection<?>) iterable);
 		}
 		if (iterable instanceof Iterable) {
-			List<Object> list = new ArrayList<Object>();
+			List<Object> list = new ArrayList<>();
 			for (Object o : (Iterable<?>) iterable) {
 				list.add(o);
 			}
 			return list;
 		}
 		if (iterable instanceof Enumeration) {
-			List<Object> list = new ArrayList<Object>();
+			List<Object> list = new ArrayList<>();
 			for (Enumeration<?> en = (Enumeration<?>) iterable; en.hasMoreElements();) {
 				list.add(en.nextElement());
 			}

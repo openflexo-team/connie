@@ -1,7 +1,7 @@
 *.class
 
 # Package Files #
-*.jar
+
 *.war
 *.ear
 .classpath
@@ -11,5 +11,7 @@
 /.gitignore
 /.DS_Store
 /basic.xml
-
+.gradle
+target/
+build/
 *.iml

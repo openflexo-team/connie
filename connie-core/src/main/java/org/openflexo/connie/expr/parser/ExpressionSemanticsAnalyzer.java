@@ -52,15 +52,15 @@ import org.openflexo.connie.expr.BooleanBinaryOperator;
 import org.openflexo.connie.expr.BooleanUnaryOperator;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
-import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.TypeReference;
-import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.expr.Constant.BooleanConstant;
 import org.openflexo.connie.expr.Constant.FloatConstant;
 import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
 import org.openflexo.connie.expr.Constant.IntegerConstant;
 import org.openflexo.connie.expr.Constant.ObjectSymbolicConstant;
 import org.openflexo.connie.expr.Constant.StringConstant;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.TypeReference;
+import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.expr.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.expr.parser.node.AAcosFuncFunction;
 import org.openflexo.connie.expr.parser.node.AAddExprExpr2;
@@ -140,7 +140,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	private Node topLevel = null;
 
 	public ExpressionSemanticsAnalyzer() {
-		expressionNodes = new Hashtable<Node, Expression>();
+		expressionNodes = new Hashtable<>();
 	}
 
 	public Expression getExpression() {
@@ -189,7 +189,8 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	private TypeReference makeTypeReference(PTypeReference node) {
 		if (node instanceof ABasicTypeReference) {
 			return makeBasicTypeReference((ABasicTypeReference) node);
-		} else if (node instanceof AParameteredTypeReference) {
+		}
+		else if (node instanceof AParameteredTypeReference) {
 			return makeParameteredTypeReference((AParameteredTypeReference) node);
 		}
 		System.err.println("Unexpected " + node);
@@ -199,7 +200,8 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	private String makeReferencePath(PTypeReferencePath path) {
 		if (path instanceof AIdentifierTypeReferencePath) {
 			return ((AIdentifierTypeReferencePath) path).getIdentifier().getText();
-		} else if (path instanceof ATailTypeReferencePath) {
+		}
+		else if (path instanceof ATailTypeReferencePath) {
 			return ((ATailTypeReferencePath) path).getIdentifier().getText() + "."
 					+ makeReferencePath(((ATailTypeReferencePath) path).getTypeReferencePath());
 		}
@@ -213,7 +215,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 	private TypeReference makeParameteredTypeReference(AParameteredTypeReference node) {
 		PTypeReferenceArgList argList = node.getTypeReferenceArgList();
-		List<TypeReference> args = new ArrayList<TypeReference>();
+		List<TypeReference> args = new ArrayList<>();
 		if (argList instanceof ATypeReferenceArgList) {
 			args.add(makeTypeReference(((ATypeReferenceArgList) argList).getTypeReference()));
 			for (PTypeReferenceAdditionalArg aa : ((ATypeReferenceArgList) argList).getTypeReferenceAdditionalArgs()) {
@@ -289,15 +291,15 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAEqExprExpr(AEqExprExpr node) {
 		super.outAEqExprExpr(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.EQUALS, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node,
+				new BinaryOperatorExpression(BooleanBinaryOperator.EQUALS, getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAEq2ExprExpr(AEq2ExprExpr node) {
 		super.outAEq2ExprExpr(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.EQUALS, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node,
+				new BinaryOperatorExpression(BooleanBinaryOperator.EQUALS, getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override
@@ -331,9 +333,8 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAGteExprExpr(AGteExprExpr node) {
 		super.outAGteExprExpr(node);
-		registerExpressionNode(node,
-				new BinaryOperatorExpression(BooleanBinaryOperator.GREATER_THAN_OR_EQUALS, getExpression(node.getLeft()),
-						getExpression(node.getRight())));
+		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.GREATER_THAN_OR_EQUALS,
+				getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	// Following methods manage following grammar fragment
@@ -355,15 +356,15 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAOrExprExpr2(AOrExprExpr2 node) {
 		super.outAOrExprExpr2(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.OR, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node,
+				new BinaryOperatorExpression(BooleanBinaryOperator.OR, getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAOr2ExprExpr2(AOr2ExprExpr2 node) {
 		super.outAOr2ExprExpr2(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.OR, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node,
+				new BinaryOperatorExpression(BooleanBinaryOperator.OR, getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override
@@ -394,7 +395,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 	@Override
 	public void outATermExpr3(ATermExpr3 node) {
-		// System.out.println("OUT Term-Expr3 with " + node + " term=" + node.getTerm() + " of  " + node.getTerm().getClass());
+		// System.out.println("OUT Term-Expr3 with " + node + " term=" + node.getTerm() + " of " + node.getTerm().getClass());
 		super.outATermExpr3(node);
 		registerExpressionNode(node, getExpression(node.getTerm()));
 		// System.out.println("***** ATermExpr3 " + node + "expression=" + getExpression(node.getTerm()));
@@ -403,15 +404,15 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAAndExprExpr3(AAndExprExpr3 node) {
 		super.outAAndExprExpr3(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.AND, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node,
+				new BinaryOperatorExpression(BooleanBinaryOperator.AND, getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAAnd2ExprExpr3(AAnd2ExprExpr3 node) {
 		super.outAAnd2ExprExpr3(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.AND, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node,
+				new BinaryOperatorExpression(BooleanBinaryOperator.AND, getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override
@@ -432,8 +433,8 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAModExprExpr3(AModExprExpr3 node) {
 		super.outAModExprExpr3(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.MOD, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node,
+				new BinaryOperatorExpression(ArithmeticBinaryOperator.MOD, getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override

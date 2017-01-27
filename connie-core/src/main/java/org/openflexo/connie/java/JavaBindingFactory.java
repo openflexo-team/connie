@@ -82,7 +82,7 @@ public class JavaBindingFactory implements BindingFactory {
 					currentType = upperBounds[0];
 				}
 			}
-			List<JavaPropertyPathElement> returned = new ArrayList<JavaPropertyPathElement>();
+			List<JavaPropertyPathElement> returned = new ArrayList<>();
 			for (KeyValueProperty p : KeyValueLibrary.getAccessibleProperties(currentType)) {
 				returned.add(new JavaPropertyPathElement(parent, p));
 			}
@@ -101,7 +101,7 @@ public class JavaBindingFactory implements BindingFactory {
 			if (currentType instanceof Class && ((Class<?>) currentType).isPrimitive()) {
 				currentType = TypeUtils.fromPrimitive((Class<?>) currentType);
 			}
-			List<JavaMethodPathElement> returned = new ArrayList<JavaMethodPathElement>();
+			List<JavaMethodPathElement> returned = new ArrayList<>();
 			for (MethodDefinition m : KeyValueLibrary.getAccessibleMethods(currentType)) {
 				returned.add(new JavaMethodPathElement(parent, m, null));
 			}
@@ -133,7 +133,7 @@ public class JavaBindingFactory implements BindingFactory {
 
 	@Override
 	public Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args) {
-		Vector<Method> possiblyMatchingMethods = new Vector<Method>();
+		Vector<Method> possiblyMatchingMethods = new Vector<>();
 		Class<?> typeClass = TypeUtils.getBaseClass(parentType);
 		if (typeClass == null) {
 			System.out.println("Cannot find typeClass for " + parentType);

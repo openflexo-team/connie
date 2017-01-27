@@ -716,11 +716,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		needsParsing = false;
 
 		if (!isValid()) {
-			LOGGER.warning(
-					"Invalid binding " + getUnparsedBinding() + " reason: " + invalidBindingReason() + " "
-							+ (getOwner() != null
-									? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory=" + getOwner().getBindingFactory()
-									: ""));
+			LOGGER.warning("Invalid binding " + getUnparsedBinding() + " reason: " + invalidBindingReason() + " " + (getOwner() != null
+					? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory=" + getOwner().getBindingFactory() : ""));
 			/*
 			 * Bindable owner = getOwner(); BindingModel bm =
 			 * getOwner().getBindingModel(); BindingFactory bf =
@@ -775,8 +772,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * toString().equals(obj.toString()); } else { return super.equals(obj); } }
 	 */
 
-	private final Map<BindingEvaluationContext, T> cachedValues = new HashMap<BindingEvaluationContext, T>();
-	private final Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = new HashMap<BindingEvaluationContext, BindingValueChangeListener<T>>();
+	private final Map<BindingEvaluationContext, T> cachedValues = new HashMap<>();
+	private final Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = new HashMap<>();
 
 	/**
 	 * Evaluate this binding in run-time evaluation context provided by supplied {@link BindingEvaluationContext} parameter. This evaluation
@@ -949,7 +946,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * is performed in WRITE mode.
 	 * 
 	 * @param context
-	 * @return
 	 * @throws TypeMismatchException
 	 * @throws NullReferenceException
 	 * @throws InvocationTargetException
@@ -1003,7 +999,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return Collections.emptyList();
 		}
 
-		final List<Object> returned = new ArrayList<Object>();
+		final List<Object> returned = new ArrayList<>();
 
 		try {
 			expression.visit(new ExpressionVisitor() {
@@ -1034,7 +1030,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return Collections.emptyList();
 		}
 
-		final ArrayList<TargetObject> returned = new ArrayList<TargetObject>();
+		final ArrayList<TargetObject> returned = new ArrayList<>();
 
 		try {
 			expression.visit(new ExpressionVisitor() {
@@ -1057,7 +1053,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	@Override
 	public DataBinding<T> clone() {
-		DataBinding<T> returned = new DataBinding<T>(getOwner(), getDeclaredType(), getBindingDefinitionType());
+		DataBinding<T> returned = new DataBinding<>(getOwner(), getDeclaredType(), getBindingDefinitionType());
 		if (isSet()) {
 			returned.setUnparsedBinding(toString());
 		}
@@ -1068,11 +1064,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public static DataBinding<Boolean> makeTrueBinding() {
-		return new DataBinding<Boolean>("true");
+		return new DataBinding<>("true");
 	}
 
 	public static DataBinding<Boolean> makeFalseBinding() {
-		return new DataBinding<Boolean>("false");
+		return new DataBinding<>("false");
 	}
 
 	/*

@@ -73,6 +73,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	// Stores contained InJarResourceImpl where key is the jar entry
 	private Map<JarEntry, InJarResourceImpl> contents;
 	private JarFile jarfile = null;
+
 	private InJarResourceImpl rootEntry;
 
 	private String jarfilename = null;

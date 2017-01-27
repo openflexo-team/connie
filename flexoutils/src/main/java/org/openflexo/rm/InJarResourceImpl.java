@@ -106,7 +106,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	
 		if (entry != null && entry.isDirectory()) {
 			// Browser the resource of the container
-			for (Resource resource :  getContainer().getContents()) {
+			for (Resource resource : getContainer().getContents()) {
 				String parentFolderPath = resource.getRelativePath();
 				// If it is a folder end with JAR_SEPARATOR then remove the "/" to find the parent path
 				if (parentFolderPath.endsWith("/")) {
@@ -123,15 +123,15 @@ public class InJarResourceImpl extends BasicResourceImpl {
 					resources.add(resource);
 					resource.setContainer(resource);
 				}
-			}
+			}	
 			// TODO some day ...
-	
+			
 		}
 	
 		System.out.println("Les contents de " + this + " c'est " + resources);
-	
+		
 		return resources;
-	
+		
 	}*/
 
 	@Override

@@ -58,7 +58,7 @@ import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
 import org.openflexo.toolbox.FileUtils;
 
 /**
- * @author bmangez, sguerin, xtof
+ * @author bmangez, sylvain, xtof
  * 
  *         <B>Locates resources on the FileSystem, given a collection of directories to search in</B>
  */
@@ -442,7 +442,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	}
 
 	protected List<File> locateAllFiles(String relativePathName, boolean lenient) {
-		List<File> found = new ArrayList<File>();
+		List<File> found = new ArrayList<>();
 		File absoluteFile = new File(relativePathName);
 		if (absoluteFile.exists()) {
 			try {
@@ -540,7 +540,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					if (LOGGER.isLoggable(Level.INFO)) {
 						LOGGER.info("Initializing directories search order");
 					}
-					directoriesSearchOrder = new ArrayList<File>();
+					directoriesSearchOrder = new ArrayList<>();
 					if (preferredResourcePath != null) {
 						/*if (logger.isLoggable(Level.INFO)) {
 							logger.info("Adding directory " + preferredResourcePath.getAbsolutePath());

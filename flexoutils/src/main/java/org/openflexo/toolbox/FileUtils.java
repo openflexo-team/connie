@@ -78,7 +78,7 @@ import org.openflexo.rm.Resource;
 /**
  * Some File utilities
  * 
- * @author sguerin
+ * @author sylvain
  */
 public class FileUtils {
 
@@ -590,15 +590,15 @@ public class FileUtils {
 	}
 
 	private static String performCleanup(String s) {
-		s = StringUtils.convertAccents(s);
-		s = s.replaceAll(BAD_CHARACTERS_FOR_FILE_NAME_REG_EXP, "-");
-		s = s.replaceAll("\\P{ASCII}+", "-");
-		s = s.replaceAll("[^\\w]+", "-");
-		return s;
+		String result = StringUtils.convertAccents(s);
+		result = result.replaceAll(BAD_CHARACTERS_FOR_FILE_NAME_REG_EXP, "-");
+		result = result.replaceAll("\\P{ASCII}+", "-");
+		result = result.replaceAll("[^\\w]+", "-");
+		return result;
 	}
 
 	/**
-	 * @param componentName
+	 * @param fileName
 	 * @return
 	 */
 	public static String getValidFileName(String fileName) {
@@ -788,7 +788,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * @param desktopIni
+	 * @param f
 	 */
 	public static void makeFileSystem(File f) {
 		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
@@ -803,7 +803,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * @param desktopIni
+	 * @param f
 	 */
 	public static void unmakeFileSystem(File f) {
 		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
@@ -872,7 +872,7 @@ public class FileUtils {
 		return canonicalPath.split(regex);
 	}
 
-	/**
+	/*
 	 * @param file
 	 * @param wd
 	 * @return
@@ -977,7 +977,7 @@ public class FileUtils {
 		if (!dir.isDirectory()) {
 			return null;
 		}
-		Vector<File> files = new Vector<File>();
+		Vector<File> files = new Vector<>();
 		File[] f = dir.listFiles();
 		for (int i = 0; i < f.length; i++) {
 			File file = f[i];

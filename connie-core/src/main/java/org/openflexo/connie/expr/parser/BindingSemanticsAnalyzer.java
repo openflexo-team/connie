@@ -75,7 +75,7 @@ class BindingSemanticsAnalyzer extends ExpressionSemanticsAnalyzer {
 	// private boolean weAreDealingWithTheRightBinding = true;
 
 	public BindingSemanticsAnalyzer(PBinding node) {
-		path = new ArrayList<BindingValue.AbstractBindingPathElement>();
+		path = new ArrayList<>();
 		// System.out.println(">>>> node=" + node + " of " + node.getClass());
 	}
 
@@ -85,13 +85,13 @@ class BindingSemanticsAnalyzer extends ExpressionSemanticsAnalyzer {
 
 	/* call = 
 	  identifier arg_list ;
-
+	
 	 arg_list = 
 	  l_par expr [additional_args]:additional_arg* r_par;
-
+	
 	 additional_arg = 
 	  comma expr;
-
+	
 	 binding = 
 	  {identifier} identifier |
 	  {call} call |
@@ -107,7 +107,7 @@ class BindingSemanticsAnalyzer extends ExpressionSemanticsAnalyzer {
 
 	public BindingValue.MethodCallBindingPathElement makeMethodCallBindingPathElement(ACall node) {
 		PArgList argList = node.getArgList();
-		List<Expression> args = new ArrayList<Expression>();
+		List<Expression> args = new ArrayList<>();
 		if (argList instanceof ANonEmptyListArgList) {
 			args.add(getExpression(((ANonEmptyListArgList) argList).getExpr()));
 			for (PAdditionalArg aa : ((ANonEmptyListArgList) argList).getAdditionalArgs()) {
