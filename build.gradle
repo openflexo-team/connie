@@ -10,4 +10,5 @@ buildscript {
 }
 
 apply plugin: 'org.openflexo.buildconfig'
-openflexo.version = "1.4-SNAPSHOT"
+
+project.allprojects { version = "1.4-SNAPSHOT" }
