@@ -1,13 +1,3 @@
-// Excludes some resources files that are Java file which can't be compiled
-sourceSets {
-  test {
-    resources {
-      exclude '**/TestDiff/**'
-      exclude '**/TestMerge/**'
-    }
-  }
-}
-
 dependencies {
   testCompile project(':testutils')
   compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
