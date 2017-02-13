@@ -78,6 +78,11 @@ public abstract class BasicResourceImpl implements Resource {
 			// Attempt to find a better relative path
 			_relativePath = _relativePath.substring(_relativePath.indexOf(TARGET_CLASSES) + TARGET_CLASSES.length());
 		}
+		String BIN_PATH = File.separator + "bin" + File.separator;
+		if (_relativePath.contains(BIN_PATH)) {
+			// Attempt to find a better relative path
+			_relativePath = _relativePath.substring(_relativePath.indexOf(BIN_PATH) + BIN_PATH.length());
+		}
 	}
 
 	public BasicResourceImpl(ResourceLocatorDelegate locator) {
