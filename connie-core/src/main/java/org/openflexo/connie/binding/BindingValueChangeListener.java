@@ -330,7 +330,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			LOGGER.warning("Unexpected exception raised. See logs for details.");
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return null;
 	}
