@@ -44,7 +44,6 @@ import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.expr.Operator;
 import org.openflexo.connie.expr.UnaryOperator;
 
-
 /**
  * This exception is thrown when an operator is invoked in a type mismatch context
  * 
@@ -105,9 +104,13 @@ public class TypeMismatchException extends TransformException {
 			return "type_mismatch_on_operator_(" + concernedOperator.getLocalizedName() + ")_supplied_types_are_("
 					+ leftSuppliedType.getLocalizedName() + ")_and_(" + rightSuppliedType.getLocalizedName()
 					+ ")_while_expected_types_are_(" + typesAsString(expectedTypes) + ")";
-		} else {
+		}
+		else if (concernedOperator != null) {
 			return "type_mismatch_on_operator_(" + concernedOperator.getLocalizedName() + ")_supplied_type_is_("
 					+ suppliedType.getLocalizedName() + ")_while_expected_types_are_(" + typesAsString(expectedTypes) + ")";
+		}
+		else {
+			return "unexpected_null_operator";
 		}
 	}
 
