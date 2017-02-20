@@ -39,6 +39,20 @@
 
 package org.openflexo.connie;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingDefinition;
 import org.openflexo.connie.binding.BindingValueChangeListener;
@@ -66,20 +80,6 @@ import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.StringUtils;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Representation of a data binding.<br>
@@ -715,15 +715,15 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 		needsParsing = false;
 
-		if (!isValid()) {
+		/*if (!isValid()) {
 			LOGGER.warning("Invalid binding " + getUnparsedBinding() + " reason: " + invalidBindingReason() + " " + (getOwner() != null
 					? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory=" + getOwner().getBindingFactory() : ""));
-			/*
-			 * Bindable owner = getOwner(); BindingModel bm =
-			 * getOwner().getBindingModel(); BindingFactory bf =
-			 * getOwner().getBindingFactory(); logger.info("Breakpoint");
-			 */
-		}
+			//
+			// Bindable owner = getOwner(); BindingModel bm =
+			// getOwner().getBindingModel(); BindingFactory bf =
+			// getOwner().getBindingFactory(); logger.info("Breakpoint");
+			//
+		}*/
 
 		return expression;
 	}

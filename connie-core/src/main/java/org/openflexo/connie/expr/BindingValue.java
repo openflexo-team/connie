@@ -39,6 +39,17 @@
 
 package org.openflexo.connie.expr;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
@@ -65,17 +76,6 @@ import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 import org.openflexo.kvc.KeyValueProperty;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Represents a binding path, as formed by an access to a binding variable and a path of BindingPathElement<br>
@@ -766,19 +766,19 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// getParsedBindingPath());
 
 		if (dataBinding.getOwner() == null) {
-			LOGGER.warning("DataBinding has no owner");
+			// LOGGER.warning("DataBinding has no owner");
 			invalidBindingReason = "DataBinding has no owner";
 			return false;
 		}
 
 		if (dataBinding.getOwner().getBindingModel() == null) {
-			LOGGER.warning("DataBinding owner has no binding model, owner=" + dataBinding.getOwner());
+			// LOGGER.warning("DataBinding owner has no binding model, owner=" + dataBinding.getOwner());
 			invalidBindingReason = "DataBinding owner has no binding model, binding=" + dataBinding + " owner=" + dataBinding.getOwner();
 			return false;
 		}
 
 		if (dataBinding.getOwner().getBindingFactory() == null) {
-			LOGGER.warning("DataBinding owner has no binding factory, owner=" + dataBinding.getOwner());
+			// LOGGER.warning("DataBinding owner has no binding factory, owner=" + dataBinding.getOwner());
 			invalidBindingReason = "DataBinding owner has no binding factory, binding=" + dataBinding + " owner=" + dataBinding.getOwner();
 			return false;
 		}
@@ -874,7 +874,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 						}
 					}
 					else {
-						LOGGER.warning("Unexpected " + pathElement);
+						// LOGGER.warning("Unexpected " + pathElement);
 						invalidBindingReason = "unexpected path element: " + pathElement;
 						analysingSuccessfull = false;
 						return false;
@@ -885,7 +885,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			analysingSuccessfull = true;
 		}
 		else {
-			LOGGER.warning("Invalid binding value " + this);
+			// LOGGER.warning("Invalid binding value " + this);
 			// Thread.dumpStack();
 			analysingSuccessfull = false;
 		}
