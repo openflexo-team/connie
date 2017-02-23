@@ -42,8 +42,6 @@ package org.openflexo.diff;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.openflexo.diff.ComputeDiff.AdditionChange;
 import org.openflexo.diff.ComputeDiff.DiffChange;
@@ -54,6 +52,8 @@ import org.openflexo.diff.DiffSource.MergeToken;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.ResourceLocator;
 import org.openflexo.toolbox.FileUtils;
+
+import junit.framework.TestCase;
 
 public class TestDiff extends TestCase {
 
@@ -70,8 +70,8 @@ public class TestDiff extends TestCase {
 	@Test
 	public void test0() throws IOException {
 		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava0-v1.java"))).getFile();
-		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava0-v2.java"))).getFile();
+		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava0-v1.java.txt"))).getFile();
+		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava0-v2.java.txt"))).getFile();
 		System.out.println("Test 0");
 		DiffPrint.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2));
 		System.out.println("" + ComputeDiff.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2)));
@@ -83,8 +83,8 @@ public class TestDiff extends TestCase {
 	@Test
 	public void test1() throws IOException {
 		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File file1 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava1-v1.java"))).getFile();
-		File file2 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava1-v2.java"))).getFile();
+		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava1-v1.java.txt"))).getFile();
+		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava1-v2.java.txt"))).getFile();
 		System.out.println("Test 1");
 		DiffPrint.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2));
 		System.out.println("" + ComputeDiff.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2)));
@@ -101,8 +101,8 @@ public class TestDiff extends TestCase {
 	@Test
 	public void test2() throws IOException {
 		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File file1 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava2-v1.java"))).getFile();
-		File file2 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava2-v2.java"))).getFile();
+		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava2-v1.java.txt"))).getFile();
+		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava2-v2.java.txt"))).getFile();
 		System.out.println("Test 2");
 		DiffPrint.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2));
 		System.out.println("" + ComputeDiff.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2)));
@@ -119,8 +119,8 @@ public class TestDiff extends TestCase {
 	public void test3() throws IOException {
 
 		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File file1 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava3-v1.java"))).getFile();
-		File file2 =  ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava3-v2.java"))).getFile();
+		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava3-v1.java.txt"))).getFile();
+		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava3-v2.java.txt"))).getFile();
 		System.out.println("Test 3");
 		DiffPrint.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2));
 		System.out.println("" + ComputeDiff.diff(FileUtils.fileContents(file1), FileUtils.fileContents(file2)));
@@ -149,27 +149,27 @@ public class TestDiff extends TestCase {
 	/*
 	public static void main(String[] args)
 	{
-		File file01 = new FileResource("TestDiff/TestJava0-v1.java");
-		File file02 = new FileResource("TestDiff/TestJava0-v2.java");
-		File file11 = new FileResource("TestDiff/TestJava1-v1.java");
-		File file12 = new FileResource("TestDiff/TestJava1-v2.java");
-		File file21 = new FileResource("TestDiff/TestJava2-v1.java");
-		File file22 = new FileResource("TestDiff/TestJava2-v2.java");
-		File file31 = new FileResource("TestDiff/TestJava3-v1.java");
-		File file32 = new FileResource("TestDiff/TestJava3-v2.java");
+		File file01 = new FileResource("TestDiff/TestJava0-v1.java.txt");
+		File file02 = new FileResource("TestDiff/TestJava0-v2.java.txt");
+		File file11 = new FileResource("TestDiff/TestJava1-v1.java.txt");
+		File file12 = new FileResource("TestDiff/TestJava1-v2.java.txt");
+		File file21 = new FileResource("TestDiff/TestJava2-v1.java.txt");
+		File file22 = new FileResource("TestDiff/TestJava2-v2.java.txt");
+		File file31 = new FileResource("TestDiff/TestJava3-v1.java.txt");
+		File file32 = new FileResource("TestDiff/TestJava3-v2.java.txt");
 		File file41 = new File("/Users/sylvain/temp/merge/branchNew.xml");
 		File file42 = new File("/Users/sylvain/temp/merge/branchOld.xml");
-
+	
 		try {
 			DiffReport report0 = ComputeDiff.diff(file01,file02);
 			DiffReport report1 = ComputeDiff.diff(file11,file12);
 			DiffReport report2 = ComputeDiff.diff(file21,file22);
 			DiffReport report3 = ComputeDiff.diff(file31,file32);
 			DiffReport report4 = ComputeDiff.diff(file41,file42);
-
-
+	
+	
 			final JDialog dialog = new JDialog((Frame)null,true);
-
+	
 			JButton closeButton = new JButton("Close");
 			closeButton.addActionListener(new ActionListener() {
 				@Override
@@ -178,27 +178,27 @@ public class TestDiff extends TestCase {
 					System.exit(0);
 				}
 			});
-
+	
 			JPanel panel = new JPanel(new BorderLayout());
-
+	
 			JTabbedPane tabbedPane = new JTabbedPane();
-			tabbedPane.add(new DiffPanel(report0,TokenMarkerStyle.Java),"Report-0");
-			tabbedPane.add(new DiffPanel(report1,TokenMarkerStyle.Java),"Report-1");
-			tabbedPane.add(new DiffPanel(report2,TokenMarkerStyle.Java),"Report-2");
-			tabbedPane.add(new DiffPanel(report3,TokenMarkerStyle.Java),"Report-3");
-			tabbedPane.add(new DiffPanel(report4,TokenMarkerStyle.Java),"Report-4");
-
+			tabbedPane.add(new DiffPanel(report0,TokenMarkerStyle.java.txt),"Report-0");
+			tabbedPane.add(new DiffPanel(report1,TokenMarkerStyle.java.txt),"Report-1");
+			tabbedPane.add(new DiffPanel(report2,TokenMarkerStyle.java.txt),"Report-2");
+			tabbedPane.add(new DiffPanel(report3,TokenMarkerStyle.java.txt),"Report-3");
+			tabbedPane.add(new DiffPanel(report4,TokenMarkerStyle.java.txt),"Report-4");
+	
 			JEditTextArea editorPane = new JEditTextArea();
 			editorPane.setEditable(true);
 			editorPane.setTokenMarker(new JavaTokenMarker());
 			editorPane.setText(FileUtils.fileContents(file01));
 			editorPane.setFont(new Font("Verdana",Font.PLAIN,11));
-
+	
 			tabbedPane.add(editorPane,"Code");
-
+	
 			panel.add(tabbedPane,BorderLayout.CENTER);
 			panel.add(closeButton,BorderLayout.SOUTH);
-
+	
 			dialog.setPreferredSize(new Dimension(1000,800));
 			dialog.getContentPane().add(panel);
 			dialog.validate();

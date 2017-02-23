@@ -42,13 +42,13 @@ package org.openflexo.diff.merge;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.openflexo.diff.DiffSource;
 import org.openflexo.diff.merge.MergeChange.MergeChangeSource;
 import org.openflexo.diff.merge.MergeChange.MergeChangeType;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.ResourceLocator;
+
+import junit.framework.TestCase;
 
 /**
  * Test some pathologic cases
@@ -60,9 +60,9 @@ public class TestMerge2 extends TestCase {
 
 	public void test0() throws IOException {
 		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File original =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-original.java"))).getFile();
-		File left =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-left.java"))).getFile();
-		File right =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-right.java"))).getFile();
+		File original = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-original.java.txt"))).getFile();
+		File left = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-left.java.txt"))).getFile();
+		File right = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-right.java.txt"))).getFile();
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 0);
 		assertFalse(merge.isReallyConflicting());
@@ -70,9 +70,9 @@ public class TestMerge2 extends TestCase {
 
 	public void test1() throws IOException {
 		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File original =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-original.java"))).getFile();
-		File left =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-left.java"))).getFile();
-		File right =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-right.java"))).getFile();
+		File original = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-original.java.txt"))).getFile();
+		File left = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-left.java.txt"))).getFile();
+		File right = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-right.java.txt"))).getFile();
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 9);
 		assertFalse(merge.isReallyConflicting());
@@ -89,9 +89,9 @@ public class TestMerge2 extends TestCase {
 
 	public void test2() throws IOException {
 		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File original =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-original.java"))).getFile();
-		File left =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-left.java"))).getFile();
-		File right =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-right.java"))).getFile();
+		File original = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-original.java.txt"))).getFile();
+		File left = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-left.java.txt"))).getFile();
+		File right = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-right.java.txt"))).getFile();
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 14);
 		assertTrue(merge.isReallyConflicting());
@@ -113,9 +113,9 @@ public class TestMerge2 extends TestCase {
 
 	public void test3() throws IOException {
 		ResourceLocator rl = ResourceLocator.getResourceLocator();
-		File original =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-original.java"))).getFile();
-		File left =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-left.java"))).getFile();
-		File right =  ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-right.java"))).getFile();
+		File original = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-original.java.txt"))).getFile();
+		File left = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-left.java.txt"))).getFile();
+		File right = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-right.java.txt"))).getFile();
 		Merge merge = new Merge(new DiffSource(original), new DiffSource(left), new DiffSource(right), DefaultMergedDocumentType.JAVA);
 		assertEquals(merge.getChanges().size(), 9);
 		assertTrue(merge.isReallyConflicting());
@@ -147,22 +147,22 @@ public class TestMerge2 extends TestCase {
 			File file2 = new FileResource("TestMerge/TestMerge4-2");
 			File file1 = new FileResource("TestMerge/TestMerge4-1");
 			File file3 = new FileResource("TestMerge/TestMerge4-3");
-
+	
 			final JDialog dialog = new JDialog((Frame)null,true);
-
+	
 			JPanel panel = new JPanel(new BorderLayout());
-
+	
 			final JTabbedPane tabbedPane = new JTabbedPane();
-
+	
 			tabbedPane.add(makeMergeTabbedPane(file2, file1, file3,DefaultMergedDocumentType.JAVA),"2-1-3"); // OK
 			tabbedPane.add(makeMergeTabbedPane(file2, file3, file1,DefaultMergedDocumentType.JAVA),"2-3-1"); // OK
 			tabbedPane.add(makeMergeTabbedPane(file3, file2, file1,DefaultMergedDocumentType.JAVA),"3-2-1"); // OK
 			tabbedPane.add(makeMergeTabbedPane(file3, file1, file2,DefaultMergedDocumentType.JAVA),"3-1-2"); // OK
 			tabbedPane.add(makeMergeTabbedPane(file1, file2, file3,DefaultMergedDocumentType.JAVA),"1-2-3");
 			tabbedPane.add(makeMergeTabbedPane(file1, file3, file2,DefaultMergedDocumentType.JAVA),"1-3-2");
-
+	
 			panel.add(tabbedPane,BorderLayout.CENTER);
-
+	
 			JButton closeButton = new JButton("Exit");
 			closeButton.addActionListener(new ActionListener() {
 				@Override
@@ -171,7 +171,7 @@ public class TestMerge2 extends TestCase {
 					System.exit(0);
 				}
 			});
-
+	
 			JButton editButton = new JButton("Edit");
 			editButton.addActionListener(new ActionListener() {
 				@Override
@@ -181,19 +181,19 @@ public class TestMerge2 extends TestCase {
 					editMerge((Merge)currentMergePanel.getMerge());
 				}
 			});
-
+	
 			JPanel controlPanel = new JPanel(new FlowLayout());
 			controlPanel.add(closeButton);
 			controlPanel.add(editButton);
 			
 			panel.add(controlPanel,BorderLayout.SOUTH);
-
+	
 			dialog.setPreferredSize(new Dimension(1000,800));
 			dialog.getContentPane().add(panel);
 			dialog.pack();
 			dialog.setVisible(true);
 		}
-
+	
 		private static JTabbedPane makeMergeTabbedPane(File original, File left, File right, MergedDocumentType docType)
 		{
 			Merge merge = null;
@@ -212,14 +212,14 @@ public class TestMerge2 extends TestCase {
 			tabbedPane.add(new DefaultMergePanel(merge,docType.getStyle()),"Merge");
 			tabbedPane.add(new DiffPanel(diffLeft,docType.getStyle()),"Diffs between left and original");
 			tabbedPane.add(new DiffPanel(diffRight,docType.getStyle()),"Diffs between original and right");
-
+	
 			return tabbedPane;
 		}
-
+	
 		public static void editMerge(Merge merge)
 		{
 			final JDialog dialog = new JDialog((Frame)null,true);
-
+	
 			JPanel panel = new JPanel(new BorderLayout());
 			MergeEditor editor = new MergeEditor(merge) {
 				@Override
@@ -228,7 +228,7 @@ public class TestMerge2 extends TestCase {
 				}
 			};
 			panel.add(editor,BorderLayout.CENTER);
-
+	
 			dialog.setPreferredSize(new Dimension(1000,800));
 			dialog.getContentPane().add(panel);
 			dialog.pack();
