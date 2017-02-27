@@ -64,6 +64,15 @@ public interface CustomType extends Type {
 	public boolean isTypeAssignableFrom(Type aType, boolean permissive);
 
 	/**
+	 * Determine if supplied object is of type beeing represented by this type
+	 * 
+	 * @param aType
+	 * @param permissive
+	 * @return
+	 */
+	public boolean isOfType(Object object, boolean permissive);
+
+	/**
 	 * Return simple (human understandable) representation for this type
 	 * 
 	 * @return

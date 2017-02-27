@@ -39,9 +39,6 @@
 
 package org.openflexo.connie.type;
 
-import com.google.common.primitives.Primitives;
-import org.openflexo.connie.expr.EvaluationType;
-
 import java.io.File;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
@@ -57,6 +54,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.openflexo.connie.expr.EvaluationType;
+
+import com.google.common.primitives.Primitives;
 
 /**
  * Utility methods focusing on types introspection
@@ -594,6 +595,20 @@ public class TypeUtils {
 				}*/
 
 		// return false;
+	}
+
+	public static boolean isOfType(Object object, Type aType) {
+		if (aType instanceof CustomType) {
+			return ((CustomType) aType).isOfType(object, true);
+		}
+		else {
+			if (object == null) {
+				return true;
+			}
+			else {
+				return isTypeAssignableFrom(aType, object.getClass());
+			}
+		}
 	}
 
 	public static String simpleRepresentation(Type aType) {
