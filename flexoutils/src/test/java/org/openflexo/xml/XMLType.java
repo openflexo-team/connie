@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.xml;
 
 import java.lang.reflect.Type;
@@ -45,38 +44,38 @@ import java.util.Map;
 
 public class XMLType implements Type {
 
-    private static final Object NAME_ATTR = "name";
+	private static final Object NAME_ATTR = "name";
 
-    private String              _uri      = null;
+	private String _uri = null;
 
-    Map<String, XMLAttr>    attributeNames;
+	Map<String, XMLAttr> attributeNames;
 
-    XMLType(String uri) {
-        super();
-        _uri = uri;
-        attributeNames = new HashMap<String, XMLAttr>();
-    }
+	XMLType(String uri) {
+		super();
+		_uri = uri;
+		attributeNames = new HashMap<>();
+	}
 
-    public void createAttribute(String name) {
-        if (!hasAttribute(name))
-            attributeNames.put(name, new XMLAttr(name));
-    }
+	public void createAttribute(String name) {
+		if (!hasAttribute(name))
+			attributeNames.put(name, new XMLAttr(name));
+	}
 
-    public Boolean hasAttribute(String name) {
-        return attributeNames.containsKey(name);
-    }
+	public Boolean hasAttribute(String name) {
+		return attributeNames.containsKey(name);
+	}
 
-    public XMLAttr getAttributeByName(String name) {
-        XMLAttr attr = attributeNames.get(name);
-        if (attr == null && name.equals(NAME_ATTR)) {
-            attr = new XMLAttr(name);
-            attributeNames.put(name, attr);
-        }
-        return attr;
-    }
+	public XMLAttr getAttributeByName(String name) {
+		XMLAttr attr = attributeNames.get(name);
+		if (attr == null && name.equals(NAME_ATTR)) {
+			attr = new XMLAttr(name);
+			attributeNames.put(name, attr);
+		}
+		return attr;
+	}
 
-    public String getURI() {
-        return _uri;
-    }
+	public String getURI() {
+		return _uri;
+	}
 
 }

@@ -65,7 +65,7 @@ public class ChainedCollection<T> implements Collection<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		final List<Iterator<? extends T>> allIterators = new ArrayList<Iterator<? extends T>>();
+		final List<Iterator<? extends T>> allIterators = new ArrayList<>();
 		for (Collection<? extends T> collection : collections) {
 			if (!collection.isEmpty())
 				allIterators.add(collection.iterator());

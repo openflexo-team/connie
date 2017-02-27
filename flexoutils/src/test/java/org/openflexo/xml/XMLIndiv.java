@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.xml;
 
 import java.lang.reflect.Type;
@@ -50,107 +49,107 @@ import java.util.UUID;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class XMLIndiv  {
+public class XMLIndiv {
 
-    private final String                   uuid;
+	private final String uuid;
 
-    private static String            NAME_KEY        = "___The_NAME___";
+	private static String NAME_KEY = "___The_NAME___";
 
-    private Map<XMLAttr, Object> attributeValues = null;
-    private List<XMLIndiv>       children        = null;
-    private XMLIndiv             parent          = null;
+	private Map<XMLAttr, Object> attributeValues = null;
+	private List<XMLIndiv> children = null;
+	private XMLIndiv parent = null;
 
-    private XMLType              type            = null;
+	private XMLType type = null;
 
-    private String                   _name           = null;
+	private String _name = null;
 
-    public XMLIndiv() {
-        uuid = UUID.randomUUID().toString();
-        attributeValues = new HashMap<XMLAttr, Object>();
-        children = new ArrayList<XMLIndiv>();
-    }
+	public XMLIndiv() {
+		uuid = UUID.randomUUID().toString();
+		attributeValues = new HashMap<>();
+		children = new ArrayList<>();
+	}
 
-    public String getContentDATA() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public String getContentDATA() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	public void setName(String name) {
+		_name = name;
+	}
 
-    public void setName(String name) {
-        _name = name;
-    }
+	public String getFullyQualifiedName() {
+		return _name;
+	}
 
-    public String getFullyQualifiedName() {
-        return _name;
-    }
+	public String getName() {
+		return _name;
+	}
 
-    public String getName() {
-        return _name;
-    }
+	public Object getAttributeValue(String attributeName) {
+		XMLAttr attr = ((XMLType) getType()).getAttributeByName(attributeName);
+		return attributeValues.get(attr);
+	}
 
-    public Object getAttributeValue(String attributeName) {
-        XMLAttr attr = ((XMLType) getType()).getAttributeByName(attributeName);
-        return attributeValues.get(attr);
-    }
+	public XMLAttr getAttributeByName(String aName) {
 
-    public XMLAttr getAttributeByName(String aName) {
+		return ((XMLType) getType()).getAttributeByName(aName);
+	}
 
-        return ((XMLType) getType()).getAttributeByName(aName);
-    }
+	public Collection<? extends XMLAttr> getAttributes() {
+		return attributeValues.keySet();
+	}
 
-    public Collection<? extends XMLAttr> getAttributes() {
-        return attributeValues.keySet();
-    }
+	public Object createAttribute(String attrLName, Type aType, String value) {
+		XMLAttr attr = new XMLAttr(attrLName);
+		attr.addValue(this, value);
+		return attr;
+	}
 
-    public Object createAttribute(String attrLName, Type aType, String value) {
-        XMLAttr attr = new XMLAttr(attrLName);
-        attr.addValue(this, value);
-        return attr;
-    }
+	public String getAttributeStringValue(XMLAttr a) {
+		return attributeValues.get(a).toString();
+	}
 
-    public String getAttributeStringValue(XMLAttr a) {
-        return attributeValues.get(a).toString();
-    }
+	public void addChild(XMLIndiv anIndividual) {
+		children.add(anIndividual);
+		anIndividual.setParent(this);
+	}
 
-    public void addChild(XMLIndiv anIndividual) {
-        children.add(anIndividual);
-        anIndividual.setParent(this);
-    }
+	public List<XMLIndiv> getChildren() {
+		return children;
+	}
 
-    public List<XMLIndiv> getChildren() {
-        return children;
-    }
+	public void setParent(XMLIndiv container) {
+		parent = container;
+	}
 
-    public void setParent(XMLIndiv container) {
-        parent = container;
-    }
+	public XMLIndiv getParent() {
+		return parent;
+	}
 
-    public XMLIndiv getParent() {
-        return parent;
-    }
+	public Type getType() {
+		return type;
+	}
 
-    public Type getType() {
-        return type;
-    }
-   public void setType(Type myClass) {
-        type = (XMLType) myClass;
-    }
+	public void setType(Type myClass) {
+		type = (XMLType) myClass;
+	}
 
-    public String getUUID() {
-        return uuid;
-    }
+	public String getUUID() {
+		return uuid;
+	}
 
-    public Element toXML(Document doc) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public Element toXML(Document doc) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public void setAttributeValue(XMLAttr attr, Object value) {
-        if (value instanceof XMLModel.StringAttribute) {
-            this.attributeValues.put(attr, ((XMLModel.StringAttribute) value).getValue());
-        }
-        else {
-            this.attributeValues.put(attr, value);
-        }
-    }
+	public void setAttributeValue(XMLAttr attr, Object value) {
+		if (value instanceof XMLModel.StringAttribute) {
+			this.attributeValues.put(attr, ((XMLModel.StringAttribute) value).getValue());
+		}
+		else {
+			this.attributeValues.put(attr, value);
+		}
+	}
 }

@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.SAXParser;
@@ -165,8 +164,8 @@ public class XMLRootElementReader {
 
 				for (int i = 0; i < len; i++) {
 
-					Type aType = null;
-					String typeName = attributes.getType(i);
+					// Unused Type aType = null;
+					// Unused String typeName = attributes.getType(i);
 					String attrQName = attributes.getQName(i);
 					String attrName = attributes.getLocalName(i);
 					String attrURI = attributes.getURI(i);

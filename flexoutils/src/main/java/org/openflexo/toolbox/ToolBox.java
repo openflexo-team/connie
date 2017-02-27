@@ -796,7 +796,7 @@ public class ToolBox {
 					version = javaVersion;
 				}
 				try {
-					fileChooserRequiresFix = version.startsWith("1.6.0") && (release == null || Integer.valueOf(release) < 10);
+					fileChooserRequiresFix = version.startsWith("1.6.0") && (release == null || Integer.parseInt(release) < 10);
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 					fileChooserRequiresFix = true;

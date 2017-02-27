@@ -67,42 +67,51 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 					if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
 						return new IntegerConstant(((IntegerConstant) leftArg).getValue() + ((IntegerConstant) rightArg).getValue());
 					}
-					return new FloatConstant(((ArithmeticConstant) leftArg).getArithmeticValue()
-							+ ((ArithmeticConstant) rightArg).getArithmeticValue());
+					return new FloatConstant(
+							((ArithmeticConstant) leftArg).getArithmeticValue() + ((ArithmeticConstant) rightArg).getArithmeticValue());
 				}
 				throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(), EvaluationType.values());
-			} else if (leftArg instanceof StringConstant) {
+			}
+			else if (leftArg instanceof StringConstant) {
 				if (rightArg instanceof StringConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((StringConstant) rightArg).getValue());
-				} else if (rightArg instanceof IntegerConstant) {
+				}
+				else if (rightArg instanceof IntegerConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((IntegerConstant) rightArg).getValue());
-				} else if (rightArg instanceof FloatConstant) {
+				}
+				else if (rightArg instanceof FloatConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((FloatConstant) rightArg).getValue());
-				} else if (rightArg instanceof BooleanConstant) {
+				}
+				else if (rightArg instanceof BooleanConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((BooleanConstant) rightArg).getValue());
-				} else if (rightArg instanceof DateConstant) {
+				}
+				else if (rightArg instanceof DateConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((DateConstant) rightArg).getDate().toString());
-				} else if (rightArg instanceof DurationConstant) {
+				}
+				else if (rightArg instanceof DurationConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue()
 							+ ((DurationConstant) rightArg).getDuration().getSerializationRepresentation());
-				} else if (rightArg == ObjectSymbolicConstant.NULL) {
+				}
+				else if (rightArg == ObjectSymbolicConstant.NULL) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + "null");
-				} else if (rightArg instanceof ObjectConstant) {
+				}
+				else if (rightArg instanceof ObjectConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((ObjectConstant) rightArg).getValue().toString());
 				}
-			} else if (leftArg instanceof DurationConstant) {
+			}
+			else if (leftArg instanceof DurationConstant) {
 				if (rightArg instanceof DurationConstant) {
 					return new DurationConstant(Duration.durationPlusDuration(((DurationConstant) leftArg).getDuration(),
 							((DurationConstant) rightArg).getDuration()));
-				} else if (rightArg instanceof DateConstant) {
-					return new DateConstant(Duration.datePlusDuration(((DateConstant) rightArg).getDate(),
-							((DurationConstant) leftArg).getDuration()));
 				}
-			} else if (leftArg instanceof DateConstant) {
-				if (rightArg instanceof DurationConstant) {
-					return new DateConstant(Duration.datePlusDuration(((DateConstant) leftArg).getDate(),
-							((DurationConstant) rightArg).getDuration()));
+				else if (rightArg instanceof DateConstant) {
+					return new DateConstant(
+							Duration.datePlusDuration(((DateConstant) rightArg).getDate(), ((DurationConstant) leftArg).getDuration()));
 				}
+			}
+			else if (leftArg instanceof DateConstant && rightArg instanceof DurationConstant) {
+				return new DateConstant(
+						Duration.datePlusDuration(((DateConstant) leftArg).getDate(), ((DurationConstant) rightArg).getDuration()));
 			}
 
 			// Special case to handle String concatenation with null
@@ -119,29 +128,33 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 				throws TypeMismatchException {
 			if (leftOperandType.isLiteral()) {
 				return EvaluationType.LITERAL; // Undecided
-			} else if (leftOperandType.isArithmetic()) {
+			}
+			else if (leftOperandType.isArithmetic()) {
 				if (rightOperandType.isArithmetic()) {
 					if (leftOperandType.isArithmeticInteger() && rightOperandType.isArithmeticInteger()) {
 						return EvaluationType.ARITHMETIC_INTEGER;
-					} else {
+					}
+					else {
 						return EvaluationType.ARITHMETIC_FLOAT;
 					}
-				} else if (rightOperandType.isLiteral()) {
+				}
+				else if (rightOperandType.isLiteral()) {
 					return EvaluationType.ARITHMETIC_FLOAT; // Undecided
 				}
-			} else if (leftOperandType.isString()) {
+			}
+			else if (leftOperandType.isString()) {
 				return EvaluationType.STRING;
-			} else if (leftOperandType.isDuration()) {
+			}
+			else if (leftOperandType.isDuration()) {
 				if (rightOperandType.isDurationOrLiteral()) {
 					return EvaluationType.DURATION;
 				}
 				if (rightOperandType.isDateOrLiteral()) {
 					return EvaluationType.DATE;
 				}
-			} else if (leftOperandType.isDate()) {
-				if (rightOperandType.isDurationOrLiteral()) {
-					return EvaluationType.DATE;
-				}
+			}
+			else if (leftOperandType.isDate() && rightOperandType.isDurationOrLiteral()) {
+				return EvaluationType.DATE;
 			}
 			throw new TypeMismatchException(this, leftOperandType, rightOperandType, EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER, EvaluationType.DATE, EvaluationType.DURATION, EvaluationType.LITERAL);
@@ -165,23 +178,24 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 				if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
 					return new IntegerConstant(((IntegerConstant) leftArg).getValue() - ((IntegerConstant) rightArg).getValue());
 				}
-				return new FloatConstant(((ArithmeticConstant) leftArg).getArithmeticValue()
-						- ((ArithmeticConstant) rightArg).getArithmeticValue());
-			} else if (leftArg instanceof DurationConstant) {
+				return new FloatConstant(
+						((ArithmeticConstant) leftArg).getArithmeticValue() - ((ArithmeticConstant) rightArg).getArithmeticValue());
+			}
+			else if (leftArg instanceof DurationConstant) {
 				if (rightArg instanceof DurationConstant) {
 					return new DurationConstant(Duration.durationMinusDuration(((DurationConstant) leftArg).getDuration(),
 							((DurationConstant) rightArg).getDuration()));
 				}
-			} else if (leftArg instanceof DateConstant) {
+			}
+			else if (leftArg instanceof DateConstant) {
 				if (rightArg instanceof DurationConstant) {
-					return new DateConstant(Duration.dateMinusDuration(((DateConstant) leftArg).getDate(),
-							((DurationConstant) rightArg).getDuration()));
+					return new DateConstant(
+							Duration.dateMinusDuration(((DateConstant) leftArg).getDate(), ((DurationConstant) rightArg).getDuration()));
 				}
-			} else if (leftArg instanceof DateConstant) {
-				if (rightArg instanceof DateConstant) {
-					return new DurationConstant(Duration.dateMinusDate(((DateConstant) leftArg).getDate(),
-							((DateConstant) rightArg).getDate()));
-				}
+			}
+			else if (leftArg instanceof DateConstant && rightArg instanceof DateConstant) {
+				return new DurationConstant(
+						Duration.dateMinusDate(((DateConstant) leftArg).getDate(), ((DateConstant) rightArg).getDate()));
 			}
 
 			if (rightArg == ObjectSymbolicConstant.NULL) {
@@ -201,21 +215,26 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 
 			if (leftOperandType.isLiteral()) {
 				return EvaluationType.LITERAL; // Undecided
-			} else if (leftOperandType.isArithmetic()) {
+			}
+			else if (leftOperandType.isArithmetic()) {
 				if (rightOperandType.isArithmetic()) {
 					if (leftOperandType.isArithmeticInteger() && rightOperandType.isArithmeticInteger()) {
 						return EvaluationType.ARITHMETIC_INTEGER;
-					} else {
+					}
+					else {
 						return EvaluationType.ARITHMETIC_FLOAT;
 					}
-				} else if (rightOperandType.isLiteral()) {
+				}
+				else if (rightOperandType.isLiteral()) {
 					return EvaluationType.LITERAL; // Undecided
 				}
-			} else if (leftOperandType.isDuration()) {
+			}
+			else if (leftOperandType.isDuration()) {
 				if (rightOperandType.isDurationOrLiteral()) {
 					return EvaluationType.DURATION;
 				}
-			} else if (leftOperandType.isDate()) {
+			}
+			else if (leftOperandType.isDate()) {
 				if (rightOperandType.isDurationOrLiteral()) {
 					return EvaluationType.DATE;
 				}
@@ -245,8 +264,8 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 				if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
 					return new IntegerConstant(((IntegerConstant) leftArg).getValue() * ((IntegerConstant) rightArg).getValue());
 				}
-				return new FloatConstant(((ArithmeticConstant) leftArg).getArithmeticValue()
-						* ((ArithmeticConstant) rightArg).getArithmeticValue());
+				return new FloatConstant(
+						((ArithmeticConstant) leftArg).getArithmeticValue() * ((ArithmeticConstant) rightArg).getArithmeticValue());
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);
@@ -259,7 +278,8 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 				if (rightOperandType.isArithmeticOrLiteral()) {
 					if (leftOperandType.isArithmeticInteger() && rightOperandType.isArithmeticInteger()) {
 						return EvaluationType.ARITHMETIC_INTEGER;
-					} else {
+					}
+					else {
 						return EvaluationType.ARITHMETIC_FLOAT;
 					}
 				}
@@ -283,8 +303,8 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		@Override
 		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return new FloatConstant(((ArithmeticConstant) leftArg).getArithmeticValue()
-						/ ((ArithmeticConstant) rightArg).getArithmeticValue());
+				return new FloatConstant(
+						((ArithmeticConstant) leftArg).getArithmeticValue() / ((ArithmeticConstant) rightArg).getArithmeticValue());
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);
@@ -317,8 +337,8 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		@Override
 		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return new FloatConstant(((ArithmeticConstant) leftArg).getArithmeticValue()
-						% ((ArithmeticConstant) rightArg).getArithmeticValue());
+				return new FloatConstant(
+						((ArithmeticConstant) leftArg).getArithmeticValue() % ((ArithmeticConstant) rightArg).getArithmeticValue());
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);

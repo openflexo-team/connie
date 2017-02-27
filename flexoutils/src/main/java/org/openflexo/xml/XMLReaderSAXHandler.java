@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.xml;
 
 import java.lang.reflect.Type;
@@ -59,20 +58,19 @@ import org.xml.sax.ext.DefaultHandler2;
 
 public class XMLReaderSAXHandler extends DefaultHandler2 {
 
-	protected static final Logger LOGGER             = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
+	protected static final Logger LOGGER = Logger.getLogger(XMLReaderSAXHandler.class.getPackage().getName());
 
-	public static final String    NAMESPACE_Property = "Namespace";
+	public static final String NAMESPACE_Property = "Namespace";
 
-	private Object                currentContainer   = null;
-	private Object                currentObject      = null;
-	private Type                  currentObjectType        = null;
+	private Object currentContainer = null;
+	private Object currentObject = null;
+	private Type currentObjectType = null;
 
-	private final StringBuffer    cdataBuffer        = new StringBuffer();
+	private final StringBuffer cdataBuffer = new StringBuffer();
 
-	private final Stack<Object>   indivStack         = new Stack<Object>();
+	private final Stack<Object> indivStack = new Stack<>();
 
-	private IObjectGraphFactory   factory            = null;
-
+	private IObjectGraphFactory factory = null;
 
 	public XMLReaderSAXHandler(IObjectGraphFactory aFactory) {
 		super();
@@ -90,7 +88,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 		// Current element is not contained => root node, set NameSpace
 		if (currentContainer == null) {
 			if (uri != null && !uri.isEmpty()) {
-				List<String> namespace = new ArrayList<String>();
+				List<String> namespace = new ArrayList<>();
 				namespace.add(uri);
 				namespace.add(NSPrefix);
 				factory.setContextProperty(NAMESPACE_Property, namespace);
@@ -106,7 +104,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 			if (uri == null || (uri.length() == 0)) {
 				// If there is no base uri, we use the localName of the XML Tag
 				currentObjectType = factory.getTypeForObject(localName, currentContainer, localName);
-			}			
+			}
 			else {
 				if (currentContainer != null) {
 					// find if there is an object property corresponding
@@ -122,7 +120,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 					currentObjectType = factory.getTypeForObject(uri + "#" + localName, null, localName);
 				}
 			}
-
 
 			// creates individual if it is a complex Type
 			if (currentObjectType != null) {
@@ -140,22 +137,22 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
 				for (int i = 0; i < len; i++) {
 
-					Type aType = null;
 					String typeName = attributes.getType(i);
 					String attrQName = attributes.getQName(i);
 					String attrName = attributes.getLocalName(i);
-					String attrURI = attributes.getURI(i);
+					// Unused String attrURI = attributes.getURI(i);
 					NSPrefix = "p"; // default
 
 					if (attrQName != null && attrName != null && currentContainer == null) {
 						// we only set prefix if there is no other Root Element
 						NSPrefix = attrQName.split(":")[0];
-						if (NSPrefix.equals(attrQName)) NSPrefix="";
+						if (NSPrefix.equals(attrQName))
+							NSPrefix = "";
 					}
 
 					if (typeName.equals(XMLCst.CDATA_TYPE_NAME)) {
-						aType = String.class;
-						if (attrName.equals("")) 
+						// Unused Type aType = String.class;
+						if (attrName.equals(""))
 							if (NSPrefix.equals(""))
 								attrName = attrQName;
 							else
@@ -163,7 +160,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
 					}
 					// add anything as attribute except name spaces....
-					if (!NSPrefix.equalsIgnoreCase(XMLCst.XML_NS)){
+					if (!NSPrefix.equalsIgnoreCase(XMLCst.XML_NS)) {
 						factory.addAttributeValueForObject(currentObject, attrName, attributes.getValue(i));
 					}
 
@@ -190,9 +187,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-
 
 		boolean isAttribute = false;
 

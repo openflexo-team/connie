@@ -73,7 +73,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	public ClasspathResourceLocatorImpl() {
 
-		jarResources = new Hashtable<String, JarResourceImpl>();
+		jarResources = new Hashtable<>();
 	}
 
 	@Override

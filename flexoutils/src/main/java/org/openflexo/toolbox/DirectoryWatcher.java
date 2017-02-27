@@ -69,9 +69,9 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 		private final DirectoryWatcher watcher;
 		private final File directory;
-		private final Map<File, Long> lastModified = new HashMap<File, Long>();
-		private final Map<File, NodeDirectoryWatcher> subNodes = new HashMap<File, NodeDirectoryWatcher>();
-		private final Map<File, Integer> checksums = new HashMap<File, Integer>();
+		private final Map<File, Long> lastModified = new HashMap<>();
+		private final Map<File, NodeDirectoryWatcher> subNodes = new HashMap<>();
+		private final Map<File, Integer> checksums = new HashMap<>();
 
 		private NodeDirectoryWatcher(File directory, DirectoryWatcher watcher, boolean notifyAdding) {
 			// System.out.println("Init NodeDirectoryWatcher on " + directory);
@@ -125,11 +125,11 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 		private synchronized boolean watch() {
 
-			Set<File> checkedFiles = new HashSet<File>();
+			Set<File> checkedFiles = new HashSet<>();
 
-			List<File> modifiedFiles = new ArrayList<File>();
-			List<File> addedFiles = new ArrayList<File>();
-			List<File> deletedFiles = new ArrayList<File>();
+			List<File> modifiedFiles = new ArrayList<>();
+			List<File> addedFiles = new ArrayList<>();
+			List<File> deletedFiles = new ArrayList<>();
 
 			if (directory == null || !directory.exists()) {
 				return false;
@@ -154,7 +154,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 			}
 
 			// now check for deleted files
-			Set<File> ref = new HashMap<File, Long>(lastModified).keySet();
+			Set<File> ref = new HashMap<>(lastModified).keySet();
 			ref.removeAll(checkedFiles);
 			Iterator<File> it = ref.iterator();
 			while (it.hasNext()) {
@@ -190,8 +190,8 @@ public abstract class DirectoryWatcher extends TimerTask {
 				// deletedFiles.removeAll(filesToRemoveFromDeletedFiles);
 			}*/
 
-			List<File> renamedFiles = new ArrayList<File>();
-			List<File> derivedRenamedFiles = new ArrayList<File>();
+			List<File> renamedFiles = new ArrayList<>();
+			List<File> derivedRenamedFiles = new ArrayList<>();
 
 			/*if (addedFiles.size() > 0 || deletedFiles.size() > 0) {
 				System.out.println("addedFiles=" + addedFiles);
@@ -457,7 +457,8 @@ public abstract class DirectoryWatcher extends TimerTask {
 		waitNextWatchingDone = false;
 		int count = 0;
 		while (isRunning || !waitNextWatchingDone) {
-			if (count > timeout) throw new InterruptedException();
+			if (count > timeout)
+				throw new InterruptedException();
 			Thread.sleep(100);
 			count += 100;
 		}

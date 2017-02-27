@@ -49,7 +49,7 @@ public class ExtendedSet<E> extends AbstractSet<E> implements Cloneable {
 	private transient HashMap<E, E> map;
 
 	public ExtendedSet() {
-		map = new HashMap<E, E>();
+		map = new HashMap<>();
 	}
 
 	/**

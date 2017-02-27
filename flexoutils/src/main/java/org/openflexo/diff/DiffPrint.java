@@ -403,15 +403,16 @@ public class DiffPrint {
 	 * purposes.
 	 */
 	public static String[] slurpFile(File file) throws IOException {
-		BufferedReader rdr = new BufferedReader(new FileReader(file));
 		Vector<String> s = new Vector<>();
-		for (;;) {
-			String line = rdr.readLine();
-			if (line == null) {
-				break;
+		try (BufferedReader rdr = new BufferedReader(new FileReader(file))) {
+			for (;;) {
+				String line = rdr.readLine();
+				if (line == null) {
+					break;
+				}
+				s.addElement(line);
+				// System.out.println("File: add line "+line);
 			}
-			s.addElement(line);
-			// System.out.println("File: add line "+line);
 		}
 		String[] a = new String[s.size()];
 		s.copyInto(a);
@@ -422,15 +423,16 @@ public class DiffPrint {
 	 * Same as above, but ignore first ignoredCols cols
 	 */
 	public static String[] slurpFile(File file, int ignoredCols) throws IOException {
-		BufferedReader rdr = new BufferedReader(new FileReader(file));
 		Vector<String> s = new Vector<>();
-		for (;;) {
-			String line = rdr.readLine();
-			if (line == null) {
-				break;
+		try (BufferedReader rdr = new BufferedReader(new FileReader(file))) {
+			for (;;) {
+				String line = rdr.readLine();
+				if (line == null) {
+					break;
+				}
+				s.addElement(line.substring(ignoredCols));
+				// System.out.println("File: add line "+line);
 			}
-			s.addElement(line.substring(ignoredCols));
-			// System.out.println("File: add line "+line);
 		}
 		String[] a = new String[s.size()];
 		s.copyInto(a);

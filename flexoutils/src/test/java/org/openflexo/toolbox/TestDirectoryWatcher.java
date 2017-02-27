@@ -38,12 +38,9 @@
 
 package org.openflexo.toolbox;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openflexo.test.OrderedRunner;
-import org.openflexo.test.TestOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +48,12 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.Vector;
 
-import static org.junit.Assert.*;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.openflexo.test.OrderedRunner;
+import org.openflexo.test.TestOrder;
 
 @Ignore
 @RunWith(OrderedRunner.class)
@@ -89,7 +91,7 @@ public class TestDirectoryWatcher {
 		file1 = new File(tempDirectory, "file1");
 		FileUtils.saveToFile(file1, "File1Contents");
 
-		events = new Vector<DirectoryWatcherEvent>();
+		events = new Vector<>();
 
 		watcher = new DirectoryWatcher(tempDirectory) {
 			@Override

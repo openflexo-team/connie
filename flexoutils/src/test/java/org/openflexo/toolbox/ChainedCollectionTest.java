@@ -1,11 +1,11 @@
 package org.openflexo.toolbox;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class ChainedCollectionTest {
 
@@ -20,7 +20,6 @@ public class ChainedCollectionTest {
 		l2.add("String4");
 		l2.add("String5");
 
-
 		ChainedCollection<String> cc1 = new ChainedCollection<>(l1, l2);
 		int count = 0;
 		int c = 1;
@@ -33,7 +32,7 @@ public class ChainedCollectionTest {
 		assertEquals(5, count);
 
 		// creates more complicated collection
-		ChainedCollection<String> cc2 = new ChainedCollection<String>(cc1);
+		ChainedCollection<String> cc2 = new ChainedCollection<>(cc1);
 		cc2.add("String4");
 		cc2.add(l1);
 
@@ -42,10 +41,11 @@ public class ChainedCollectionTest {
 		for (String s : cc2) {
 			assertEquals("String" + c, s);
 			c += 1;
-			if (c > 5) c = 1;
+			if (c > 5)
+				c = 1;
 			count += 1;
 		}
 		assertEquals(9, count);
 	}
-	
+
 }
