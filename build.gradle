@@ -8,8 +8,9 @@ buildscript {
     classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.0.4,)'
   }
 }
+
 plugins {
-    id "com.jfrog.artifactory" version "4.4.9"
+    id "com.jfrog.artifactory" version "4.4.13"
 }
 
 apply plugin: 'org.openflexo.buildconfig'
@@ -17,6 +18,7 @@ apply plugin: 'org.openflexo.buildconfig'
 allprojects { version = "1.4-SNAPSHOT" }
 
 subprojects {
+    apply plugin: 'java'
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.artifactory'
 
@@ -33,8 +35,8 @@ subprojects {
         publish {
             repository {
                 repoKey = 'openflexo-snapshot' // The Artifactory repository key to publish to
-                username = "${artifactory_user}" // The publisher user name
-                password = "${artifactory_password}" // The publisher password
+                username = "$System.env.ARTIFACTORY_USER" // The publisher user name
+                password = "$System.env.ARTIFACTORY_PASSWORD" // The publisher password
             }
             defaults {
                 // Reference to Gradle publications defined in the build script.
