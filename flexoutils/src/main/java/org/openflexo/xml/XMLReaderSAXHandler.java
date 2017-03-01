@@ -180,7 +180,6 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

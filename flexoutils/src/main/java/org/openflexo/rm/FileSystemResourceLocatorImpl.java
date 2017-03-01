@@ -46,8 +46,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,10 +128,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					foundResource = new FileResourceImpl(this, file);
 					filesCache.put(file, foundResource);
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (LocatorNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -171,10 +167,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 						filesCache.put(file, foundResource);
 						returned.add(foundResource);
 					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (LocatorNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -185,28 +179,30 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	}
 
+	/* Unused
 	private File locateFile(String relativePathName) {
-
+	
 		File file = new File(relativePathName);
-
+	
 		if (file.exists()) {
 			// A absolute file path
 			return file;
 		}
 		else {
-
+	
 			file = locateFile(relativePathName, false);
-
+	
 			if (file == null) {
 				file = locateFile(relativePathName, true);
 			}
 			if (file != null) {
 				return file;
 			}
-
+	
 		}
 		return null;
 	}
+	*/
 
 	@Override
 	public Resource locateResourceWithBaseLocation(Resource baseLocation, final String relativePath) {
@@ -393,17 +389,17 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	 */
 
 	// TODO: to be re-factored
-
+	/* Unused
 	private File locateFile(String relativePathName, boolean lenient) {
 		final File workingDirectory = new File(System.getProperty("user.dir"));
 		List<File> found = locateAllFiles(relativePathName, lenient);
-
+	
 		if (found.size() == 1) {
 			// System.out.println("Returning " + found.get(0));
 			return found.get(0);
 		}
-
-		// In this case, the response is ambigous
+	
+		// In this case, the response is ambiguous
 		if (found.size() > 1) {
 			// We try to privilegiate files that are closer to working dir
 			Collections.sort(found, new Comparator<File>() {
@@ -411,26 +407,25 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				public int compare(File o1, File o2) {
 					return FileUtils.distance(workingDirectory, o1) - FileUtils.distance(workingDirectory, o2);
 				}
-
+	
 			});
-			/*System.out.println("Ambigous files: ");
-			for (File f : found) {
-				System.out.println("> Found: distance=" + FileUtils.distance(workingDirectory, f) + " " + f);
-			}*/
+			// System.out.println("Ambiguous files: ");
+			// for (File f : found) {
+			// System.out.println("> Found: distance=" + FileUtils.distance(workingDirectory, f) + " " + f);
+			// }
 			return found.get(0);
+	
 		}
-
-		/*if (LOGGER.isLoggable(Level.WARNING)) {
-			LOGGER.warning("Could not locate resource " + relativePathName);
-			Thread.dumpStack();
-		}*/
+	
+		// if (LOGGER.isLoggable(Level.WARNING)) {
+		// LOGGER.warning("Could not locate resource " + relativePathName);
+		// Thread.dumpStack();
+		// }
 		return null;
 		// TODO: this should not happen!
-		/* 
-		return new File(userDirectory, relativePathName);
-		 */
+		// return new File(userDirectory, relativePathName);
 	}
-
+	*/
 	/**
 	 * Locate and returns the list of all files matching supplied relativePathName
 	 * 

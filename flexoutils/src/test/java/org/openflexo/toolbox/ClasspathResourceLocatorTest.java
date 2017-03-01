@@ -52,7 +52,8 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources() throws Exception {
-		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
+		// Unused ClasspathResourceLocatorImpl rl =
+		new ClasspathResourceLocatorImpl();
 
 		Resource rloc = null;
 
@@ -62,7 +63,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		if (rloc != null) {
 
-			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"), false);
+			List<?> list = rloc.getContents(Pattern.compile(".*[.]properties"), false);
 
 			assertTrue(list.size() == 7);
 
@@ -71,7 +72,8 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources2() throws Exception {
-		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
+		// Unused ClasspathResourceLocatorImpl rl =
+		new ClasspathResourceLocatorImpl();
 
 		Resource rloc = null;
 
@@ -108,7 +110,8 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources3() throws Exception {
-		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
+		// Unused ClasspathResourceLocatorImpl rl =
+		new ClasspathResourceLocatorImpl();
 
 		Resource rloc = null;
 

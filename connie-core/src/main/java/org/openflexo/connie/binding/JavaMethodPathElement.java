@@ -149,7 +149,6 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			LOGGER.warning(warningMessage.toString());
 			// e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			// e.getTargetException().printStackTrace();

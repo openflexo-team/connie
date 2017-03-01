@@ -111,7 +111,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public static enum CachingStrategy {
-		NO_CACHING, /* Do not cache, execute inconditionaly */
+		NO_CACHING, /* Do not cache, execute unconditionally */
 		OPTIMIST_CACHE, /*
 						* Always cache executed value, fully rely on
 						* notification schemes
@@ -338,7 +338,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				return ((CastExpression) getExpression()).getCastType().getType();
 			}
 			else if (expression instanceof Constant) {
-				return ((Constant) expression).getType();
+				return ((Constant<?>) expression).getType();
 			}
 			else if (expression instanceof ConditionalExpression) {
 				return ((ConditionalExpression) expression).getAccessedType();
@@ -388,7 +388,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					}
 				});
 			} catch (VisitorException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -867,18 +866,18 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					if (argument instanceof Constant) {
 						// Special case for Files to be converted from Strings
 						if (declaredType == File.class && argument.getEvaluationType() == EvaluationType.STRING) {
-							return (T) new File((String) ((Constant) argument).getValue());
+							return (T) new File((String) ((Constant<?>) argument).getValue());
 						}
-						returned = (T) ((Constant) ((CastExpression) evaluatedExpression).getArgument()).getValue();
+						returned = (T) ((Constant<?>) ((CastExpression) evaluatedExpression).getArgument()).getValue();
 					}
 				}
 
 				else if (evaluatedExpression instanceof Constant) {
 					Class<?> baseClassForType = TypeUtils.getBaseClass(getDeclaredType());
 					if (baseClassForType != null && Number.class.isAssignableFrom(baseClassForType)) {
-						return (T) TypeUtils.castTo(((Constant) evaluatedExpression).getValue(), getDeclaredType());
+						return (T) TypeUtils.castTo(((Constant<?>) evaluatedExpression).getValue(), getDeclaredType());
 					}
-					returned = (T) ((Constant) evaluatedExpression).getValue();
+					returned = (T) ((Constant<?>) evaluatedExpression).getValue();
 				}
 
 				else {

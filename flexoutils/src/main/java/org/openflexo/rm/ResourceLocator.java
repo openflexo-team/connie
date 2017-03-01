@@ -59,7 +59,7 @@ final public class ResourceLocator {
 	private static final Logger LOGGER = Logger.getLogger(ResourceLocator.class.getPackage().getName());
 
 	static final private ArrayList<ResourceLocatorDelegate> _delegatesOrderedList = new ArrayList<>();
-	static final private Map<Class, ResourceLocatorDelegate> _delegatesListMap = new Hashtable<>();
+	static final private Map<Class<?>, ResourceLocatorDelegate> _delegatesListMap = new Hashtable<>();
 
 	private final static ClasspathResourceLocatorImpl _cprl = new ClasspathResourceLocatorImpl();
 	private final static ResourceLocator _instance = new ResourceLocator();
@@ -68,7 +68,7 @@ final public class ResourceLocator {
 		resetConfiguration();
 	}
 
-	static public ResourceLocatorDelegate getInstanceForLocatorClass(Class aClass) {
+	static public ResourceLocatorDelegate getInstanceForLocatorClass(Class<?> aClass) {
 		return _delegatesListMap.get(aClass);
 	}
 

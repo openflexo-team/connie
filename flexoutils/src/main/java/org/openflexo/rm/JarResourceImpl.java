@@ -111,7 +111,6 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		try {
 			loadJarFile();
 		} catch (LocatorNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -133,7 +132,6 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		try {
 			loadJarFile();
 		} catch (LocatorNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

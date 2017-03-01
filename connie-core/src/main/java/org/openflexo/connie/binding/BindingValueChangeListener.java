@@ -133,7 +133,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		return initValue;
 	}
 
-	private List<TargetObject> getChainedBindings(TargetObject object) { // NOPMD by beugnard on 30/10/14 17:15
+	private static List<TargetObject> getChainedBindings(TargetObject object) { // NOPMD by beugnard on 30/10/14 17:15
 		return null; // local optimization in refreshObserving
 	}
 

@@ -55,14 +55,17 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof IntegerConstant) {
 				return new IntegerConstant(-((IntegerConstant) arg).getValue());
-			} else if (arg instanceof FloatConstant) {
+			}
+			else if (arg instanceof FloatConstant) {
 				return new FloatConstant(-((FloatConstant) arg).getValue());
-			} else if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(-((ArithmeticConstant) arg).getArithmeticValue());
-			} else if (arg instanceof DurationConstant) {
+			}
+			else if (arg instanceof ArithmeticConstant) {
+				return new FloatConstant(-((ArithmeticConstant<?>) arg).getArithmeticValue());
+			}
+			else if (arg instanceof DurationConstant) {
 				Duration inverse = ((DurationConstant) arg).getDuration().clone();
 				inverse.setValue(-inverse.getValue());
 				return new DurationConstant(inverse);
@@ -102,9 +105,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.sin(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.sin(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);
@@ -123,9 +126,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.asin(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.asin(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);
@@ -144,9 +147,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.cos(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.cos(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);
@@ -165,9 +168,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.acos(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.acos(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);
@@ -186,9 +189,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.tan(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.tan(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);
@@ -207,9 +210,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.atan(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.atan(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);
@@ -229,9 +232,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.exp(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.exp(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);
@@ -250,9 +253,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.log(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.log(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);
@@ -272,9 +275,9 @@ public abstract class ArithmeticUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
 			if (arg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.sqrt(((ArithmeticConstant) arg).getArithmeticValue()));
+				return new FloatConstant(Math.sqrt(((ArithmeticConstant<?>) arg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);

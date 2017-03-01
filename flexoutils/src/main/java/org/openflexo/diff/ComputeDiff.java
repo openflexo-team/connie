@@ -102,7 +102,7 @@ public class ComputeDiff {
 		/**
 		 * Called with the tail of the script and returns the last link that belongs together with the start of the tail.
 		 */
-		private Diff.change hunkfun(Diff.change hunk) {
+		private static Diff.change hunkfun(Diff.change hunk) {
 			return hunk;
 		}
 

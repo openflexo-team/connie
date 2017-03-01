@@ -67,7 +67,7 @@ public abstract class Constant<V> extends Expression {
 			return new Constant.StringConstant((String) value);
 		}
 		else if (value.getClass().isEnum()) {
-			return new Constant.EnumConstant(((Enum) value));
+			return new Constant.EnumConstant<>(((Enum<?>) value));
 		}
 		else if (value instanceof Float) {
 			return new Constant.FloatConstant(((Float) value).doubleValue());
@@ -223,8 +223,8 @@ public abstract class Constant<V> extends Expression {
 
 	}
 
-	public static class EnumConstant extends Constant<Enum> {
-		private Enum value;
+	public static class EnumConstant<E extends Enum<E>> extends Constant<Enum<E>> {
+		private Enum<E> value;
 		private String enumName;
 
 		@Override
@@ -232,7 +232,7 @@ public abstract class Constant<V> extends Expression {
 			return EvaluationType.ENUM;
 		}
 
-		public EnumConstant(Enum value) {
+		public EnumConstant(Enum<E> value) {
 			super();
 			this.value = value;
 		}
@@ -251,7 +251,7 @@ public abstract class Constant<V> extends Expression {
 		}
 
 		@Override
-		public Enum getValue() {
+		public Enum<E> getValue() {
 			return value;
 		}
 	}

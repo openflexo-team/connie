@@ -53,7 +53,7 @@ public class XMLIndiv {
 
 	private final String uuid;
 
-	private static String NAME_KEY = "___The_NAME___";
+	// Unused private static String NAME_KEY = "___The_NAME___";
 
 	private Map<XMLAttr, Object> attributeValues = null;
 	private List<XMLIndiv> children = null;

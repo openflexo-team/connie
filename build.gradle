@@ -12,3 +12,27 @@ buildscript {
 apply plugin: 'org.openflexo.buildconfig'
 
 allprojects { version = "1.4-SNAPSHOT" }
+
+subprojects {
+  	//  apply plugin: 'checkstyle'
+	apply plugin: 'pmd'
+	pmd {
+		ignoreFailures = true
+	}
+	apply plugin: 'findbugs'
+	findbugs {
+	    ignoreFailures = true
+	}
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+}
+
+task analyze() {
+    dependsOn subprojects.pmdMain
+    dependsOn subprojects.findbugsMain
+}

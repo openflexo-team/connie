@@ -90,7 +90,8 @@ public class LoggingFilter {
 	public void setHasFilteredMessage(boolean aFlag) {
 		if (aFlag) {
 			messageFilterType = MessageFilterType.Contains;
-		} else {
+		}
+		else {
 			messageFilterType = null;
 		}
 	}
@@ -102,7 +103,8 @@ public class LoggingFilter {
 	public void setHasFilteredLevel(boolean aFlag) {
 		if (aFlag) {
 			filteredLevel = Level.INFO;
-		} else {
+		}
+		else {
 			filteredLevel = null;
 		}
 	}
@@ -114,7 +116,8 @@ public class LoggingFilter {
 	public void setHasFilteredSource(boolean aFlag) {
 		if (aFlag) {
 			sourceFilterType = SourceFilterType.Class;
-		} else {
+		}
+		else {
 			sourceFilterType = null;
 		}
 	}
@@ -126,7 +129,8 @@ public class LoggingFilter {
 	public void setHasFilteredDate(boolean aFlag) {
 		if (aFlag) {
 			dateFilterType = DateFilterType.After;
-		} else {
+		}
+		else {
 			dateFilterType = null;
 		}
 	}
@@ -138,7 +142,8 @@ public class LoggingFilter {
 	public void setHasFilteredThread(boolean aFlag) {
 		if (aFlag) {
 			filteredThread = "10";
-		} else {
+		}
+		else {
 			filteredThread = null;
 		}
 	}
@@ -150,7 +155,8 @@ public class LoggingFilter {
 	public void setHasFilteredStacktrace(boolean aFlag) {
 		if (aFlag) {
 			filteredStacktrace = "Searched content";
-		} else {
+		}
+		else {
 			filteredStacktrace = null;
 		}
 	}
@@ -163,7 +169,8 @@ public class LoggingFilter {
 		if (aFlag) {
 			startSequence = 0;
 			endSequence = 0;
-		} else {
+		}
+		else {
 			startSequence = -1;
 			endSequence = -1;
 		}
@@ -174,46 +181,46 @@ public class LoggingFilter {
 			return true;
 		}
 		switch (messageFilterType) {
-		case Contains:
-			if (record.message.contains(filteredContent)) {
-				return true;
-			}
-			break;
-		case StartsWith:
-			if (record.message.startsWith(filteredContent)) {
-				return true;
-			}
-			break;
-		case EndsWith:
-			if (record.message.endsWith(filteredContent)) {
-				return true;
-			}
-			break;
-		default:
-			break;
+			case Contains:
+				if (record.message.contains(filteredContent)) {
+					return true;
+				}
+				break;
+			case StartsWith:
+				if (record.message.startsWith(filteredContent)) {
+					return true;
+				}
+				break;
+			case EndsWith:
+				if (record.message.endsWith(filteredContent)) {
+					return true;
+				}
+				break;
+			default:
+				break;
 		}
 		return false;
 	}
 
 	private boolean sourceMatches(LogRecord record) {
 		switch (sourceFilterType) {
-		case Package:
-			if (record.logger.contains(filteredSourceContent)) {
-				return true;
-			}
-			break;
-		case Class:
-			if (record.classAsString().contains(filteredSourceContent)) {
-				return true;
-			}
-			break;
-		case Method:
-			if (record.methodName.contains(filteredSourceContent)) {
-				return true;
-			}
-			break;
-		default:
-			break;
+			case Package:
+				if (record.logger.contains(filteredSourceContent)) {
+					return true;
+				}
+				break;
+			case Class:
+				if (record.classAsString().contains(filteredSourceContent)) {
+					return true;
+				}
+				break;
+			case Method:
+				if (record.methodName.contains(filteredSourceContent)) {
+					return true;
+				}
+				break;
+			default:
+				break;
 		}
 		return false;
 	}
@@ -234,7 +241,7 @@ public class LoggingFilter {
 		return record.sequence >= startSequence && record.sequence <= endSequence;
 	}
 
-	private boolean dateMatches(LogRecord record) {
+	private static boolean dateMatches(LogRecord record) {
 		LOGGER.warning("Not implemented ");
 		return true;
 	}

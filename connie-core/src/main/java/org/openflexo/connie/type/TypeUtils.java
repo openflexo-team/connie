@@ -178,7 +178,7 @@ public class TypeUtils {
 		return parentClass.isAssignableFrom(childClass);
 	}
 
-	public static Class toPrimitive(Class<?> aClass) {
+	public static Class<?> toPrimitive(Class<?> aClass) {
 		if (isDouble(aClass)) {
 			return Double.TYPE;
 		}
@@ -206,7 +206,7 @@ public class TypeUtils {
 		return aClass;
 	}
 
-	public static Class fromPrimitive(Class<?> aClass) {
+	public static Class<?> fromPrimitive(Class<?> aClass) {
 		if (isDouble(aClass)) {
 			return Double.class;
 		}

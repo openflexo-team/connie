@@ -39,17 +39,7 @@
 
 package org.openflexo.toolbox;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.filter.ElementFilter;
-import org.jdom2.input.SAXBuilder;
-
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML.Tag;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.parser.ParserDelegator;
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -58,28 +48,39 @@ import java.text.DecimalFormatSymbols;
 import java.text.ParsePosition;
 import java.util.regex.Pattern;
 
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.html.HTML.Tag;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.parser.ParserDelegator;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.filter.ElementFilter;
+import org.jdom2.input.SAXBuilder;
+
 public class HTMLUtils {
-	private static final String START_HTML_TAG = "<HTML>";
-	private static final String END_HTML_TAG = "</HTML>";
-	private static final String START_HEAD_TAG = "<HEAD>";
-	private static final String END_HEAD_TAG = "</HEAD>";
+	private static final String START_HTML_TAG = "<html>";
+	private static final String END_HTML_TAG = "</html>";
+	// Unused private static final String START_HEAD_TAG = "<HEAD>";
+	// Unused private static final String END_HEAD_TAG = "</HEAD>";
 	private static final String START_BODY_TAG = "<BODY>";
 	private static final String END_BODY_TAG = "</BODY>";
 
-	private static final String START_BOLD_TAG = "<B>";
-	private static final String END_BOLD_TAG = "</B>";
-	private static final String START_ITALIC_TAG = "<I>";
-	private static final String END_ITALIC_TAG = "</I>";
-	private static final String START_UNDERLINE_TAG = "<U>";
-	private static final String END_UNDERLINE_TAG = "</U>";
-	private static final String START_UNORDERED_TAG = "<UL>";
-	private static final String END_UNORDERED_TAG = "</UL>";
-	private static final String START_ORDERED_TAG = "<OL>";
-	private static final String END_ORDERED_TAG = "</OL>";
-	private static final String START_LIST_ITEM_TAG = "<LI>";
-	private static final String END_LIST_ITEM_TAG = "</LI>";
+	// Unused private static final String START_BOLD_TAG = "<B>";
+	// Unused private static final String END_BOLD_TAG = "</B>";
+	// Unused private static final String START_ITALIC_TAG = "<I>";
+	// Unused private static final String END_ITALIC_TAG = "</I>";
+	// Unused private static final String START_UNDERLINE_TAG = "<U>";
+	// Unused private static final String END_UNDERLINE_TAG = "</U>";
+	// Unused private static final String START_UNORDERED_TAG = "<UL>";
+	// Unused private static final String END_UNORDERED_TAG = "</UL>";
+	// Unused private static final String START_ORDERED_TAG = "<OL>";
+	// Unused private static final String END_ORDERED_TAG = "</OL>";
+	// Unused private static final String START_LIST_ITEM_TAG = "<LI>";
+	// Unused private static final String END_LIST_ITEM_TAG = "</LI>";
 
-	private static final String BREAK = "<BR>";
+	// Unused private static final String BREAK = "<BR>";
 	private static final String XHTML_BREAK = "<BR/>";
 	private static final String START_PARAGRAPH_TAG = "<P>";
 	private static final String END_PARAGRAPH_TAG = "</P>";
@@ -123,24 +124,25 @@ public class HTMLUtils {
 	private static final String REGISTERED = "&reg;";
 	private static final String COPYRIGHT = "&copy;";
 	private static final String EURO = "&euro;";
-	private static final String NON_BREAKING_SPACE = "&nbsp;";
-	private static final String FOOTNOTE_TAG = "footnote";
+	// Unused private static final String NON_BREAKING_SPACE = "&nbsp;";
+	// Unused private static final String FOOTNOTE_TAG = "footnote";
 
 	private static final String EMPTY_PARAGRAPH_REGEXP = "\\s*" + START_PARAGRAPH_TAG + "\\s*" + END_PARAGRAPH_TAG + "\\s*";
 	private static final Pattern EMPTY_PARAGRAPH_PATTERN = Pattern.compile(EMPTY_PARAGRAPH_REGEXP, Pattern.CASE_INSENSITIVE);
 
+	/* Unused
 	private static String extractImageHeight(String img) {
 		return extractAttributeNamed(img, "HEIGHT");
 	}
-
+	
 	private static String extractImageWidth(String img) {
 		return extractAttributeNamed(img, "WIDTH");
 	}
-
+	
 	private static String extractImageSource(String img) {
 		return extractAttributeNamed(img, "SRC");
 	}
-
+	
 	private static String extractAttributeNamed(String tag, String attribute) {
 		boolean backslash = false;
 		boolean withinQuotes = false;
@@ -198,6 +200,7 @@ public class HTMLUtils {
 		}
 		return null;
 	}
+	*/
 
 	public static String extractBodyContent(String html) {
 		return extractBodyContent(html, false);
@@ -234,23 +237,23 @@ public class HTMLUtils {
 			char c = s.charAt(i);
 			switch (c) {
 				case '<':
-					sb.append("&lt;");
+					sb.append(SMALLER);
 					break;
 				case '>':
-					sb.append("&gt;");
+					sb.append(GREATER);
 					break;
 				case '&':
-					sb.append("&amp;");
+					sb.append(AMPERSAND);
 					break;
 				case '"':
-					sb.append("&quot;");
+					sb.append(QUOTE);
 					break;
 				case '\'':
 					sb.append("&#146;");
 					break;
 				case '\n':
 					if (!removeNewLine) {
-						sb.append("<br/>");
+						sb.append(XHTML_BREAK);
 					}
 					else {
 						sb.append(' ');
@@ -259,82 +262,82 @@ public class HTMLUtils {
 				case '\r':
 					break;
 				case 'à':
-					sb.append("&agrave;");
+					sb.append(a_GRAVE);
 					break;
 				case 'À':
-					sb.append("&Agrave;");
+					sb.append(A_GRAVE);
 					break;
 				case 'â':
-					sb.append("&acirc;");
+					sb.append(a_CIRC);
 					break;
 				case 'Â':
-					sb.append("&Acirc;");
+					sb.append(A_CIRC);
 					break;
 				case 'ä':
-					sb.append("&auml;");
+					sb.append(a_UML);
 					break;
 				case 'Ä':
-					sb.append("&Auml;");
+					sb.append(A_UML);
 					break;
 				case 'å':
-					sb.append("&aring;");
+					sb.append(a_RING);
 					break;
 				case 'Å':
-					sb.append("&Aring;");
+					sb.append(A_RING);
 					break;
 				case 'æ':
-					sb.append("&aelig;");
+					sb.append(ae_LIGATURE);
 					break;
 				case 'Æ':
-					sb.append("&AElig;");
+					sb.append(AE_LIGATURE);
 					break;
 				case 'ç':
-					sb.append("&ccedil;");
+					sb.append(c_CEDILLA);
 					break;
 				case 'Ç':
-					sb.append("&Ccedil;");
+					sb.append(C_CEDILLA);
 					break;
 				case 'é':
-					sb.append("&eacute;");
+					sb.append(e_ACUTE);
 					break;
 				case 'É':
-					sb.append("&Eacute;");
+					sb.append(E_ACUTE);
 					break;
 				case 'è':
-					sb.append("&egrave;");
+					sb.append(e_GRAVE);
 					break;
 				case 'È':
-					sb.append("&Egrave;");
+					sb.append(E_GRAVE);
 					break;
 				case 'ê':
-					sb.append("&ecirc;");
+					sb.append(e_CIRC);
 					break;
 				case 'Ê':
-					sb.append("&Ecirc;");
+					sb.append(E_CIRC);
 					break;
 				case 'ë':
-					sb.append("&euml;");
+					sb.append(e_UML);
 					break;
 				case 'Ë':
-					sb.append("&Euml;");
+					sb.append(E_UML);
 					break;
 				case 'ï':
-					sb.append("&iuml;");
+					sb.append(i_UML);
 					break;
 				case 'Ï':
-					sb.append("&Iuml;");
+					sb.append(I_UML);
 					break;
 				case 'ô':
-					sb.append("&ocirc;");
+					sb.append(o_CIRC);
 					break;
 				case 'Ô':
-					sb.append("&Ocirc;");
+					sb.append(O_CIRC);
 					break;
 				case 'ö':
-					sb.append("&ouml;");
+					sb.append(o_UML);
 					break;
 				case 'Ö':
-					sb.append("&Ouml;");
+					sb.append(O_UML);
 					break;
 				case 'ø':
 					sb.append("&oslash;");
@@ -346,31 +349,31 @@ public class HTMLUtils {
 					sb.append("&szlig;");
 					break;
 				case 'ù':
-					sb.append("&ugrave;");
+					sb.append(u_GRAVE);
 					break;
 				case 'Ù':
-					sb.append("&Ugrave;");
+					sb.append(U_GRAVE);
 					break;
 				case 'û':
-					sb.append("&ucirc;");
+					sb.append(u_CIRC);
 					break;
 				case 'Û':
-					sb.append("&Ucirc;");
+					sb.append(U_CIRC);
 					break;
 				case 'ü':
-					sb.append("&uuml;");
+					sb.append(u_UML);
 					break;
 				case 'Ü':
-					sb.append("&Uuml;");
+					sb.append(U_UML);
 					break;
 				case '®':
-					sb.append("&reg;");
+					sb.append(REGISTERED);
 					break;
 				case '©':
-					sb.append("&copy;");
+					sb.append(COPYRIGHT);
 					break;
 				case '€':
-					sb.append("&euro;");
+					sb.append(EURO);
 					break;
 				default:
 					sb.append(c);
@@ -650,12 +653,12 @@ public class HTMLUtils {
 		if (htmlCode == null || htmlCode.length() < 7) {
 			return null;
 		}
-		if (!htmlCode.substring(0, 7).toLowerCase().startsWith("<html>")) {
-			htmlCode = "<html>" + htmlCode + "</html>";
+		if (!htmlCode.substring(0, 7).toLowerCase().startsWith(START_HTML_TAG)) {
+			htmlCode = START_HTML_TAG + htmlCode + END_HTML_TAG;
 		}
 		// 1. Let's try with XML parsers (it works most of the time and it is a lot more reliable as a parser)
 		final String embeddedVideoCode = htmlCode;
-		Reader reader = new StringReader(embeddedVideoCode.replaceAll("&", "&amp;"));
+		Reader reader = new StringReader(embeddedVideoCode.replaceAll("&", AMPERSAND));
 		try {
 			SAXBuilder builder = new SAXBuilder();
 			Document document = builder.build(reader);

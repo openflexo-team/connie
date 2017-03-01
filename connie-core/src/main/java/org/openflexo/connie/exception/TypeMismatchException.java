@@ -118,7 +118,7 @@ public class TypeMismatchException extends TransformException {
 		return "<html>" + getLocalizedMessage() + "</html>";
 	}
 
-	private String typesAsString(EvaluationType... types) {
+	private static String typesAsString(EvaluationType... types) {
 		StringBuffer sb = new StringBuffer();
 		boolean isFirst = true;
 		for (EvaluationType t : types) {

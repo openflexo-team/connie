@@ -82,7 +82,6 @@ public class ClassPathUtils {
 				try {
 					jarFiles.add(new JarFile(jar));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -104,7 +103,6 @@ public class ClassPathUtils {
 					// loader.addURL(files[i].toURI().toURL());
 					urls[i] = files[i].toURI().toURL();
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -118,7 +116,6 @@ public class ClassPathUtils {
 			try {
 				HTTPFileUtils.getFile(url.toURI().toString(), path);
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

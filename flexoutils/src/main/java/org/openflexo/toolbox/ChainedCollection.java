@@ -50,6 +50,7 @@ public class ChainedCollection<T> implements Collection<T> {
 	private final List<Collection<? extends T>> collections = new ArrayList<>();
 	private final List<T> items = new ArrayList<>();
 
+	@SafeVarargs
 	public ChainedCollection(Collection<? extends T>... collections) {
 		Collections.addAll(this.collections, collections);
 	}

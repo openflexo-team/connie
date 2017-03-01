@@ -975,9 +975,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				// System.out.println("Obtain "+returned);
 			}
 		}
-		if (returned == null) {
-			throw new NullReferenceException("null occured when evaluating " + lastEvaluatedPathElement + " from " + lastEvaluated);
-		}
 
 		// logger.info("returned="+returned);
 		// logger.info("lastElement="+getBindingPath().lastElement());

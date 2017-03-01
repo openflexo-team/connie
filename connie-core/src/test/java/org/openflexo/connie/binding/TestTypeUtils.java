@@ -188,7 +188,7 @@ public class TestTypeUtils {
 
 	@Test
 	public void testInstantiatedTypes1() {
-		TypeVariable e = Vector.class.getTypeParameters()[0];
+		TypeVariable<?> e = Vector.class.getTypeParameters()[0];
 		assertEquals(String.class, TypeUtils.makeInstantiatedType(e, MyVector.class));
 	}
 
@@ -198,11 +198,11 @@ public class TestTypeUtils {
 		// MyClass2<String, Boolean>
 		Type genericType = TestInstantiatedTypes.class.getMethod("retrieveType1").getGenericReturnType();
 
-		TypeVariable a = MyClass1.class.getTypeParameters()[0];
+		TypeVariable<?> a = MyClass1.class.getTypeParameters()[0];
 		assertEquals(Boolean.class, TypeUtils.makeInstantiatedType(a, genericType));
-		TypeVariable b = MyClass2.class.getTypeParameters()[0];
+		TypeVariable<?> b = MyClass2.class.getTypeParameters()[0];
 		assertEquals(String.class, TypeUtils.makeInstantiatedType(b, genericType));
-		TypeVariable d = MyClass2.class.getTypeParameters()[1];
+		TypeVariable<?> d = MyClass2.class.getTypeParameters()[1];
 		assertEquals(Boolean.class, TypeUtils.makeInstantiatedType(d, genericType));
 	}
 
@@ -214,9 +214,9 @@ public class TestTypeUtils {
 		// List<String>
 		Type expectedType = TestInstantiatedTypes.class.getMethod("retrieveType3").getGenericReturnType();
 
-		TypeVariable a = MyClass1.class.getTypeParameters()[0];
+		TypeVariable<?> a = MyClass1.class.getTypeParameters()[0];
 		assertEquals(expectedType, TypeUtils.makeInstantiatedType(a, genericType));
-		TypeVariable c = MyClass3.class.getTypeParameters()[0];
+		TypeVariable<?> c = MyClass3.class.getTypeParameters()[0];
 		assertEquals(String.class, TypeUtils.makeInstantiatedType(c, genericType));
 	}
 
@@ -230,10 +230,10 @@ public class TestTypeUtils {
 		// MyClass1<String>
 		Type expectedType2 = TestInstantiatedTypes.class.getMethod("retrieveType5").getGenericReturnType();
 
-		TypeVariable a = MyClass1.class.getTypeParameters()[0];
+		TypeVariable<?> a = MyClass1.class.getTypeParameters()[0];
 		assertEquals(expectedType1, TypeUtils.makeInstantiatedType(a, genericType));
 
-		TypeVariable c = MyClass3.class.getTypeParameters()[0];
+		TypeVariable<?> c = MyClass3.class.getTypeParameters()[0];
 		assertEquals(expectedType2, TypeUtils.makeInstantiatedType(c, genericType));
 	}
 
@@ -244,21 +244,21 @@ public class TestTypeUtils {
 		Type genericType = TestInstantiatedTypes.class.getMethod("retrieveType6").getGenericReturnType();
 
 		// List<MyClass1<String>>
-		Type expectedType1 = TestInstantiatedTypes.class.getMethod("retrieveType4").getGenericReturnType();
+		// Unused Type expectedType1 = TestInstantiatedTypes.class.getMethod("retrieveType4").getGenericReturnType();
 		// MyClass1<String>
-		Type expectedType2 = TestInstantiatedTypes.class.getMethod("retrieveType5").getGenericReturnType();
+		// Unused Type expectedType2 = TestInstantiatedTypes.class.getMethod("retrieveType5").getGenericReturnType();
 
-		TypeVariable d5 = MyClass5.class.getTypeParameters()[0];
+		TypeVariable<?> d5 = MyClass5.class.getTypeParameters()[0];
 		assertEquals(String.class, TypeUtils.makeInstantiatedType(d5, genericType));
-		TypeVariable b5 = MyClass5.class.getTypeParameters()[1];
+		TypeVariable<?> b5 = MyClass5.class.getTypeParameters()[1];
 		assertEquals(Integer.class, TypeUtils.makeInstantiatedType(b5, genericType));
 
-		TypeVariable b2 = MyClass2.class.getTypeParameters()[0];
+		TypeVariable<?> b2 = MyClass2.class.getTypeParameters()[0];
 		assertEquals(Integer.class, TypeUtils.makeInstantiatedType(b2, genericType));
-		TypeVariable d2 = MyClass2.class.getTypeParameters()[1];
+		TypeVariable<?> d2 = MyClass2.class.getTypeParameters()[1];
 		assertEquals(String.class, TypeUtils.makeInstantiatedType(d2, genericType));
 
-		TypeVariable a = MyClass1.class.getTypeParameters()[0];
+		TypeVariable<?> a = MyClass1.class.getTypeParameters()[0];
 		assertEquals(String.class, TypeUtils.makeInstantiatedType(a, genericType));
 	}
 
@@ -271,9 +271,9 @@ public class TestTypeUtils {
 
 		System.out.println(TypeUtils.simpleRepresentation(genericType) + " of " + genericType.getClass());
 
-		TypeVariable b = MyClass2.class.getTypeParameters()[0];
+		TypeVariable<?> b = MyClass2.class.getTypeParameters()[0];
 		assertEquals(String.class, TypeUtils.makeInstantiatedType(b, genericType));
-		TypeVariable d = MyClass2.class.getTypeParameters()[1];
+		TypeVariable<?> d = MyClass2.class.getTypeParameters()[1];
 		assertEquals(Number.class, TypeUtils.makeInstantiatedType(d, genericType));
 
 	}
@@ -360,10 +360,10 @@ public class TestTypeUtils {
 		// ClassC
 		Type genericType = ClassC.class;
 
-		TypeVariable a = ClassA.class.getTypeParameters()[0];
+		TypeVariable<?> a = ClassA.class.getTypeParameters()[0];
 		assertEquals(Bound2.class, TypeUtils.makeInstantiatedType(a, genericType));
 
-		TypeVariable b = ClassB.class.getTypeParameters()[0];
+		TypeVariable<?> b = ClassB.class.getTypeParameters()[0];
 		assertEquals(Bound2.class, TypeUtils.makeInstantiatedType(b, genericType));
 
 		Type methodType = ClassA.class.getMethods()[0].getGenericReturnType();
@@ -408,7 +408,7 @@ public class TestTypeUtils {
 			Method getEMethod = Bound1.class.getMethod("getE");
 			Type methodType3 = getEMethod.getGenericReturnType();
 
-			WildcardType result = (WildcardType) TypeUtils.makeInstantiatedType(methodType3, genericType);
+			// Unused WildcardType result = (WildcardType) TypeUtils.makeInstantiatedType(methodType3, genericType);
 
 			// List<? extends Number>
 			Type listOfExpectedType2 = TestInstantiatedTypes.class.getMethod("retrieveType10").getGenericReturnType();

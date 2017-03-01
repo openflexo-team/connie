@@ -61,14 +61,14 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException {
 			if (leftArg instanceof ArithmeticConstant) {
 				if (rightArg instanceof ArithmeticConstant) {
 					if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
 						return new IntegerConstant(((IntegerConstant) leftArg).getValue() + ((IntegerConstant) rightArg).getValue());
 					}
-					return new FloatConstant(
-							((ArithmeticConstant) leftArg).getArithmeticValue() + ((ArithmeticConstant) rightArg).getArithmeticValue());
+					return new FloatConstant(((ArithmeticConstant<?>) leftArg).getArithmeticValue()
+							+ ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
 				}
 				throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(), EvaluationType.values());
 			}
@@ -173,13 +173,13 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException, NullReferenceException {
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
 				if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
 					return new IntegerConstant(((IntegerConstant) leftArg).getValue() - ((IntegerConstant) rightArg).getValue());
 				}
 				return new FloatConstant(
-						((ArithmeticConstant) leftArg).getArithmeticValue() - ((ArithmeticConstant) rightArg).getArithmeticValue());
+						((ArithmeticConstant<?>) leftArg).getArithmeticValue() - ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
 			}
 			else if (leftArg instanceof DurationConstant) {
 				if (rightArg instanceof DurationConstant) {
@@ -259,13 +259,13 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
 				if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
 					return new IntegerConstant(((IntegerConstant) leftArg).getValue() * ((IntegerConstant) rightArg).getValue());
 				}
 				return new FloatConstant(
-						((ArithmeticConstant) leftArg).getArithmeticValue() * ((ArithmeticConstant) rightArg).getArithmeticValue());
+						((ArithmeticConstant<?>) leftArg).getArithmeticValue() * ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);
@@ -301,10 +301,10 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
 				return new FloatConstant(
-						((ArithmeticConstant) leftArg).getArithmeticValue() / ((ArithmeticConstant) rightArg).getArithmeticValue());
+						((ArithmeticConstant<?>) leftArg).getArithmeticValue() / ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);
@@ -335,10 +335,10 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
 				return new FloatConstant(
-						((ArithmeticConstant) leftArg).getArithmeticValue() % ((ArithmeticConstant) rightArg).getArithmeticValue());
+						((ArithmeticConstant<?>) leftArg).getArithmeticValue() % ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);
@@ -369,10 +369,10 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return new FloatConstant(Math.pow(((ArithmeticConstant) leftArg).getArithmeticValue(),
-						((ArithmeticConstant) rightArg).getArithmeticValue()));
+				return new FloatConstant(Math.pow(((ArithmeticConstant<?>) leftArg).getArithmeticValue(),
+						((ArithmeticConstant<?>) rightArg).getArithmeticValue()));
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);

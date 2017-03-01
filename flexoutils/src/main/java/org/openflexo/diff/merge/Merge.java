@@ -247,7 +247,7 @@ public class Merge extends Observable implements IMerge {
 		recompute();
 	}
 
-	private boolean intersect(DiffChange aLeftChange, DiffChange aRightChange) {
+	private static boolean intersect(DiffChange aLeftChange, DiffChange aRightChange) {
 		int l1 = aLeftChange.getFirst1();
 		int l2 = aLeftChange.getLast1();
 		int r1 = aRightChange.getFirst0();

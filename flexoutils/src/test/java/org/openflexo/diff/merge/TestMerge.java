@@ -53,7 +53,8 @@ import junit.framework.TestCase;
 public class TestMerge extends TestCase {
 
 	public void test0() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		// Unused ResourceLocator rl =
+		ResourceLocator.getResourceLocator();
 		File original = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-original.java.txt"))).getFile();
 		File left = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-left.java.txt"))).getFile();
 		File right = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge0-right.java.txt"))).getFile();
@@ -63,7 +64,8 @@ public class TestMerge extends TestCase {
 	}
 
 	public void test1() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		// Unused ResourceLocator rl =
+		ResourceLocator.getResourceLocator();
 		File original = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-original.java.txt"))).getFile();
 		File left = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-left.java.txt"))).getFile();
 		File right = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge1-right.java.txt"))).getFile();
@@ -82,7 +84,8 @@ public class TestMerge extends TestCase {
 	}
 
 	public void test2() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		// Unused ResourceLocator rl =
+		ResourceLocator.getResourceLocator();
 		File original = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-original.java.txt"))).getFile();
 		File left = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-left.java.txt"))).getFile();
 		File right = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge2-right.java.txt"))).getFile();
@@ -106,7 +109,8 @@ public class TestMerge extends TestCase {
 	}
 
 	public void test3() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		// Unused ResourceLocator rl =
+		ResourceLocator.getResourceLocator();
 		File original = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-original.java.txt"))).getFile();
 		File left = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-left.java.txt"))).getFile();
 		File right = ((FileResourceImpl) (ResourceLocator.locateResource("TestMerge/TestMerge3-right.java.txt"))).getFile();
@@ -124,7 +128,7 @@ public class TestMerge extends TestCase {
 		assertChange(merge.getChanges().get(8), MergeChangeSource.Conflict, MergeChangeType.Modification, 159, 159, 154, 154, 158, 158);
 	}
 
-	private void assertChange(MergeChange change, MergeChangeSource changeSource, MergeChangeType changeType, int first0, int last0,
+	private static void assertChange(MergeChange change, MergeChangeSource changeSource, MergeChangeType changeType, int first0, int last0,
 			int first1, int last1, int first2, int last2) {
 		assertEquals(change.getMergeChangeSource(), changeSource);
 		assertEquals(change.getMergeChangeType(), changeType);
@@ -225,7 +229,6 @@ public class TestMerge extends TestCase {
 			diffLeft = ComputeDiff.diff(left,original);
 			diffRight = ComputeDiff.diff(original,right);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 				

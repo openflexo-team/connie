@@ -85,7 +85,7 @@ public class FileSystemMetaDataManager {
 		return returned;
 	}
 
-	class MetaDataProperties extends Properties {
+	private class MetaDataProperties extends Properties {
 
 		private final File directory;
 		private final File metaDataFile;
@@ -104,9 +104,11 @@ public class FileSystemMetaDataManager {
 			}
 		}
 
+		/* Unused
 		public File getDirectory() {
 			return directory;
 		}
+		 */
 
 		public String getProperty(String key, File f) {
 			if (f.equals(directory)) {
@@ -155,10 +157,8 @@ public class FileSystemMetaDataManager {
 			try {
 				store(new FileOutputStream(metaDataFile), "Metadata for directory " + directory);
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

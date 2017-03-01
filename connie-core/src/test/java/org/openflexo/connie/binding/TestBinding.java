@@ -174,10 +174,8 @@ public class TestBinding extends TestCase {
 	
 				return expression.toString();
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (TransformException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return expression.toString();

@@ -69,7 +69,8 @@ public class TestDiff extends TestCase {
 
 	@Test
 	public void test0() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		// Unused ResourceLocator rl =
+		ResourceLocator.getResourceLocator();
 		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava0-v1.java.txt"))).getFile();
 		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava0-v2.java.txt"))).getFile();
 		System.out.println("Test 0");
@@ -82,7 +83,8 @@ public class TestDiff extends TestCase {
 
 	@Test
 	public void test1() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		// Unused ResourceLocator rl =
+		ResourceLocator.getResourceLocator();
 		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava1-v1.java.txt"))).getFile();
 		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava1-v2.java.txt"))).getFile();
 		System.out.println("Test 1");
@@ -100,7 +102,8 @@ public class TestDiff extends TestCase {
 
 	@Test
 	public void test2() throws IOException {
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		// Unused ResourceLocator rl =
+		ResourceLocator.getResourceLocator();
 		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava2-v1.java.txt"))).getFile();
 		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava2-v2.java.txt"))).getFile();
 		System.out.println("Test 2");
@@ -118,7 +121,8 @@ public class TestDiff extends TestCase {
 	@Test
 	public void test3() throws IOException {
 
-		ResourceLocator rl = ResourceLocator.getResourceLocator();
+		// Unused ResourceLocator rl =
+		ResourceLocator.getResourceLocator();
 		File file1 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava3-v1.java.txt"))).getFile();
 		File file2 = ((FileResourceImpl) (ResourceLocator.locateResource("TestDiff/TestJava3-v2.java.txt"))).getFile();
 		System.out.println("Test 3");
@@ -138,7 +142,7 @@ public class TestDiff extends TestCase {
 		assertChange(report.getChanges().get(8), AdditionChange.class, 70, 69, 144, 148);
 	}
 
-	private void assertChange(DiffChange change, Class diffClass, int first0, int last0, int first1, int last1) {
+	private static void assertChange(DiffChange change, Class<?> diffClass, int first0, int last0, int first1, int last1) {
 		assertTrue(diffClass.isAssignableFrom(change.getClass()));
 		assertEquals(first0, change.getFirst0());
 		assertEquals(first1, change.getFirst1());

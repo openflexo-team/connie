@@ -151,6 +151,7 @@ public class ExtendedSet<E> extends AbstractSet<E> implements Cloneable {
 	@Override
 	public Object clone() {
 		try {
+			@SuppressWarnings("unchecked")
 			ExtendedSet<E> newSet = (ExtendedSet<E>) super.clone();
 			newSet.map = (HashMap<E, E>) map.clone();
 			return newSet;
