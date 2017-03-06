@@ -45,11 +45,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
@@ -87,8 +87,6 @@ import org.openflexo.kvc.KeyValueProperty;
 public class BindingValue extends Expression implements PropertyChangeListener, Cloneable {
 
 	private static final Logger LOGGER = Logger.getLogger(BindingValue.class.getPackage().getName());
-
-	private final ArrayList<Object> EMPTY_LIST = new ArrayList<>();
 
 	public static abstract class AbstractBindingPathElement {
 	}
@@ -1005,10 +1003,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 */
 	public List<Object> getConcernedObjects(BindingEvaluationContext context) {
 		if (!isValid()) {
-			return EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		if (!isSettable()) {
-			return EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		List<Object> returned = new ArrayList<>();
