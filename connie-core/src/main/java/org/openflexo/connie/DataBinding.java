@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingDefinition;
 import org.openflexo.connie.binding.BindingValueChangeListener;
@@ -103,14 +102,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * <li>EXECUTE: a binding used to execute some code</li>
 	 * </ul>
 	 */
-	public static enum BindingDefinitionType {
+	public enum BindingDefinitionType {
 		GET, /* GET: a binding used to retrieve a data */
 		SET, /* SET: a binding used to set a data */
 		GET_SET, /* GET_SET: a binding used to retrieve and set a data */
 		EXECUTE /* */
 	}
 
-	public static enum CachingStrategy {
+	public enum CachingStrategy {
 		NO_CACHING, /* Do not cache, execute unconditionally */
 		OPTIMIST_CACHE, /*
 						* Always cache executed value, fully rely on
@@ -149,14 +148,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	private PropertyChangeSupport pcSupport;
 
+	private Map<BindingEvaluationContext, T> cachedValues = null;
+	private Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = null;
+
+
 	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
-		super();
-		pcSupport = new PropertyChangeSupport(this);
-		setOwner(owner);
 		this.declaredType = declaredType;
 		this.bdType = bdType;
-		// setBindingDefinition(new BindingDefinition("unnamed", declaredType,
-		// bdType, true));
+		pcSupport = new PropertyChangeSupport(this);
+		setOwner(owner);
+		initCache();
 	}
 
 	public DataBinding(String unparsed, Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
@@ -189,18 +190,22 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void setCachingStrategy(CachingStrategy cachingStrategy) {
 		this.cachingStrategy = cachingStrategy;
+		initCache();
+	}
+
+	private void initCache() {
+		if (cachingStrategy == CachingStrategy.NO_CACHING) {
+			cachedValues = null;
+			cachedBindingValueChangeListeners = null;
+		} else {
+			cachedValues = new HashMap<>();
+			cachedBindingValueChangeListeners = new HashMap<>();
+		}
 	}
 
 	@Override
 	public String toString() {
 		if (expression != null) {
-			/*
-			 * if (StringUtils.isEmpty(expression.toString())) {
-			 * System.out.println("Pourquoi ya rien ?");
-			 * System.out.println("l'expression est une " +
-			 * expression.getClass()); if (expression instanceof BindingValue) {
-			 * BindingValue bv = (BindingValue) expression; bv.debug(); } }
-			 */
 			return expression.toString();
 		}
 		if (StringUtils.isEmpty(unparsedBinding)) {
@@ -764,16 +769,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 	}
 
-	// DONT DO THIS, since it is really dangerous !!!
-	/*
-	 * @Override public boolean equals(Object obj) { if (obj instanceof
-	 * DataBinding) { if (toString() == null) { return false; } return
-	 * toString().equals(obj.toString()); } else { return super.equals(obj); } }
-	 */
-
-	private final Map<BindingEvaluationContext, T> cachedValues = new HashMap<>();
-	private final Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = new HashMap<>();
-
 	/**
 	 * Evaluate this binding in run-time evaluation context provided by supplied {@link BindingEvaluationContext} parameter. This evaluation
 	 * is performed in READ_ONLY mode.
@@ -1078,7 +1073,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 */
 
 	public void clearCacheForBindingEvaluationContext(BindingEvaluationContext context) {
-		cachedValues.remove(context);
+		if (cachedValues != null) {
+			cachedValues.remove(context);
+		}
 		/*
 		 * BindingValueChangeListener<?> l =
 		 * cachedBindingValueChangeListeners.get(context); if (l != null) {
