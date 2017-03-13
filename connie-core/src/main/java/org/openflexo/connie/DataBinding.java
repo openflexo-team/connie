@@ -169,6 +169,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		super();
 		pcSupport = new PropertyChangeSupport(this);
 		setUnparsedBinding(unparsed);
+		initCache();
 	}
 
 	@Override
