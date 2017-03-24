@@ -40,8 +40,8 @@
 package org.openflexo.connie.expr;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.Vector;
-
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -61,7 +61,9 @@ public class BinaryOperatorExpression extends Expression {
 
 	@Override
 	public int getDepth() {
-		return Math.max(leftArgument.getDepth(), rightArgument.getDepth()) + 1;
+		int left = leftArgument == null ? 0 : leftArgument.getDepth();
+		int right = rightArgument == null ? 0 : rightArgument.getDepth();
+		return Math.max(left, right) + 1;
 	}
 
 	public int getPriority() {
@@ -197,8 +199,9 @@ public class BinaryOperatorExpression extends Expression {
 	public boolean equals(Object obj) {
 		if (obj instanceof BinaryOperatorExpression) {
 			BinaryOperatorExpression e = (BinaryOperatorExpression) obj;
-			return getOperator().equals(e.getOperator()) && getLeftArgument().equals(e.getLeftArgument())
-					&& getRightArgument().equals(e.getRightArgument());
+			return 	Objects.equals(getOperator(), e.getOperator()) &&
+					Objects.equals(getLeftArgument(), e.getLeftArgument()) &&
+					Objects.equals(getRightArgument(), e.getRightArgument());
 		}
 		return super.equals(obj);
 	}
