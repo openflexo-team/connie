@@ -464,7 +464,7 @@ public class TypeUtils {
 					|| isChar(anOtherType) || isByte(anOtherType);
 		}
 
-		if (aType instanceof WildcardType) {
+		if (aType instanceof WildcardType && ((WildcardType) aType).getUpperBounds().length > 0) {
 			if (anOtherType instanceof WildcardType) {
 				// If two wildcards, perform check on both upper bounds
 				return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], ((WildcardType) anOtherType).getUpperBounds()[0],
@@ -502,6 +502,12 @@ public class TypeUtils {
 		if (aType instanceof Class || anOtherType instanceof Class) {
 			// One of two types is not parameterized, we cannot check, return true
 			return true;
+		}
+
+		if (aType instanceof ParameterizedType && anOtherType instanceof WildcardType
+				&& ((WildcardType) anOtherType).getUpperBounds().length > 0) {
+			Type t = ((WildcardType) anOtherType).getUpperBounds()[0];
+			return isTypeAssignableFrom(aType, t, permissive);
 		}
 
 		if (aType instanceof ParameterizedType && anOtherType instanceof ParameterizedType) {
@@ -549,6 +555,7 @@ public class TypeUtils {
 		}
 
 		return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
+
 		/*if (getBaseEntity() == type.getBaseEntity()) {
 			// Base entities are the same, let's analyse parameters
 		
