@@ -48,13 +48,23 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class BasicResourceImpl implements Resource {
 
 	private static final Logger LOGGER = Logger.getLogger(BasicResourceImpl.class.getPackage().getName());
 	protected static final Date _dateZero = new Date(0);
+
+	private static List<String> developerPathFragment = Stream.of(
+			"target" + File.separator + "classes" + File.separator,
+			"build" + File.separator + "classes" + File.separator + "main" + File.separator,
+			"build" + File.separator + "resources" + File.separator + "main" + File.separator,
+			File.separator + "bin" + File.separator
+	).collect(Collectors.toList());
 
 	// Initial requested path
 	protected String _relativePath;
@@ -73,15 +83,11 @@ public abstract class BasicResourceImpl implements Resource {
 		_url = url;
 		_locator = locator;
 		_relativePath = initialPath;
-		String TARGET_CLASSES = "target" + File.separator + "classes" + File.separator;
-		if (_relativePath.contains(TARGET_CLASSES)) {
-			// Attempt to find a better relative path
-			_relativePath = _relativePath.substring(_relativePath.indexOf(TARGET_CLASSES) + TARGET_CLASSES.length());
-		}
-		String BIN_PATH = File.separator + "bin" + File.separator;
-		if (_relativePath.contains(BIN_PATH)) {
-			// Attempt to find a better relative path
-			_relativePath = _relativePath.substring(_relativePath.indexOf(BIN_PATH) + BIN_PATH.length());
+		Optional<Integer> first = developerPathFragment.stream()
+				.map((sp) -> _relativePath.indexOf(sp) < 0 ? -1 : _relativePath.indexOf(sp) + sp.length() )
+				.filter((i) -> i >= 0).findFirst();
+		if (first.isPresent()) {
+			_relativePath = _relativePath.substring(first.get());
 		}
 	}
 
