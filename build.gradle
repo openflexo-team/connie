@@ -38,3 +38,6 @@ task analyze() {
     dependsOn subprojects.pmdMain
     dependsOn subprojects.findbugsMain
 }
+task test() {
+    dependsOn subprojects.test
+}
