@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingDefinition;
 import org.openflexo.connie.binding.BindingValueChangeListener;
@@ -151,7 +152,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private Map<BindingEvaluationContext, T> cachedValues = null;
 	private Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = null;
 
-
 	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
 		this.declaredType = declaredType;
 		this.bdType = bdType;
@@ -198,7 +198,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (cachingStrategy == CachingStrategy.NO_CACHING) {
 			cachedValues = null;
 			cachedBindingValueChangeListeners = null;
-		} else {
+		}
+		else {
 			cachedValues = new HashMap<>();
 			cachedBindingValueChangeListeners = new HashMap<>();
 		}
@@ -948,7 +949,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 */
 	public void setBindingValue(Object value, BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetException, NotSettableContextException {
-		if (isSettable()) {
+		if (isValid() && isSettable()) {
 			if (isBindingValue()) {
 				// BindingValue is settable
 				try {
@@ -971,7 +972,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 		}
 		else {
-			LOGGER.warning("Not settable binding: " + this);
+			if (!isValid()) {
+				LOGGER.warning("Trying to set value: invalid binding " + getUnparsedBinding() + " reason=" + invalidBindingReason());
+			}
+			else {
+				LOGGER.warning("Trying to set value: not settable binding " + this);
+			}
 		}
 	}
 
