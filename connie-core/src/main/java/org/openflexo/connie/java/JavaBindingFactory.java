@@ -67,6 +67,14 @@ public class JavaBindingFactory implements BindingFactory {
 	static final Logger LOGGER = Logger.getLogger(JavaBindingFactory.class.getPackage().getName());
 
 	@Override
+	public Type getTypeForObject(Object object) {
+		if (object != null) {
+			return object.getClass();
+		}
+		return Object.class;
+	}
+
+	@Override
 	public List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent) {
 		if (parent.getType() != null) {
 			if (TypeUtils.getBaseClass(parent.getType()) == null) {

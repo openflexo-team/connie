@@ -42,13 +42,13 @@
 
 package org.openflexo.connie;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 public interface BindingFactory {
 
@@ -62,4 +62,5 @@ public interface BindingFactory {
 
 	FunctionPathElement makeFunctionPathElement(BindingPathElement father, Function function, List<DataBinding<?>> args);
 
+	public Type getTypeForObject(Object object);
 }
