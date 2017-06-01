@@ -40,7 +40,6 @@
 package org.openflexo.connie.expr.parser;
 
 import junit.framework.TestCase;
-
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
@@ -49,16 +48,14 @@ import org.openflexo.connie.expr.BooleanBinaryOperator;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.DefaultExpressionPrettyPrinter;
-import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.expr.Constant.BooleanConstant;
 import org.openflexo.connie.expr.Constant.FloatConstant;
 import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
 import org.openflexo.connie.expr.Constant.IntegerConstant;
 import org.openflexo.connie.expr.Constant.StringConstant;
-import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
+import org.openflexo.connie.expr.DefaultExpressionPrettyPrinter;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.UnaryOperatorExpression;
 
 public class TestExpressionParser extends TestCase {
 
@@ -432,6 +429,14 @@ public class TestExpressionParser extends TestCase {
 	public void testParameteredCast2() {
 		tryToParse("($java.util.Hashtable<$java.lang.String,$java.util.List<$java.lang.String>>)data.map",
 				"($java.util.Hashtable<$java.lang.String,$java.util.List<$java.lang.String>>)data.map", CastExpression.class, null, false);
+	}
+
+	public void testAccentCharacter() {
+		tryToParse(
+			"flexoConcept.unité",
+			"flexoConcept.unité",
+			BindingValue.class, null, false
+		);
 	}
 
 }

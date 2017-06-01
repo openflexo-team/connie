@@ -1,8 +1,8 @@
 Package org.openflexo.connie.expr.parser;
 
 Helpers
- upper_case = ['A' .. 'Z'];
- lower_case = ['a' .. 'z'];
+ upper_case = ['A' .. 'Z'] | ['À' .. 'Ÿ'] ;
+ lower_case = ['a' .. 'z'] | ['à' .. 'ÿ'] ;
  digit = ['0'..'9'];
  letter = upper_case | lower_case | '_' ;
  any        = [0 .. 0xffff];
@@ -154,4 +154,3 @@ Productions
   {binding} binding |
   {expr} l_par expr r_par |
   {cast} l_par type_reference r_par term;
-  
