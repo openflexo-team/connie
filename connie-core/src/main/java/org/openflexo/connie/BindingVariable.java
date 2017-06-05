@@ -171,7 +171,10 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 
 	@Override
 	public int hashCode() {
-		return (toString()).hashCode();
+		if (toString() != null) {
+			return (toString()).hashCode();
+		}
+		return super.hashCode();
 	}
 
 	@Override
