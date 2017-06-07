@@ -306,4 +306,10 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean exists() {
+		return getJarfile() != null;
+	}
+
 }

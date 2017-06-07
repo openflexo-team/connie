@@ -303,4 +303,9 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		return buf.toString();
 	}
 
+	@Override
+	public boolean exists() {
+		return getEntry() != null;
+	}
+
 }

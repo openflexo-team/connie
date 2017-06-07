@@ -162,4 +162,5 @@ public interface Resource {
 	 */
 	public Resource locateResource(String relativePathName);
 
+	public boolean exists();
 }

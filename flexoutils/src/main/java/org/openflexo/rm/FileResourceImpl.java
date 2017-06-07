@@ -380,4 +380,8 @@ public class FileResourceImpl extends BasicResourceImpl {
 		return null;
 	}
 
+	@Override
+	public boolean exists() {
+		return getFile() != null && getFile().exists();
+	}
 }
