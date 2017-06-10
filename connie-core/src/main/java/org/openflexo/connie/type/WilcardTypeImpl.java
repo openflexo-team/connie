@@ -48,6 +48,9 @@ public class WilcardTypeImpl implements WildcardType {
 	private Type[] upperBounds = new Type[0];
 	private Type[] lowerBounds = new Type[0];
 
+	public WilcardTypeImpl() {
+	}
+
 	public WilcardTypeImpl(Type[] upperBounds, Type[] lowerBounds) {
 		this.upperBounds = upperBounds;
 		this.lowerBounds = lowerBounds;
@@ -88,6 +91,31 @@ public class WilcardTypeImpl implements WildcardType {
 			boolean isFirst = true;
 			for (Type t : getLowerBounds()) {
 				sb.append((isFirst ? "" : ",") + TypeUtils.simpleRepresentation(t));
+				isFirst = false;
+			}
+		}
+
+		return sb.toString();
+	}
+
+	public String fullQualifiedRepresentation() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("?");
+
+		if (getUpperBounds() != null && getUpperBounds().length > 0) {
+			sb.append(" extends ");
+			boolean isFirst = true;
+			for (Type t : getUpperBounds()) {
+				sb.append((isFirst ? "" : ",") + TypeUtils.fullQualifiedRepresentation(t));
+				isFirst = false;
+			}
+		}
+
+		if (getLowerBounds() != null && getLowerBounds().length > 0) {
+			sb.append(" super ");
+			boolean isFirst = true;
+			for (Type t : getLowerBounds()) {
+				sb.append((isFirst ? "" : ",") + TypeUtils.fullQualifiedRepresentation(t));
 				isFirst = false;
 			}
 		}

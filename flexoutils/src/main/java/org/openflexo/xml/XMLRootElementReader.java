@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.SAXParser;
@@ -114,7 +113,7 @@ public class XMLRootElementReader {
 				handler.setInfo(info);
 				saxParser.parse(input, handler);
 				input.close();
-			} catch (stopParsingException e) {
+			} catch (StopParsingException e) {
 				// Stop the parser after parsing first element
 			} catch (SAXException e) {
 				throw new IOException(e.getMessage());
@@ -127,8 +126,8 @@ public class XMLRootElementReader {
 
 	}
 
-	public class stopParsingException extends SAXException {
-		// an Exception used only to break parsing
+	// an Exception used only to break parsing
+	private class StopParsingException extends SAXException {
 	}
 
 	/**
@@ -165,8 +164,8 @@ public class XMLRootElementReader {
 
 				for (int i = 0; i < len; i++) {
 
-					Type aType = null;
-					String typeName = attributes.getType(i);
+					// Unused Type aType = null;
+					// Unused String typeName = attributes.getType(i);
 					String attrQName = attributes.getQName(i);
 					String attrName = attributes.getLocalName(i);
 					String attrURI = attributes.getURI(i);
@@ -190,11 +189,10 @@ public class XMLRootElementReader {
 				}
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			throw new stopParsingException();
+			throw new StopParsingException();
 		}
 
 		public void setInfo(XMLRootElementInfo info) {

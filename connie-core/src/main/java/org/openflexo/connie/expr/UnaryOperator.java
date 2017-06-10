@@ -53,7 +53,7 @@ public abstract class UnaryOperator extends Operator {
 	@Override
 	public abstract int getPriority();
 
-	public abstract Constant evaluate(Constant arg) throws TypeMismatchException, NullReferenceException;
+	public abstract Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException, NullReferenceException;
 
 	public abstract EvaluationType getEvaluationType(EvaluationType operandType) throws TypeMismatchException;
 

@@ -44,9 +44,18 @@ import java.io.PrintStream;
 import org.openflexo.connie.expr.BinaryOperator;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
 import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Constant.BooleanConstant;
+import org.openflexo.connie.expr.Constant.DateConstant;
+import org.openflexo.connie.expr.Constant.DurationConstant;
+import org.openflexo.connie.expr.Constant.EnumConstant;
+import org.openflexo.connie.expr.Constant.FloatConstant;
+import org.openflexo.connie.expr.Constant.IntegerConstant;
+import org.openflexo.connie.expr.Constant.ObjectConstant;
+import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionGrammar;
 import org.openflexo.connie.expr.Operator;
@@ -56,15 +65,6 @@ import org.openflexo.connie.expr.TypeReference;
 import org.openflexo.connie.expr.UnaryOperator;
 import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.expr.UnresolvedExpression;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
-import org.openflexo.connie.expr.Constant.BooleanConstant;
-import org.openflexo.connie.expr.Constant.DateConstant;
-import org.openflexo.connie.expr.Constant.DurationConstant;
-import org.openflexo.connie.expr.Constant.EnumConstant;
-import org.openflexo.connie.expr.Constant.FloatConstant;
-import org.openflexo.connie.expr.Constant.IntegerConstant;
-import org.openflexo.connie.expr.Constant.ObjectConstant;
-import org.openflexo.connie.expr.Constant.StringConstant;
 
 public abstract class ExpressionPrettyPrinter {
 
@@ -103,7 +103,7 @@ public abstract class ExpressionPrettyPrinter {
 			return makeStringRepresentation((BindingValue) expression);
 		}
 		if (expression instanceof Constant) {
-			return makeStringRepresentation((Constant) expression);
+			return makeStringRepresentation((Constant<?>) expression);
 		}
 		if (expression instanceof UnaryOperatorExpression) {
 			return makeStringRepresentation((UnaryOperatorExpression) expression);
@@ -124,24 +124,32 @@ public abstract class ExpressionPrettyPrinter {
 		return expression.toString();
 	}
 
-	protected String makeStringRepresentation(Constant constant) {
+	protected String makeStringRepresentation(Constant<?> constant) {
 		if (constant instanceof SymbolicConstant) {
 			return makeStringRepresentation((SymbolicConstant) constant);
-		} else if (constant instanceof BooleanConstant) {
+		}
+		else if (constant instanceof BooleanConstant) {
 			return makeStringRepresentation((BooleanConstant) constant);
-		} else if (constant instanceof FloatConstant) {
+		}
+		else if (constant instanceof FloatConstant) {
 			return makeStringRepresentation((FloatConstant) constant);
-		} else if (constant instanceof IntegerConstant) {
+		}
+		else if (constant instanceof IntegerConstant) {
 			return makeStringRepresentation((IntegerConstant) constant);
-		} else if (constant instanceof StringConstant) {
+		}
+		else if (constant instanceof StringConstant) {
 			return makeStringRepresentation((StringConstant) constant);
-		} else if (constant instanceof DateConstant) {
+		}
+		else if (constant instanceof DateConstant) {
 			return makeStringRepresentation((DateConstant) constant);
-		} else if (constant instanceof DurationConstant) {
+		}
+		else if (constant instanceof DurationConstant) {
 			return makeStringRepresentation((DurationConstant) constant);
-		} else if (constant instanceof EnumConstant) {
-			return makeStringRepresentation((EnumConstant) constant);
-		} else if (constant instanceof ObjectConstant) {
+		}
+		else if (constant instanceof EnumConstant) {
+			return makeStringRepresentation((EnumConstant<?>) constant);
+		}
+		else if (constant instanceof ObjectConstant) {
 			return makeStringRepresentation((ObjectConstant) constant);
 		}
 		return "???";
@@ -167,7 +175,7 @@ public abstract class ExpressionPrettyPrinter {
 
 	protected abstract String makeStringRepresentation(DurationConstant constant);
 
-	protected abstract String makeStringRepresentation(EnumConstant constant);
+	protected abstract String makeStringRepresentation(EnumConstant<?> constant);
 
 	protected abstract String makeStringRepresentation(ObjectConstant constant);
 

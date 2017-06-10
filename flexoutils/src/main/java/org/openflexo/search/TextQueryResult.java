@@ -84,7 +84,8 @@ public class TextQueryResult {
 			Vector<Result> res = getFilteredResults();
 			if (currentIndex > -1 && currentIndex < res.size()) {
 				return res.get(currentIndex);
-			} else {
+			}
+			else {
 				return null;
 			}
 		}
@@ -121,44 +122,49 @@ public class TextQueryResult {
 			}
 
 			switch (direction) {
-			case FORWARD:
-				if (currentIndex + 1 == filteredResults.size()) {
-					if (wrapSearch) {
-						currentIndex = 0;
-					} else {
-						throw new EndOfDocumentHasBeenReachedException();
+				case FORWARD:
+					if (currentIndex + 1 == filteredResults.size()) {
+						if (wrapSearch) {
+							currentIndex = 0;
+						}
+						else {
+							throw new EndOfDocumentHasBeenReachedException();
+						}
 					}
-				} else {
-					currentIndex++;
-				}
-				return filteredResults.get(currentIndex);
-			case BACKWARD:
-				if (currentIndex - 1 < 0) {
-					if (wrapSearch) {
-						currentIndex = filteredResults.size() - 1;
-					} else {
-						throw new EndOfDocumentHasBeenReachedException();
+					else {
+						currentIndex++;
 					}
-				} else {
-					currentIndex--;
-				}
-				return filteredResults.get(currentIndex);
-			default:
-				break;
+					return filteredResults.get(currentIndex);
+				case BACKWARD:
+					if (currentIndex - 1 < 0) {
+						if (wrapSearch) {
+							currentIndex = filteredResults.size() - 1;
+						}
+						else {
+							throw new EndOfDocumentHasBeenReachedException();
+						}
+					}
+					else {
+						currentIndex--;
+					}
+					return filteredResults.get(currentIndex);
+				default:
+					break;
 			}
 			return null;
 		}
 
 		private Vector<Result> getFilteredResults() {
 			if (limitToSelectedText) {
-				Vector<Result> r = new Vector<Result>();
+				Vector<Result> r = new Vector<>();
 				for (Result result : getResults()) {
 					if (result.startOffset >= selectionStart && result.endOffset <= selectionEnd) {
 						r.add(result);
 					}
 				}
 				return r;
-			} else {
+			}
+			else {
 				return getResults();
 			}
 		}
@@ -240,13 +246,13 @@ public class TextQueryResult {
 
 	public TextQueryResult(TextQuery query) {
 		this.query = query;
-		this.results = new Vector<Result>();
+		this.results = new Vector<>();
 	}
 
 	public TextQueryResult(TextQuery query, String text) {
 		this.query = query;
 		this.text = text;
-		this.results = new Vector<Result>();
+		this.results = new Vector<>();
 	}
 
 	public TextQueryResult(TextQuery query, Document document) {
@@ -257,7 +263,7 @@ public class TextQueryResult {
 		} catch (BadLocationException e) {
 			e.printStackTrace();// Should never happen
 		}
-		this.results = new Vector<Result>();
+		this.results = new Vector<>();
 	}
 
 	public void addToResults(Result res) {

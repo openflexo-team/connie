@@ -52,7 +52,7 @@ import org.openflexo.rm.ResourceLocator;
  * Flexo logging manager: manages logs for the application above java.util.logging<br>
  * Also read and parse logs of an expired session of Flexo
  * 
- * @author sguerin
+ * @author sylvain
  */
 
 // TODO: we can now no more save or load a log file: proceed as a service in flexofoundation layer
@@ -102,7 +102,7 @@ public class FlexoLoggingManager {
 		_instance._loggingLevel = logLevel;
 		if (configurationFile != null) {
 			_instance._configurationFile = configurationFile;
-			// TODO : Log files location should be parametrizable
+			// TODO : Log files location should be parameterizable
 			File f = new File(System.getProperty("user.home"), "Library/Logs/Flexo/");
 			if (!f.exists()) {
 				f.mkdirs();
@@ -118,7 +118,8 @@ public class FlexoLoggingManager {
 		try {
 			if (configurationFile != null) {
 				LogManager.getLogManager().readConfiguration(configurationFile.openInputStream());
-			} else {
+			}
+			else {
 				LOGGER.warning("Unable to initialize LogginManager with NULL configurationFile...");
 			}
 		} catch (SecurityException e) {
@@ -155,7 +156,8 @@ public class FlexoLoggingManager {
 		if (flexoLoggingHandler != null) {
 			flexoLoggingHandler.publishUnhandledException(new java.util.logging.LogRecord(java.util.logging.Level.WARNING,
 					"Unhandled exception occured: " + e.getClass().getName()), e);
-		} else {
+		}
+		else {
 			Logger.global.warning("Unexpected exception occured: " + e.getClass().getName());
 		}
 	}
@@ -201,22 +203,16 @@ public class FlexoLoggingManager {
 			FileInputStream fis = new FileInputStream(logFile);
 			return (LogRecords) XMLDecoder.decodeObjectWithMapping(fis, getLoggingMapping());
 		} catch (InvalidXMLDataException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidObjectSpecificationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (AccessorInvocationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidModelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		logger.warning("Could not read " + logFile.getAbsolutePath());
@@ -311,7 +307,7 @@ public class FlexoLoggingManager {
 		reloadLoggingFile(configurationFile);
 	}
 
-	private boolean reloadLoggingFile(Resource filePath) {
+	private static boolean reloadLoggingFile(Resource filePath) {
 		LOGGER.info("reloadLoggingFile with " + filePath.getURI());
 		try {
 			LogManager.getLogManager().readConfiguration(filePath.openInputStream());

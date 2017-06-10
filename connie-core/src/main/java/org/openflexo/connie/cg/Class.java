@@ -58,7 +58,7 @@ public class Class implements AlgorithmicUnit {
 		super();
 		this.className = className;
 		this.groupName = groupName;
-		this.procedures = new Vector<Procedure>();
+		this.procedures = new Vector<>();
 	}
 
 	public Class(String className, String groupName, Procedure... procedures) {

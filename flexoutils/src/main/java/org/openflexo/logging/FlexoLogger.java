@@ -43,7 +43,7 @@ import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 /**
- * @author sguerin
+ * @author sylvain
  * 
  */
 public class FlexoLogger extends Logger {
@@ -57,7 +57,8 @@ public class FlexoLogger extends Logger {
 		if (flexoLoggingHandler != null) {
 			flexoLoggingHandler.publishUnhandledException(new java.util.logging.LogRecord(java.util.logging.Level.WARNING,
 					"Unhandled exception occured: " + e.getClass().getName()), e);
-		} else {
+		}
+		else {
 			warning("Unexpected exception occured: " + e.getClass().getName());
 		}
 	}

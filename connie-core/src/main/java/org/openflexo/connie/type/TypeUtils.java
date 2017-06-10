@@ -39,9 +39,6 @@
 
 package org.openflexo.connie.type;
 
-import com.google.common.primitives.Primitives;
-import org.openflexo.connie.expr.EvaluationType;
-
 import java.io.File;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
@@ -58,6 +55,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.expr.EvaluationType;
+
+import com.google.common.primitives.Primitives;
+
 /**
  * Utility methods focusing on types introspection
  */
@@ -70,7 +71,7 @@ public class TypeUtils {
 	 * Transforms the passed in type to a {@code Class} object. Type-checking method of convenience.
 	 * </p>
 	 * 
-	 * @param parameterizedType
+	 * @param aType
 	 *            the type to be converted
 	 * @return the corresponding {@code Class} object
 	 * @throws IllegalStateException
@@ -177,7 +178,7 @@ public class TypeUtils {
 		return parentClass.isAssignableFrom(childClass);
 	}
 
-	public static Class toPrimitive(Class<?> aClass) {
+	public static Class<?> toPrimitive(Class<?> aClass) {
 		if (isDouble(aClass)) {
 			return Double.TYPE;
 		}
@@ -205,7 +206,7 @@ public class TypeUtils {
 		return aClass;
 	}
 
-	public static Class fromPrimitive(Class<?> aClass) {
+	public static Class<?> fromPrimitive(Class<?> aClass) {
 		if (isDouble(aClass)) {
 			return Double.class;
 		}
@@ -373,9 +374,9 @@ public class TypeUtils {
 	}
 
 	/**
-	 * Determines if the class or interface represented by supplied <code>aType</code> object is either the same as, or is a superclass or
-	 * superinterface of, the class or interface represented by the specified <code>anOtherType</code> parameter. It returns
-	 * <code>true</code> if so; otherwise false<br>
+	 * Determines if the class or interface represented by supplied {@code aType} object is either the same as, or is a superclass or
+	 * superinterface of, the class or interface represented by the specified {@code anOtherType} parameter. It returns {@code true} if so;
+	 * otherwise false<br>
 	 * This method also tried to resolve generics before to perform the assignability test
 	 * 
 	 * @param aType
@@ -463,7 +464,7 @@ public class TypeUtils {
 					|| isChar(anOtherType) || isByte(anOtherType);
 		}
 
-		if (aType instanceof WildcardType) {
+		if (aType instanceof WildcardType && ((WildcardType) aType).getUpperBounds().length > 0) {
 			if (anOtherType instanceof WildcardType) {
 				// If two wildcards, perform check on both upper bounds
 				return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], ((WildcardType) anOtherType).getUpperBounds()[0],
@@ -501,6 +502,12 @@ public class TypeUtils {
 		if (aType instanceof Class || anOtherType instanceof Class) {
 			// One of two types is not parameterized, we cannot check, return true
 			return true;
+		}
+
+		if (aType instanceof ParameterizedType && anOtherType instanceof WildcardType
+				&& ((WildcardType) anOtherType).getUpperBounds().length > 0) {
+			Type t = ((WildcardType) anOtherType).getUpperBounds()[0];
+			return isTypeAssignableFrom(aType, t, permissive);
 		}
 
 		if (aType instanceof ParameterizedType && anOtherType instanceof ParameterizedType) {
@@ -548,6 +555,7 @@ public class TypeUtils {
 		}
 
 		return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
+
 		/*if (getBaseEntity() == type.getBaseEntity()) {
 			// Base entities are the same, let's analyse parameters
 		
@@ -596,6 +604,20 @@ public class TypeUtils {
 		// return false;
 	}
 
+	public static boolean isOfType(Object object, Type aType) {
+		if (aType instanceof CustomType) {
+			return ((CustomType) aType).isOfType(object, true);
+		}
+		else {
+			if (object == null) {
+				return true;
+			}
+			else {
+				return isTypeAssignableFrom(aType, object.getClass());
+			}
+		}
+	}
+
 	public static String simpleRepresentation(Type aType) {
 		if (aType == null) {
 			return "null";
@@ -641,6 +663,30 @@ public class TypeUtils {
 				isFirst = false;
 			}
 			sb.append(">");
+			return sb.toString();
+		}
+		else if (aType instanceof WildcardType) {
+			WildcardType t = (WildcardType) aType;
+			StringBuffer sb = new StringBuffer();
+			sb.append("?");
+
+			if (t.getUpperBounds() != null && t.getUpperBounds().length > 0) {
+				sb.append(" extends ");
+				boolean isFirst = true;
+				for (Type u : t.getUpperBounds()) {
+					sb.append((isFirst ? "" : ",") + TypeUtils.fullQualifiedRepresentation(u));
+					isFirst = false;
+				}
+			}
+
+			if (t.getLowerBounds() != null && t.getLowerBounds().length > 0) {
+				sb.append(" super ");
+				boolean isFirst = true;
+				for (Type l : t.getLowerBounds()) {
+					sb.append((isFirst ? "" : ",") + TypeUtils.fullQualifiedRepresentation(l));
+					isFirst = false;
+				}
+			}
 			return sb.toString();
 		}
 		return aType.toString();
@@ -989,9 +1035,9 @@ public class TypeUtils {
 			return;
 		}
 
-		for (Class<?> reducedClass : new ArrayList<Class<?>>(someClasses)) {
+		for (Class<?> reducedClass : new ArrayList<>(someClasses)) {
 			if (someClasses.contains(reducedClass)) {
-				for (Class<?> aClass : new ArrayList<Class<?>>(someClasses)) {
+				for (Class<?> aClass : new ArrayList<>(someClasses)) {
 					if (!aClass.equals(reducedClass) && aClass.isAssignableFrom(reducedClass)) {
 						someClasses.remove(aClass);
 					}
@@ -1069,7 +1115,7 @@ public class TypeUtils {
 
 			// We first check for exact lookup
 
-			Map<Class<?>, T> matchingClasses = new HashMap<Class<?>, T>();
+			Map<Class<?>, T> matchingClasses = new HashMap<>();
 
 			// First on super class
 			Class<?> superclass = aClass.getSuperclass();
@@ -1213,8 +1259,8 @@ public class TypeUtils {
 
 	/**
 	 * <p>
-	 * Retrieves all the type arguments for this parameterized type including owner hierarchy arguments such as <code>
-	 * Outer<K,V>.Inner<T>.DeepInner<E></code> . The arguments are returned in a {@link Map} specifying the argument type for each
+	 * Retrieves all the type arguments for this parameterized type including owner hierarchy arguments such as {@code 
+	 * Outer<K,V>.Inner<T>.DeepInner<E>} . The arguments are returned in a {@link Map} specifying the argument type for each
 	 * {@link TypeVariable}.
 	 * </p>
 	 * 

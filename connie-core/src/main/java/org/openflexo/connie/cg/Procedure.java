@@ -60,7 +60,7 @@ public class Procedure implements AlgorithmicUnit {
 		super();
 		this.procedureName = procedureName;
 		this.controlGraph = controlGraph;
-		this.parameters = new Vector<ProcedureParameter>();
+		this.parameters = new Vector<>();
 	}
 
 	public Procedure(String procedureName, ControlGraph controlGraph, ProcedureParameter... parameters) {

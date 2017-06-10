@@ -57,7 +57,7 @@ import java.util.Properties;
  */
 public class FileSystemMetaDataManager {
 
-	private final Map<File, MetaDataProperties> propertiesForFiles = new HashMap<File, MetaDataProperties>();
+	private final Map<File, MetaDataProperties> propertiesForFiles = new HashMap<>();
 
 	public String getProperty(String key, File f) {
 		return getMetaDataProperties(f).getProperty(key, f);
@@ -76,7 +76,8 @@ public class FileSystemMetaDataManager {
 		if (returned == null) {
 			if (f.isDirectory()) {
 				returned = new MetaDataProperties(f);
-			} else {
+			}
+			else {
 				returned = getMetaDataProperties(f.getParentFile());
 			}
 			propertiesForFiles.put(f, returned);
@@ -84,7 +85,7 @@ public class FileSystemMetaDataManager {
 		return returned;
 	}
 
-	class MetaDataProperties extends Properties {
+	private class MetaDataProperties extends Properties {
 
 		private final File directory;
 		private final File metaDataFile;
@@ -103,16 +104,20 @@ public class FileSystemMetaDataManager {
 			}
 		}
 
+		/* Unused
 		public File getDirectory() {
 			return directory;
 		}
+		 */
 
 		public String getProperty(String key, File f) {
 			if (f.equals(directory)) {
 				return getProperty(key);
-			} else if (f.getParentFile().equals(directory)) {
+			}
+			else if (f.getParentFile().equals(directory)) {
 				return getProperty(f.getName() + "." + key);
-			} else {
+			}
+			else {
 				System.err.println("Error: cannot retrieve metadata from that file: " + f + " in " + directory);
 				return null;
 			}
@@ -121,9 +126,11 @@ public class FileSystemMetaDataManager {
 		public String getProperty(String key, String defaultValue, File f) {
 			if (f.equals(directory)) {
 				return getProperty(key, defaultValue);
-			} else if (f.getParentFile().equals(directory)) {
+			}
+			else if (f.getParentFile().equals(directory)) {
 				return getProperty(f.getName() + "." + key, defaultValue);
-			} else {
+			}
+			else {
 				System.err.println("Error: cannot retrieve metadata from that file: " + f + " in " + directory);
 				return null;
 			}
@@ -135,9 +142,11 @@ public class FileSystemMetaDataManager {
 			if ((value == null && currentValue != null) || (value != null && !value.equals(currentValue))) {
 				if (f.equals(directory)) {
 					setProperty(key, value);
-				} else if (f.getParentFile().equals(directory)) {
+				}
+				else if (f.getParentFile().equals(directory)) {
 					setProperty(f.getName() + "." + key, value);
-				} else {
+				}
+				else {
 					System.err.println("Error: cannot set metadata for that file: " + f + " in " + directory);
 				}
 				save();
@@ -148,10 +157,8 @@ public class FileSystemMetaDataManager {
 			try {
 				store(new FileOutputStream(metaDataFile), "Metadata for directory " + directory);
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

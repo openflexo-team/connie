@@ -37,7 +37,6 @@
  * 
  */
 
-
 package org.openflexo.diff;
 
 import java.io.BufferedReader;
@@ -217,7 +216,8 @@ public class DiffPrint {
 			if (++b > ++a) {
 				outfile.print("" + a + sepchar + b);
 				diffResult.append("" + a + sepchar + b);
-			} else {
+			}
+			else {
 				outfile.print(b);
 				diffResult.append(b);
 			}
@@ -226,9 +226,11 @@ public class DiffPrint {
 		public static char change_letter(int inserts, int deletes) {
 			if (inserts == 0) {
 				return 'd';
-			} else if (deletes == 0) {
+			}
+			else if (deletes == 0) {
 				return 'a';
-			} else {
+			}
+			else {
 				return 'c';
 			}
 		}
@@ -380,7 +382,8 @@ public class DiffPrint {
 						/* Now change that double dot to the desired single dot.  */
 						outfile.println(i - first1 + first0 + 1 + "s/^\\.\\././");
 						inserting = false;
-					} else {
+					}
+					else {
 						/* Line is not `.', so output it unmodified.  */
 						print_1_line("", file1[i]);
 					}
@@ -400,15 +403,16 @@ public class DiffPrint {
 	 * purposes.
 	 */
 	public static String[] slurpFile(File file) throws IOException {
-		BufferedReader rdr = new BufferedReader(new FileReader(file));
-		Vector<String> s = new Vector<String>();
-		for (;;) {
-			String line = rdr.readLine();
-			if (line == null) {
-				break;
+		Vector<String> s = new Vector<>();
+		try (BufferedReader rdr = new BufferedReader(new FileReader(file))) {
+			for (;;) {
+				String line = rdr.readLine();
+				if (line == null) {
+					break;
+				}
+				s.addElement(line);
+				// System.out.println("File: add line "+line);
 			}
-			s.addElement(line);
-			// System.out.println("File: add line "+line);
 		}
 		String[] a = new String[s.size()];
 		s.copyInto(a);
@@ -419,15 +423,16 @@ public class DiffPrint {
 	 * Same as above, but ignore first ignoredCols cols
 	 */
 	public static String[] slurpFile(File file, int ignoredCols) throws IOException {
-		BufferedReader rdr = new BufferedReader(new FileReader(file));
-		Vector<String> s = new Vector<String>();
-		for (;;) {
-			String line = rdr.readLine();
-			if (line == null) {
-				break;
+		Vector<String> s = new Vector<>();
+		try (BufferedReader rdr = new BufferedReader(new FileReader(file))) {
+			for (;;) {
+				String line = rdr.readLine();
+				if (line == null) {
+					break;
+				}
+				s.addElement(line.substring(ignoredCols));
+				// System.out.println("File: add line "+line);
 			}
-			s.addElement(line.substring(ignoredCols));
-			// System.out.println("File: add line "+line);
 		}
 		String[] a = new String[s.size()];
 		s.copyInto(a);
@@ -448,7 +453,7 @@ public class DiffPrint {
 	 */
 	public static String[] slurpString(String aString) throws IOException {
 		BufferedReader rdr = new BufferedReader(new StringReader(aString));
-		Vector<String> s = new Vector<String>();
+		Vector<String> s = new Vector<>();
 		for (;;) {
 			String line = rdr.readLine();
 			if (line == null) {
@@ -467,7 +472,7 @@ public class DiffPrint {
 	 */
 	public static String[] slurpString(String aString, int ignoredCols) throws IOException {
 		BufferedReader rdr = new BufferedReader(new StringReader(aString));
-		Vector<String> s = new Vector<String>();
+		Vector<String> s = new Vector<>();
 		for (;;) {
 			String line = rdr.readLine();
 			if (line == null) {
@@ -492,11 +497,13 @@ public class DiffPrint {
 		Diff.change script = d.diff_2(edstyle);
 		if (script == null) {
 			System.err.println("No differences");
-		} else {
+		}
+		else {
 			Base p = null;
 			if (edstyle) {
 				p = new EdPrint(a, b);
-			} else {
+			}
+			else {
 				p = new NormalPrint(a, b);
 			}
 			p.print_script(script);
@@ -511,7 +518,8 @@ public class DiffPrint {
 		if (script == null) {
 			// No differences
 			return false;
-		} else {
+		}
+		else {
 			Base p = null;
 			p = new NormalPrint(a, b);
 			p.print_script(script);
@@ -527,7 +535,8 @@ public class DiffPrint {
 		if (script == null) {
 			// No differences
 			return false;
-		} else {
+		}
+		else {
 			Base p = null;
 			p = new NormalPrint(a, b);
 			p.print_script(script);
@@ -543,7 +552,8 @@ public class DiffPrint {
 		if (script == null) {
 			// No differences
 			return false;
-		} else {
+		}
+		else {
 			Base p = null;
 			p = new NormalPrint(a, b);
 			p.print_script(script);

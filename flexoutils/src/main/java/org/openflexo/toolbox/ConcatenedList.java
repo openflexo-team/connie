@@ -55,19 +55,14 @@ import java.util.Vector;
  */
 public class ConcatenedList<E> extends AbstractList<E> {
 
-	private Vector<Object> embedded;
-
-	public ConcatenedList() {
-		super();
-		embedded = new Vector<Object>();
-	}
+	private Vector<Object> embedded = new Vector<>();
 
 	public ConcatenedList(Object... elements) {
-		this();
 		for (Object element : elements) {
 			if (element instanceof List) {
-				addElementList((List) element);
-			} else {
+				addElementList((List<E>) element);
+			}
+			else {
 				addElement((E) element);
 			}
 		}
@@ -86,17 +81,18 @@ public class ConcatenedList<E> extends AbstractList<E> {
 				return;
 			}
 			if (o instanceof List) {
-				List list = (List) o;
+				List<?> list = (List<?>) o;
 				if (index < current + list.size()) {
 					throw new UnsupportedOperationException();
 				}
 				current += list.size();
-			} else {
+			}
+			else {
 				// Fabien: I think the following code is useless as if current == index we have already returned in line 86
-				//if (current == index) {
-				//	embedded.add(i, element);
-				//	return;
-				//}
+				// if (current == index) {
+				// embedded.add(i, element);
+				// return;
+				// }
 				current++;
 			}
 		}
@@ -115,12 +111,13 @@ public class ConcatenedList<E> extends AbstractList<E> {
 		int current = 0;
 		for (Object o : embedded) {
 			if (o instanceof List) {
-				List list = (List) o;
+				List<E> list = (List<E>) o;
 				if (index < current + list.size()) {
-					return (E) list.get(index - current);
+					return list.get(index - current);
 				}
 				current += list.size();
-			} else {
+			}
+			else {
 				if (index == current) {
 					return (E) o;
 				}
@@ -135,8 +132,9 @@ public class ConcatenedList<E> extends AbstractList<E> {
 		int returned = 0;
 		for (Object o : embedded) {
 			if (o instanceof List) {
-				returned += ((List) o).size();
-			} else {
+				returned += ((List<?>) o).size();
+			}
+			else {
 				returned++;
 			}
 		}

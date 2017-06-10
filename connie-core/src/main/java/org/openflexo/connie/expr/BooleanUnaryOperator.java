@@ -53,7 +53,7 @@ public abstract class BooleanUnaryOperator extends UnaryOperator {
 		}
 
 		@Override
-		public Constant evaluate(Constant arg) throws TypeMismatchException, NullReferenceException {
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException, NullReferenceException {
 			if (arg instanceof BooleanConstant) {
 				return BooleanConstant.get(!((BooleanConstant) arg).getValue());
 			}

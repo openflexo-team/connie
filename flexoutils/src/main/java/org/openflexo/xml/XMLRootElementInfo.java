@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.xml;
 
 import java.util.HashMap;
@@ -47,85 +46,84 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 /**
- * Data structure used to hold information parsed for the root element of a XML
- * Document
+ * Data structure used to hold information parsed for the root element of a XML Document
  * 
  * @author xtof
  * 
  */
 public class XMLRootElementInfo {
 
-    protected static final Logger LOGGER     = Logger.getLogger(XMLRootElementInfo.class.getPackage().getName());
+	protected static final Logger LOGGER = Logger.getLogger(XMLRootElementInfo.class.getPackage().getName());
 
-    protected SAXParserFactory    factory    = null;
-    protected SAXParser           saxParser  = null;
-    protected XMLReaderSAXHandler handler    = null;
+	protected SAXParserFactory factory = null;
+	protected SAXParser saxParser = null;
+	protected XMLReaderSAXHandler handler = null;
 
-    private Map<String, String>   namespaces = null;
+	private Map<String, String> namespaces = null;
 
-    private Map<String, String>   attributes = null;
+	private Map<String, String> attributes = null;
 
-    private String                name;
+	private String name;
 
-    private String                URI;
+	private String URI;
 
-    private String                qName;
+	private String qName;
 
-    XMLRootElementInfo() {
-        namespaces = new HashMap<String, String>();
-        attributes = new HashMap<String, String>();
-    }
+	XMLRootElementInfo() {
+		namespaces = new HashMap<>();
+		attributes = new HashMap<>();
+	}
 
-    public void addNamespace(String prefix, String uri) {
-        if (namespaces.get(prefix) == null) {
-            namespaces.put(prefix, uri);
-        }
-    }
+	public void addNamespace(String prefix, String uri) {
+		if (namespaces.get(prefix) == null) {
+			namespaces.put(prefix, uri);
+		}
+	}
 
-    public String getNamespaceByPrefix(String prefix) {
-        return namespaces.get(prefix);
-    }
+	public String getNamespaceByPrefix(String prefix) {
+		return namespaces.get(prefix);
+	}
 
-    public void addAttribute(String name, String value) {
-        if (attributes.get(name) == null) {
-            attributes.put(name, value);
-        }
-        else {
-            LOGGER.warning("Several attributes with the same Name?");
-        }
-    }
+	public void addAttribute(String name, String value) {
+		if (attributes.get(name) == null) {
+			attributes.put(name, value);
+		}
+		else {
+			LOGGER.warning("Several attributes with the same Name?");
+		}
+	}
 
-    public String getAttribute(String name) {
-        return attributes.get(name);
-    }
+	public String getAttribute(String name) {
+		return attributes.get(name);
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getURI() {
-        return URI;
-    }
+	public String getURI() {
+		return URI;
+	}
 
-    public void setURI(String uRI) {
-        URI = uRI;
-    }
+	public void setURI(String uRI) {
+		URI = uRI;
+	}
 
-    public void setQName(String name) {
-        qName = name;
+	public void setQName(String name) {
+		qName = name;
 
-    }
+	}
 
-    public String getQName() {
-        return qName;
+	public String getQName() {
+		return qName;
 
-    }
+	}
 
-    public String toString() {
-        return new String("[" + name + "]" + "/" + namespaces + "/" + attributes);
-    }
+	public String toString() {
+		return new String("[" + name + "]" + "/" + namespaces + "/" + attributes);
+	}
 }

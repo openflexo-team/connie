@@ -1,0 +1,43 @@
+buildscript {
+    configurations.classpath.resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    repositories {
+        maven { url uri('https://maven.openflexo.org/artifactory/openflexo-deps/') }
+    }
+    dependencies {
+        classpath group: 'org.openflexo', name: 'buildplugin', version: '+'
+        classpath group: 'org.openflexo', name: 'buildconfig', version: '1.8.1-SNAPSHOT'
+        classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.0.4,)'
+    }
+}
+
+apply plugin: 'org.openflexo.buildconfig'
+
+allprojects { version = "1.4-SNAPSHOT" }
+
+subprojects {
+    apply plugin: 'java'
+}
+
+subprojects {
+    //  apply plugin: 'checkstyle'
+    apply plugin: 'pmd'
+    apply plugin: 'findbugs'
+
+    pmd { ignoreFailures = true }
+    findbugs { ignoreFailures = true }
+
+    tasks.withType(FindBugs) {
+        reports {
+            xml.enabled false
+            html.enabled true
+        }
+    }
+}
+
+task analyze() {
+    dependsOn subprojects.pmdMain
+    dependsOn subprojects.findbugsMain
+}
+task test() {
+    dependsOn subprojects.test
+}

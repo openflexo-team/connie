@@ -52,7 +52,8 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources() throws Exception {
-		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
+		// Unused ClasspathResourceLocatorImpl rl =
+		new ClasspathResourceLocatorImpl();
 
 		Resource rloc = null;
 
@@ -62,7 +63,7 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		if (rloc != null) {
 
-			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"), false);
+			List<?> list = rloc.getContents(Pattern.compile(".*[.]properties"), false);
 
 			assertTrue(list.size() == 7);
 
@@ -71,7 +72,8 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources2() throws Exception {
-		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
+		// Unused ClasspathResourceLocatorImpl rl =
+		new ClasspathResourceLocatorImpl();
 
 		Resource rloc = null;
 
@@ -108,7 +110,8 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 	@Test
 	public void testListResources3() throws Exception {
-		ClasspathResourceLocatorImpl rl = new ClasspathResourceLocatorImpl();
+		// Unused ClasspathResourceLocatorImpl rl =
+		new ClasspathResourceLocatorImpl();
 
 		Resource rloc = null;
 
@@ -120,6 +123,10 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		if (rloc != null) {
 
+			// This test tend to fail in eclipse because of the way eclipse manage resources
+			// Here we have resources that are java files! My solution is to tweak the run
+			// configuration for tests adding explicitly the folder containing the java files
+			// first in the classpath
 			List<? extends Resource> list = rloc.getContents(false);
 
 			for (Resource r : list) {

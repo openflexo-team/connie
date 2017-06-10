@@ -43,7 +43,7 @@ import java.beans.PropertyChangeSupport;
 /**
  * Default partial implementation for {@link Bindable} interface<br>
  * 
- * @author sguerin
+ * @author sylvain
  * 
  */
 public abstract class DefaultBindable implements Bindable {

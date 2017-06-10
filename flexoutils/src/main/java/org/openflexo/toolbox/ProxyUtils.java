@@ -60,8 +60,8 @@ public class ProxyUtils {
 
 	public static boolean isProxyEnabled() {
 		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
-			return Integer.decode(WinRegistryAccess.getRegistryValue(WIN_REG_PROXY_PATH, WIN_REG_PROXY_ENABLE,
-					WinRegistryAccess.REG_DWORD_TOKEN)) != 0;
+			return Integer.decode(
+					WinRegistryAccess.getRegistryValue(WIN_REG_PROXY_PATH, WIN_REG_PROXY_ENABLE, WinRegistryAccess.REG_DWORD_TOKEN)) != 0;
 		}
 		return false;
 	}
@@ -99,7 +99,8 @@ public class ProxyUtils {
 								}
 							}
 						}
-					} else {
+					}
+					else {
 						proxyHost = ToolBox.getHostPortFromString(proxyServer, defaultPort);
 					}
 				}
@@ -111,7 +112,7 @@ public class ProxyUtils {
 	}
 
 	public static List<String[]> getProxiesFromAutoConfigURL(URL autoConfigURL, int defaultPort) {
-		List<String[]> proxies = new ArrayList<String[]>();
+		List<String[]> proxies = new ArrayList<>();
 		if (autoConfigURL == null) {
 			return proxies;
 		}
@@ -125,7 +126,7 @@ public class ProxyUtils {
 				String proxyHost = m.group(1);
 				int port = defaultPort;
 				if (m.groupCount() > 2) {
-					port = Integer.valueOf(m.group(3));
+					port = Integer.parseInt(m.group(3));
 				}
 				proxies.add(new String[] { proxyHost, String.valueOf(port) });
 			}

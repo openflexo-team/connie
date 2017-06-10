@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.xml;
 
 import java.util.HashMap;
@@ -44,34 +43,34 @@ import java.util.Map;
 
 public class MapModel {
 
-    public String               name;
+	public String name;
 
-    public Map<Integer, String> aMap;
+	public Map<Integer, String> aMap;
 
-    MapModel() {
-        aMap = new HashMap<Integer, String>();
-    }
+	MapModel() {
+		aMap = new HashMap<>();
+	}
 
-    MapModel(String aName) {
-        name = aName;
-        aMap = new HashMap<Integer, String>();
-    }
+	MapModel(String aName) {
+		name = aName;
+		aMap = new HashMap<>();
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Map getValues() {
-        return aMap;
-    }
+	public Map<Integer, String> getValues() {
+		return aMap;
+	}
 
-    public void addNode(Integer key, String value) {
-        if (value != null)
-            aMap.put(key, value);
-    }
+	public void addNode(Integer key, String value) {
+		if (value != null)
+			aMap.put(key, value);
+	}
 
 }

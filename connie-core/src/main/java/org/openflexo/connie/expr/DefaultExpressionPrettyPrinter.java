@@ -70,7 +70,8 @@ public class DefaultExpressionPrettyPrinter extends ExpressionPrettyPrinter {
 	protected String makeStringRepresentation(BooleanConstant constant) {
 		if (constant == BooleanConstant.FALSE) {
 			return "false";
-		} else if (constant == BooleanConstant.TRUE) {
+		}
+		else if (constant == BooleanConstant.TRUE) {
 			return "true";
 		}
 		return "???";
@@ -136,7 +137,7 @@ public class DefaultExpressionPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected final String makeStringRepresentation(EnumConstant constant) {
+	protected final String makeStringRepresentation(EnumConstant<?> constant) {
 		return constant.getName();
 	}
 
@@ -157,7 +158,8 @@ public class DefaultExpressionPrettyPrinter extends ExpressionPrettyPrinter {
 			}
 			return sb.toString();
 
-		} else {
+		}
+		else {
 			StringBuffer sb = new StringBuffer();
 			boolean isFirst = true;
 			if (bv != null) {
@@ -174,7 +176,8 @@ public class DefaultExpressionPrettyPrinter extends ExpressionPrettyPrinter {
 	protected String makeStringRepresentation(AbstractBindingPathElement e) {
 		if (e instanceof NormalBindingPathElement) {
 			return ((NormalBindingPathElement) e).property;
-		} else if (e instanceof MethodCallBindingPathElement) {
+		}
+		else if (e instanceof MethodCallBindingPathElement) {
 			StringBuffer sb = new StringBuffer();
 			sb.append(((MethodCallBindingPathElement) e).method);
 			sb.append("(");

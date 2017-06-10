@@ -94,10 +94,11 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 			lastNotifiedValue = newValue;
 			bindingValueChanged(evt.getSource(), newValue);
 			refreshObserving(false);
-		} else {
+		}
+		else {
 			// Lists are sames, but values inside lists, may have changed
 			if ((lastKnownValues == null) || (!lastKnownValues.equals(newValue))) {
-				lastKnownValues = (newValue != null ? new ArrayList<T2>(newValue) : null);
+				lastKnownValues = (newValue != null ? new ArrayList<>(newValue) : null);
 				bindingValueChanged(evt.getSource(), newValue);
 				refreshObserving(false);
 			}

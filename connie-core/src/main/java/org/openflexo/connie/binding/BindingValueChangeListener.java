@@ -93,7 +93,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		super();
 		this.dataBinding = dataBinding;
 		this.context = context;
-		this.dependingObjects = new ArrayList<TargetObject>();
+		this.dependingObjects = new ArrayList<>();
 		try {
 			initValue = evaluateValue();
 		} catch (NullReferenceException e) {
@@ -133,7 +133,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		return initValue;
 	}
 
-	private List<TargetObject> getChainedBindings(TargetObject object) { // NOPMD by beugnard on 30/10/14 17:15
+	private static List<TargetObject> getChainedBindings(TargetObject object) { // NOPMD by beugnard on 30/10/14 17:15
 		return null; // local optimization in refreshObserving
 	}
 
@@ -166,7 +166,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			LOGGER.info("-------------> DependencyBindings:");
 		}
 
-		List<TargetObject> updatedDependingObjects = new ArrayList<TargetObject>();
+		List<TargetObject> updatedDependingObjects = new ArrayList<>();
 		List<TargetObject> targetObjects = dataBinding.getTargetObjects(context);
 
 		if (debug) {
@@ -194,7 +194,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			LOGGER.info("2-updatedDependingObjects = " + updatedDependingObjects);
 		}
 
-		Set<HasPropertyChangeSupport> set = new HashSet<HasPropertyChangeSupport>();
+		Set<HasPropertyChangeSupport> set = new HashSet<>();
 		for (TargetObject o : updatedDependingObjects) {
 			if (o.target instanceof HasPropertyChangeSupport) {
 				set.add((HasPropertyChangeSupport) o.target);
@@ -210,8 +210,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			LOGGER.info("3-updatedDependingObjects = " + updatedDependingObjects);
 		}
 
-		List<TargetObject> newDependingObjects = new ArrayList<TargetObject>();
-		List<TargetObject> oldDependingObjects = new ArrayList<TargetObject>(dependingObjects);
+		List<TargetObject> newDependingObjects = new ArrayList<>();
+		List<TargetObject> oldDependingObjects = new ArrayList<>(dependingObjects);
 		for (TargetObject o : updatedDependingObjects) {
 			if (oldDependingObjects.contains(o)) {
 				oldDependingObjects.remove(o);
@@ -330,7 +330,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			LOGGER.warning("Unexpected exception raised. See logs for details.");
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return null;
 	}
@@ -411,7 +411,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		else {
 			// This change will not cause the change of the object, but a different path may lead to the same value
 			// If we do nothing, we might no longer observe the right objects
-			for (TargetObject o : new ArrayList<TargetObject>(dependingObjects)) {
+			for (TargetObject o : new ArrayList<>(dependingObjects)) {
 				if (evt.getSource() == o.target && evt.getPropertyName().equals(o.propertyName)) {
 					bindingValueChanged(evt.getSource(), newValue);
 					refreshObserving(false);

@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.kvc;
 
 import java.lang.reflect.InvocationTargetException;
@@ -45,10 +44,10 @@ import java.lang.reflect.InvocationTargetException;
  * <p>
  * Exception thrown when invoking a class accessor during coding or decoding process.
  * </p>
- * The <code>message</code> (see {@link #getMessage()}) contains the error description, and <code>targetException</code> (see
+ * The {@code message} (see {@link #getMessage()}) contains the error description, and {@code targetException} (see
  * {@link #getTargetException()})
  * 
- * @author <a href="mailto:Sylvain.Guerin@enst-bretagne.fr">Sylvain Guerin</a>
+ * @author sylvain
  * @see org.openflexo.kvc.KeyValueProperty
  */
 public class AccessorInvocationException extends RuntimeException {
@@ -56,9 +55,10 @@ public class AccessorInvocationException extends RuntimeException {
 	protected Throwable targetException;
 
 	/**
-	 * Creates a new <code>AccessorInvocationException</code> instance.
+	 * Creates a new {@code AccessorInvocationException} instance.
 	 * 
-	 * @param exception target exception.
+	 * @param exception
+	 *            target exception.
 	 * 
 	 */
 	public AccessorInvocationException(InvocationTargetException exception) {
@@ -68,11 +68,12 @@ public class AccessorInvocationException extends RuntimeException {
 	}
 
 	/**
-	 * Creates a new <code>AccessorInvocationException</code> instance given a message <code>aMessage</code>
+	 * Creates a new {@code AccessorInvocationException} instance given a message {@code aMessage}
 	 * 
 	 * @param aMessage
-	 *            a <code>String</code> value
-	 * @param exception target exception.
+	 *            a {@code String} value
+	 * @param exception
+	 *            target exception.
 	 */
 	public AccessorInvocationException(String aMessage, InvocationTargetException exception) {
 

@@ -130,7 +130,8 @@ public class DiffSource {
 		_delimitingMethod = method;
 		if (aString == null) {
 			textTokens = slurpString("", ignoredCols, method);
-		} else {
+		}
+		else {
 			textTokens = slurpString(aString, ignoredCols, method);
 		}
 	}
@@ -263,7 +264,7 @@ public class DiffSource {
 	 */
 	private static String deleteFirstColumns(String aString, int ignoredCols) {
 		BufferedReader rdr = new BufferedReader(new StringReader(aString));
-		Vector<String> s = new Vector<String>();
+		Vector<String> s = new Vector<>();
 		StringBuffer sb = new StringBuffer();
 		for (;;) {
 			String line = null;
@@ -310,7 +311,7 @@ public class DiffSource {
 
 		String delims = delimitingMethod.getDelimiters();
 
-		List<MergeToken> tokens = new ArrayList<MergeToken>();
+		List<MergeToken> tokens = new ArrayList<>();
 		int index = 0;
 		int beginDelimStartIndex = 0;
 		int beginDelimEndIndex = 0;
@@ -331,42 +332,43 @@ public class DiffSource {
 				location = TokenLocation.END;
 			}
 			switch (location) {
-			case BEGIN:
-				if (!isDelim) {
-					beginDelimEndIndex = index;
-					location = TokenLocation.TOKEN;
-				}
-				break;
-			case END:
-				if (!isDelim || isNewLine) {
-					endDelimEndIndex = isNewLine ? index + 1 : index;
-					if (beginDelimStartIndex < endDelimEndIndex) {
-						tokens.add(new MergeToken(beginDelimStartIndex, beginDelimEndIndex, endDelimStartIndex, endDelimEndIndex));
-					}
-					beginDelimStartIndex = endDelimEndIndex;
-					if (isNewLine) {
-						location = TokenLocation.BEGIN;
-					} else {
+				case BEGIN:
+					if (!isDelim) {
+						beginDelimEndIndex = index;
 						location = TokenLocation.TOKEN;
 					}
-				}
-				break;
-			case TOKEN:
-				if (isDelim) {
-					endDelimStartIndex = index;
-					location = TokenLocation.END;
-				}
-				break;
+					break;
+				case END:
+					if (!isDelim || isNewLine) {
+						endDelimEndIndex = isNewLine ? index + 1 : index;
+						if (beginDelimStartIndex < endDelimEndIndex) {
+							tokens.add(new MergeToken(beginDelimStartIndex, beginDelimEndIndex, endDelimStartIndex, endDelimEndIndex));
+						}
+						beginDelimStartIndex = endDelimEndIndex;
+						if (isNewLine) {
+							location = TokenLocation.BEGIN;
+						}
+						else {
+							location = TokenLocation.TOKEN;
+						}
+					}
+					break;
+				case TOKEN:
+					if (isDelim) {
+						endDelimStartIndex = index;
+						location = TokenLocation.END;
+					}
+					break;
 			}
 			index++;
 		}
 		switch (location) {
-		case BEGIN:
-			beginDelimEndIndex = index;
-		case TOKEN:
-			endDelimStartIndex = index;
-		case END:
-			endDelimEndIndex = index;
+			case BEGIN:
+				beginDelimEndIndex = index;
+			case TOKEN:
+				endDelimStartIndex = index;
+			case END:
+				endDelimEndIndex = index;
 		}
 		if (beginDelimStartIndex < endDelimEndIndex) {
 			tokens.add(new MergeToken(beginDelimStartIndex, beginDelimEndIndex, endDelimStartIndex, endDelimEndIndex));
@@ -430,7 +432,8 @@ public class DiffSource {
 	public MergeToken tokenAt(int index) {
 		if (index < textTokens.length) {
 			return textTokens[index];
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
@@ -438,7 +441,8 @@ public class DiffSource {
 	public String tokenValueAt(int index) {
 		if (index < textTokens.length) {
 			return textTokens[index].getToken();
-		} else {
+		}
+		else {
 			return "???";
 		}
 	}

@@ -120,8 +120,8 @@ public class JavaMethodPathElement extends FunctionPathElement {
 	}
 
 	@Override
-	public Object getBindingValue(Object target, BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
-			InvocationTargetTransformException {
+	public Object getBindingValue(Object target, BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
 
 		// System.out.println("evaluate " + getMethodDefinition().getSignature() + " for " + target);
 
@@ -130,8 +130,8 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 		for (Function.FunctionArgument a : getFunction().getArguments()) {
 			try {
-				args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context), getMethodDefinition().getMethod()
-						.getGenericParameterTypes()[i]);
+				args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
+						getMethodDefinition().getMethod().getGenericParameterTypes()[i]);
 			} catch (InvocationTargetException e) {
 				throw new InvocationTargetTransformException(e);
 			}
@@ -140,8 +140,8 @@ public class JavaMethodPathElement extends FunctionPathElement {
 		try {
 			return getMethodDefinition().getMethod().invoke(target, args);
 		} catch (IllegalArgumentException e) {
-			StringBuffer warningMessage = new StringBuffer("While evaluating method " + getMethodDefinition().getMethod()
-					+ " exception occured: " + e.getMessage());
+			StringBuffer warningMessage = new StringBuffer(
+					"While evaluating method " + getMethodDefinition().getMethod() + " exception occured: " + e.getMessage());
 			warningMessage.append(", object = " + target);
 			for (i = 0; i < getFunction().getArguments().size(); i++) {
 				warningMessage.append(", arg[" + i + "] = " + args[i]);
@@ -149,10 +149,9 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			LOGGER.warning(warningMessage.toString());
 			// e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			e.getTargetException().printStackTrace();
+			// e.getTargetException().printStackTrace();
 			StringBuffer sb = new StringBuffer();
 			sb.append("InvocationTargetException " + e.getTargetException().getClass().getSimpleName() + " : "
 					+ e.getTargetException().getMessage() + " while evaluating method " + getMethodDefinition().getMethod()

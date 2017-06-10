@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -119,14 +120,11 @@ public abstract class Expression {
 	/**
 	 * Return a list containing all {@link BindingValue} used in this expression
 	 * 
-	 * @param expression
 	 * @return
-	 * @throws ParseException
-	 * @throws TypeMismatchException
 	 */
 	public List<BindingValue> getAllBindingValues() {
 
-		final List<BindingValue> returned = new ArrayList<BindingValue>();
+		final List<BindingValue> returned = new ArrayList<>();
 
 		try {
 			visit(new ExpressionVisitor() {
@@ -134,6 +132,31 @@ public abstract class Expression {
 				public void visit(Expression e) {
 					if (e instanceof BindingValue) {
 						returned.add((BindingValue) e);
+					}
+				}
+			});
+		} catch (VisitorException e) {
+			LOGGER.warning("Unexpected " + e);
+		}
+
+		return returned;
+	}
+
+	/**
+	 * Return a list containing all {@link BindingVariables} used in this expression
+	 * 
+	 * @return
+	 */
+	public List<BindingVariable> getAllBindingVariables() {
+
+		final List<BindingVariable> returned = new ArrayList<>();
+
+		try {
+			visit(new ExpressionVisitor() {
+				@Override
+				public void visit(Expression e) {
+					if (e instanceof BindingValue) {
+						returned.add(((BindingValue) e).getBindingVariable());
 					}
 				}
 			});
@@ -157,7 +180,7 @@ public abstract class Expression {
 	 * expressions (an atomic expression is a constant or a binding value, or a variable). An atomic expression has no child.
 	 */
 	public Vector<Expression> getAllAtomicExpressions() {
-		Vector<Expression> returned = new Vector<Expression>();
+		Vector<Expression> returned = new Vector<>();
 		appendAllAtomicExpressions(returned, this);
 		return returned;
 	}

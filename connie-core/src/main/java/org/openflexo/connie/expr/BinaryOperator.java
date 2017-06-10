@@ -53,16 +53,16 @@ public abstract class BinaryOperator extends Operator {
 	@Override
 	public abstract int getPriority();
 
-	public abstract Constant evaluate(Constant leftArg, Constant rightArg) throws TypeMismatchException, NullReferenceException;
+	public abstract Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException;
 
 	public abstract EvaluationType getEvaluationType(EvaluationType leftOperandType, EvaluationType rightOperandType)
 			throws TypeMismatchException;
 
-	public Expression evaluate(Expression leftArg, Constant rightArg) throws TypeMismatchException, NullReferenceException {
+	public Expression evaluate(Expression leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 		return new BinaryOperatorExpression(this, leftArg, rightArg);
 	}
 
-	public Expression evaluate(Constant leftArg, Expression rightArg) throws TypeMismatchException, NullReferenceException {
+	public Expression evaluate(Constant<?> leftArg, Expression rightArg) throws TypeMismatchException, NullReferenceException {
 		return new BinaryOperatorExpression(this, leftArg, rightArg);
 	}
 

@@ -49,7 +49,7 @@ import java.lang.reflect.Type;
  */
 public class ExplicitNullType implements Type {
 
-	public static ExplicitNullType INSTANCE = new ExplicitNullType();
+	public static final ExplicitNullType INSTANCE = new ExplicitNullType();
 
 	private ExplicitNullType() {
 		// Cannot instanciate from outside

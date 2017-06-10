@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.kvc;
 
 /**
@@ -53,7 +52,7 @@ package org.openflexo.kvc;
 public class InvalidKeyValuePropertyException extends RuntimeException {
 
 	/**
-	 * Creates a new <code>InvalidKeyValuePropertyException</code> instance.
+	 * Creates a new {@code InvalidKeyValuePropertyException} instance.
 	 * 
 	 */
 	public InvalidKeyValuePropertyException() {
@@ -61,10 +60,10 @@ public class InvalidKeyValuePropertyException extends RuntimeException {
 	}
 
 	/**
-	 * Creates a new <code>InvalidKeyValuePropertyException</code> instance, given a message <code>aMessage</code>
+	 * Creates a new {@code InvalidKeyValuePropertyException} instance, given a message {@code aMessage}
 	 * 
 	 * @param aMessage
-	 *            a <code>String</code> value
+	 *            a {@code String} message
 	 */
 	public InvalidKeyValuePropertyException(String aMessage) {
 		super(aMessage);

@@ -68,7 +68,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 	public FunctionPathElement(BindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
 		this.parent = parent;
 		this.function = function;
-		parameters = new HashMap<Function.FunctionArgument, DataBinding<?>>();
+		parameters = new HashMap<>();
 		if (function == null) {
 			LOGGER.warning("FunctionPathElement called with null function");
 		}
@@ -91,7 +91,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		for (Function.FunctionArgument arg : function.getArguments()) {
 			DataBinding<?> parameter = getParameter(arg);
 			if (parameter == null) {
-				parameter = new DataBinding<Object>(bindable, arg.getArgumentType(), DataBinding.BindingDefinitionType.GET);
+				parameter = new DataBinding<>(bindable, arg.getArgumentType(), DataBinding.BindingDefinitionType.GET);
 				parameter.setBindingName(arg.getArgumentName());
 				parameter.setUnparsedBinding("");
 				setParameter(arg, parameter);

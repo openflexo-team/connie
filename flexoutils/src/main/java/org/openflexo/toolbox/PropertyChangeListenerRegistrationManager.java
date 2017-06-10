@@ -50,14 +50,14 @@ public class PropertyChangeListenerRegistrationManager {
 	private List<PropertyChangeListenerRegistration> registrations;
 
 	public PropertyChangeListenerRegistrationManager() {
-		registrations = new Vector<PropertyChangeListenerRegistrationManager.PropertyChangeListenerRegistration>();
+		registrations = new Vector<>();
 	}
 
 	public boolean hasListener(String propertyName, PropertyChangeListener listener, HasPropertyChangeSupport hasPropertyChangeSupport) {
 		for (PropertyChangeListenerRegistration registration : registrations) {
 			if (registration.hasPropertyChangeSupport == hasPropertyChangeSupport && registration.listener == listener
-					&& registration.propertyName == null && propertyName == null || registration.propertyName != null
-					&& registration.propertyName.equals(propertyName)) {
+					&& registration.propertyName == null && propertyName == null
+					|| registration.propertyName != null && registration.propertyName.equals(propertyName)) {
 				return true;
 			}
 		}
@@ -65,7 +65,7 @@ public class PropertyChangeListenerRegistrationManager {
 	}
 
 	public void delete() {
-		for (PropertyChangeListenerRegistration registration : new ArrayList<PropertyChangeListenerRegistration>(registrations)) {
+		for (PropertyChangeListenerRegistration registration : new ArrayList<>(registrations)) {
 			registration.removeListener();
 		}
 		// Just to be sure
@@ -88,7 +88,8 @@ public class PropertyChangeListenerRegistrationManager {
 			this.hasPropertyChangeSupport = hasPropertyChangeSupport;
 			if (propertyName != null) {
 				hasPropertyChangeSupport.getPropertyChangeSupport().addPropertyChangeListener(propertyName, listener);
-			} else {
+			}
+			else {
 				hasPropertyChangeSupport.getPropertyChangeSupport().addPropertyChangeListener(listener);
 			}
 			registrations.add(this);
@@ -97,7 +98,8 @@ public class PropertyChangeListenerRegistrationManager {
 		public void removeListener() {
 			if (propertyName != null) {
 				hasPropertyChangeSupport.getPropertyChangeSupport().removePropertyChangeListener(propertyName, listener);
-			} else {
+			}
+			else {
 				hasPropertyChangeSupport.getPropertyChangeSupport().removePropertyChangeListener(listener);
 			}
 			registrations.remove(this);

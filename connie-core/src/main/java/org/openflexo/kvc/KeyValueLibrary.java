@@ -58,15 +58,15 @@ public class KeyValueLibrary {
 
 	private static final Logger LOGGER = Logger.getLogger(KeyValueLibrary.class.getPackage().getName());
 
-	private static final Map<Type, Hashtable<String, KeyValueProperty>> PROPERTIES = new Hashtable<Type, Hashtable<String, KeyValueProperty>>();
+	private static final Map<Type, Hashtable<String, KeyValueProperty>> PROPERTIES = new Hashtable<>();
 
-	private static final Map<Type, Vector<KeyValueProperty>> DECLARED_KEY_VALUE_PROPERTIES = new Hashtable<Type, Vector<KeyValueProperty>>();
+	private static final Map<Type, Vector<KeyValueProperty>> DECLARED_KEY_VALUE_PROPERTIES = new Hashtable<>();
 
-	private static final Map<Type, Vector<MethodDefinition>> DECLARED_METHODS = new Hashtable<Type, Vector<MethodDefinition>>();
+	private static final Map<Type, Vector<MethodDefinition>> DECLARED_METHODS = new Hashtable<>();
 
-	private static final Map<Type, Vector<KeyValueProperty>> ACCESSIBLE_KEY_VALUE_PROPERTIES = new Hashtable<Type, Vector<KeyValueProperty>>();
+	private static final Map<Type, Vector<KeyValueProperty>> ACCESSIBLE_KEY_VALUE_PROPERTIES = new Hashtable<>();
 
-	private static final Map<Type, Vector<MethodDefinition>> ACCESSIBLE_METHODS = new Hashtable<Type, Vector<MethodDefinition>>();
+	private static final Map<Type, Vector<MethodDefinition>> ACCESSIBLE_METHODS = new Hashtable<>();
 
 	public static void clearCache() {
 		PROPERTIES.clear();
@@ -82,7 +82,7 @@ public class KeyValueLibrary {
 		}
 		Hashtable<String, KeyValueProperty> cacheForType = PROPERTIES.get(declaringType);
 		if (cacheForType == null) {
-			cacheForType = new Hashtable<String, KeyValueProperty>();
+			cacheForType = new Hashtable<>();
 			PROPERTIES.put(declaringType, cacheForType);
 		}
 		KeyValueProperty returned = cacheForType.get(propertyName);
@@ -114,7 +114,7 @@ public class KeyValueLibrary {
 			if (LOGGER.isLoggable(Level.FINE)) {
 				LOGGER.fine("build declaredProperties() for " + declaringType);
 			}
-			Vector<String> excludedSignatures = new Vector<String>();
+			Vector<String> excludedSignatures = new Vector<>();
 			returned = searchForProperties(declaringType, true, excludedSignatures);
 			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, returned);
 			Vector<MethodDefinition> methods = searchForMethods(declaringType, excludedSignatures);
@@ -127,7 +127,7 @@ public class KeyValueLibrary {
 		Vector<MethodDefinition> returned = DECLARED_METHODS.get(declaringType);
 		if (returned == null) {
 			LOGGER.fine("build declaredMethods() for " + declaringType);
-			Vector<String> excludedSignatures = new Vector<String>();
+			Vector<String> excludedSignatures = new Vector<>();
 			Vector<KeyValueProperty> properties = searchForProperties(declaringType, true, excludedSignatures);
 			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, properties);
 			returned = searchForMethods(declaringType, excludedSignatures);
@@ -139,7 +139,7 @@ public class KeyValueLibrary {
 	public static Vector<KeyValueProperty> getAccessibleProperties(Type declaringType) {
 		Vector<KeyValueProperty> returned = ACCESSIBLE_KEY_VALUE_PROPERTIES.get(declaringType);
 		if (returned == null) {
-			returned = new Vector<KeyValueProperty>();
+			returned = new Vector<>();
 			appendAccessibleProperties(declaringType, returned);
 			Collections.sort(returned, new Comparator<KeyValueProperty>() {
 
@@ -189,7 +189,7 @@ public class KeyValueLibrary {
 	public static Vector<MethodDefinition> getAccessibleMethods(Type declaringType) {
 		Vector<MethodDefinition> returned = ACCESSIBLE_METHODS.get(declaringType);
 		if (returned == null) {
-			returned = new Vector<MethodDefinition>();
+			returned = new Vector<>();
 			Type current = declaringType;
 			while (current != null) {
 				returned.addAll(getDeclaredMethods(current));
@@ -209,7 +209,7 @@ public class KeyValueLibrary {
 	}
 
 	private static Vector<MethodDefinition> searchForMethods(Type declaringType, Vector<String> excludedSignatures) {
-		Vector<MethodDefinition> returned = new Vector<MethodDefinition>();
+		Vector<MethodDefinition> returned = new Vector<>();
 
 		if (LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.fine("searchForMethods()");
@@ -257,7 +257,7 @@ public class KeyValueLibrary {
 
 	private static Vector<KeyValueProperty> searchForProperties(Type declaringTypeType, boolean includesGetOnlyProperties,
 			Vector<String> excludedSignatures) {
-		Vector<KeyValueProperty> returned = new Vector<KeyValueProperty>();
+		Vector<KeyValueProperty> returned = new Vector<>();
 
 		Class<?> theClass = TypeUtils.getBaseClass(declaringTypeType);
 		if (theClass == null) {
@@ -399,7 +399,7 @@ public class KeyValueLibrary {
 		String propertyNameWithFirstCharToUpperCase = propertyName.substring(0, 1).toUpperCase()
 				+ propertyName.substring(1, propertyName.length());
 
-		Vector<String> tries = new Vector<String>();
+		Vector<String> tries = new Vector<>();
 
 		Type params[] = new Type[1];
 		params[0] = aType;

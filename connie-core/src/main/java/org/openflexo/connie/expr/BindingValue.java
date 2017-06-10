@@ -39,6 +39,17 @@
 
 package org.openflexo.connie.expr;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
@@ -66,17 +77,6 @@ import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 import org.openflexo.kvc.KeyValueProperty;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Represents a binding path, as formed by an access to a binding variable and a path of BindingPathElement<br>
  * A BindingValue may be settable is the last BindingPathElement is itself settable
@@ -87,8 +87,6 @@ import java.util.logging.Logger;
 public class BindingValue extends Expression implements PropertyChangeListener, Cloneable {
 
 	private static final Logger LOGGER = Logger.getLogger(BindingValue.class.getPackage().getName());
-
-	private final ArrayList<Object> EMPTY_LIST = new ArrayList<Object>();
 
 	public static abstract class AbstractBindingPathElement {
 	}
@@ -179,7 +177,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		this.parsedBindingPath = aBindingPath;
 		bindingVariable = null;
-		bindingPath = new ArrayList<BindingPathElement>();
+		bindingPath = new ArrayList<>();
 		needsAnalysing = true;
 		analysingSuccessfull = true;
 	}
@@ -227,7 +225,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	/**
 	 * @param element
-	 * @param i
 	 */
 	public Type addBindingPathElement(BindingPathElement element) {
 		int index = bindingPath.size();
@@ -286,7 +283,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			else if (e instanceof FunctionPathElement) {
 				FunctionPathElement fpe = (FunctionPathElement) e;
-				List<Expression> argList = new ArrayList<Expression>();
+				List<Expression> argList = new ArrayList<>();
 				for (FunctionArgument fa : fpe.getArguments()) {
 					DataBinding<?> db = fpe.getParameter(fa);
 					if (db != null) {
@@ -462,8 +459,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * A {@link BindingValue} is cacheable if
 	 * <ul>
 	 * <li>related {@link BindingVariable} is cacheable</li>
-	 * <li>this {@link BindingValue} should be notification-safe
-	 * 
+	 * <li>this {@link BindingValue} should be notification-safe</li>
+	 * </ul>
 	 * 
 	 * @return
 	 */
@@ -547,13 +544,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 
 		boolean hasBeenTransformed = false;
-		ArrayList<AbstractBindingPathElement> newBindingPath = new ArrayList<AbstractBindingPathElement>();
+		ArrayList<AbstractBindingPathElement> newBindingPath = new ArrayList<>();
 		for (AbstractBindingPathElement e : getParsedBindingPath()) {
 			if (e instanceof NormalBindingPathElement) {
 				newBindingPath.add(new NormalBindingPathElement(((NormalBindingPathElement) e).property));
 			}
 			else if (e instanceof MethodCallBindingPathElement) {
-				ArrayList<Expression> newArgs = new ArrayList<Expression>();
+				ArrayList<Expression> newArgs = new ArrayList<>();
 				for (Expression arg : ((MethodCallBindingPathElement) e).args) {
 					Expression transformedExpression = arg.transform(transformer);
 					newArgs.add(transformedExpression);
@@ -767,19 +764,19 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// getParsedBindingPath());
 
 		if (dataBinding.getOwner() == null) {
-			LOGGER.warning("DataBinding has no owner");
+			// LOGGER.warning("DataBinding has no owner");
 			invalidBindingReason = "DataBinding has no owner";
 			return false;
 		}
 
 		if (dataBinding.getOwner().getBindingModel() == null) {
-			LOGGER.warning("DataBinding owner has no binding model, owner=" + dataBinding.getOwner());
+			// LOGGER.warning("DataBinding owner has no binding model, owner=" + dataBinding.getOwner());
 			invalidBindingReason = "DataBinding owner has no binding model, binding=" + dataBinding + " owner=" + dataBinding.getOwner();
 			return false;
 		}
 
 		if (dataBinding.getOwner().getBindingFactory() == null) {
-			LOGGER.warning("DataBinding owner has no binding factory, owner=" + dataBinding.getOwner());
+			// LOGGER.warning("DataBinding owner has no binding factory, owner=" + dataBinding.getOwner());
 			invalidBindingReason = "DataBinding owner has no binding factory, binding=" + dataBinding + " owner=" + dataBinding.getOwner();
 			return false;
 		}
@@ -824,10 +821,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					}
 					else if (pathElement instanceof MethodCallBindingPathElement) {
 						MethodCallBindingPathElement methodCall = (MethodCallBindingPathElement) pathElement;
-						List<DataBinding<?>> args = new ArrayList<DataBinding<?>>();
+						List<DataBinding<?>> args = new ArrayList<>();
 						int argIndex = 0;
 						for (Expression arg : methodCall.args) {
-							DataBinding<?> argDataBinding = new DataBinding<Object>(dataBinding.getOwner(), Object.class,
+							DataBinding<?> argDataBinding = new DataBinding<>(dataBinding.getOwner(), Object.class,
 									DataBinding.BindingDefinitionType.GET);
 							argDataBinding.setBindingName("arg" + argIndex);
 							if (arg != null) {
@@ -875,7 +872,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 						}
 					}
 					else {
-						LOGGER.warning("Unexpected " + pathElement);
+						// LOGGER.warning("Unexpected " + pathElement);
 						invalidBindingReason = "unexpected path element: " + pathElement;
 						analysingSuccessfull = false;
 						return false;
@@ -886,7 +883,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			analysingSuccessfull = true;
 		}
 		else {
-			LOGGER.warning("Invalid binding value " + this);
+			// LOGGER.warning("Invalid binding value " + this);
 			// Thread.dumpStack();
 			analysingSuccessfull = false;
 		}
@@ -976,9 +973,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				// System.out.println("Obtain "+returned);
 			}
 		}
-		if (returned == null) {
-			throw new NullReferenceException("null occured when evaluating " + lastEvaluatedPathElement + " from " + lastEvaluated);
-		}
 
 		// logger.info("returned="+returned);
 		// logger.info("lastElement="+getBindingPath().lastElement());
@@ -1009,13 +1003,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 */
 	public List<Object> getConcernedObjects(BindingEvaluationContext context) {
 		if (!isValid()) {
-			return EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		if (!isSettable()) {
-			return EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
-		List<Object> returned = new ArrayList<Object>();
+		List<Object> returned = new ArrayList<>();
 
 		Object current = context.getValue(getBindingVariable());
 		returned.add(current);
@@ -1070,7 +1064,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return null;
 		}
 
-		ArrayList<TargetObject> returned = new ArrayList<TargetObject>();
+		ArrayList<TargetObject> returned = new ArrayList<>();
 
 		Object current = context.getValue(getBindingVariable());
 		returned.add(new TargetObject(context, getBindingVariable().getVariableName()));

@@ -100,7 +100,7 @@ public class CastExpression extends Expression {
 
 	@Override
 	protected Vector<Expression> getChilds() {
-		Vector<Expression> returned = new Vector<Expression>();
+		Vector<Expression> returned = new Vector<>();
 		returned.add(getArgument());
 		return returned;
 	}

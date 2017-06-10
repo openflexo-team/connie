@@ -81,7 +81,8 @@ public class ConditionalExpression extends Expression {
 		if (transformedCondition == BooleanConstant.TRUE) {
 			// No need to analyze further
 			return thenExpression.transform(transformer);
-		} else if (transformedCondition == BooleanConstant.FALSE) {
+		}
+		else if (transformedCondition == BooleanConstant.FALSE) {
 			// No need to analyze further
 			return elseExpression.transform(transformer);
 		}
@@ -112,7 +113,8 @@ public class ConditionalExpression extends Expression {
 
 		if (TypeUtils.isTypeAssignableFrom(thenType, elseType)) {
 			return thenType;
-		} else if (TypeUtils.isTypeAssignableFrom(elseType, thenType)) {
+		}
+		else if (TypeUtils.isTypeAssignableFrom(elseType, thenType)) {
 			return elseType;
 		}
 		return Object.class;
@@ -130,7 +132,7 @@ public class ConditionalExpression extends Expression {
 
 	@Override
 	protected Vector<Expression> getChilds() {
-		Vector<Expression> returned = new Vector<Expression>();
+		Vector<Expression> returned = new Vector<>();
 		returned.add(getCondition());
 		returned.add(getThenExpression());
 		returned.add(getElseExpression());

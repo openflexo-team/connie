@@ -48,13 +48,12 @@ import java.util.Vector;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * A {@link BindingModel} represents a set of {@link BindingVariable}, which are
- * variables accessible in the context of which this binding model is declared.
- * This is the type specification of an evaluation context, determined at
- * run-time by a {@link BindingEvaluationContext} instance<br>
+ * A {@link BindingModel} represents a set of {@link BindingVariable}, which are variables accessible in the context of which this binding
+ * model is declared. This is the type specification of an evaluation context, determined at run-time by a {@link BindingEvaluationContext}
+ * instance<br>
  * 
  * 
- * @author sguerin
+ * @author sylvain
  * 
  */
 public class BindingModel implements HasPropertyChangeSupport, PropertyChangeListener {
@@ -78,7 +77,7 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	}
 
 	public BindingModel(BindingModel baseBindingModel) {
-		_bindingVariables = new Vector<BindingVariable>();
+		_bindingVariables = new Vector<>();
 		pcSupport = new PropertyChangeSupport(this);
 		setBaseBindingModel(baseBindingModel);
 	}
@@ -147,7 +146,8 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	public BindingVariable getBindingVariableAt(int index) {
 		if (baseBindingModel == null || index < _bindingVariables.size()) {
 			return _bindingVariables.get(index);
-		} else {
+		}
+		else {
 			return baseBindingModel.getBindingVariableAt(index - _bindingVariables.size());
 		}
 	}
@@ -178,15 +178,14 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	@Override
 	public String toString() {
 		return "[ " + getClass().getSimpleName() + ": " + _bindingVariables
-				+ (baseBindingModel != null ? " Combined with: " + baseBindingModel : "") + "]";
+				+ (baseBindingModel != null ? " Combined with: " + (baseBindingModel != this ? baseBindingModel.toString() : "") : "")
+				+ "]";
 	}
 
 	/**
 	 * Equals method for BindingModel<br>
-	 * Two BindingModel are equals if they have the same number of
-	 * {@link BindingVariable} and if all {@link BindingVariable} match (peer to
-	 * peer responding to equals method) TODO: implements hashCode() method
-	 * respecting this semantics
+	 * Two BindingModel are equals if they have the same number of {@link BindingVariable} and if all {@link BindingVariable} match (peer to
+	 * peer responding to equals method) TODO: implements hashCode() method respecting this semantics
 	 */
 	@Override
 	public boolean equals(Object obj) {

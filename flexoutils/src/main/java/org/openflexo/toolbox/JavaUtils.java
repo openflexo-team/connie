@@ -64,14 +64,14 @@ public class JavaUtils {
 	public static final String JAVA_CLASS_NAME_REGEXP = "[_A-Za-z][_A-Za-z0-9]*";
 	public static final Pattern JAVA_CLASS_NAME_PATTERN = Pattern.compile(JAVA_CLASS_NAME_REGEXP);
 
-	public static final Set<String> JAVA_RESERVED_KEYWORDS = new HashSet<String>(Arrays.asList("abstract", "continue", "for", "new",
-			"switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double",
-			"implements", "protected", "throw", "byte", "else", "import", "public", "throws", "catch", "extends", "int", "short", "try",
-			"char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
-			"super", "while"));
+	public static final Set<String> JAVA_RESERVED_KEYWORDS = new HashSet<>(
+			Arrays.asList("abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean",
+					"do", "if", "private", "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import",
+					"public", "throws", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class",
+					"finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"));
 
 	/**
-	 * Transform the specified <code>value</code> to be used as a java variable name. <br>
+	 * Transform the specified {@code value} to be used as a java variable name. <br>
 	 * Basically, it will remove all special/whiteSpace characters, ensure it starts with a lower case and ensure it doesn't start with a
 	 * number.
 	 * 
@@ -84,10 +84,10 @@ public class JavaUtils {
 	}
 
 	/**
-	 * Transform the specified <code>value</code> to be used as a java constant name. <br>
+	 * Transform the specified {@code name} to be used as a java constant name. <br>
 	 * Basically, it will remove all special/whiteSpace characters, ensure it doesn't start with a number and transform it to upper case.
 	 * 
-	 * @param value
+	 * @param name
 	 *            the string to transform, can be null, in such case null is returned
 	 * @return the transformed string
 	 */
@@ -96,7 +96,7 @@ public class JavaUtils {
 	}
 
 	/**
-	 * Transform the specified <code>value</code> to be used as a java class name. <br>
+	 * Transform the specified {@code value} to be used as a java class name. <br>
 	 * Basically, it will remove all special/whiteSpace characters, ensure it starts with a upper case and ensure it doesn't start with a
 	 * number.
 	 * 
@@ -109,7 +109,7 @@ public class JavaUtils {
 	}
 
 	/**
-	 * Transform the specified <code>value</code> to be used as a java package name. <br>
+	 * Transform the specified {@code value} to be used as a java package name. <br>
 	 * Basically, it will remove all special/whiteSpace characters (except .), ensure it contains only lower case and ensure each part
 	 * doesn't start with a number.
 	 * 
@@ -141,7 +141,7 @@ public class JavaUtils {
 	}
 
 	/**
-	 * Transform the specified <code>value</code> to be used as a java string. <br>
+	 * Transform the specified {@code value} to be used as a java string. <br>
 	 * Basically, it will replace all breaking line by \n and add a \ before all escapable characters (", \, ...).
 	 * 
 	 * @param value
@@ -166,7 +166,7 @@ public class JavaUtils {
 	}
 
 	/**
-	 * Transform the specified <code>value</code> to be used as javadoc. <br>
+	 * Transform the specified {@code value} to be used as javadoc. <br>
 	 * 
 	 * @param value
 	 * @return the transformed string

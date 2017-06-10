@@ -61,51 +61,53 @@ public class ExpressionEvaluator implements ExpressionTransformer {
 		// e._checkSemanticallyAcceptable();
 		if (e instanceof BinaryOperatorExpression) {
 			return transformBinaryOperatorExpression((BinaryOperatorExpression) e);
-		} else if (e instanceof UnaryOperatorExpression) {
+		}
+		else if (e instanceof UnaryOperatorExpression) {
 			return transformUnaryOperatorExpression((UnaryOperatorExpression) e);
-		} else if (e instanceof ConditionalExpression) {
+		}
+		else if (e instanceof ConditionalExpression) {
 			return transformConditionalExpression((ConditionalExpression) e);
-		} else if (e instanceof FloatSymbolicConstant) {
+		}
+		else if (e instanceof FloatSymbolicConstant) {
 			return transformFloatSymbolicConstant((FloatSymbolicConstant) e);
 		}
 		return e;
 	}
 
-	private Expression transformBinaryOperatorExpression(BinaryOperatorExpression e) throws TransformException {
+	private static Expression transformBinaryOperatorExpression(BinaryOperatorExpression e) throws TransformException {
 		// If both arguments are constants, we try to evaluate them
 		if (e.getLeftArgument() instanceof Constant && e.getRightArgument() instanceof Constant
 		/*&& e.getLeftArgument().getEvaluationType() == e.getRightArgument().getEvaluationType()*/
 		/*&& (e.getLeftArgument() != ObjectSymbolicConstant.NULL) && (e.getRightArgument() != ObjectSymbolicConstant.NULL)*/) {
-			Constant returned = e.getOperator().evaluate((Constant) e.getLeftArgument(), (Constant) e.getRightArgument());
-			return returned;
+			return e.getOperator().evaluate((Constant<?>) e.getLeftArgument(), (Constant<?>) e.getRightArgument());
 		}
 		if (e.getLeftArgument() instanceof Constant /*&& (e.getLeftArgument() != ObjectSymbolicConstant.NULL)*/) {
-			return e.getOperator().evaluate((Constant) e.getLeftArgument(), e.getRightArgument());
+			return e.getOperator().evaluate((Constant<?>) e.getLeftArgument(), e.getRightArgument());
 		}
 		if (e.getRightArgument() instanceof Constant /*&& (e.getRightArgument() != ObjectSymbolicConstant.NULL)*/) {
-			return e.getOperator().evaluate(e.getLeftArgument(), (Constant) e.getRightArgument());
+			return e.getOperator().evaluate(e.getLeftArgument(), (Constant<?>) e.getRightArgument());
 		}
 		return e;
 	}
 
-	private Expression transformUnaryOperatorExpression(UnaryOperatorExpression e) throws TransformException {
+	private static Expression transformUnaryOperatorExpression(UnaryOperatorExpression e) throws TransformException {
 		if (e.getArgument() instanceof Constant /*&& (e.getArgument() != ObjectSymbolicConstant.NULL)*/) {
-			Constant returned = e.getOperator().evaluate((Constant) e.getArgument());
-			return returned;
+			return e.getOperator().evaluate((Constant<?>) e.getArgument());
 		}
 		return e;
 	}
 
-	private Expression transformConditionalExpression(ConditionalExpression e) throws TransformException {
+	private static Expression transformConditionalExpression(ConditionalExpression e) throws TransformException {
 		if (e.getCondition() == BooleanConstant.TRUE) {
 			return e.getThenExpression();
-		} else if (e.getCondition() == BooleanConstant.FALSE) {
+		}
+		else if (e.getCondition() == BooleanConstant.FALSE) {
 			return e.getElseExpression();
 		}
 		return e;
 	}
 
-	private FloatConstant transformFloatSymbolicConstant(FloatSymbolicConstant e) {
+	private static FloatConstant transformFloatSymbolicConstant(FloatSymbolicConstant e) {
 		return new FloatConstant(e.getValue());
 	}
 

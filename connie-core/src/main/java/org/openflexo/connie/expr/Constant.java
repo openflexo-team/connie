@@ -55,26 +55,36 @@ public abstract class Constant<V> extends Expression {
 		if (value instanceof Boolean) {
 			if ((Boolean) value) {
 				return Constant.BooleanConstant.TRUE;
-			} else {
+			}
+			else {
 				return Constant.BooleanConstant.FALSE;
 			}
-		} else if (value instanceof Character) {
+		}
+		else if (value instanceof Character) {
 			return new Constant.StringConstant(((Character) value).toString());
-		} else if (value instanceof String) {
+		}
+		else if (value instanceof String) {
 			return new Constant.StringConstant((String) value);
-		} else if (value.getClass().isEnum()) {
-			return new Constant.EnumConstant(((Enum) value));
-		} else if (value instanceof Float) {
+		}
+		else if (value.getClass().isEnum()) {
+			return new Constant.EnumConstant<>(((Enum<?>) value));
+		}
+		else if (value instanceof Float) {
 			return new Constant.FloatConstant(((Float) value).doubleValue());
-		} else if (value instanceof Double) {
+		}
+		else if (value instanceof Double) {
 			return new Constant.FloatConstant(((Double) value).doubleValue());
-		} else if (value instanceof Integer) {
+		}
+		else if (value instanceof Integer) {
 			return new Constant.IntegerConstant(((Integer) value).longValue());
-		} else if (value instanceof Short) {
+		}
+		else if (value instanceof Short) {
 			return new Constant.IntegerConstant(((Short) value).longValue());
-		} else if (value instanceof Long) {
+		}
+		else if (value instanceof Long) {
 			return new Constant.IntegerConstant(((Long) value).longValue());
-		} else if (value instanceof Byte) {
+		}
+		else if (value instanceof Byte) {
 			return new Constant.IntegerConstant(((Byte) value).longValue());
 		} /*else if (value instanceof DateValue) {
 			return new Constant.DateConstant(((DateValue) value).getDateValue());
@@ -129,7 +139,8 @@ public abstract class Constant<V> extends Expression {
 		public static BooleanConstant get(boolean value) {
 			if (value) {
 				return TRUE;
-			} else {
+			}
+			else {
 				return FALSE;
 			}
 		}
@@ -212,8 +223,8 @@ public abstract class Constant<V> extends Expression {
 
 	}
 
-	public static class EnumConstant extends Constant<Enum> {
-		private Enum value;
+	public static class EnumConstant<E extends Enum<E>> extends Constant<Enum<E>> {
+		private Enum<E> value;
 		private String enumName;
 
 		@Override
@@ -221,7 +232,7 @@ public abstract class Constant<V> extends Expression {
 			return EvaluationType.ENUM;
 		}
 
-		public EnumConstant(Enum value) {
+		public EnumConstant(Enum<E> value) {
 			super();
 			this.value = value;
 		}
@@ -240,7 +251,7 @@ public abstract class Constant<V> extends Expression {
 		}
 
 		@Override
-		public Enum getValue() {
+		public Enum<E> getValue() {
 			return value;
 		}
 	}
@@ -325,8 +336,8 @@ public abstract class Constant<V> extends Expression {
 			this.symbol = symbol;
 		}
 
-		public static FloatSymbolicConstant PI = new FloatSymbolicConstant("pi", Math.PI);
-		public static FloatSymbolicConstant E = new FloatSymbolicConstant("e", Math.E);
+		public static final FloatSymbolicConstant PI = new FloatSymbolicConstant("pi", Math.PI);
+		public static final FloatSymbolicConstant E = new FloatSymbolicConstant("e", Math.E);
 
 		@Override
 		public String getValueAsString() {

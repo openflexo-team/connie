@@ -44,7 +44,7 @@ import java.lang.reflect.Type;
 
 public class ParameterizedTypeImpl implements ParameterizedType {
 
-	public ParameterizedTypeImpl(Class<?> rawType, Type[] actualTypeArguments) {
+	public ParameterizedTypeImpl(Class<?> rawType, Type... actualTypeArguments) {
 		this(rawType, null, actualTypeArguments);
 	}
 
@@ -65,7 +65,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 		this.actualTypeArguments = actualTypeArguments;
 	}
 
-	private Class rawType;
+	private Class<?> rawType;
 	private Type ownerType;
 	private Type[] actualTypeArguments;
 

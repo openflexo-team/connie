@@ -74,8 +74,8 @@ public abstract class FileFormat {
 	public static final DirectoryFormat EOMODEL, WO;
 
 	static {
-		_fileFormats = new Hashtable<String, FileFormat>();
-		_fileFormatsByExtensions = new Hashtable<String, List<FileFormat>>();
+		_fileFormats = new Hashtable<>();
+		_fileFormatsByExtensions = new Hashtable<>();
 
 		TEXT = registerTextFileFormat("TXT", "text/plain", TextSyntax.Plain, "txt", "text");
 		SYSTEM = registerTextFileFormat("SYSTEM", "text/plain", TextSyntax.Plain);
@@ -122,7 +122,8 @@ public abstract class FileFormat {
 			if (_fileFormats.get(formatId) instanceof TextFileFormat) {
 				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (TextFileFormat) _fileFormats.get(formatId);
-			} else {
+			}
+			else {
 				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
 				return null;
 			}
@@ -140,7 +141,8 @@ public abstract class FileFormat {
 			if (_fileFormats.get(formatId) instanceof DirectoryFormat) {
 				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (DirectoryFormat) _fileFormats.get(formatId);
-			} else {
+			}
+			else {
 				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
 				return null;
 			}
@@ -158,7 +160,8 @@ public abstract class FileFormat {
 			if (_fileFormats.get(formatId) instanceof BinaryFileFormat) {
 				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (BinaryFileFormat) _fileFormats.get(formatId);
-			} else {
+			}
+			else {
 				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
 				return null;
 			}
@@ -176,7 +179,8 @@ public abstract class FileFormat {
 			if (_fileFormats.get(formatId) instanceof ImageFileFormat) {
 				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (ImageFileFormat) _fileFormats.get(formatId);
-			} else {
+			}
+			else {
 				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
 				return null;
 			}
@@ -218,7 +222,7 @@ public abstract class FileFormat {
 				return _fileFormatsByExtensions.get(ext);
 			}
 		}
-		Vector<FileFormat> newVector = new Vector<FileFormat>();
+		Vector<FileFormat> newVector = new Vector<>();
 		newVector.add(UNKNOWN);
 		_fileFormatsByExtensions.put(extension, newVector);
 		return newVector;
@@ -235,7 +239,7 @@ public abstract class FileFormat {
 	public static void registerExtension(String extension, FileFormat fileFormat) {
 		List<FileFormat> returned = _fileFormatsByExtensions.get(extension);
 		if (returned == null) {
-			returned = new Vector<FileFormat>();
+			returned = new Vector<>();
 			_fileFormatsByExtensions.put(extension, returned);
 		}
 		if (returned.contains(UNKNOWN)) {
@@ -260,7 +264,7 @@ public abstract class FileFormat {
 		super();
 		this.identifier = identifier;
 		this.mimeType = mimeType;
-		extensions = new Vector<String>();
+		extensions = new Vector<>();
 	}
 
 	public static class TextFileFormat extends FileFormat {

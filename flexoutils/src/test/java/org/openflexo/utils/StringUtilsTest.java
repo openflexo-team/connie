@@ -39,7 +39,7 @@
 
 package org.openflexo.utils;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.openflexo.toolbox.StringUtils;

@@ -73,6 +73,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	// Stores contained InJarResourceImpl where key is the jar entry
 	private Map<JarEntry, InJarResourceImpl> contents;
 	private JarFile jarfile = null;
+
 	private InJarResourceImpl rootEntry;
 
 	private String jarfilename = null;
@@ -110,7 +111,6 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		try {
 			loadJarFile();
 		} catch (LocatorNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -132,7 +132,6 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		try {
 			loadJarFile();
 		} catch (LocatorNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -230,7 +229,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	// TODO: manage recursive / not recursive
 	@Override
 	public List<InJarResourceImpl> getContents(boolean deep) {
-		return new ArrayList<InJarResourceImpl>(contents.values());
+		return new ArrayList<>(contents.values());
 	}
 
 	/*@Override
@@ -262,7 +261,7 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 	}
 
 	public List<? extends Resource> getContents(String startpath, Pattern pattern) {
-		List<Resource> retval = new ArrayList<Resource>();
+		List<Resource> retval = new ArrayList<>();
 		for (JarEntry current : contents.keySet()) {
 			String name = current.getName();
 			boolean accept = pattern.matcher(name).matches();
@@ -307,4 +306,10 @@ public class JarResourceImpl extends BasicResourceImpl implements Resource {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean exists() {
+		return getJarfile() != null;
+	}
+
 }

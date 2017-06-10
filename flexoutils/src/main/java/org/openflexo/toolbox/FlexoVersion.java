@@ -42,7 +42,7 @@ package org.openflexo.toolbox;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 
-public class FlexoVersion implements Comparable<FlexoVersion>{
+public class FlexoVersion implements Comparable<FlexoVersion> {
 
 	public FlexoVersion copy() {
 		return new FlexoVersion(major, minor, patch, rc, isAlpha, isBeta);
@@ -92,7 +92,7 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 	public boolean isAlpha = false;
 
 	public boolean isBeta = false;
-	
+
 	public boolean isSnapshot = false;
 
 	public static FlexoVersion versionByIncrementing(FlexoVersion v, int majorInc, int minorInc, int patchInc) {
@@ -114,7 +114,7 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 		if (st.hasMoreTokens()) {
 			String next = st.nextToken();
 			try {
-				major = Integer.valueOf(next).intValue();
+				major = Integer.parseInt(next);
 			} catch (NumberFormatException e) {
 				System.err.println("Invalid major number: " + next + " is not valid (" + versionAsString + ")");
 				major = 0;
@@ -123,7 +123,7 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 		if (st.hasMoreTokens()) {
 			String next = st.nextToken();
 			try {
-				minor = Integer.valueOf(next).intValue();
+				minor = Integer.parseInt(next);
 			} catch (NumberFormatException e) {
 				try {
 					minor = parseAlphaBetaRC(versionAsString, next);
@@ -160,7 +160,8 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 				throw new NumberFormatException("Invalid RC number: " + token.substring(token.toLowerCase().indexOf("rc") + 2)
 						+ " is not valid (" + versionAsString + ")");
 			}
-		} else {
+		}
+		else {
 			if (token.toLowerCase().indexOf("-alpha") > -1) {
 				isAlpha = true;
 				try {
@@ -169,7 +170,8 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 					throw new NumberFormatException("Invalid patch number: " + token.substring(0, token.toLowerCase().indexOf("-alpha"))
 							+ " is not valid (" + versionAsString + ")");
 				}
-			}else if (token.toLowerCase().indexOf("alpha") > -1) {
+			}
+			else if (token.toLowerCase().indexOf("alpha") > -1) {
 				isAlpha = true;
 				try {
 					returned = Integer.parseInt(token.substring(0, token.toLowerCase().indexOf("alpha")));
@@ -177,7 +179,8 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 					throw new NumberFormatException("Invalid patch number: " + token.substring(0, token.toLowerCase().indexOf("alpha"))
 							+ " is not valid (" + versionAsString + ")");
 				}
-			} else if (token.toLowerCase().indexOf("-beta") > -1) {
+			}
+			else if (token.toLowerCase().indexOf("-beta") > -1) {
 				isBeta = true;
 				try {
 					returned = Integer.parseInt(token.substring(0, token.toLowerCase().indexOf("-beta")));
@@ -185,7 +188,8 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 					throw new NumberFormatException("Invalid patch number: " + token.substring(0, token.toLowerCase().indexOf("-beta"))
 							+ " is not valid (" + versionAsString + ")");
 				}
-			} else if (token.toLowerCase().indexOf("beta") > -1) {
+			}
+			else if (token.toLowerCase().indexOf("beta") > -1) {
 				isBeta = true;
 				try {
 					returned = Integer.parseInt(token.substring(0, token.toLowerCase().indexOf("beta")));
@@ -193,7 +197,8 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 					throw new NumberFormatException("Invalid patch number: " + token.substring(0, token.toLowerCase().indexOf("beta"))
 							+ " is not valid (" + versionAsString + ")");
 				}
-			} else if (token.indexOf("-SNAPSHOT") > -1) {
+			}
+			else if (token.indexOf("-SNAPSHOT") > -1) {
 				isSnapshot = true;
 				try {
 					returned = Integer.parseInt(token.substring(0, token.indexOf("-SNAPSHOT")));
@@ -201,7 +206,8 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 					throw new NumberFormatException("Invalid snapshot number: " + token.substring(0, token.indexOf("-SNAPSHOT"))
 							+ " is not valid (" + versionAsString + ")");
 				}
-			} else if (token.indexOf("SNAPSHOT") > -1) {
+			}
+			else if (token.indexOf("SNAPSHOT") > -1) {
 				isSnapshot = true;
 				try {
 					returned = Integer.parseInt(token.substring(0, token.indexOf("SNAPSHOT")));
@@ -209,8 +215,9 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 					throw new NumberFormatException("Invalid snapshot number: " + token.substring(0, token.indexOf("SNAPSHOT"))
 							+ " is not valid (" + versionAsString + ")");
 				}
-			}else {
-				returned = Integer.valueOf(token).intValue();
+			}
+			else {
+				returned = Integer.parseInt(token);
 				rc = -1;
 			}
 		}
@@ -240,9 +247,11 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 	public boolean equals(Object anObject) {
 		if (anObject instanceof FlexoVersion) {
 			return toString().equals(anObject.toString());
-		} else if (anObject instanceof String) {
+		}
+		else if (anObject instanceof String) {
 			return toString().equals(new FlexoVersion((String) anObject).toString());
-		} else {
+		}
+		else {
 			return super.equals(anObject);
 		}
 	}
@@ -259,14 +268,16 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 	public int hashCode() {
 		return toString().hashCode();
 	}
-	
+
 	@Override
 	public int compareTo(FlexoVersion version) {
-		if(this.isGreaterThan(version)){
+		if (this.isGreaterThan(version)) {
 			return 1;
-		} else if(this.isLesserThan(version)){
+		}
+		else if (this.isLesserThan(version)) {
 			return -1;
-		} else{
+		}
+		else {
 			return 0;
 		}
 	}
@@ -291,51 +302,68 @@ public class FlexoVersion implements Comparable<FlexoVersion>{
 		public int compare(FlexoVersion v1, FlexoVersion v2) {
 			if (v1.major < v2.major) {
 				return -1;
-			} else if (v1.major > v2.major) {
+			}
+			else if (v1.major > v2.major) {
 				return 1;
-			} else {
+			}
+			else {
 				if (v1.minor < v2.minor) {
 					return -1;
-				} else if (v1.minor > v2.minor) {
+				}
+				else if (v1.minor > v2.minor) {
 					return 1;
-				} else {
+				}
+				else {
 					if (v1.patch < v2.patch) {
 						return -1;
-					} else if (v1.patch > v2.patch) {
+					}
+					else if (v1.patch > v2.patch) {
 						return 1;
-					} else {
+					}
+					else {
 						if (v1.rc < 0 && v2.rc < 0) {
 							if (v1.isAlpha) {
 								if (v2.isAlpha) {
 									return 0;
-								} else {
+								}
+								else {
 									return -1;
 								}
-							} else if (v1.isBeta) {
+							}
+							else if (v1.isBeta) {
 								if (v2.isAlpha) {
 									return 1;
-								} else if (v2.isBeta) {
+								}
+								else if (v2.isBeta) {
 									return 0;
-								} else {
+								}
+								else {
 									return -1;
 								}
-							} else {
+							}
+							else {
 								if (v2.isAlpha || v2.isBeta) {
 									return 1;
-								} else {
+								}
+								else {
 									return 0;
 								}
 							}
-						} else if (v1.rc < 0 && v2.rc > -1 && !v1.isAlpha && !v1.isBeta) {
+						}
+						else if (v1.rc < 0 && v2.rc > -1 && !v1.isAlpha && !v1.isBeta) {
 							return 1;
-						} else if (v1.rc > -1 && v2.rc < 0 && !v2.isAlpha && !v2.isBeta) {
+						}
+						else if (v1.rc > -1 && v2.rc < 0 && !v2.isAlpha && !v2.isBeta) {
 							return -1;
-						} else {
+						}
+						else {
 							if (v1.rc < v2.rc) {
 								return -1;
-							} else if (v1.rc > v2.rc) {
+							}
+							else if (v1.rc > v2.rc) {
 								return 1;
-							} else {
+							}
+							else {
 								// equals object !!!
 								return 0;
 							}

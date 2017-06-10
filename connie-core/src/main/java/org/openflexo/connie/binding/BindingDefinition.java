@@ -51,7 +51,7 @@ import org.openflexo.connie.type.TypeUtils;
 /**
  * Represents the specification of a DataBinding
  * 
- * @author sguerin
+ * @author sylvain
  * 
  */
 @Deprecated
@@ -88,13 +88,15 @@ public class BindingDefinition extends Observable {
 				if (bd.variableName != null) {
 					return false;
 				}
-			} else {
+			}
+			else {
 				if (!variableName.equals(bd.variableName)) {
 					return false;
 				}
 			}
 			return type == bd.type && isMandatory == bd.isMandatory;
-		} else {
+		}
+		else {
 			return super.equals(object);
 		}
 	}
@@ -133,7 +135,7 @@ public class BindingDefinition extends Observable {
 	/**
 	 * Used to sort binding definition according to name alphabetic ordering
 	 * 
-	 * @author sguerin
+	 * @author sylvain
 	 * 
 	 */
 	public static class BindingDefinitionComparator implements Comparator<BindingDefinition> {
@@ -154,7 +156,8 @@ public class BindingDefinition extends Observable {
 			String s2 = o2.getVariableName();
 			if (s1 != null && s2 != null) {
 				return Collator.getInstance().compare(s1, s2);
-			} else {
+			}
+			else {
 				return 0;
 			}
 		}
@@ -172,7 +175,8 @@ public class BindingDefinition extends Observable {
 	public String getTypeStringRepresentation() {
 		if (getType() == null) {
 			return "no_type";
-		} else {
+		}
+		else {
 			return TypeUtils.simpleRepresentation(getType());
 		}
 	}

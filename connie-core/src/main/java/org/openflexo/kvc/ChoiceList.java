@@ -46,16 +46,16 @@ import java.util.List;
  * 
  * NOTE: All classes inplementing this interface MUST define a static method called public static Vector availableValues();
  * 
- * @author sguerin
+ * @author sylvain
  * 
  */
-public interface ChoiceList {
+public interface ChoiceList<T> {
 
 	/**
 	 * Return a Vector of possible values (which must be of the same type as the one declared as class implemented this interface)
 	 * 
 	 * @return a Vector of ChoiceList
 	 */
-	public List<?> getAvailableValues();
+	public List<T> getAvailableValues();
 
 }

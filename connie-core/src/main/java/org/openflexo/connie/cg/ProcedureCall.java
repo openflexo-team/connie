@@ -51,7 +51,7 @@ public class ProcedureCall extends Instruction {
 	public ProcedureCall(Procedure procedure) {
 		super();
 		this.procedure = procedure;
-		this.arguments = new Vector<Expression>();
+		this.arguments = new Vector<>();
 	}
 
 	public ProcedureCall(Procedure procedure, Expression... arguments) {
