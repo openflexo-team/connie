@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.kvc;
 
 import java.lang.reflect.Field;
@@ -98,8 +97,8 @@ public class KeyValueProperty extends Observable {
 	public boolean equals(Object obj) {
 		if (obj instanceof KeyValueProperty) {
 			KeyValueProperty kvp = (KeyValueProperty) obj;
-			return (declaringClass.equals(kvp.declaringClass) || TypeUtils.isClassAncestorOf(declaringClass, kvp.declaringClass) || TypeUtils
-					.isClassAncestorOf(kvp.declaringClass, declaringClass)) && name.equals(kvp.name);
+			return (declaringClass.equals(kvp.declaringClass) || TypeUtils.isClassAncestorOf(declaringClass, kvp.declaringClass)
+					|| TypeUtils.isClassAncestorOf(kvp.declaringClass, declaringClass)) && name.equals(kvp.name);
 		}
 		return super.equals(obj);
 	}
@@ -140,10 +139,12 @@ public class KeyValueProperty extends Observable {
 				throw new InvalidKeyValuePropertyException("No public field " + name + " found, nor method matching " + name + "() nor "
 						+ "_" + name + "() nor " + "get" + propertyNameWithFirstCharToUpperCase + "() nor " + "_get"
 						+ propertyNameWithFirstCharToUpperCase + "() found in class:" + declaringClass.getName());
-			} else {
+			}
+			else {
 				type = getMethod.getGenericReturnType();
 			}
-		} else { // field != null
+		}
+		else { // field != null
 			type = field.getGenericType();
 			if (getMethod != null) {
 				if (getMethod.getGenericReturnType() != type) {
@@ -162,7 +163,8 @@ public class KeyValueProperty extends Observable {
 					throw new InvalidKeyValuePropertyException("No public field " + name + " found, nor method matching " + "set"
 							+ propertyNameWithFirstCharToUpperCase + "(" + type + ") or " + "_set" + propertyNameWithFirstCharToUpperCase
 							+ "(" + type + ") found " + "in class " + declaringClass);
-				} else {
+				}
+				else {
 					if (getMethod != null) {
 						// Debugging.debug ("Public field "+propertyName+"
 						// found, with type "
@@ -196,19 +198,18 @@ public class KeyValueProperty extends Observable {
 			type = TypeUtils.makeInstantiatedType(type, declaringType);
 		}
 
-		/*if (type instanceof TypeVariable) {
-			TypeVariable<GenericDeclaration> tv = (TypeVariable<GenericDeclaration>)type;
-			//System.out.println("Found type variable "+tv+" name="+tv.getName()+" GD="+tv.getGenericDeclaration());
-			if (declaringType instanceof ParameterizedType) {
-		    	GenericDeclaration gd = tv.getGenericDeclaration();
-				for (int i=0; i<gd.getTypeParameters().length; i++) {
-					if (gd.getTypeParameters()[i] == tv) {
-						type = ((ParameterizedType)declaringType).getActualTypeArguments()[i];
-						// Found matching parameterized type
-					}
-				}
-			}
-		}*/
+		/*
+		 * if (type instanceof TypeVariable) { TypeVariable<GenericDeclaration>
+		 * tv = (TypeVariable<GenericDeclaration>)type;
+		 * //System.out.println("Found type variable "
+		 * +tv+" name="+tv.getName()+" GD="+tv.getGenericDeclaration()); if
+		 * (declaringType instanceof ParameterizedType) { GenericDeclaration gd
+		 * = tv.getGenericDeclaration(); for (int i=0;
+		 * i<gd.getTypeParameters().length; i++) { if (gd.getTypeParameters()[i]
+		 * == tv) { type =
+		 * ((ParameterizedType)declaringType).getActualTypeArguments()[i]; //
+		 * Found matching parameterized type } } } }
+		 */
 
 	}
 
@@ -222,7 +223,7 @@ public class KeyValueProperty extends Observable {
 	 * </ul>
 	 * Returns corresponding method, null if no such method exist
 	 */
-	protected Method searchMatchingGetMethod(Class aDeclaringClass, String propertyName) {
+	protected Method searchMatchingGetMethod(Class<?> aDeclaringClass, String propertyName) {
 
 		Method returnedMethod = null;
 		String propertyNameWithFirstCharToUpperCase = propertyName.substring(0, 1).toUpperCase()
@@ -238,7 +239,7 @@ public class KeyValueProperty extends Observable {
 
 		for (String trie : tries) {
 			try {
-				returnedMethod = aDeclaringClass.getMethod(trie, null);
+				returnedMethod = aDeclaringClass.getMethod(trie);
 				if (returnedMethod != null) {
 					return returnedMethod;
 				}
@@ -258,15 +259,12 @@ public class KeyValueProperty extends Observable {
 
 		// TODO: this code is totally wrong ??? i commented it
 		// If everything fails, try static class methods
-		/*for (String trie : tries) {
-			try {
-				return ((Class) aDeclaringClass.getClass()).getMethod(trie, (Class<?>[]) null);
-			} catch (SecurityException err) {
-				// we continue
-			} catch (NoSuchMethodException err) {
-				// we continue
-			}
-		}*/
+		/*
+		 * for (String trie : tries) { try { return ((Class)
+		 * aDeclaringClass.getClass()).getMethod(trie, (Class<?>[]) null); }
+		 * catch (SecurityException err) { // we continue } catch
+		 * (NoSuchMethodException err) { // we continue } }
+		 */
 
 		// Debugging.debug ("No method matching "
 		// +propertyName+"() or "
@@ -286,7 +284,7 @@ public class KeyValueProperty extends Observable {
 	 * </ul>
 	 * Returns corresponding method, null if no such method exist
 	 */
-	protected Method searchMatchingSetMethod(Class aDeclaringClass, String propertyName, Type aType) {
+	protected Method searchMatchingSetMethod(Class<?> aDeclaringClass, String propertyName, Type aType) {
 		String propertyNameWithFirstCharToUpperCase = propertyName.substring(0, 1).toUpperCase()
 				+ propertyName.substring(1, propertyName.length());
 		List<String> tries = new ArrayList<String>();
@@ -297,7 +295,8 @@ public class KeyValueProperty extends Observable {
 				String propertyNameWithFirstCharToUpperCase2 = propertyName.substring(2);
 				tries.add("set" + propertyNameWithFirstCharToUpperCase2);
 				tries.add("_set" + propertyNameWithFirstCharToUpperCase2);
-			} else if (propertyName.startsWith("_is")) {
+			}
+			else if (propertyName.startsWith("_is")) {
 				String propertyNameWithFirstCharToUpperCase2 = propertyName.substring(3);
 				tries.add("set" + propertyNameWithFirstCharToUpperCase2);
 				tries.add("_set" + propertyNameWithFirstCharToUpperCase2);
@@ -312,10 +311,12 @@ public class KeyValueProperty extends Observable {
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			for (Method m : aDeclaringClass.getMethods()) {
 				for (String t : tries) {
-					if (m.getName().equals(t) && m.getGenericParameterTypes().length == 1 && m.getGenericParameterTypes()[0].equals(aType)) {
+					if (m.getName().equals(t) && m.getGenericParameterTypes().length == 1
+							&& m.getGenericParameterTypes()[0].equals(aType)) {
 						return m;
 					}
 				}
@@ -338,12 +339,12 @@ public class KeyValueProperty extends Observable {
 			return searchMatchingSetMethod(aDeclaringClass, propertyName, TypeUtils.getBaseClass(aType).getSuperclass());
 		}
 		/*
-		Class typeClass = TypeUtils.getBaseClass(aType);
-		
-		 if (typeClass != null && typeClass.getSuperclass() != null) {
-			// Try with a super class
-			return searchMatchingSetMethod(declaringClass, propertyName, typeClass.getSuperclass());
-		}*/
+		 * Class typeClass = TypeUtils.getBaseClass(aType);
+		 * 
+		 * if (typeClass != null && typeClass.getSuperclass() != null) { // Try
+		 * with a super class return searchMatchingSetMethod(declaringClass,
+		 * propertyName, typeClass.getSuperclass()); }
+		 */
 
 		return null;
 
@@ -452,7 +453,8 @@ public class KeyValueProperty extends Observable {
 			resultingTypeAsString = TypeUtils.simpleRepresentation(resultingType);
 			resultingTypeAsString = ToolBox.replaceStringByStringInString("<", "&LT;", resultingTypeAsString);
 			resultingTypeAsString = ToolBox.replaceStringByStringInString(">", "&GT;", resultingTypeAsString);
-		} else {
+		}
+		else {
 			resultingTypeAsString = "???";
 		}
 		returned += "<p><b>" + resultingTypeAsString + " " + getName() + "</b></p>";
@@ -462,26 +464,28 @@ public class KeyValueProperty extends Observable {
 		return returned;
 	}
 
-	/*public Object getBindingValue(Object target, BindingEvaluationContext context) {
-		return KeyValueDecoder.objectForKey(target, getName());
-	}
+	/*
+	 * public Object getBindingValue(Object target, BindingEvaluationContext
+	 * context) { return KeyValueDecoder.objectForKey(target, getName()); }
+	 * 
+	 * public void setBindingValue(Object value, Object target,
+	 * BindingEvaluationContext context) { KeyValueCoder.setObjectForKey(target,
+	 * value, getName()); }
+	 */
 
-	public void setBindingValue(Object value, Object target, BindingEvaluationContext context) {
-		KeyValueCoder.setObjectForKey(target, value, getName());
-	}*/
-
-	/*public static void main(String[] args) {
-		KeyValueProperty kv1 = new KeyValueProperty(Object.class, "class", false);
-		System.out.println("kv1=" + kv1);
-		KeyValueProperty kv2 = new KeyValueProperty(KeyValueProperty.class, "class", false);
-		System.out.println("kv2=" + kv2);
-		KeyValueProperty kv3 = new KeyValueProperty(TestInterface.class, "class", false);
-		System.out.println("kv3=" + kv3);
-	}
-
-	public static interface TestInterface {
-
-	}*/
+	/*
+	 * public static void main(String[] args) { KeyValueProperty kv1 = new
+	 * KeyValueProperty(Object.class, "class", false); System.out.println("kv1="
+	 * + kv1); KeyValueProperty kv2 = new
+	 * KeyValueProperty(KeyValueProperty.class, "class", false);
+	 * System.out.println("kv2=" + kv2); KeyValueProperty kv3 = new
+	 * KeyValueProperty(TestInterface.class, "class", false);
+	 * System.out.println("kv3=" + kv3); }
+	 * 
+	 * public static interface TestInterface {
+	 * 
+	 * }
+	 */
 
 	/**
 	 * Returns Object value, asserting that this property represents an Object property (if not, throw an InvalidKeyValuePropertyException
@@ -494,7 +498,8 @@ public class KeyValueProperty extends Observable {
 	public Object getObjectValue(Object object) {
 		if (object == null) {
 			throw new InvalidKeyValuePropertyException("No object is specified");
-		} else {
+		}
+		else {
 			Object currentObject = object;
 
 			if (field != null) {
@@ -507,6 +512,11 @@ public class KeyValueProperty extends Observable {
 			}
 
 			else if (getMethod != null) {
+
+				if (!getMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass())) {
+					throw new InvalidKeyValuePropertyException("Object is not an instance of declaring class: expected "
+							+ getMethod.getDeclaringClass().getName() + ", but was " + currentObject.getClass());
+				}
 
 				try {
 					return getMethod.invoke(currentObject, (Object[]) null);
@@ -558,7 +568,8 @@ public class KeyValueProperty extends Observable {
 	public void setObjectValue(Object aValue, Object object) {
 		if (object == null) {
 			throw new InvalidKeyValuePropertyException("No object is specified");
-		} else {
+		}
+		else {
 
 			Object currentObject = object;
 
@@ -581,25 +592,26 @@ public class KeyValueProperty extends Observable {
 						setMethod.invoke(currentObject, params);
 					} catch (InvocationTargetException e) {
 						e.getTargetException().printStackTrace();
-						throw new AccessorInvocationException("AccessorInvocationException: class " + declaringClass.getName()
-								+ ": method " + setMethod.getName() + " Exception raised: " + e.getTargetException().toString(), e);
+						throw new AccessorInvocationException("AccessorInvocationException: class " + declaringClass.getName() + ": method "
+								+ setMethod.getName() + " Exception raised: " + e.getTargetException().toString(), e);
 					} catch (IllegalArgumentException e) {
 						// e.printStackTrace();
-						throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
-								+ ": method " + setMethod.getName() + "Argument mismatch: tried to pass a '"
-								+ (aValue != null ? aValue.getClass().getName() : "null") + " instead of a "
-								+ setMethod.getParameterTypes()[0] + " Exception raised: " + e.toString());
+						throw new InvalidKeyValuePropertyException(
+								"InvalidKeyValuePropertyException: class " + declaringClass.getName() + ": method " + setMethod.getName()
+										+ "Argument mismatch: tried to pass a '" + (aValue != null ? aValue.getClass().getName() : "null")
+										+ " instead of a " + setMethod.getParameterTypes()[0] + " Exception raised: " + e.toString());
 
 					} catch (Exception e) {
 						// e.printStackTrace();
 						throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
 								+ ": field " + setMethod.getName() + " Exception raised: " + e.toString());
 					}
-				} else {
-					throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: " + ": method " + setMethod.getName()
-							+ " called for object " + currentObject
-							+ (currentObject != null ? " of " + currentObject.getClass().getName() : "") + " instead of "
-							+ declaringClass.getName());
+				}
+				else {
+					throw new InvalidKeyValuePropertyException(
+							"InvalidKeyValuePropertyException: " + ": method " + setMethod.getName() + " called for object " + currentObject
+									+ (currentObject != null ? " of " + currentObject.getClass().getName() : "") + " instead of "
+									+ declaringClass.getName());
 				}
 
 			}

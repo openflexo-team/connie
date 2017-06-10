@@ -43,6 +43,7 @@ import java.lang.reflect.Type;
 import java.util.Comparator;
 
 import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -56,17 +57,21 @@ import org.openflexo.connie.type.Typed;
  */
 public interface BindingPathElement extends Typed {
 
-	public static final Comparator<BindingPathElement> COMPARATOR = new Comparator<BindingPathElement>() {
+	public final String BINDING_PATH_CHANGED = "BindingPathChanged";
+
+	Comparator<BindingPathElement> COMPARATOR = new Comparator<BindingPathElement>() {
 
 		@Override
 		public int compare(BindingPathElement o1, BindingPathElement o2) {
 			if (o1.getLabel() == null) {
 				if (o2.getLabel() == null) {
 					return 0;
-				} else {
+				}
+				else {
 					return -1;
 				}
-			} else if (o2.getLabel() == null) {
+			}
+			else if (o2.getLabel() == null) {
 				return 1;
 			}
 			return o1.getLabel().compareTo(o2.getLabel());
@@ -74,24 +79,24 @@ public interface BindingPathElement extends Typed {
 	};
 
 	@Override
-	public Type getType();
+	Type getType();
 
 	// public void addObserver(Observer o);
 
 	// public void deleteObserver(Observer o);
 
-	public String getSerializationRepresentation();
+	String getSerializationRepresentation();
 
 	// public boolean isBindingValid();
 
-	public String getLabel();
+	String getLabel();
 
-	public String getTooltipText(Type resultingType);
+	String getTooltipText(Type resultingType);
 
 	/**
 	 * Return a flag indicating if this path element is settable or not (settable indicates that a new value can be set)
 	 */
-	public boolean isSettable();
+	boolean isSettable();
 
 	/**
 	 * Evaluate and return value for related path element, given a binding evaluation context
@@ -104,9 +109,18 @@ public interface BindingPathElement extends Typed {
 	 * @throws NullReferenceException
 	 * @throws TypeMismatchException
 	 */
-	public Object getBindingValue(Object target, BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException,
-			InvocationTargetTransformException;
+	Object getBindingValue(Object target, BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException;
 
-	public BindingPathElement getParent();
+	BindingPathElement getParent();
+
+	/**
+	 * When set to true, means that this path element is beeing changing, and that available accessible path elements following this path
+	 * element are to be recomputed<br>
+	 * This method is generally called from {@link BindingFactory}
+	 * 
+	 * @return
+	 */
+	public boolean isNotifyingBindingPathChanged();
 
 }

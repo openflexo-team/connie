@@ -42,6 +42,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openflexo.test.OrderedRunner;
@@ -85,7 +87,7 @@ public class TestResourceLocator {
 		assertTrue(r3 instanceof FileResourceImpl);
 
 		assertTrue(((FileResourceImpl) r).getFile().getAbsolutePath().contains("target"));
-		assertTrue(((FileResourceImpl) r2).getFile().getAbsolutePath().contains("src/main/resources"));
+		assertTrue(((FileResourceImpl) r2).getFile().getAbsolutePath().contains("src"+File.separator+"main"+File.separator+"resources"));
 
 		assertSame(r2, r3);
 

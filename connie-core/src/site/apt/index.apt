@@ -4,6 +4,8 @@
  The Openflexo team
  -----
 
+[/images/components/connie/ConnieScreenshot] Connie
+
 Introduction to CONNIE
 
   CONNIE is a Java library allowing to define and execute an expression-based language over a generic API.

@@ -36,10 +36,9 @@
  * 
  */
 
-
-
 package org.openflexo.rm;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,7 +51,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-public class BasicResourceImpl implements Resource {
+public abstract class BasicResourceImpl implements Resource {
 
 	private static final Logger LOGGER = Logger.getLogger(BasicResourceImpl.class.getPackage().getName());
 	protected static final Date _dateZero = new Date(0);
@@ -60,22 +59,25 @@ public class BasicResourceImpl implements Resource {
 	// Initial requested path
 	protected String _relativePath;
 	// Location of the resource for the given Delegate
-	protected URL _url; 
+	protected URL _url;
 	// The Delegate that can resolve this location
-	private ResourceLocatorDelegate _locator;
+	private final ResourceLocatorDelegate _locator;
 	// Parent Resource
 	protected Resource _parent;
 
-	public BasicResourceImpl(
-			ResourceLocatorDelegate locator, String initialPath, URL url) throws LocatorNotFoundException {
-		if (locator == null){
+	public BasicResourceImpl(ResourceLocatorDelegate locator, String initialPath, URL url) throws LocatorNotFoundException {
+		if (locator == null) {
 			LOGGER.severe("Cannot create a Resource without a Locator : " + url.toString());
 			throw new LocatorNotFoundException();
 		}
-		_relativePath = initialPath;
 		_url = url;
 		_locator = locator;
-
+		_relativePath = initialPath;
+		String TARGET_CLASSES = "target" + File.separator + "classes" + File.separator;
+		if (_relativePath.contains(TARGET_CLASSES)) {
+			// Attempt to find a better relative path
+			_relativePath = _relativePath.substring(_relativePath.indexOf(TARGET_CLASSES) + TARGET_CLASSES.length());
+		}
 	}
 
 	public BasicResourceImpl(ResourceLocatorDelegate locator) {
@@ -96,7 +98,7 @@ public class BasicResourceImpl implements Resource {
 			LOGGER.severe("Unable to translate given string to url: " + anURI);
 			e.printStackTrace();
 		}
-		if (uri != null){
+		if (uri != null) {
 			try {
 				_url = uri.toURL();
 			} catch (MalformedURLException e) {
@@ -105,6 +107,10 @@ public class BasicResourceImpl implements Resource {
 			}
 		}
 
+	}
+
+	public Resource getParent() {
+		return _parent;
 	}
 
 	@Override
@@ -132,10 +138,9 @@ public class BasicResourceImpl implements Resource {
 		return false;
 	}
 
-
 	@Override
 	public InputStream openInputStream() {
-		if (_url != null){
+		if (_url != null) {
 			try {
 				return _url.openStream();
 			} catch (IOException e) {
@@ -151,7 +156,7 @@ public class BasicResourceImpl implements Resource {
 		return null;
 	}
 
-	/** 
+	/**
 	 * By default, a Resource cannot be considered Editable
 	 */
 	@Override
@@ -165,27 +170,33 @@ public class BasicResourceImpl implements Resource {
 	}
 
 	@Override
-	public String toString(){
+	public String toString() {
 		ResourceLocator.getInstanceForLocatorClass(FileSystemResourceLocatorImpl.class);
-		return "[" + _locator.toString() + "]" +_url.toString();
+		return "[" + _locator.toString() + "]" + _url.toString();
 
 	}
 
 	@Override
 	public List<? extends Resource> getContents() {
+		return getContents(false);
+	}
+
+	@Override
+	public List<? extends Resource> getContents(boolean deep) {
 		return java.util.Collections.emptyList();
 	}
 
 	@Override
-	public List<? extends Resource> getContents(Pattern pattern) {
+	public List<? extends Resource> getContents(Pattern pattern, boolean deep) {
 		return java.util.Collections.emptyList();
 	}
-	
+
 	// Additional methods not from Resource interface
-	
-	public URL getURL(){
+
+	public URL getURL() {
 		return this._url;
 	}
+
 	/***
 	 * Locator Not Found Exception
 	 */
@@ -196,13 +207,7 @@ public class BasicResourceImpl implements Resource {
 		 * 
 		 */
 		private static final long serialVersionUID = -3102784112143915911L;
-		
+
 	}
-	
-	@Override
-	public String makePathRelativeToString(String pathRelative) {
-		return pathRelative;
-	}
-	
 
 }

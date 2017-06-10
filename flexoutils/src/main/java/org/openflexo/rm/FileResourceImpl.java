@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.rm;
 
 import java.io.File;
@@ -83,7 +82,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 				e.printStackTrace();
 			}
 		}
-		return null;
+		return _parent;
 
 	}
 
@@ -114,6 +113,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	public FileResourceImpl(ResourceLocatorDelegate locator, File file) throws MalformedURLException, LocatorNotFoundException {
 		super(locator, file.getPath(), file.toURI().toURL());
+		_file = file;
 	}
 
 	public FileResourceImpl(ResourceLocatorDelegate locator) {
@@ -169,16 +169,16 @@ public class FileResourceImpl extends BasicResourceImpl {
 	}
 
 	@Override
-	public List<Resource> getContents() {
+	public List<Resource> getContents(boolean deep) {
 		List<Resource> retval = new ArrayList<Resource>();
 
-		addDirectoryContent(this.getLocator(), getFile(), retval);
+		addDirectoryContent(this.getLocator(), getFile(), retval, deep);
 
 		return retval;
 	}
 
 	@Override
-	public List<Resource> getContents(Pattern pattern) {
+	public List<Resource> getContents(Pattern pattern, boolean deep) {
 
 		File file = getFile();
 		if (file == null) {
@@ -205,7 +205,7 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	// Additional methods not in Resource API
 
-	public static void addDirectoryContent(ResourceLocatorDelegate dl, File file, List<Resource> list) {
+	public static void addDirectoryContent(ResourceLocatorDelegate dl, File file, List<Resource> list, boolean recursive) {
 
 		File[] fileList = file.listFiles();
 		for (final File f : fileList) {
@@ -224,8 +224,8 @@ public class FileResourceImpl extends BasicResourceImpl {
 				}
 			}
 			// Recursive search
-			else {
-				addDirectoryContent(dl, f, list);
+			else if (recursive) {
+				addDirectoryContent(dl, f, list, recursive);
 			}
 		}
 
@@ -241,7 +241,8 @@ public class FileResourceImpl extends BasicResourceImpl {
 					LOGGER.severe("File Not Found : " + getURI());
 					e.printStackTrace();
 				}
-			} else {
+			}
+			else {
 				try {
 					_file.createNewFile();
 					return new FileOutputStream(_file);
@@ -313,19 +314,70 @@ public class FileResourceImpl extends BasicResourceImpl {
 		if (_file == null) {
 			if (other._file != null)
 				return false;
-		} else if (!_file.equals(other._file))
+		}
+		else if (!_file.equals(other._file))
 			return false;
 		return true;
 	}
 
-	
+	/**
+	 * Compute relative path to access supplied {@link Resource}, asserting this relative path is expressed relatively of this resource
+	 * 
+	 * @param resource
+	 * @return
+	 */
 	@Override
-	public String makePathRelativeToString(String pathRelative) {
-		try {
-			return FileUtils.makeFilePathRelativeToDir(getFile(), new File(pathRelative));
-		} catch (IOException e) {
-			e.printStackTrace();
+	public String computeRelativePath(Resource resource) {
+		ResourceLocatorDelegate locator = getLocator();
+		if (locator != null) {
+			Resource relocatedResource = locator.locateResource(resource.getRelativePath());
+			if (relocatedResource != null) {
+				resource = relocatedResource;
+			}
 		}
-		return getFile().getAbsolutePath();
+
+		if (resource instanceof FileResourceImpl) {
+			FileResourceImpl fileResource = (FileResourceImpl) resource;
+			try {
+				return FileUtils.makeFilePathRelativeToDir(fileResource.getFile(), getFile());
+			} catch (IOException e) {
+				e.printStackTrace();
+				LOGGER.warning("Could not compute relative path from " + this + " for " + resource);
+				return fileResource.getFile().getAbsolutePath();
+			}
+		}
+		LOGGER.warning("Could not compute relative path from a File for a non-file resource: " + resource);
+		return resource.getURI();
 	}
+
+	/**
+	 * Retrieve resource using supplied relative path name, asserting this relative path name represent a relative path from this resource
+	 * 
+	 * @param relativePathName
+	 * @return
+	 */
+	@Override
+	public FileResourceImpl locateResource(String relativePathName) {
+		File locatedFile = new File(getFile(), relativePathName);
+		if (!locatedFile.exists()) {
+			return null;
+		}
+		if (getLocator() instanceof FileSystemResourceLocatorImpl) {
+			return ((FileSystemResourceLocatorImpl) getLocator()).retrieveResource(locatedFile);
+		}
+		else {
+			try {
+				return new FileResourceImpl(getLocator(), locatedFile);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (LocatorNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		LOGGER.warning("Could not locate a resource relatively to a resource (resource=" + this + " locator=" + getLocator() + ")");
+		return null;
+	}
+
 }

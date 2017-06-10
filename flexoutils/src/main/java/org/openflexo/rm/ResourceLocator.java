@@ -42,9 +42,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  * @author c guychard
@@ -73,23 +74,62 @@ final public class ResourceLocator {
 
 	/**
 	 * Locate a Resource<br>
-	 * This lookup is performed according to the order in which all {@link ResourceLocatorDelegate} are registered.
+	 * Return first found resource according to the order in which all {@link ResourceLocatorDelegate} are registered.
 	 * 
 	 * @param relativePath
 	 * @return
 	 */
-	static public Resource locateResource(String relativePath) {
+	public static Resource locateResource(String relativePath) {
 		if (relativePath == null) {
 			return null;
 		}
-		Resource location = null;
+		Resource foundResource = null;
 		Iterator<ResourceLocatorDelegate> delegateIt = _delegatesOrderedList.iterator();
-		while (delegateIt.hasNext() && location == null) {
+		while (delegateIt.hasNext() && foundResource == null) {
 			ResourceLocatorDelegate del = delegateIt.next();
-			location = del.locateResource(relativePath);
-			// System.out.println("> Searched in " + del + " found " + location);
+			// System.out.println("> Searching " + relativePath + " in " + del);
+			foundResource = del.locateResource(relativePath);
+			if (foundResource != null) {
+				return foundResource;
+			}
+			// System.out.println("> Searched " + relativePath + " in " + del + " found " + foundResource);
 		}
-		return location;
+		if (LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Could not locate resource " + relativePath);
+			Thread.dumpStack();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Locate some {@link Resource}<br>
+	 * Return list of Resource of the first {@link ResourceLocatorDelegate} which contains at least one {@link Resource} matching supplied
+	 * relative path. Computation is performed according to the order in which all {@link ResourceLocatorDelegate} are registered.
+	 * 
+	 * @param relativePath
+	 * @return
+	 */
+	public static List<Resource> locateAllResources(String relativePath) {
+		if (relativePath == null) {
+			return null;
+		}
+		List<Resource> foundResources = new ArrayList<>();
+		Iterator<ResourceLocatorDelegate> delegateIt = _delegatesOrderedList.iterator();
+		while (delegateIt.hasNext()) {
+			ResourceLocatorDelegate del = delegateIt.next();
+			List<? extends Resource> foundResourcesInDelegate = del.locateAllResources(relativePath);
+			if (foundResourcesInDelegate != null && foundResourcesInDelegate.size() > 0) {
+				foundResources.addAll(foundResourcesInDelegate);
+			}
+			// System.out.println("> Searched "+relativePath+" in " + del + " found " + location);
+		}
+		if (foundResources.size() == 0 && LOGGER.isLoggable(Level.WARNING)) {
+			LOGGER.warning("Could not locate resource " + relativePath);
+			Thread.dumpStack();
+		}
+
+		return foundResources;
 	}
 
 	private static SourceCodeResourceLocatorImpl sourceCodeResourceLocator;
@@ -105,11 +145,12 @@ final public class ResourceLocator {
 	 * Explicitely locate a Resource in the source code (when source code is available)<br>
 	 * 
 	 * @param resource
-	 * @param an additionial regexFilter for disambiguation when several resources are found.
+	 * @param an
+	 *            additionial regexFilter for disambiguation when several resources are found.
 	 * @return
 	 */
-	static public Resource locateSourceCodeResource(Resource resource, String  regexFilter) {
-		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath(),  regexFilter);
+	static public Resource locateSourceCodeResource(Resource resource, String regexFilter) {
+		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath(), regexFilter);
 
 	}
 
@@ -120,9 +161,13 @@ final public class ResourceLocator {
 	 * @return
 	 */
 	static public Resource locateSourceCodeResource(Resource resource) {
-		return getSourceCodeResourceLocator().locateResource(resource.getRelativePath());
+		if (resource != null) {
+			return getSourceCodeResourceLocator().locateResource(resource.getRelativePath());
+		}
+		return null;
 
 	}
+
 	/**
 	 * Explicitely locate a Resource in the source code (when source code is available)<br>
 	 * 
@@ -161,10 +206,12 @@ final public class ResourceLocator {
 				if (dl.equals(newdelegate)) {
 					_delegatesOrderedList.remove(dl);
 					_delegatesOrderedList.add(dl);
-				} else {
+				}
+				else {
 					LOGGER.severe("The newdelegate is not added as it conflicts with existing one");
 				}
-			} else {
+			}
+			else {
 				_delegatesOrderedList.add(newdelegate);
 				_delegatesListMap.put(newdelegate.getClass(), newdelegate);
 			}
@@ -187,10 +234,12 @@ final public class ResourceLocator {
 				if (dl.equals(newdelegate)) {
 					_delegatesOrderedList.remove(dl);
 					_delegatesOrderedList.add(0, dl);
-				} else {
+				}
+				else {
 					LOGGER.severe("The newdelegate is not added as it conflicts with existing one");
 				}
-			} else {
+			}
+			else {
 				_delegatesOrderedList.add(0, newdelegate);
 				_delegatesListMap.put(newdelegate.getClass(), newdelegate);
 			}
@@ -231,7 +280,8 @@ final public class ResourceLocator {
 	public static File retrieveResourceAsFile(Resource location) {
 		if (location != null) {
 			return location.getLocator().retrieveResourceAsFile(location);
-		} else {
+		}
+		else {
 			LOGGER.warning("Cannot retrieve a File for a null location");
 			return null;
 		}

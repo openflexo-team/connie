@@ -54,6 +54,6 @@ public interface BindingEvaluationContext {
 	 * 
 	 * @param variable the binding to evaluate.
 	 */
-	public Object getValue(BindingVariable variable);
+	Object getValue(BindingVariable variable);
 
 }

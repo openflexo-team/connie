@@ -44,11 +44,11 @@ import java.lang.reflect.Type;
 
 public class ParameterizedTypeImpl implements ParameterizedType {
 
-	public ParameterizedTypeImpl(Class rawType, Type[] actualTypeArguments) {
+	public ParameterizedTypeImpl(Class<?> rawType, Type[] actualTypeArguments) {
 		this(rawType, null, actualTypeArguments);
 	}
 
-	public ParameterizedTypeImpl(Class rawType, Type actualTypeArgument) {
+	public ParameterizedTypeImpl(Class<?> rawType, Type actualTypeArgument) {
 		this(rawType, null, makeTypeArray(actualTypeArgument));
 	}
 
@@ -58,7 +58,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 		return returned;
 	}
 
-	public ParameterizedTypeImpl(Class rawType, Type ownerType, Type[] actualTypeArguments) {
+	public ParameterizedTypeImpl(Class<?> rawType, Type ownerType, Type[] actualTypeArguments) {
 		super();
 		this.rawType = rawType;
 		this.ownerType = ownerType;
@@ -118,7 +118,8 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 	public boolean equals(Object obj) {
 		if (obj instanceof Type) {
 			return TypeUtils.fullQualifiedRepresentation(this).equals(TypeUtils.fullQualifiedRepresentation((Type) obj));
-		} else {
+		}
+		else {
 			return super.equals(obj);
 		}
 		/*if (obj instanceof ParameterizedType) {

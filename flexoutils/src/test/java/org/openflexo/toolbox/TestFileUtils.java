@@ -43,6 +43,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -67,6 +68,11 @@ public class TestFileUtils {
 		d = new File(c, "d");
 		e = new File(c, "e");
 		f = new File(e, "f");
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		tempDirectory.delete();
 	}
 
 	@Test

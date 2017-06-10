@@ -1,9 +1,9 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2012-2012, AgileBirds
+ * Copyright (c) 2011-2012, AgileBirds
  * 
- * This file is part of Connie-core, a component of the software infrastructure 
+ * This file is part of Flexoutils, a component of the software infrastructure 
  * developed at Openflexo.
  * 
  * 
@@ -37,38 +37,20 @@
  * 
  */
 
-package org.openflexo.connie.type;
+package org.openflexo.toolbox;
 
-import org.openflexo.toolbox.HasPropertyChangeSupport;
+import junit.framework.TestCase;
 
-/**
- * A factory for {@link CustomType}
- * 
- * @author sylvain
- * 
- */
-public interface CustomTypeFactory<T extends CustomType> extends HasPropertyChangeSupport {
+public class TestStringUtils extends TestCase {
 
-	/**
-	 * Build and return {@link CustomType} given the supplied {@link String} representation<br>
-	 * If supplied String representation is null, build a new {@link CustomType} using default configuration
-	 * 
-	 * @param configuration
-	 * @return
-	 */
-	public T makeCustomType(String stringRepresentation);
+	public void testHasExtension() {
 
-	/**
-	 * Return class of custom type beeing handled by this factory
-	 * 
-	 * @return
-	 */
-	public Class<T> getCustomType();
+		assertTrue(StringUtils.hasExtension("test.file", ".file"));
+		assertTrue(StringUtils.hasExtension("test.file", ".file"));
+		assertTrue(StringUtils.hasExtension(".ext2", ".ext2"));
 
-	/**
-	 * Use supplied type to configure factory
-	 * 
-	 * @param type
-	 */
-	public void configureFactory(T type);
+		assertFalse(StringUtils.hasExtension(".ext2", ".file"));
+		assertFalse(StringUtils.hasExtension("test.ext1.ext2", ".file"));
+		assertFalse(StringUtils.hasExtension("test.file", ".file1", ".file2", ".file3"));
+	}
 }

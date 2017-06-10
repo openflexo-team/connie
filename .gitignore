@@ -11,3 +11,5 @@
 /.gitignore
 /.DS_Store
 /basic.xml
+
+*.iml

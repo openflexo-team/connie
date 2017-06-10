@@ -38,18 +38,18 @@
 
 package org.openflexo;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
+
+import junit.framework.TestCase;
 
 public class TestColorCst extends TestCase {
 
 	@Test
 	public void test() {
-		
+
 		ColorCst cst = new ColorCst();
-		assertNotNull(cst.LIGHT_BLUE);
-		assertEquals(cst.ODD_LINES_TABULAR_VIEW_COLOR.getBlue(),254);
-		
+		assertNotNull(ColorCst.LIGHT_BLUE);
+		assertEquals(ColorCst.ODD_LINES_TABULAR_VIEW_COLOR.getBlue(), 254);
+
 	}
 }

@@ -42,6 +42,7 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.BindingVariable;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
@@ -117,20 +118,6 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SimplePathElement) {
-			return getParent().equals(((SimplePathElement) obj).getParent())
-					&& getPropertyName().equals(((SimplePathElement) obj).getPropertyName());
-		}
-		return super.equals(obj);
-	}
-
-	@Override
-	public int hashCode() {
-		return getPropertyName().hashCode();
-	}
-
-	@Override
 	public PropertyChangeSupport getPropertyChangeSupport() {
 		return pcSupport;
 	}
@@ -140,4 +127,64 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		return DELETED_PROPERTY;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SimplePathElement other = (SimplePathElement) obj;
+		if (parent == null) {
+			if (other.parent != null)
+				return false;
+		}
+		else if (!parent.equals(other.parent))
+			return false;
+		if (propertyName == null) {
+			if (other.propertyName != null)
+				return false;
+		}
+		else if (!propertyName.equals(other.propertyName))
+			return false;
+		return true;
+	}
+
+	/*@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof SimplePathElement) {
+			return getParent().equals(((SimplePathElement) obj).getParent())
+					&& getPropertyName().equals(((SimplePathElement) obj).getPropertyName());
+		}
+		return super.equals(obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		return getPropertyName().hashCode();
+	}*/
+
+	public boolean isNotifyingBindingPathChanged() {
+		return false;
+	}
+
+	public String getBindingPath() {
+		if (getParent() instanceof SimplePathElement) {
+			return ((SimplePathElement) getParent()).getBindingPath() + "." + getLabel();
+		}
+		if (getParent() instanceof BindingVariable) {
+			return ((BindingVariable) getParent()).getVariableName() + "." + getLabel();
+		}
+		return getLabel();
+	}
 }

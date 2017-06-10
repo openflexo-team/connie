@@ -39,12 +39,14 @@
 
 package org.openflexo.utils;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertEquals;
 
+import org.junit.Test;
 import org.openflexo.toolbox.StringUtils;
 
-public class StringUtilsTest extends TestCase {
+public class StringUtilsTest {
 
+	@Test
 	public void testReplaceNonMatchingPatterns() {
 		String string1 = "Coucou";
 		String string2 = "éèîï";
@@ -62,6 +64,13 @@ public class StringUtilsTest extends TestCase {
 		}
 		assertEquals(sb.toString(), StringUtils.replaceNonMatchingPatterns(string2, regexp, replacement, true));
 		assertEquals(string1 + sb.toString(), StringUtils.replaceNonMatchingPatterns(string1 + string2, regexp, replacement, true));
+	}
 
+	@Test
+	public void testMatchingChars() {
+		assertEquals(3, StringUtils.matchingChars("hop", "hopala"));
+		assertEquals(3, StringUtils.matchingChars("hopala", "hop"));
+		assertEquals(3, StringUtils.matchingChars("hop", "ethop"));
+		assertEquals(3, StringUtils.matchingChars("rezut", "holalazut"));
 	}
 }

@@ -2,7 +2,8 @@
 
 package org.openflexo.connie.expr.parser.node;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @SuppressWarnings("nls")
 public abstract class Node implements Switchable, Cloneable {
@@ -15,7 +16,7 @@ public abstract class Node implements Switchable, Cloneable {
 		return this.parent;
 	}
 
-	void parent(@SuppressWarnings("hiding") Node parent) {
+	void parent(Node parent) {
 		this.parent = parent;
 	}
 
@@ -35,11 +36,11 @@ public abstract class Node implements Switchable, Cloneable {
 		return "";
 	}
 
-	protected String toString(List list) {
+	protected String toString(List<?> list) {
 		StringBuffer s = new StringBuffer();
 
-		for (Iterator i = list.iterator(); i.hasNext();) {
-			s.append(i.next());
+		for (Object o : list) {
+			s.append(o);
 		}
 
 		return s.toString();

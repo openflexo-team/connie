@@ -65,7 +65,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 	private final NodeDirectoryWatcher rootDirectoryWatcher;
 
-	private static class NodeDirectoryWatcher {
+	protected static class NodeDirectoryWatcher {
 
 		private final DirectoryWatcher watcher;
 		private final File directory;
@@ -104,7 +104,8 @@ public abstract class DirectoryWatcher extends TimerTask {
 					// System.out.println("For file " + f + " checksum=" + checksum);
 					checksums.put(f, checksum);
 
-				} else {
+				}
+				else {
 					try {
 						if (logger.isLoggable(Level.FINE)) {
 							logger.fine("Computing checksum for " + f);
@@ -122,14 +123,17 @@ public abstract class DirectoryWatcher extends TimerTask {
 			return checksum;
 		}
 
-		private void watch() {
+		private synchronized boolean watch() {
+
 			Set<File> checkedFiles = new HashSet<File>();
 
 			List<File> modifiedFiles = new ArrayList<File>();
 			List<File> addedFiles = new ArrayList<File>();
 			List<File> deletedFiles = new ArrayList<File>();
 
-			// System.out.println("Watch in NodeDirectoryWatcher " + directory);
+			if (directory == null || !directory.exists()) {
+				return false;
+			}
 
 			// scan the files and check for modification/addition
 			for (File f : directory.listFiles()) {
@@ -140,7 +144,8 @@ public abstract class DirectoryWatcher extends TimerTask {
 					lastModified.put(f, f.lastModified());
 					// watcher.fileAdded(f);
 					addedFiles.add(f);
-				} else if (current.longValue() != f.lastModified()) {
+				}
+				else if (current.longValue() != f.lastModified()) {
 					// modified file
 					lastModified.put(f, f.lastModified());
 					// watcher.fileModified(f);
@@ -216,10 +221,15 @@ public abstract class DirectoryWatcher extends TimerTask {
 				watcher.fileModified(f);
 			}
 
-			for (NodeDirectoryWatcher w : subNodes.values()) {
+			for (File k : subNodes.keySet()) {
+				NodeDirectoryWatcher w = subNodes.get(k);
 				// System.out.println("now watch for " + w.directory);
-				w.watch();
+				if (!w.watch()) {
+					subNodes.remove(k);
+				}
 			}
+
+			return true;
 		}
 
 		private void detectRenamedFiles(List<File> addedFiles, List<File> deletedFiles, List<File> renamedFiles,
@@ -317,29 +327,72 @@ public abstract class DirectoryWatcher extends TimerTask {
 				w.delete(notify);
 			}
 		}
+
 	}
 
 	public DirectoryWatcher(File directory) {
 		super();
 		rootDirectoryWatcher = new NodeDirectoryWatcher(directory, this, false);
 		logger.info("Started DirectoryWatcher on " + directory + " ...");
+		status = Status.INIT;
 	}
 
-	private boolean isRunning = false;
+	protected boolean isRunning = false;
+
+	public boolean DEBUG = false;
+
+	public NodeDirectoryWatcher getRootDirectoryWatcher() {
+		return rootDirectoryWatcher;
+	}
+
+	public File getDirectory() {
+		return rootDirectoryWatcher.directory;
+	}
+
+	public final void runNow() {
+		isRunning = false;
+		run();
+		isRunning = false;
+	}
 
 	@Override
 	public final void run() {
-		isRunning = true;
+
+		if (isWaitingCurrentExecution) {
+			return;
+		}
 		if (waitNextWatchingRequested) {
 			waitNextWatchingDone = true;
 		}
-		// System.err.println("* BEGIN Watch" + rootDirectoryWatcher.directory);
-		rootDirectoryWatcher.watch();
-		// System.err.println("* END Watch" + rootDirectoryWatcher.directory);
+		if (isRunning) {
+			return;
+		}
+
+		isRunning = true;
+		if (status == Status.INIT) {
+			status = Status.FIRST_RUN;
+		}
+		else if (status == Status.IDLE) {
+			status = Status.RUNNING;
+		}
+		try {
+			performRun();
+		} catch (Exception e) {
+			logger.warning("Unexpected exception in DirectoryWatcher " + e);
+			e.printStackTrace();
+		}
 		if (waitNextWatchingRequested) {
 			waitNextWatchingRequested = false;
 		}
 		isRunning = false;
+		status = Status.IDLE;
+
+	}
+
+	protected void performRun() {
+		// logger.info("********** START performWatching NOW " + rootDirectoryWatcher.directory);
+		rootDirectoryWatcher.watch();
+		// logger.info("********** FINISHED performWatching");
 	}
 
 	public boolean isRunning() {
@@ -386,18 +439,50 @@ public abstract class DirectoryWatcher extends TimerTask {
 	boolean waitNextWatchingRequested = false;
 	boolean waitNextWatchingDone = false;
 
+	public Status status = null;
+
+	public enum Status {
+		INIT, FIRST_RUN, RUNNING, IDLE
+	}
+
 	/**
-	 * Wait for the next watching to be performed
+	 * Wait for the next watching to be performed (with a default timeout of 5 seconds)
 	 */
-	public void waitNextWatching() {
+	public void waitNextWatching() throws InterruptedException {
+		waitNextWatching(5000);
+	}
+
+	public void waitNextWatching(long timeout) throws InterruptedException {
 		waitNextWatchingRequested = true;
 		waitNextWatchingDone = false;
+		int count = 0;
 		while (isRunning || !waitNextWatchingDone) {
+			if (count > timeout) throw new InterruptedException();
+			Thread.sleep(100);
+			count += 100;
+		}
+	}
+
+	private boolean isWaitingCurrentExecution = false;
+
+	/**
+	 * Wait for the currnt execution to be performed
+	 */
+	public void waitCurrentExecution() {
+		isWaitingCurrentExecution = true;
+		while (isRunning) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				return;
+				isRunning = false;
 			}
 		}
+		isWaitingCurrentExecution = false;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + ":" + getDirectory();
+	}
+
 }

@@ -91,7 +91,7 @@ public class TypeReference {
 	}
 
 	private Type makeType() throws ClassNotFoundException {
-		Class baseClass = Class.forName(baseType);
+		Class<?> baseClass = Class.forName(baseType);
 		if (parameters.size() > 0) {
 			Type[] params = new Type[parameters.size()];
 			int i = 0;
@@ -99,7 +99,8 @@ public class TypeReference {
 				params[i++] = r.getType();
 			}
 			return new ParameterizedTypeImpl(baseClass, params);
-		} else {
+		}
+		else {
 			return baseClass;
 		}
 	}

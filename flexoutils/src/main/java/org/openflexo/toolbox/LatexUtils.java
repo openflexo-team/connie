@@ -88,7 +88,8 @@ public class LatexUtils {
 		if (testDefaultCommands) {
 			if (testLatexCommand(TEXIFY)) {
 				return TEXIFY;
-			} else if (testLatexCommand(PDFLATEX)) {
+			}
+			else if (testLatexCommand(PDFLATEX)) {
 				return PDFLATEX;
 			}
 		}
@@ -103,7 +104,8 @@ public class LatexUtils {
 					File file = new File(string2, "texify");
 					if (file.exists()) {
 						return file.getAbsolutePath();
-					} else {
+					}
+					else {
 						file = new File(string2, "pdflatex");
 						if (file.exists()) {
 							return file.getAbsolutePath();
@@ -130,7 +132,8 @@ public class LatexUtils {
 					}
 				}
 			}
-		} else if (ToolBox.getPLATFORM() == ToolBox.MACOS) {
+		}
+		else if (ToolBox.getPLATFORM() == ToolBox.MACOS) {
 			StringBuilder sb = new StringBuilder("/usr/local/teTeX/bin/");
 			sb.append(System.getProperty("os.arch").equals("ppc") ? "powerpc" : "i386");
 			sb.append("-apple-darwin-current");
@@ -138,7 +141,8 @@ public class LatexUtils {
 			if (path != null) {
 				return path;
 			}
-		} else if (ToolBox.getPLATFORM() == ToolBox.LINUX) {
+		}
+		else if (ToolBox.getPLATFORM() == ToolBox.LINUX) {
 			String path = testCommandsWithPath("/usr/bin");
 			if (path != null) {
 				return path;
@@ -215,9 +219,9 @@ public class LatexUtils {
 	 */
 	private static String removeStringsToIgnore(String javaString) {
 		StringBuffer sb = new StringBuffer();
-		Iterator i = stringsToIgnore.iterator();
+		Iterator<String> i = stringsToIgnore.iterator();
 		while (i.hasNext()) {
-			String s = (String) i.next();
+			String s = i.next();
 			sb.append(s);
 			if (i.hasNext()) {
 				sb.append('|');
@@ -257,7 +261,8 @@ public class LatexUtils {
 					// pattern
 					if (latex.group(1) == null) {// just a tag \blabla
 						m.appendReplacement(sb, "$0");
-					} else {// a tag \blabla{bloblo} {}
+					}
+					else {// a tag \blabla{bloblo} {}
 						String str = latex.group();
 						int n = -1;
 						Matcher tmpMatcher = CHARS_TO_ESCAPE_PATTERN.matcher(str);
@@ -269,14 +274,16 @@ public class LatexUtils {
 							m.appendReplacement(sb, "$0");
 						}
 					}
-				} else {
+				}
+				else {
 					if (m.group().equals(JAVA_BACKSLASH)) {
 						m.appendReplacement(sb, "\\" + LATEX_BACKSLASH);
 						// The double \ added in front of the replacement are
 						// there to escape the begining of a Latex backslash
 						// which starts with a backslash too and are interpreted
 						// in the replacement method.
-					} else {
+					}
+					else {
 						m.appendReplacement(sb, "\\\\" + m.group());
 					}
 				}

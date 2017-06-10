@@ -48,9 +48,10 @@ import java.util.Vector;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * A {@link BindingModel} represents a set of {@link BindingVariable}, which are variables accessible in the context of which this binding
- * model is declared. This is the type specification of an evaluation context, determined at run-time by a {@link BindingEvaluationContext}
- * instance<br>
+ * A {@link BindingModel} represents a set of {@link BindingVariable}, which are
+ * variables accessible in the context of which this binding model is declared.
+ * This is the type specification of an evaluation context, determined at
+ * run-time by a {@link BindingEvaluationContext} instance<br>
  * 
  * 
  * @author sguerin
@@ -65,6 +66,8 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	public static final String BINDING_VARIABLE_PROPERTY = "bindingVariable";
 	public static final String BINDING_VARIABLE_NAME_CHANGED = "bindingVariableNameChanged";
 	public static final String BINDING_VARIABLE_TYPE_CHANGED = "bindingVariableTypeChanged";
+	public static final String BINDING_PATH_ELEMENT_NAME_CHANGED = "bindingPathElementNameChanged";
+	public static final String BINDING_PATH_ELEMENT_TYPE_CHANGED = "bindingPathElementTypeChanged";
 	public static final String BASE_BINDING_MODEL_PROPERTY = "baseBindingModel";
 	public static final String DELETED_PROPERTY = "deleted";
 
@@ -180,8 +183,10 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 
 	/**
 	 * Equals method for BindingModel<br>
-	 * Two BindingModel are equals if they have the same number of {@link BindingVariable} and if all {@link BindingVariable} match (peer to
-	 * peer responding to equals method) TODO: implements hashCode() method respecting this semantics
+	 * Two BindingModel are equals if they have the same number of
+	 * {@link BindingVariable} and if all {@link BindingVariable} match (peer to
+	 * peer responding to equals method) TODO: implements hashCode() method
+	 * respecting this semantics
 	 */
 	@Override
 	public boolean equals(Object obj) {

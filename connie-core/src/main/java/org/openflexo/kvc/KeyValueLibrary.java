@@ -97,6 +97,14 @@ public class KeyValueLibrary {
 				return null;
 			}
 		}
+		/*if (propertyName != null && propertyName.equals("flexoConcept")) {
+			System.out.println(
+					">>>>>> for " + declaringType + " return property " + returned + " hash=" + Integer.toHexString(returned.hashCode())
+							+ " declaringType=" + returned.getDeclaringType() + " type=" + returned.getType());
+			if (!returned.getDeclaringType().equals(declaringType)) {
+				System.out.println("C'est-y-pas bizarre la ???");
+			}
+		}*/
 		return returned;
 	}
 
@@ -170,7 +178,8 @@ public class KeyValueLibrary {
 			// If this is a simple interface, at least inherits properties from Object class
 			if (superType == null && TypeUtils.getBaseClass(current) != null && TypeUtils.getBaseClass(current).isInterface()) {
 				current = Object.class;
-			} else {
+			}
+			else {
 				current = superType;
 			}
 
@@ -211,7 +220,7 @@ public class KeyValueLibrary {
 			}
 		}
 
-		Class theClass = TypeUtils.getBaseClass(declaringType);
+		Class<?> theClass = TypeUtils.getBaseClass(declaringType);
 		if (theClass == null) {
 			LOGGER.warning("Cannot search properties for type: " + declaringType);
 			return null;
@@ -418,7 +427,7 @@ public class KeyValueLibrary {
 				// we continue
 			} // catch (NoSuchMethodException err) {
 				// we continue
-			// }
+				// }
 		}
 
 		return null;
@@ -427,8 +436,8 @@ public class KeyValueLibrary {
 
 	// Not anymore throw SuchMethodException (return null instead)
 	// > performance issue
-	private static Method getMethod(Type type, String methodName, Type... params) /*throws NoSuchMethodException*/{
-		Class theClass = TypeUtils.getBaseClass(type);
+	private static Method getMethod(Type type, String methodName, Type... params) /*throws NoSuchMethodException*/ {
+		Class<?> theClass = TypeUtils.getBaseClass(type);
 		if (theClass == null) {
 			LOGGER.warning("Cannot search properties for type: " + type);
 			return null;

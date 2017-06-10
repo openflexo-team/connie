@@ -39,6 +39,9 @@
 
 package org.openflexo.connie.type;
 
+import com.google.common.primitives.Primitives;
+import org.openflexo.connie.expr.EvaluationType;
+
 import java.io.File;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
@@ -47,17 +50,13 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
-
-import org.openflexo.connie.expr.EvaluationType;
-
-import com.google.common.primitives.Primitives;
 
 /**
  * Utility methods focusing on types introspection
@@ -90,18 +89,21 @@ public class TypeUtils {
 		}
 		if (isResolved(aType)) {
 			if (aType instanceof Class) {
-				return (Class) aType;
-			} else if (aType instanceof ParameterizedType) {
+				return (Class<?>) aType;
+			}
+			else if (aType instanceof ParameterizedType) {
 				Type rawType = ((ParameterizedType) aType).getRawType();
 				if (rawType instanceof Class) {
-					return (Class) rawType;
+					return (Class<?>) rawType;
 				}
 				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
-			} else if (aType instanceof GenericArrayType) {
+			}
+			else if (aType instanceof GenericArrayType) {
 				Type componentType = ((GenericArrayType) aType).getGenericComponentType();
 				return getBaseClass(componentType);
-			} else {
+			}
+			else {
 				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
 			}
@@ -120,7 +122,7 @@ public class TypeUtils {
 			}
 		}
 		if (aType instanceof TypeVariable) {
-			TypeVariable tv = (TypeVariable) aType;
+			TypeVariable<?> tv = (TypeVariable<?>) aType;
 			StringBuffer upperBounds = new StringBuffer();
 			boolean isFirst = true;
 			for (Type upperBound : tv.getBounds()) {
@@ -130,11 +132,17 @@ public class TypeUtils {
 			// logger.warning("Unresolved TypeVariable: " + tv.getName() + " " + tv.getGenericDeclaration() + " bounds=" + upperBounds);
 			if (tv.getBounds().length > 0) {
 				return getBaseClass(tv.getBounds()[0]);
-			} else {
+			}
+			else {
 				return Object.class;
 			}
 
 		}
+		if (aType instanceof GenericArrayType) {
+			Type componentType = ((GenericArrayType) aType).getGenericComponentType();
+			return getBaseClass(componentType);
+		}
+
 		LOGGER.warning("Not handled: " + aType.getClass().getName());
 		return null;
 	}
@@ -225,11 +233,11 @@ public class TypeUtils {
 		return aClass;
 	}
 
-	public static boolean isPrimitive(@Nullable Type type) {
+	public static boolean isPrimitive(Type type) {
 		return type != null && Primitives.allPrimitiveTypes().contains(type);
 	}
 
-	public static boolean isWrapperClass(@Nullable Class<?> klass) {
+	public static boolean isWrapperClass(Class<?> klass) {
 		return klass != null && Primitives.isWrapperType(klass);
 	}
 
@@ -317,14 +325,31 @@ public class TypeUtils {
 		return type.equals(Character.class) || type.equals(Character.TYPE);
 	}
 
+	public static boolean isList(Type type) {
+		if (type == null) {
+			return false;
+		}
+		if (type.equals(List.class)) {
+			return true;
+		}
+		Class<?> baseClass = getBaseClass(type);
+		if (baseClass != null && baseClass.equals(List.class)) {
+			return true;
+		}
+		return false;
+	}
+
 	public static EvaluationType kindOfType(Type type) {
 		if (isBoolean(type)) {
 			return EvaluationType.BOOLEAN;
-		} else if (isInteger(type) || isLong(type) || isShort(type) || isChar(type) || isByte(type)) {
+		}
+		else if (isInteger(type) || isLong(type) || isShort(type) || isChar(type) || isByte(type)) {
 			return EvaluationType.ARITHMETIC_INTEGER;
-		} else if (isFloat(type) || isDouble(type)) {
+		}
+		else if (isFloat(type) || isDouble(type)) {
 			return EvaluationType.ARITHMETIC_FLOAT;
-		} else if (isString(type)) {
+		}
+		else if (isString(type)) {
 			return EvaluationType.STRING;
 		}
 		return EvaluationType.LITERAL;
@@ -375,6 +400,10 @@ public class TypeUtils {
 		}
 
 		if (aType.equals(anOtherType)) {
+			return true;
+		}
+
+		if (anOtherType == ExplicitNullType.INSTANCE) {
 			return true;
 		}
 
@@ -450,16 +479,17 @@ public class TypeUtils {
 			if (anOtherType instanceof GenericArrayType) {
 				return isTypeAssignableFrom(((GenericArrayType) aType).getGenericComponentType(),
 						((GenericArrayType) anOtherType).getGenericComponentType(), permissive);
-			} else if (anOtherType instanceof Class && ((Class) anOtherType).isArray()) {
-				return isTypeAssignableFrom(((GenericArrayType) aType).getGenericComponentType(), ((Class) anOtherType).getComponentType(),
-						permissive);
+			}
+			else if (anOtherType instanceof Class && ((Class<?>) anOtherType).isArray()) {
+				return isTypeAssignableFrom(((GenericArrayType) aType).getGenericComponentType(),
+						((Class<?>) anOtherType).getComponentType(), permissive);
 			}
 			return false;
 		}
 
 		// Look if we are on same class
 		if (aType instanceof Class && anOtherType instanceof Class) {
-			return isClassAncestorOf((Class) aType, (Class) anOtherType);
+			return isClassAncestorOf((Class<?>) aType, (Class<?>) anOtherType);
 		}
 
 		if (!isClassAncestorOf(getBaseClass(aType), getBaseClass(anOtherType))) {
@@ -485,15 +515,17 @@ public class TypeUtils {
 			// Now, we have to compare parameter per parameter
 			for (int i = 0; i < t1.getActualTypeArguments().length; i++) {
 				Type st1 = t1.getActualTypeArguments()[i];
-				if (isPureWildCard(st1) && t1.getRawType() instanceof Class && ((Class) t1.getRawType()).getTypeParameters().length > i) {
+				if (isPureWildCard(st1) && t1.getRawType() instanceof Class
+						&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
 					// Fixed assignalibity issue with widcards as natural bounds of generic type
-					TypeVariable TV1 = ((Class) t1.getRawType()).getTypeParameters()[i];
+					TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
 					st1 = new WilcardTypeImpl(TV1.getBounds(), new Type[0]);
 				}
 				Type st2 = t2.getActualTypeArguments()[i];
-				if (isPureWildCard(st2) && t2.getRawType() instanceof Class && ((Class) t2.getRawType()).getTypeParameters().length > i) {
+				if (isPureWildCard(st2) && t2.getRawType() instanceof Class
+						&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
 					// Fixed assignalibity issue with widcards as natural bounds of generic type
-					TypeVariable TV2 = ((Class) t2.getRawType()).getTypeParameters()[i];
+					TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
 					st2 = new WilcardTypeImpl(TV2.getBounds(), new Type[0]);
 				}
 				if (!isTypeAssignableFrom(st1, st2, true)) {
@@ -505,7 +537,7 @@ public class TypeUtils {
 
 		// In this case, the type is not fully resolved, we only consider the first upper bound
 		if (aType instanceof TypeVariable) {
-			TypeVariable tv = (TypeVariable) aType;
+			TypeVariable<?> tv = (TypeVariable<?>) aType;
 			if (tv.getBounds() != null && tv.getBounds().length > 0 && tv.getBounds()[0] != null) {
 				return isTypeAssignableFrom(tv.getBounds()[0], anOtherType);
 			}
@@ -518,21 +550,21 @@ public class TypeUtils {
 		return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
 		/*if (getBaseEntity() == type.getBaseEntity()) {
 			// Base entities are the same, let's analyse parameters
-
+		
 			// If one of both paramters def is empty (parameters are not defined, as before java5)
 			// accept it without performing a test which is impossible to perform
 			if ((getParameters().size() == 0)
 					|| (type.getParameters().size() == 0)) return true;
-
+		
 			// Now check that parameters size are the same
 			if (getParameters().size() != type.getParameters().size()) return false;
-
+		
 			// Now, we have to compare parameter per parameter
 			for (int i=0; i<getParameters().size(); i++) 
 			{
 				DMType localParam = getParameters().elementAt(i);
 				DMType sourceParam = type.getParameters().elementAt(i);
-
+		
 				if (localParam.getKindOfType() == KindOfType.WILDCARD
 						&& localParam.getUpperBounds().size()==1) {
 					DMType resultingSourceParamType;
@@ -553,7 +585,7 @@ public class TypeUtils {
 					}
 					return true;    			
 				}
-
+		
 				// Else it's a true ancestor
 				else {
 					//DMType parentType = makeInstantiatedDMType(type.getBaseEntity().getParentType(),type);
@@ -572,8 +604,9 @@ public class TypeUtils {
 			return ((CustomType) aType).simpleRepresentation();
 		}
 		if (aType instanceof Class) {
-			return ((Class) aType).getSimpleName();
-		} else if (aType instanceof ParameterizedType) {
+			return ((Class<?>) aType).getSimpleName();
+		}
+		else if (aType instanceof ParameterizedType) {
 			ParameterizedType t = (ParameterizedType) aType;
 			StringBuilder sb = new StringBuilder();
 			sb.append(simpleRepresentation(t.getRawType())).append("<");
@@ -596,8 +629,9 @@ public class TypeUtils {
 			return ((CustomType) aType).fullQualifiedRepresentation();
 		}
 		if (aType instanceof Class) {
-			return ((Class) aType).getName();
-		} else if (aType instanceof ParameterizedType) {
+			return ((Class<?>) aType).getName();
+		}
+		else if (aType instanceof ParameterizedType) {
 			ParameterizedType t = (ParameterizedType) aType;
 			StringBuilder sb = new StringBuilder();
 			sb.append(fullQualifiedRepresentation(t.getRawType())).append("<");
@@ -618,9 +652,9 @@ public class TypeUtils {
 	}
 
 	public static boolean isPureWildCard(Type type) {
-		return type instanceof WildcardType
-				&& ((((WildcardType) type).getUpperBounds() == null) || (((WildcardType) type).getUpperBounds().length == 0 || ((((WildcardType) type)
-						.getUpperBounds().length == 1 && (((WildcardType) type).getUpperBounds()[0].equals(Object.class))))));
+		return type instanceof WildcardType && ((((WildcardType) type).getUpperBounds() == null)
+				|| (((WildcardType) type).getUpperBounds().length == 0 || ((((WildcardType) type).getUpperBounds().length == 1
+						&& (((WildcardType) type).getUpperBounds()[0].equals(Object.class))))));
 	}
 
 	/**
@@ -685,12 +719,16 @@ public class TypeUtils {
 		// unresolved type (a class with generic arguments not specified)
 		// We make an indirection with an infered context computed with default bounds
 		// declared in generic type
-		if (aType instanceof Class && ((Class) aType).getTypeParameters().length > 0) {
-			Type[] args = new Type[((Class) aType).getTypeParameters().length];
-			for (int i = 0; i < ((Class) aType).getTypeParameters().length; i++) {
-				args[i] = new WilcardTypeImpl(((Class) aType).getTypeParameters()[i].getBounds(), new Type[0]);
+		if (aType instanceof Class) {
+			Class<?> aClass = (Class<?>) aType;
+			TypeVariable<?>[] params = aClass.getTypeParameters();
+			if (params.length > 0) {
+				Type[] args = new Type[params.length];
+				for (int i = 0; i < params.length; i++) {
+					args[i] = new WilcardTypeImpl(params[i].getBounds(), new Type[0]);
+				}
+				return new ParameterizedTypeImpl(aClass, args);
 			}
-			return new ParameterizedTypeImpl((Class) aType, args);
 		}
 		return aType;
 
@@ -732,12 +770,13 @@ public class TypeUtils {
 						contextualizeType = true;
 					}
 					actualTypeArguments[i] = new WilcardTypeImpl(bounds, new Type[0]);
-				} else {
+				}
+				else {
 					actualTypeArguments[i] = currentTypeArgument;
 				}
 			}
 			if (contextualizeType) {
-				ParameterizedType fullyContextualizedType = new ParameterizedTypeImpl((Class) contextParameterizedType.getRawType(),
+				ParameterizedType fullyContextualizedType = new ParameterizedTypeImpl((Class<?>) contextParameterizedType.getRawType(),
 						actualTypeArguments);
 				// In this case, we use the bounds defined by the TypeVariable, and we recall the method with this most contextualized type
 				return makeInstantiatedType(type, fullyContextualizedType);
@@ -748,7 +787,7 @@ public class TypeUtils {
 		// unresolved type (a class with generic arguments not specified)
 		// We make an indirection with an infered context computed with default bounds
 		// declared in generic type
-		if (context instanceof Class && ((Class) context).getTypeParameters().length > 0) {
+		if (context instanceof Class && ((Class<?>) context).getTypeParameters().length > 0) {
 			return makeInstantiatedType(type, makeInferedType(context));
 		}
 
@@ -757,7 +796,7 @@ public class TypeUtils {
 			for (int i = 0; i < ((ParameterizedType) type).getActualTypeArguments().length; i++) {
 				actualTypeArguments[i] = makeInstantiatedType(((ParameterizedType) type).getActualTypeArguments()[i], context);
 			}
-			return new ParameterizedTypeImpl((Class) ((ParameterizedType) type).getRawType(), actualTypeArguments);
+			return new ParameterizedTypeImpl((Class<?>) ((ParameterizedType) type).getRawType(), actualTypeArguments);
 		}
 
 		if (type instanceof GenericArrayType) {
@@ -772,9 +811,9 @@ public class TypeUtils {
 			if (gd instanceof Class) {
 				if (context instanceof ParameterizedType) {
 					ParameterizedType parameterizedType = (ParameterizedType) context;
-					if (!((ParameterizedType) context).getRawType().equals(gd)) {
+					if (!parameterizedType.getRawType().equals(gd)) {
 						// Searching tv in gd, but this is not the right class, find relevant super type
-						Type relevantSuperType = getSuperInterfaceType(context, (Class) gd);
+						Type relevantSuperType = getSuperInterfaceType(context, (Class<?>) gd);
 						return makeInstantiatedType(type, relevantSuperType);
 					}
 					for (int i = 0; i < gd.getTypeParameters().length; i++) {
@@ -787,27 +826,47 @@ public class TypeUtils {
 									return makeInstantiatedType(type, getSuperType(context));
 								}
 								return ((ParameterizedType) context).getActualTypeArguments()[i];
-							} else {
-								LOGGER.warning("Could not retrieve parameterized type " + tv + " with context "
-										+ simpleRepresentation(context));
+							}
+							else {
+								LOGGER.warning(
+										"Could not retrieve parameterized type " + tv + " with context " + simpleRepresentation(context));
 								return type;
 							}
 						}
 					}
-				} else if (context instanceof Class && ((Class) context).getGenericSuperclass() != null) {
-					return makeInstantiatedType(type, ((Class) context).getGenericSuperclass());
-				} else if (context instanceof WildcardType) {
+				}
+				else if (context instanceof Class) {
+					// TODO: instead of returning the first resolved type, we should build a list and return the most specialized type
+					Class<?> contextClass = (Class<?>) context;
+					if (contextClass.getGenericSuperclass() != null) {
+						Type attemptFromSuperClass = makeInstantiatedType(type, contextClass.getGenericSuperclass());
+						if (!attemptFromSuperClass.equals(type)) {
+							return attemptFromSuperClass;
+						}
+					}
+					for (Type superInterface : contextClass.getGenericInterfaces()) {
+						Type attemptFromSuperInterface = makeInstantiatedType(type, superInterface);
+						if (!attemptFromSuperInterface.equals(type)) {
+							return attemptFromSuperInterface;
+						}
+					}
+					// Could not find any further resolution
+					return type;
+
+				}
+				else if (context instanceof WildcardType) {
 					if (((WildcardType) context).getUpperBounds() != null && ((WildcardType) context).getUpperBounds().length > 0) {
 						// In this case, we use the default upper bound
 						return makeInstantiatedType(type, ((WildcardType) context).getUpperBounds()[0]);
 					}
 				}
-			} else if (gd instanceof Method) {
+			}
+			else if (gd instanceof Method) {
 				return type;
 			}
 			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.fine("Not found type variable " + tv + " in context " + context + " GenericDeclaration="
-						+ tv.getGenericDeclaration() + " bounds=" + (tv.getBounds().length > 0 ? tv.getBounds()[0] : Object.class));
+				LOGGER.fine("Not found type variable " + tv + " in context " + context + " GenericDeclaration=" + tv.getGenericDeclaration()
+						+ " bounds=" + (tv.getBounds().length > 0 ? tv.getBounds()[0] : Object.class));
 			}
 			return tv.getBounds().length > 0 ? tv.getBounds()[0] : Object.class;
 		}
@@ -845,12 +904,14 @@ public class TypeUtils {
 					actualTypeArguments[i] = makeInstantiatedType(tv2, type);
 				}
 				return new ParameterizedTypeImpl(((Class<?>) ((ParameterizedType) type).getRawType()).getSuperclass(), actualTypeArguments);
-			} else {
+			}
+			else {
 				// System.out.println("super type of " + simpleRepresentation(type) + " is " + simpleRepresentation(superType));
 				return superType;
 			}
-		} else if (type instanceof Class) {
-			return ((Class) type).getGenericSuperclass();
+		}
+		else if (type instanceof Class) {
+			return ((Class<?>) type).getGenericSuperclass();
 		}
 		if (type instanceof CustomType) {
 			return getSuperType(((CustomType) type).getBaseClass());
@@ -859,7 +920,7 @@ public class TypeUtils {
 		return null;
 	}
 
-	public static Type getSuperInterfaceType(Type type, Class searchedSuperType) {
+	public static Type getSuperInterfaceType(Type type, Class<?> searchedSuperType) {
 		Type superType = getSuperType(type);
 		if (isTypeAssignableFrom(searchedSuperType, superType)) {
 			return superType;
@@ -877,7 +938,8 @@ public class TypeUtils {
 		if (type instanceof ParameterizedType) {
 			ParameterizedType myType = (ParameterizedType) type;
 			return ((Class<?>) myType.getRawType()).getGenericInterfaces();
-		} else if (type instanceof Class) {
+		}
+		else if (type instanceof Class) {
 			return ((Class<?>) type).getGenericInterfaces();
 		}
 		if (type instanceof CustomType) {
@@ -919,6 +981,24 @@ public class TypeUtils {
 			}
 		}
 		return object;
+	}
+
+	public static void reduceToMostSpecializedClasses(Collection<Class<?>> someClasses) {
+
+		if (someClasses.size() <= 1) {
+			return;
+		}
+
+		for (Class<?> reducedClass : new ArrayList<Class<?>>(someClasses)) {
+			if (someClasses.contains(reducedClass)) {
+				for (Class<?> aClass : new ArrayList<Class<?>>(someClasses)) {
+					if (!aClass.equals(reducedClass) && aClass.isAssignableFrom(reducedClass)) {
+						someClasses.remove(aClass);
+					}
+				}
+			}
+		}
+
 	}
 
 	public static Class<?> getMostSpecializedClass(Collection<Class<?>> someClasses) {
@@ -984,7 +1064,8 @@ public class TypeUtils {
 		T returned = storedObjectForClasses.get(aClass);
 		if (returned != null) {
 			return returned;
-		} else {
+		}
+		else {
 
 			// We first check for exact lookup
 
@@ -1060,9 +1141,9 @@ public class TypeUtils {
 
 				// Ambigous, return most specialized
 
-				Class mostSpecialized = null;
+				Class<?> mostSpecialized = null;
 				int bestDistance = 1001;
-				for (Class c : matchingClasses.keySet()) {
+				for (Class<?> c : matchingClasses.keySet()) {
 					if (distance(aClass, c) < bestDistance) {
 						mostSpecialized = c;
 						bestDistance = distance(aClass, c);
@@ -1089,7 +1170,7 @@ public class TypeUtils {
 	 * @param c2
 	 * @return
 	 */
-	private static int distance(Class c1, Class c2) {
+	private static int distance(Class<?> c1, Class<?> c2) {
 		if (c2.equals(c1)) {
 			return 0;
 		}
@@ -1102,7 +1183,7 @@ public class TypeUtils {
 					return d1 + 1;
 				}
 			}
-			for (Class superInterface : c2.getInterfaces()) {
+			for (Class<?> superInterface : c2.getInterfaces()) {
 				int d1 = distance(c1, superInterface);
 				if (d1 < 1000) {
 					return d1 + 1;
@@ -1119,7 +1200,7 @@ public class TypeUtils {
 				}
 			}
 
-			for (Class superInterface : c1.getInterfaces()) {
+			for (Class<?> superInterface : c1.getInterfaces()) {
 				int d2 = distance(c2, superInterface);
 				if (d2 < 1000) {
 					return d2 + 1;
@@ -1161,34 +1242,34 @@ public class TypeUtils {
 
 	/*public static interface ShouldFail {
 		public void test4(short t1, double t2);
-
+	
 		public void test10(Vector t1, List<String> t2);
-
+	
 		public void test14(Vector<String> t1, List<String> t2);
 	}
-
+	
 	public static interface ShouldSucceed {
 		public void test1(Object t1, Object t2);
-
+	
 		public void test2(int t1, Integer t2);
-
+	
 		public void test3(float t1, int t2);
-
+	
 		public void test11(List t1, Vector<String> t2);
-
+	
 		public void test12(Vector<String> t1, Vector<String> t2);
-
+	
 		public void test13(List<String> t1, Vector<String> t2);
 	}
-
+	
 	public static interface TestSuperType {
 		public void test20(MyClass2<Integer, Boolean> t1, MyClass1<Boolean> t2);
-
+	
 		public void test21(MyClass2<Integer, List<Boolean>> t1, MyClass1<List<Boolean>> t2);
-
+	
 		public void test22(MyClass3<Integer> t1, MyClass1<List<Integer>> t2);
 	}
-
+	
 	private static boolean checkFail(Method m) {
 		Type t1 = m.getGenericParameterTypes()[0];
 		Type t2 = m.getGenericParameterTypes()[1];
@@ -1196,7 +1277,7 @@ public class TypeUtils {
 				+ " of " + t1.getClass().getSimpleName() + " t2: " + t2 + " of " + t2.getClass().getSimpleName());
 		return isTypeAssignableFrom(t1, t2, true);
 	}
-
+	
 	private static boolean checkSucceed(Method m) {
 		Type t1 = m.getGenericParameterTypes()[0];
 		Type t2 = m.getGenericParameterTypes()[1];
@@ -1204,7 +1285,7 @@ public class TypeUtils {
 				+ t1 + " of " + t1.getClass().getSimpleName() + " t2: " + t2 + " of " + t2.getClass().getSimpleName());
 		return isTypeAssignableFrom(t1, t2, true);
 	}
-
+	
 	private static boolean checkSuperType(Method m) {
 		Type t1 = m.getGenericParameterTypes()[0];
 		Type t2 = m.getGenericParameterTypes()[1];
@@ -1212,23 +1293,23 @@ public class TypeUtils {
 				+ simpleRepresentation(t1) + " super type: " + simpleRepresentation(t2));
 		return true;
 	}
-
+	
 	public static class MyClass1<A> {
-
+	
 	}
-
+	
 	public static class MyClass2<B, D> extends MyClass1<D> {
-
+	
 	}
-
+	
 	public static class MyClass3<C> extends MyClass1<List<C>> {
-
+	
 	}
-
+	
 	public static class MyVector extends Vector<String> {
-
+	
 	}
-
+	
 	public static void main(String[] args) {
 		System.out.println("Type Argument=" + getTypeArgument(MyVector.class, Vector.class, 0));
 		System.err.println(isTypeAssignableFrom(Number.class, Integer.class));

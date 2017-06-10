@@ -94,7 +94,8 @@ public abstract class Expression {
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
-		} else if (obj instanceof Expression) {
+		}
+		else if (obj instanceof Expression) {
 			return getClass().equals(obj.getClass()) && toString().equalsIgnoreCase(((Expression) obj).toString());
 		}
 		return super.equals(obj);
@@ -164,7 +165,8 @@ public abstract class Expression {
 	private static void appendAllAtomicExpressions(Vector<Expression> buildVector, Expression current) {
 		if (current.getChilds() == null) {
 			buildVector.add(current);
-		} else {
+		}
+		else {
 			for (Expression e : current.getChilds()) {
 				appendAllAtomicExpressions(buildVector, e);
 			}

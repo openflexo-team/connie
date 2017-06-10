@@ -38,6 +38,7 @@
 
 package org.openflexo.connie.binding;
 
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -65,11 +66,13 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 		super(dataBinding, context);
 	}
 
+	@Override
 	public void delete() {
 		super.delete();
 	}
 
-	protected void fireChange(Object source) {
+	@Override
+	protected void fireChange(PropertyChangeEvent evt) {
 
 		T newValue;
 		try {
@@ -80,14 +83,23 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 			newValue = null;
 		}
 
+		if (getDataBinding().toString().equals("data.selectedDocumentElements")) {
+			System.out.println(">>>>>>>>>> fireChange for " + getDataBinding().toString());
+			System.out.println("newValue=" + newValue);
+			System.out.println("lastNotifiedValue=" + lastNotifiedValue);
+			System.out.println("lastKnownValues=" + lastKnownValues);
+		}
+
 		if (newValue != lastNotifiedValue) {
 			lastNotifiedValue = newValue;
-			bindingValueChanged(source, newValue);
+			bindingValueChanged(evt.getSource(), newValue);
+			refreshObserving(false);
 		} else {
 			// Lists are sames, but values inside lists, may have changed
 			if ((lastKnownValues == null) || (!lastKnownValues.equals(newValue))) {
 				lastKnownValues = (newValue != null ? new ArrayList<T2>(newValue) : null);
-				bindingValueChanged(source, newValue);
+				bindingValueChanged(evt.getSource(), newValue);
+				refreshObserving(false);
 			}
 		}
 	}
