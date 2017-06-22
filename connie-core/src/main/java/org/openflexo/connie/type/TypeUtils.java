@@ -1006,6 +1006,10 @@ public class TypeUtils {
 			return object;
 		}
 
+		if (desiredType.equals(String.class)) {
+			return object.toString();
+		}
+
 		if (object instanceof Number) {
 			if (TypeUtils.isByte(desiredType)) {
 				return ((Number) object).byteValue();
