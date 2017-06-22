@@ -401,6 +401,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	}
 
+	/**
+	 * Calling this method forces validity status recomputation<br>
+	 * {@link #isValid()} will be force called
+	 */
 	public void revalidate() {
 		markedAsToBeReanalized();
 		isValid();
@@ -422,19 +426,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return false;
 		}
 
+		// TODO: we should implement here the cache for DataBinding that were
+		// not valid and are valid again (it returns false instead of true)
 		if (wasValid && getOwner().getBindingModel() == bindingModelOnWhichValidityWasTested) {
-			// Use cache info to test DataBinding validity
-			return true;
+			// In this case (bindingModelOnWhichValidityWasTested not null)
+			// This means that we won't compute again DataBinding validity but we will use cached value
+			// Note: use revalidate() to force recompute validity status
+			return wasValid;
 		}
-		// TODO: implements and use correct equals() implementation on
-		// BindingModel class
-		/*
-		 * if (cacheable && wasValid) {
-		 * logger.info("Already tested for an other BindingModel");
-		 * logger.info("Tested on " + bindingModelOnWhichValidityWasTested);
-		 * logger.info("Should be now tested on " +
-		 * getOwner().getBindingModel()); }
-		 */
 
 		if (getExpression() == null) {
 			invalidBindingReason = "null expression";
