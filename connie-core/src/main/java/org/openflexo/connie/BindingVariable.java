@@ -155,7 +155,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		this.settable = settable;
 	}
 
-	@Override
+	/*@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BindingVariable) {
 			String vname = getVariableName();
@@ -168,14 +168,14 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		}
 		return super.equals(obj);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		if (toString() != null) {
 			return (toString()).hashCode();
 		}
 		return super.hashCode();
-	}
+	}*/
 
 	@Override
 	public Object getBindingValue(Object owner, BindingEvaluationContext context) {
