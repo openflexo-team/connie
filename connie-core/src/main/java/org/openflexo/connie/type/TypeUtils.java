@@ -554,8 +554,15 @@ public class TypeUtils {
 			LOGGER.warning("WildcardType not implemented yet !");
 		}
 
-		return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
-
+		try {
+			return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
+		} catch (NullPointerException e) {
+			// Might happen is some circonstance
+			// eg:
+			// anOtherType=R
+			// aType=org.openflexo.model.validation.ValidationRule<R, V>
+			return false;
+		}
 		/*if (getBaseEntity() == type.getBaseEntity()) {
 			// Base entities are the same, let's analyse parameters
 		
