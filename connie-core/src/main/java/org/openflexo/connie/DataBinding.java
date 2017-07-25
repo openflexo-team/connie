@@ -140,6 +140,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	// If type model is not dynamic, use setCacheable(false)
 	private boolean wasValid = false;
 	private String bindingModelOnWhichValidityWasTested = null;
+	private String lastTestedStringRepresentation = null;
 	private String invalidBindingReason;
 
 	private boolean needsParsing = false;
@@ -383,6 +384,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public void markedAsToBeReanalized() {
 
 		bindingModelOnWhichValidityWasTested = null;
+		lastTestedStringRepresentation = null;
 		wasValid = false;
 		if (expression != null) {
 			try {
@@ -419,8 +421,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public boolean isValid() {
 
-		invalidBindingReason = "unknown";
-
 		if (getOwner() == null) {
 			invalidBindingReason = "null owner";
 			wasValid = false;
@@ -435,12 +435,15 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		// Caching strategy
 		if (bindingModelOnWhichValidityWasTested != null
-				&& getOwner().getBindingModel().getDebugStructure().equals(bindingModelOnWhichValidityWasTested)) {
+				&& getOwner().getBindingModel().getDebugStructure().equals(bindingModelOnWhichValidityWasTested)
+				&& lastTestedStringRepresentation != null && toString().equals(lastTestedStringRepresentation)) {
 			// In this case (bindingModelOnWhichValidityWasTested not null)
 			// This means that we won't compute again DataBinding validity but we will use cached value
 			// Note: use revalidate() to force recompute validity status
 			return wasValid;
 		}
+
+		invalidBindingReason = "unknown";
 
 		if (getExpression() == null) {
 			invalidBindingReason = "null expression";
@@ -449,6 +452,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 
 		bindingModelOnWhichValidityWasTested = getOwner().getBindingModel().getDebugStructure();
+		lastTestedStringRepresentation = toString();
 
 		isCacheable = true;
 
