@@ -139,7 +139,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	// name and type changing are notified
 	// If type model is not dynamic, use setCacheable(false)
 	private boolean wasValid = false;
-	private BindingModel bindingModelOnWhichValidityWasTested = null;
+	private String bindingModelOnWhichValidityWasTested = null;
 	private String invalidBindingReason;
 
 	private boolean needsParsing = false;
@@ -410,6 +410,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		isValid();
 	}
 
+	public boolean isValid(boolean force) {
+		if (force) {
+			markedAsToBeReanalized();
+		}
+		return isValid();
+	}
+
 	public boolean isValid() {
 
 		invalidBindingReason = "unknown";
@@ -426,9 +433,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return false;
 		}
 
-		// TODO: we should implement here the cache for DataBinding that were
-		// not valid and are valid again (it returns false instead of true)
-		if (wasValid && getOwner().getBindingModel() == bindingModelOnWhichValidityWasTested) {
+		// Caching strategy
+		if (bindingModelOnWhichValidityWasTested != null
+				&& getOwner().getBindingModel().getDebugStructure().equals(bindingModelOnWhichValidityWasTested)) {
 			// In this case (bindingModelOnWhichValidityWasTested not null)
 			// This means that we won't compute again DataBinding validity but we will use cached value
 			// Note: use revalidate() to force recompute validity status
@@ -441,7 +448,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return false;
 		}
 
-		bindingModelOnWhichValidityWasTested = getOwner().getBindingModel();
+		bindingModelOnWhichValidityWasTested = getOwner().getBindingModel().getDebugStructure();
 
 		isCacheable = true;
 
