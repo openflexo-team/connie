@@ -242,6 +242,13 @@ public class TypeUtils {
 		return klass != null && Primitives.isWrapperType(klass);
 	}
 
+	public static boolean isNumber(Type type) {
+		if (type == null) {
+			return false;
+		}
+		return isDouble(type) || isFloat(type) || isLong(type) || isInteger(type) || isShort(type) || isByte(type);
+	}
+
 	public static boolean isDouble(Type type) {
 		if (type == null) {
 			return false;
