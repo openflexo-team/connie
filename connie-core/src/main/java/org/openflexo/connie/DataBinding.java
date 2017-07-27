@@ -412,8 +412,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		isValid();
 	}
 
-	public boolean isValid(boolean force) {
-		if (force) {
+	public boolean isValid(boolean forceRevalidate) {
+		if (forceRevalidate) {
 			markedAsToBeReanalized();
 		}
 		return isValid();
