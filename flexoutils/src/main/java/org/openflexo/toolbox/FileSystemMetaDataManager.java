@@ -67,8 +67,16 @@ public class FileSystemMetaDataManager {
 		return getMetaDataProperties(f).getProperty(key, defaultValue, f);
 	}
 
-	public void setProperty(String key, String value, File f) {
-		getMetaDataProperties(f).setProperty(key, value, f);
+	public void setProperty(String key, String value, File f, boolean save) {
+		getMetaDataProperties(f).setProperty(key, value, f, save);
+	}
+
+	public void saveMetaDataProperties(File f) {
+		getMetaDataProperties(f).save();
+	}
+
+	public long metaDataLastModified(File f) {
+		return getMetaDataProperties(f).metaDataFile.lastModified();
 	}
 
 	private MetaDataProperties getMetaDataProperties(File f) {
@@ -136,7 +144,7 @@ public class FileSystemMetaDataManager {
 			}
 		}
 
-		public void setProperty(String key, String value, File f) {
+		public void setProperty(String key, String value, File f, boolean save) {
 
 			String currentValue = getProperty(key, f);
 			if ((value == null && currentValue != null) || (value != null && !value.equals(currentValue))) {
@@ -149,7 +157,9 @@ public class FileSystemMetaDataManager {
 				else {
 					System.err.println("Error: cannot set metadata for that file: " + f + " in " + directory);
 				}
-				save();
+				if (save) {
+					save();
+				}
 			}
 		}
 
