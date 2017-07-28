@@ -64,11 +64,20 @@ public class XMLRootElementReader {
 	protected static final Logger LOGGER = Logger.getLogger(XMLRootElementReader.class.getPackage().getName());
 
 	private final LocalHandler handler;
-
 	private SAXParser saxParser;
+	private boolean parseFirstLevelElements = false;
+	private String firstLevelElementName;
 
 	public XMLRootElementReader() {
+		this(false, null);
+	}
+
+	public XMLRootElementReader(boolean parseFirstLevelElements, String firstLevelElementName) {
 		super();
+
+		this.parseFirstLevelElements = parseFirstLevelElements;
+		this.firstLevelElementName = firstLevelElementName;
+
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setNamespaceAware(true);
 		factory.setXIncludeAware(true);
@@ -105,7 +114,7 @@ public class XMLRootElementReader {
 
 	synchronized public XMLRootElementInfo readRootElement(InputStream input) throws IOException {
 
-		XMLRootElementInfo info = new XMLRootElementInfo();
+		XMLRootElementInfo info = new XMLRootElementInfo(parseFirstLevelElements, firstLevelElementName);
 
 		if (info != null && input != null) {
 
@@ -139,26 +148,66 @@ public class XMLRootElementReader {
 	class LocalHandler extends DefaultHandler2 {
 
 		private XMLRootElementInfo _info;
+		private int level = 0;
 
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-			String NSPrefix = "xmlns:p"; // default
+			if (level == 0) {
 
-			try {
-				_info.setName(localName);
-				_info.setQName(qName);
-				_info.setURI(uri);
+				String NSPrefix = "xmlns:p"; // default
 
-				if (qName != null && localName != null) {
-					NSPrefix = qName;
-					NSPrefix = NSPrefix.replace(localName, "").replace(":", "");
-					if (!NSPrefix.isEmpty() && !uri.isEmpty())
-						_info.addNamespace(NSPrefix, uri);
+				try {
+					_info.setName(localName);
+					_info.setQName(qName);
+					_info.setURI(uri);
+
+					if (qName != null && localName != null) {
+						NSPrefix = qName;
+						NSPrefix = NSPrefix.replace(localName, "").replace(":", "");
+						if (!NSPrefix.isEmpty() && !uri.isEmpty())
+							_info.addNamespace(NSPrefix, uri);
+					}
+
+					// ************************************
+					// processing Attributes
+
+					int len = attributes.getLength();
+
+					for (int i = 0; i < len; i++) {
+
+						// Unused Type aType = null;
+						// Unused String typeName = attributes.getType(i);
+						String attrQName = attributes.getQName(i);
+						String attrName = attributes.getLocalName(i);
+						String attrURI = attributes.getURI(i);
+						NSPrefix = "xmlns:p"; // default
+
+						if (qName != null && localName != null) {
+							NSPrefix = attrQName;
+							NSPrefix = NSPrefix.replace(attrName, "").replace(":", "");
+						}
+						if (!attrURI.isEmpty()) {
+							_info.addNamespace(NSPrefix, attrURI);
+						}
+
+						if (attrName.equals(""))
+							attrName = attrQName;
+
+						if (!attrName.isEmpty()) {
+							_info.addAttribute(attrName, attributes.getValue(i));
+						}
+
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+			}
+			else if (level == 1 && _info.parseFirstLevelElements() && _info.getFirstLevelElementName().equals(localName)) {
+				XMLElementInfo el = _info.addElement(uri, localName, qName);
 
-				// ************************************
-				// processing Attributes
+				String NSPrefix = "xmlns:p"; // default
 
 				int len = attributes.getLength();
 
@@ -176,23 +225,32 @@ public class XMLRootElementReader {
 						NSPrefix = NSPrefix.replace(attrName, "").replace(":", "");
 					}
 					if (!attrURI.isEmpty()) {
-						_info.addNamespace(NSPrefix, attrURI);
+						el.addNamespace(NSPrefix, attrURI);
 					}
 
 					if (attrName.equals(""))
 						attrName = attrQName;
 
 					if (!attrName.isEmpty()) {
-						_info.addAttribute(attrName, attributes.getValue(i));
+						el.addAttribute(attrName, attributes.getValue(i));
 					}
 
 				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 
-			throw new StopParsingException();
+			if (!_info.parseFirstLevelElements()) {
+				throw new StopParsingException();
+			}
+
+			level++;
+
+			// throw new StopParsingException();
+		}
+
+		@Override
+		public void endElement(String uri, String localName, String qName) throws SAXException {
+			super.endElement(uri, localName, qName);
+			level--;
 		}
 
 		public void setInfo(XMLRootElementInfo info) {

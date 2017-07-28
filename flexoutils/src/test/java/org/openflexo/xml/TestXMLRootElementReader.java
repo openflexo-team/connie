@@ -36,141 +36,140 @@
  * 
  */
 
-
 package org.openflexo.xml;
 
 import java.io.IOException;
-
-import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 
+import junit.framework.TestCase;
+
 public class TestXMLRootElementReader extends TestCase {
 
-    protected static XMLRootElementReader reader = new XMLRootElementReader();
+	protected static XMLRootElementReader reader = new XMLRootElementReader();
 
-    @Test
-    public void testLibrary0Parser() {
+	@Test
+	public void testLibrary0Parser() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/example_library_0.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/example_library_0.xml");
+		assertNotNull(rsc);
 
-        XMLRootElementInfo result = null;
+		XMLRootElementInfo result = null;
 
-        try {
-            result = reader.readRootElement(rsc);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		try {
+			result = reader.readRootElement(rsc);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        assertNotNull(result);
-        assertEquals(result.getName(), "Library");
+		assertNotNull(result);
+		assertEquals(result.getName(), "Library");
 
-    }
+	}
 
-    @Test
-    public void testLibrary1Parser() {
+	@Test
+	public void testLibrary1Parser() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/example_library_1.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/example_library_1.xml");
+		assertNotNull(rsc);
 
-        XMLRootElementInfo result = null;
+		XMLRootElementInfo result = null;
 
-        try {
-            result = reader.readRootElement(rsc.openInputStream());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		try {
+			result = reader.readRootElement(rsc.openInputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        assertNotNull(result);
-        assertEquals(result.getName(), "Library");
+		assertNotNull(result);
+		assertEquals(result.getName(), "Library");
 
-    }
+	}
 
-    @Test
-    public void testLibrary2Parser() {
+	@Test
+	public void testLibrary2Parser() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/example_library_2.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/example_library_2.xml");
+		assertNotNull(rsc);
 
-        XMLRootElementInfo result = null;
+		XMLRootElementInfo result = null;
 
-        try {
-            result = reader.readRootElement(rsc);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		try {
+			result = reader.readRootElement(rsc);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        assertNotNull(result);
-        assertEquals(result.getName(), "Library");
-    }
+		assertNotNull(result);
+		assertEquals(result.getName(), "Library");
+	}
 
-    @Test
-    public void testLibrary3Parser() {
+	@Test
+	public void testLibrary3Parser() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/example_library_3.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/example_library_3.xml");
+		assertNotNull(rsc);
 
-        XMLRootElementInfo result = null;
+		XMLRootElementInfo result = null;
 
-        try {
-            result = reader.readRootElement(rsc.openInputStream());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		try {
+			result = reader.readRootElement(rsc.openInputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        assertNotNull(result);
-        assertNotNull(result.getNamespaceByPrefix("p"));
-        assertEquals(result.getName(), "Library");
+		assertNotNull(result);
+		assertNotNull(result.getNamespaceByPrefix("p"));
+		assertEquals(result.getName(), "Library");
 
-    }
+	}
 
-    @Test
-    public void testMapParsing() {
+	@Test
+	public void testMapParsing() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/MapTest.xml");
-        assertNotNull(rsc);
-        XMLRootElementInfo result = null;
+		Resource rsc = ResourceLocator.locateResource("testXML/MapTest.xml");
+		assertNotNull(rsc);
+		XMLRootElementInfo result = null;
 
-        try {
-        	if (rsc instanceof FileResourceImpl) {
-        		result = reader.readRootElement(((FileResourceImpl) rsc).getFile());
-        	}
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		try {
+			if (rsc instanceof FileResourceImpl) {
+				result = reader.readRootElement(((FileResourceImpl) rsc).getFile());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        assertNotNull(result);
-        assertNotNull(result.getURI());
-        assertEquals(result.getName(), "Map");
+		assertNotNull(result);
+		assertNotNull(result.getURI());
+		assertEquals(result.getName(), "Map");
 
-    }
+	}
 
-    @Test
-    public void testVPParsing() {
+	@Test
+	public void testVPParsing() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/SampleUML.xml");
-        assertNotNull(rsc);
-        XMLRootElementInfo result = null;
+		Resource rsc = ResourceLocator.locateResource("testXML/SampleUML.xml");
+		assertNotNull(rsc);
+		XMLRootElementInfo result = null;
 
-        try {
-            result = reader.readRootElement(rsc);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		try {
+			result = reader.readRootElement(rsc);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        assertNotNull(result);
-        assertEquals(result.getName(), "ViewPoint");
-        System.out.println(result.toString());
+		assertNotNull(result);
+		assertEquals(result.getName(), "ViewPoint");
+		System.out.println(result.toString());
 
-    }
+	}
 }
