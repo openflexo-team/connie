@@ -71,6 +71,8 @@ public class TestBinding extends TestCase {
 		public static boolean aBoolean = false;
 		public static int anInt = 7;
 		public static List<String> aList = new ArrayList<>();
+		public static String aUTF8string = "Á à é ð";
+		public static Float unMontant = new Float(18.0);
 
 		static {
 			aList.add("this");
@@ -104,6 +106,12 @@ public class TestBinding extends TestCase {
 			else if (variable.getVariableName().equals("aList")) {
 				return aList;
 			}
+			else if (variable.getVariableName().equals("unëChaÎneUnîcÔde")) {
+				return aUTF8string;
+			}
+			else if (variable.getVariableName().equals("des€")) {
+				return unMontant;
+			}
 			return null;
 		}
 
@@ -128,6 +136,8 @@ public class TestBinding extends TestCase {
 		public TestBindingModel() {
 			super();
 			addToBindingVariables(new BindingVariable("aString", String.class));
+			addToBindingVariables(new BindingVariable("unëChaÎneUnîcÔde", String.class));
+			addToBindingVariables(new BindingVariable("des€", Float.TYPE));
 			addToBindingVariables(new BindingVariable("aBoolean", Boolean.TYPE));
 			addToBindingVariables(new BindingVariable("anInt", Integer.TYPE));
 			addToBindingVariables(new BindingVariable("aList", new TypeToken<List<String>>() {
@@ -258,33 +268,39 @@ public class TestBinding extends TestCase {
 			AbstractBinding binding = BINDING_FACTORY.convertFromString(bindingPath);
 			binding.setBindingDefinition(new BindingDefinition("test", expectedType, BindingDefinitionType.GET, true));*/
 
-		System.out
-				.println("Parsed " + dataBinding + " as " + dataBinding.getExpression() + " of " + dataBinding.getExpression().getClass());
+		if (dataBinding.getExpression() != null) {
+			System.out.println(
+					"Parsed " + dataBinding + " as " + dataBinding.getExpression() + " of " + dataBinding.getExpression().getClass());
 
-		if (!dataBinding.isValid()) {
-			fail(dataBinding.invalidBindingReason());
+			if (!dataBinding.isValid()) {
+				fail(dataBinding.invalidBindingReason());
+			}
+
+			Object evaluation = null;
+			try {
+				evaluation = dataBinding.getBindingValue(BINDING_CONTEXT);
+			} catch (TypeMismatchException e) {
+				e.printStackTrace();
+				fail();
+			} catch (NullReferenceException e) {
+				e.printStackTrace();
+				fail();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				fail();
+			}
+			System.out.println("Evaluated as " + evaluation);
+
+			System.out.println("expectedResult = " + expectedResult + " of " + expectedResult.getClass());
+			System.out.println("evaluation = " + evaluation + " of " + evaluation.getClass());
+
+			assertEquals(expectedResult, TypeUtils.castTo(evaluation, expectedType));
 		}
+		else {
+			System.out.println("Could not Parse " + dataBinding + " defined as " + dataBinding.getUnparsedBinding());
+			fail("Unparseable binding");
 
-		Object evaluation = null;
-		try {
-			evaluation = dataBinding.getBindingValue(BINDING_CONTEXT);
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-			fail();
-		} catch (NullReferenceException e) {
-			e.printStackTrace();
-			fail();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-			fail();
 		}
-
-		System.out.println("Evaluated as " + evaluation);
-
-		System.out.println("expectedResult = " + expectedResult + " of " + expectedResult.getClass());
-		System.out.println("evaluation = " + evaluation + " of " + evaluation.getClass());
-
-		assertEquals(expectedResult, TypeUtils.castTo(evaluation, expectedType));
 
 		/*Object evaluatedResult = null;
 		try {
@@ -397,4 +413,17 @@ public class TestBinding extends TestCase {
 		TestBindingContext.aString = "foo";
 		genericTest("aString.length", Integer.TYPE, 3);
 	}
+
+	public void testUTF8_1() {
+		System.out.println("***********  test UTF-8 1");
+		TestBindingContext.aUTF8string = "à la même place";
+		genericTest("unëChaÎneUnîcÔde == 'à la même place'", Boolean.TYPE, true);
+	}
+
+	public void testUTF8_2() {
+		System.out.println("*********** test UTF-8 2");
+		TestBindingContext.unMontant = new Float(120.0);
+		genericTest("des€ > 12.0", Boolean.TYPE, true);
+	}
+
 }
