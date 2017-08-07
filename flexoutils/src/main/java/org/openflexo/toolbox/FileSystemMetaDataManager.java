@@ -146,6 +146,11 @@ public class FileSystemMetaDataManager {
 
 		public void setProperty(String key, String value, File f, boolean save) {
 
+			if (value == null) {
+				System.err.println("Error: cannot set null value for key=" + key + " file: " + f + " in " + directory);
+				return;
+			}
+
 			String currentValue = getProperty(key, f);
 			if ((value == null && currentValue != null) || (value != null && !value.equals(currentValue))) {
 				if (f.equals(directory)) {
