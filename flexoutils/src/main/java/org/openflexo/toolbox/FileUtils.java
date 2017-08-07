@@ -1027,6 +1027,12 @@ public class FileUtils {
 			if (source.renameTo(destination)) {
 				return true;
 			}
+
+			if (destination.isDirectory()) {
+				System.err.println("Cannot rename from " + source + " to " + destination);
+				return false;
+			}
+
 			FileUtils.createNewFile(destination);
 			// API rename attempt failed, forcibly copy
 			bis = new BufferedInputStream(new FileInputStream(source));
