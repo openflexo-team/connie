@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
@@ -637,15 +638,16 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		}
 
 		if (needsAnalysing) {
+			// System.out.println("On Reanalyse " + toString() + " avec " + dataBinding.getOwner().getBindingModel());
 			buildBindingPathFromParsedBindingPath(dataBinding);
 		}
+		needsAnalysing = false;
 
 		if (!analysingSuccessfull && !needsAnalysing) {
 			// if (!analysingSuccessfull && !needsToBeReanalized) {
 			return false;
 		}
 
-		needsAnalysing = false;
 		// needsToBeReanalized = false;
 
 		if (LOGGER.isLoggable(Level.FINEST)) {
@@ -672,7 +674,23 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return false;
 		}*/
 
+		analyzedWithBindingModel = dataBinding.getOwner().getBindingModel();
+		analysingSuccessfull = true;
+
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if (getBindingVariable() != null) {
+			sb.append(getBindingVariable().getVariableName());
+			for (BindingPathElement e : getBindingPath()) {
+				sb.append("." + e.getSerializationRepresentation());
+			}
+		}
+		return sb.toString();
+
 	}
 
 	public String invalidBindingReason() {
@@ -796,7 +814,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// System.out.println("Found binding variable " + bindingVariable);
 			if (bindingVariable == null) {
 				invalidBindingReason = "cannot find binding variable " + ((NormalBindingPathElement) getParsedBindingPath().get(0)).property
-						+ " BindingModel=" + dataBinding.getOwner().getBindingModel();
+						+ " BindingModel=" + dataBinding.getBindingModelOnWhichValidityWasTested();
 				analysingSuccessfull = false;
 				return false;
 			}
@@ -880,6 +898,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				}
 				i++;
 			}
+			invalidBindingReason = "Valid";
 			analysingSuccessfull = true;
 		}
 		else {
