@@ -123,7 +123,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 						*/
 	}
 
-	private static final CachingStrategy DEFAULT_CACHING_STRATEGY = CachingStrategy.NO_CACHING; // CachingStrategy.PRAGMATIC_CACHE;
+	private static CachingStrategy defaultCachingStrategy = CachingStrategy.NO_CACHING;
+	// private static final CachingStrategy DEFAULT_CACHING_STRATEGY = CachingStrategy.PRAGMATIC_CACHE;
+
+	public static CachingStrategy getDefaultCachingStrategy() {
+		return defaultCachingStrategy;
+	}
+
+	public static void setDefaultCachingStrategy(CachingStrategy aCachingStrategy) {
+		defaultCachingStrategy = aCachingStrategy;
+	}
 
 	private Bindable owner;
 	private String unparsedBinding;
@@ -133,7 +142,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private Type declaredType = null;
 	private DataBinding.BindingDefinitionType bdType = null;
 	private boolean mandatory = false;
-	// TODO : XtoF, first attempt to have better performances
 	// Sylvain: the caching is now performed for a given BindingModel
 	// We assume here that the type model is not dynamic, only BindingVariable
 	// name and type changing are notified
@@ -146,7 +154,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private boolean needsParsing = false;
 	private String bindingName;
 
-	private CachingStrategy cachingStrategy = DEFAULT_CACHING_STRATEGY;
+	private CachingStrategy cachingStrategy = null;
 
 	private PropertyChangeSupport pcSupport;
 
@@ -185,7 +193,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public CachingStrategy getCachingStrategy() {
 		if (cachingStrategy == null) {
-			return DEFAULT_CACHING_STRATEGY;
+			return defaultCachingStrategy;
 		}
 		return cachingStrategy;
 	}
@@ -1098,5 +1106,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		 * cachedBindingValueChangeListeners.get(context); if (l != null) {
 		 * l.refreshObserving(); }
 		 */
+	}
+
+	public String getBindingModelOnWhichValidityWasTested() {
+		return bindingModelOnWhichValidityWasTested;
 	}
 }
