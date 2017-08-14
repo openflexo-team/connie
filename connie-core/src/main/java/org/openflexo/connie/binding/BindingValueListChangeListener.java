@@ -83,21 +83,27 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 			newValue = null;
 		}
 
-		if (getDataBinding().toString().equals("data.selectedDocumentElements")) {
+		/*if (getDataBinding().toString().equals("data.selectedDocumentElements")) {
 			System.out.println(">>>>>>>>>> fireChange for " + getDataBinding().toString());
 			System.out.println("newValue=" + newValue);
 			System.out.println("lastNotifiedValue=" + lastNotifiedValue);
 			System.out.println("lastKnownValues=" + lastKnownValues);
-		}
+		}*/
 
 		if (newValue != lastNotifiedValue) {
 			lastNotifiedValue = newValue;
+			/*if (getDataBinding() != null) {
+				System.out.println("1-For " + getDataBinding().toString() + " notifying from " + lastNotifiedValue + " to " + newValue);
+			}*/
 			bindingValueChanged(evt.getSource(), newValue);
 			refreshObserving(false);
 		}
 		else {
 			// Lists are sames, but values inside lists, may have changed
-			if ((lastKnownValues == null) || (!lastKnownValues.equals(newValue))) {
+			if ((lastKnownValues == null && newValue != null) || (lastKnownValues != null && !lastKnownValues.equals(newValue))) {
+				/*if (getDataBinding() != null) {
+					System.out.println("2-For " + getDataBinding().toString() + " notifying from " + lastKnownValues + " to " + newValue);
+				}*/
 				lastKnownValues = (newValue != null ? new ArrayList<>(newValue) : null);
 				bindingValueChanged(evt.getSource(), newValue);
 				refreshObserving(false);
