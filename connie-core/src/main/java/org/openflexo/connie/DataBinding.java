@@ -444,7 +444,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// Caching strategy
 		if (bindingModelOnWhichValidityWasTested != null
 				&& getOwner().getBindingModel().getDebugStructure().equals(bindingModelOnWhichValidityWasTested)
-				&& lastTestedStringRepresentation != null && toString().equals(lastTestedStringRepresentation)) {
+				&& lastTestedStringRepresentation != null && lastTestedStringRepresentation.equals(toString())) {
 			// In this case (bindingModelOnWhichValidityWasTested not null)
 			// This means that we won't compute again DataBinding validity but we will use cached value
 			// Note: use revalidate() to force recompute validity status
