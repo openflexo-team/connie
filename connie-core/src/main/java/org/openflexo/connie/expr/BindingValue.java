@@ -419,6 +419,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 
+			clearSerializationRepresentation();
+
 			// System.out.println(">>> In binding value " + this);
 			// System.out.println(">>> Detecting that variable " + getBindingVariable().getVariableName() + " change to "
 			// + evt.getNewValue());
@@ -440,6 +442,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 		}
 		else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
+
+			clearSerializationRepresentation();
+
 			// In this case, we detect that our current BindingVariable type has changed
 			// We need to mark the DataBinding as being reanalyzed
 			if (dataBinding != null) {
