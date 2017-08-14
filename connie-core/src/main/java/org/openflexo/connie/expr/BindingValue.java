@@ -90,6 +90,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	private static final Logger LOGGER = Logger.getLogger(BindingValue.class.getPackage().getName());
 
 	public static abstract class AbstractBindingPathElement {
+		public abstract String getSerializationRepresentation();
 	}
 
 	public static class NormalBindingPathElement extends AbstractBindingPathElement {
@@ -102,6 +103,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		@Override
 		public String toString() {
 			return "Normal[" + property + "]";
+		}
+
+		@Override
+		public String getSerializationRepresentation() {
+			return property;
 		}
 
 		@Override
@@ -134,6 +140,19 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		@Override
 		public String toString() {
 			return "Call[" + method + "(" + args + ")" + "]";
+		}
+
+		@Override
+		public String getSerializationRepresentation() {
+			StringBuffer sb = new StringBuffer();
+			sb.append(method + "(");
+			boolean isFirst = true;
+			for (Expression arg : args) {
+				sb.append((isFirst ? "" : ",") + arg);
+				isFirst = false;
+			}
+			sb.append(")");
+			return sb.toString();
 		}
 
 		@Override
@@ -294,6 +313,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				parsedBindingPath.add(new MethodCallBindingPathElement(fpe.getFunction().getName(), argList));
 			}
 		}
+		clearSerializationRepresentation();
 	}
 
 	public BindingPathElement getBindingPathElementAtIndex(int i) {
@@ -382,6 +402,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private void internallySetBindingVariable(BindingVariable aBindingVariable) {
 		if (bindingVariable != aBindingVariable) {
+			clearSerializationRepresentation();
 			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
 				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
 				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
@@ -607,6 +628,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	public void markedAsToBeReanalized() {
 		// needsToBeReanalized = true;
 		needsAnalysing = true;
+		clearSerializationRepresentation();
 		// dataBinding.markedAsToBeReanalized();
 	}
 
@@ -680,8 +702,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return true;
 	}
 
-	@Override
-	public String toString() {
+	private String serializationRepresentation = null;
+
+	public void clearSerializationRepresentation() {
+		serializationRepresentation = null;
+	}
+
+	private String makeSerializationRepresentation() {
 		StringBuffer sb = new StringBuffer();
 		if (getBindingVariable() != null) {
 			sb.append(getBindingVariable().getVariableName());
@@ -689,8 +716,45 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				sb.append("." + e.getSerializationRepresentation());
 			}
 		}
+		else {
+			boolean isFirst = true;
+			for (AbstractBindingPathElement apbe : parsedBindingPath) {
+				sb.append((isFirst ? "" : ".") + apbe.getSerializationRepresentation());
+				isFirst = false;
+			}
+		}
 		return sb.toString();
+	}
 
+	@Override
+	public String toString() {
+		if (serializationRepresentation == null) {
+			/*StringBuffer sb = new StringBuffer();
+			if (getBindingVariable() != null) {
+				sb.append(getBindingVariable().getVariableName());
+				for (BindingPathElement e : getBindingPath()) {
+					sb.append("." + e.getSerializationRepresentation());
+				}
+			}
+			else {
+				boolean isFirst = true;
+				for (AbstractBindingPathElement apbe : parsedBindingPath) {
+					sb.append((isFirst ? "" : ".") + apbe.getSerializationRepresentation());
+					isFirst = false;
+				}
+			}*/
+			// return sb.toString();
+			/*if (!sb.toString().equals(serializationRepresentation)) {
+				System.out.println("Au lieu de retourner " + sb.toString() + " je retourne " + serializationRepresentation);
+			}*/
+			serializationRepresentation = makeSerializationRepresentation();
+		}
+
+		if (!makeSerializationRepresentation().equals(serializationRepresentation)) {
+			System.out.println("Au lieu de retourner " + makeSerializationRepresentation() + " je retourne " + serializationRepresentation);
+		}
+
+		return serializationRepresentation;
 	}
 
 	public String invalidBindingReason() {
@@ -698,6 +762,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	private boolean _checkBindingPathValid() {
+
+		clearSerializationRepresentation();
+
 		if (getBindingVariable() == null) {
 			invalidBindingReason = "binding variable is null";
 			return false;

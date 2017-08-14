@@ -106,6 +106,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 							if (!(firstPathElement instanceof NormalBindingPathElement)
 									|| !((NormalBindingPathElement) firstPathElement).property.equals("object")) {
 								bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
+								bv.clearSerializationRepresentation();
 							}
 						}
 						return bv;
@@ -153,16 +154,14 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 
 	private Object evaluate(String bindingPath)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		// System.out.println("Evaluating " + bindingPath);
 		String normalizedBindingPath = normalizeBindingPath(bindingPath);
-		// System.out.println("Normalize " + bindingPath + " to " + normalizedBindingPath);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 		binding.setDeclaredType(Object.class);
 		binding.setBindingDefinitionType(BindingDefinitionType.GET);
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {
-			System.out.println("not valid: " + binding.invalidBindingReason());
+			//System.out.println("not valid: " + binding.invalidBindingReason());
 			throw new InvalidKeyValuePropertyException(
 					"Cannot interpret " + normalizedBindingPath + " for object of type " + object.getClass());
 		}

@@ -44,7 +44,6 @@ import java.io.PrintStream;
 import org.openflexo.connie.expr.BinaryOperator;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
@@ -158,8 +157,6 @@ public abstract class ExpressionPrettyPrinter {
 	protected abstract String makeStringRepresentation(TypeReference tr);
 
 	protected abstract String makeStringRepresentation(BindingValue bv);
-
-	protected abstract String makeStringRepresentation(AbstractBindingPathElement e);
 
 	protected abstract String makeStringRepresentation(BooleanConstant constant);
 
