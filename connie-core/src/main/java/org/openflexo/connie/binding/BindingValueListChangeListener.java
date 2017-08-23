@@ -62,6 +62,9 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 
 	private List<T2> lastKnownValues = null;
 
+	// Boolean used to indicate that lastKnownValues has never been notified
+	private boolean neverNotified = true;
+
 	public BindingValueListChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		super(dataBinding, context);
 	}
@@ -90,7 +93,13 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 			System.out.println("lastKnownValues=" + lastKnownValues);
 		}*/
 
-		if (newValue != lastNotifiedValue) {
+		// Fixed CONNIE-17
+		// OK, i get the problem
+		// When the first notification raised for a new value set to null, both values are not different
+		// and refreshObserving() is not called, thus some objects are not observed
+		// A solution is to force refreshObserving() to be called the first time, even values are both null
+
+		if (newValue != lastNotifiedValue || neverNotified) {
 			lastNotifiedValue = newValue;
 			/*if (getDataBinding() != null) {
 				System.out.println("1-For " + getDataBinding().toString() + " notifying from " + lastNotifiedValue + " to " + newValue);
@@ -109,5 +118,7 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 				refreshObserving(false);
 			}
 		}
+
+		neverNotified = false;
 	}
 }
