@@ -323,6 +323,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	}
 
 	final public T evaluateValue() throws NullReferenceException {
+		if (dataBinding == null) {
+			// TODO: we should handle this, we should never arrive here
+			return null;
+		}
 		try {
 			return dataBinding.getBindingValue(context);
 		} catch (TypeMismatchException e) {
