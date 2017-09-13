@@ -715,7 +715,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private String makeSerializationRepresentation() {
 		StringBuffer sb = new StringBuffer();
-		if (getBindingVariable() != null) {
+		if (getBindingVariable() != null && analysingSuccessfull) {
 			sb.append(getBindingVariable().getVariableName());
 			for (BindingPathElement e : getBindingPath()) {
 				sb.append("." + e.getSerializationRepresentation());
@@ -768,8 +768,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private boolean _checkBindingPathValid() {
 
-		clearSerializationRepresentation();
-
 		if (getBindingVariable() == null) {
 			invalidBindingReason = "binding variable is null";
 			return false;
@@ -821,6 +819,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		/*if (!TypeUtils.isResolved(currentType)) {
 			return false;
 		}*/
+		clearSerializationRepresentation();
 
 		return true;
 	}
