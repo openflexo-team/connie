@@ -43,6 +43,7 @@ import org.openflexo.connie.expr.Expression;
 
 public abstract class WhileLoop extends Loop { // NOPMD by beugnard on 29/10/14 23:16
 
+	@SuppressWarnings("unused")
 	private Expression condition;
 
 }

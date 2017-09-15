@@ -41,5 +41,6 @@ package org.openflexo.connie.cg;
 
 public abstract class Loop extends ControlGraph { // NOPMD by beugnard on 29/10/14 23:14
 
+	@SuppressWarnings("unused")
 	private ControlGraph statement;
 }
