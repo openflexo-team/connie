@@ -1189,7 +1189,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				// e.printStackTrace();
 			} catch (InvalidKeyValuePropertyException e) {
 				current = null;
-				e.printStackTrace();
+				// We silently escape...
+				// e.printStackTrace();
 			}
 			if (element instanceof FunctionPathElement) {
 				FunctionPathElement functionPathElement = (FunctionPathElement) element;
