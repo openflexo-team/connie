@@ -864,7 +864,7 @@ public class TypeUtils {
 		}
 
 		if (type instanceof TypeVariable) {
-			TypeVariable<GenericDeclaration> tv = (TypeVariable<GenericDeclaration>) type;
+			TypeVariable<?> tv = (TypeVariable<?>) type;
 			GenericDeclaration gd = tv.getGenericDeclaration();
 			// System.out.println(">>>>>> Trying to infer type of type variable " + tv + " name=" + tv.getName() + " GD="
 			// + tv.getGenericDeclaration() + " context=" + simpleRepresentation(context));

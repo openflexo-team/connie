@@ -435,7 +435,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				}
 			}
 			else {
-				// Does't matter, but mark data binding as beeing reanalyzed
+				// Does't matter, but mark data binding as being reanalyzed
 				if (dataBinding != null) {
 					dataBinding.markedAsToBeReanalized();
 				}

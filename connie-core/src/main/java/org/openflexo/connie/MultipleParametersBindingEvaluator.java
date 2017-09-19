@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
@@ -158,7 +157,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		} catch (org.openflexo.connie.exception.TransformException e) {
 			e.printStackTrace();
 		}
-		return expression.toString();
+		return null;
 	}
 
 	@Override
@@ -198,8 +197,8 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		// String normalizedBindingPath = normalizeBindingPath(bindingPath);
 		// System.out.println("Normalize " + bindingPath + " to " + normalizedBindingPath);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
-		binding.setDeclaredType(Object.class);
-		binding.setBindingDefinitionType(BindingDefinitionType.GET);
+		// FD redondant : binding.setDeclaredType(Object.class);
+		// FD redondant : binding.setBindingDefinitionType(BindingDefinitionType.GET);
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {

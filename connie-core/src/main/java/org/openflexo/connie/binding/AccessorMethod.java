@@ -48,10 +48,10 @@ import org.openflexo.kvc.KeyValueProperty;
  * {@code AccessorMethod} is a class representing a KeyValueProperty accessor method.
  * </p>
  * <p>
- * Because many differents accessors could be defined in a class, all implementing different class-specific levels (more or less
- * specialized, regarding parameters classes), we store these {@code AccessorMethods} in a particular order depending on the parameters
- * specialization. This order is implemented in this class through {@link Comparable} interface implementation. Note: this class has a
- * natural ordering that is inconsistent with equals, which means that {@code (x.compareTo(y)==0) == (x.equals(y))} condition is violated.
+ * Because many different accessors could be defined in a class, all implementing different class-specific levels (more or less specialized,
+ * regarding parameters classes), we store these {@code AccessorMethods} in a particular order depending on the parameters specialization.
+ * This order is implemented in this class through {@link Comparable} interface implementation. Note: this class has a natural ordering that
+ * is inconsistent with equals, which means that {@code (x.compareTo(y)==0) == (x.equals(y))} condition is violated.
  * 
  * @author sylvain
  * @see KeyValueProperty

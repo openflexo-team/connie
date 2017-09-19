@@ -42,7 +42,6 @@ package org.openflexo.connie;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
-import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -121,7 +120,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 		} catch (TransformException e) {
 			e.printStackTrace();
 		}
-		return expression.toString();
+		return null;
 	}
 
 	@Override
@@ -156,12 +155,12 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 		String normalizedBindingPath = normalizeBindingPath(bindingPath);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
-		binding.setDeclaredType(Object.class);
-		binding.setBindingDefinitionType(BindingDefinitionType.GET);
+		// FD redondant : binding.setDeclaredType(Object.class);
+		// FD redondant : binding.setBindingDefinitionType(BindingDefinitionType.GET);
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {
-			//System.out.println("not valid: " + binding.invalidBindingReason());
+			// System.out.println("not valid: " + binding.invalidBindingReason());
 			throw new InvalidKeyValuePropertyException(
 					"Cannot interpret " + normalizedBindingPath + " for object of type " + object.getClass());
 		}
