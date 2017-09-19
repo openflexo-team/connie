@@ -161,12 +161,20 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private Map<BindingEvaluationContext, T> cachedValues = null;
 	private Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = null;
 
-	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
+	private DataBinding() {
+		pcSupport = new PropertyChangeSupport(this);
+		initCache();
+	}
+
+	public DataBinding(Type declaredType, DataBinding.BindingDefinitionType bdType) {
+		this();
 		this.declaredType = declaredType;
 		this.bdType = bdType;
-		pcSupport = new PropertyChangeSupport(this);
+	}
+
+	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
+		this(declaredType, bdType);
 		setOwner(owner);
-		initCache();
 	}
 
 	public DataBinding(String unparsed, Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
@@ -174,11 +182,18 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		setUnparsedBinding(unparsed);
 	}
 
+	public DataBinding(String unparsed, Bindable owner, DataBinding<?> db) {
+		this(unparsed, owner, db.declaredType, db.bdType);
+	}
+
 	public DataBinding(String unparsed) {
-		super();
-		pcSupport = new PropertyChangeSupport(this);
+		this();
 		setUnparsedBinding(unparsed);
-		initCache();
+	}
+
+	public DataBinding(String unparsed, Type declaredType, DataBinding.BindingDefinitionType bdType) {
+		this(declaredType, bdType);
+		setUnparsedBinding(unparsed);
 	}
 
 	@Override
@@ -260,31 +275,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// logger.info("setExpression() with " + value);
 		needsParsing = false;
 		wasValid = false;
-		Expression oldValue = this.expression;
-		if (oldValue == null) {
-			if (value == null) {
-				return; // No change
-			}
-			else {
-				this.expression = value;
-				unparsedBinding = value != null ? value.toString() : null;
-				// analyseExpressionAfterParsing();
-				notifyBindingChanged(oldValue, value);
-				return;
-			}
-		}
-		else {
-			if (oldValue.equals(value)) {
-				return; // No change
-			}
-			else {
-				this.expression = value;
-				unparsedBinding = value != null ? expression.toString() : null;
-				LOGGER.info("Binding takes now value " + value);
-				// analyseExpressionAfterParsing();
-				notifyBindingChanged(oldValue, value);
-				return;
-			}
+		if ((this.expression == null && value != null) || (this.expression != null && !this.expression.equals(value))) {
+			// there is a change
+			Expression oldValue = this.expression;
+			this.expression = value;
+			unparsedBinding = value != null ? value.toString() : null;
+			LOGGER.info("Binding takes now value " + value);
+			// analyseExpressionAfterParsing();
+			notifyBindingChanged(oldValue, value);
 		}
 	}
 
@@ -329,8 +327,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 	}
 
-	public DataBinding.BindingDefinitionType getBindingDefinitionType() {
-		return bdType;
+	public boolean isExecutable() {
+		return bdType == BindingDefinitionType.EXECUTE;
+	}
+
+	public boolean isGET() {
+		return bdType == BindingDefinitionType.GET || bdType == BindingDefinitionType.GET_SET;
+	}
+
+	public boolean isSET() {
+		return bdType == BindingDefinitionType.SET || bdType == BindingDefinitionType.GET_SET;
 	}
 
 	public void setBindingDefinitionType(DataBinding.BindingDefinitionType aBDType) {
@@ -383,7 +389,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
-	 * Explicitely called when a structural modification of data occurs, and when the validity status of the {@link DataBinding} might have
+	 * Explicitly called when a structural modification of data occurs, and when the validity status of the {@link DataBinding} might have
 	 * changed<br>
 	 * Calling this method will force the next call of isValid() to force recompute the {@link DataBinding} validity status and message
 	 */
@@ -509,9 +515,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return false;
 		}
 
-		if (getBindingDefinitionType() == DataBinding.BindingDefinitionType.SET
-				|| getBindingDefinitionType() == DataBinding.BindingDefinitionType.GET_SET) {
-
+		if (isSET()) {
 			if (!getExpression().isSettable()) {
 				invalidBindingReason = "Invalid binding because binding declared as settable and definition cannot satisfy it";
 				if (LOGGER.isLoggable(Level.FINE)) {
@@ -525,7 +529,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		// NO need to check target type for EXECUTE bindings (we don't need
 		// return type nor value)
-		if (getBindingDefinitionType() == DataBinding.BindingDefinitionType.EXECUTE) {
+		if (isExecutable()) {
 			wasValid = true;
 			return true;
 		}
@@ -803,9 +807,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public T getBindingValue(final BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
 
-		if (((getBindingDefinitionType() == BindingDefinitionType.GET) || (getBindingDefinitionType() == BindingDefinitionType.GET_SET))
-				&& ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE)
-						|| (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
+		if (isGET() && ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE)
+				|| (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
 			// Caching will be done ONLY if:
 			// - Type of binding should have GET feature (EXECUTE bindings
 			// should NEVER be cached, or a new execution will be fired)
@@ -909,10 +912,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				// System.out.println("[EXECUTE] " + this + " value=" + returned
 				// + " for " + context);
 
-				if (((getBindingDefinitionType() == BindingDefinitionType.GET)
-						|| (getBindingDefinitionType() == BindingDefinitionType.GET_SET))
-						&& ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE)
-								|| (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
+				if (this.isGET() && ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE)
+						|| (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
 
 					// Caching will be done ONLY if:
 					// - Type of binding should have GET feature (EXECUTE
@@ -1072,7 +1073,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	@Override
 	public DataBinding<T> clone() {
-		DataBinding<T> returned = new DataBinding<>(getOwner(), getDeclaredType(), getBindingDefinitionType());
+		DataBinding<T> returned = new DataBinding<>(getOwner(), getDeclaredType(), this.bdType);
 		if (isSet()) {
 			returned.setUnparsedBinding(toString());
 		}
@@ -1080,14 +1081,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			returned.decode();
 		}
 		return returned;
-	}
-
-	public static DataBinding<Boolean> makeTrueBinding() {
-		return new DataBinding<>("true");
-	}
-
-	public static DataBinding<Boolean> makeFalseBinding() {
-		return new DataBinding<>("false");
 	}
 
 	/*

@@ -173,7 +173,7 @@ public class JavaBindingFactory implements BindingFactory {
 		return null;
 	}
 
-	private String getSignature(String functionName, List<DataBinding<?>> args) {
+	private static String getSignature(String functionName, List<DataBinding<?>> args) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(functionName);
 		sb.append("(");
