@@ -51,8 +51,6 @@ import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
 
 /**
  * Represents a symbolic expression
@@ -231,34 +229,6 @@ public abstract class Expression {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	@Deprecated
-	public boolean evaluateCondition(final Hashtable<String, ?> variables) throws TypeMismatchException, UnresolvedExpressionException {
-		// logger.info("evaluate "+this);
-		// logger.info("variables "+variables);
-
-		Expression evaluation = evaluate(variables);
-		// logger.info("evaluation "+evaluation);
-		if (evaluation == Constant.BooleanConstant.TRUE) {
-			return true;
-		}
-		if (evaluation == Constant.BooleanConstant.FALSE) {
-			return false;
-		}
-		LOGGER.warning("Unresolved expression: " + evaluation);
-		throw new UnresolvedExpressionException();
-	}
-
-	@Deprecated
-	public static List<BindingValue> extractBindingValues(String anExpression) throws ParseException, TypeMismatchException {
-
-		return extractBindingValues(ExpressionParser.parse(anExpression));
-	}
-
-	@Deprecated
-	public static List<BindingValue> extractBindingValues(final Expression expression) throws ParseException, TypeMismatchException {
-		return expression.getAllBindingValues();
 	}
 
 	@Override

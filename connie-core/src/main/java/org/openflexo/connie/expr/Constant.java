@@ -237,12 +237,6 @@ public abstract class Constant<V> extends Expression {
 			this.value = value;
 		}
 
-		@Deprecated
-		public EnumConstant(String enumName) {
-			super();
-			this.enumName = enumName;
-		}
-
 		public String getName() {
 			if (value != null) {
 				return value.name();
