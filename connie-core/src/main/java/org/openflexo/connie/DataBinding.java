@@ -280,7 +280,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			Expression oldValue = this.expression;
 			this.expression = value;
 			unparsedBinding = value != null ? value.toString() : null;
-			LOGGER.info("Binding takes now value " + value);
+			// LOGGER.info("Binding takes now value " + value);
 			// analyseExpressionAfterParsing();
 			notifyBindingChanged(oldValue, value);
 		}
