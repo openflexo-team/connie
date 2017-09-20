@@ -158,7 +158,7 @@ public class FlexoLoggingManager {
 					"Unhandled exception occured: " + e.getClass().getName()), e);
 		}
 		else {
-			Logger.global.warning("Unexpected exception occured: " + e.getClass().getName());
+			LOGGER.warning("Unexpected exception occured: " + e.getClass().getName());
 		}
 	}
 

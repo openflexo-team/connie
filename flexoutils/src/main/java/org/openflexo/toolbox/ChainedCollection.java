@@ -143,6 +143,7 @@ public class ChainedCollection<T> implements Collection<T> {
 		return returned;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T2> T2[] toArray(T2[] a) {
 		int i = 0;

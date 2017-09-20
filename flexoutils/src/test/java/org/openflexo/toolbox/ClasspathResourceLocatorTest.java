@@ -96,11 +96,10 @@ public class ClasspathResourceLocatorTest extends TestCase {
 			Resource container = rloc.getContainer();
 
 			if (container != null) {
-				List<Resource> list = (List<Resource>) rloc.getContainer().getContents(Pattern.compile(".*[.]wav"), false);
+				Pattern pat = Pattern.compile(".*[.]wav");
+				assertTrue(rloc.getContainer().getContents(pat, false).size() > 1);
 
-				assertTrue(list.size() > 1);
-
-				for (Resource r : list) {
+				for (Resource r : rloc.getContainer().getContents(pat, false)) {
 					System.out.println(r.getURI());
 				}
 			}
