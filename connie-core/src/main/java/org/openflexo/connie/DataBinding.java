@@ -54,6 +54,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.annotations.NotificationUnsafe;
+import org.openflexo.connie.binding.BindingDefinition;
 import org.openflexo.connie.binding.BindingValueChangeListener;
 import org.openflexo.connie.binding.LazyBindingValueChangeListener;
 import org.openflexo.connie.binding.TargetObject;
@@ -135,6 +136,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	private Bindable owner;
 	private String unparsedBinding;
+	private BindingDefinition bindingDefinition;
 	private Expression expression;
 
 	private Type declaredType = null;
@@ -238,6 +240,21 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return unparsedBinding;
 	}
 
+	@Deprecated
+	public BindingDefinition getBindingDefinition() {
+		if (bindingDefinition == null) {
+			bindingDefinition = new BindingDefinition("unamed", declaredType, bdType, false);
+		}
+		return bindingDefinition;
+	}
+
+	@Deprecated
+	public void setBindingDefinition(BindingDefinition bindingDefinition) {
+		this.bindingDefinition = bindingDefinition;
+		declaredType = bindingDefinition.getType();
+		bdType = bindingDefinition.getBindingDefinitionType();
+	}
+
 	public void decode() {
 		if (needsParsing) {
 			parseExpression();
@@ -305,6 +322,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void setDeclaredType(Type aDeclaredType) {
 		declaredType = aDeclaredType;
+		if (bindingDefinition != null) {
+			bindingDefinition.setType(aDeclaredType);
+		}
 	}
 
 	public boolean isExecutable() {
@@ -321,6 +341,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void setBindingDefinitionType(DataBinding.BindingDefinitionType aBDType) {
 		bdType = aBDType;
+		if (bindingDefinition != null) {
+			bindingDefinition.setBindingDefinitionType(aBDType);
+		}
 	}
 
 	public Type getAnalyzedType() {
