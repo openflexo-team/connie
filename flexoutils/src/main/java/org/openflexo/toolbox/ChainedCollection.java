@@ -50,6 +50,8 @@ public class ChainedCollection<T> implements Collection<T> {
 	private final List<Collection<? extends T>> collections = new ArrayList<>();
 	private final List<T> items = new ArrayList<>();
 
+	private String debugName;
+
 	@SafeVarargs
 	public ChainedCollection(Collection<? extends T>... collections) {
 		Collections.addAll(this.collections, collections);
@@ -217,5 +219,26 @@ public class ChainedCollection<T> implements Collection<T> {
 	public void clear() {
 		collections.clear();
 		items.clear();
+	}
+
+	public List<Collection<? extends T>> getCollections() {
+		return collections;
+	}
+
+	public void setDebugName(String name) {
+		this.debugName = name;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(debugName != null ? debugName : "ChainedCollection");
+		sb.append("{");
+		boolean isFirst = true;
+		for (Collection c : collections) {
+			sb.append((isFirst ? "" : ",") + c.toString());
+			isFirst = false;
+		}
+		return sb.toString();
 	}
 }
