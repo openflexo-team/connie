@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2014, Openflexo
+ * Copyright (c) 2017, Openflexo
  * 
  * This file is part of Flexoutils, a component of the software infrastructure 
  * developed at Openflexo.
@@ -39,10 +39,9 @@
 package org.openflexo.test;
 
 import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 
-public class OnlyOnWindowsRunner extends BlockJUnit4ClassRunner {
+public class OnlyOnWindowsRunner extends OrderedRunner {
 
 	public OnlyOnWindowsRunner(Class<?> klass) throws InitializationError {
 		super(klass);
