@@ -40,7 +40,7 @@ package org.openflexo.connie.binding;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
@@ -56,11 +56,11 @@ import org.openflexo.logging.FlexoLogger;
  * @author sylvain
  * 
  */
-public abstract class BindingValueListChangeListener<T2, T extends List<T2>> extends BindingValueChangeListener<T> {
+public abstract class BindingValueListChangeListener<T2, T extends Collection<T2>> extends BindingValueChangeListener<T> {
 
 	private static final Logger LOGGER = FlexoLogger.getLogger(BindingValueListChangeListener.class.getName());
 
-	private List<T2> lastKnownValues = null;
+	private Collection<T2> lastKnownValues = null;
 
 	// Boolean used to indicate that lastKnownValues has never been notified
 	private boolean neverNotified = true;
@@ -83,6 +83,9 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 		} catch (NullReferenceException e) {
 			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext()
 					+ " because NullReferenceException has raised");
+			newValue = null;
+		} catch (ClassCastException e) {
+			LOGGER.warning("ClassCastException while evaluating " + getDataBinding() + " with context " + getContext());
 			newValue = null;
 		}
 
