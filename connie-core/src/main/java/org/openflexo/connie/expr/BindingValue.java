@@ -755,9 +755,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			serializationRepresentation = makeSerializationRepresentation();
 		}
 
-		if (!makeSerializationRepresentation().equals(serializationRepresentation)) {
+		/*if (!makeSerializationRepresentation().equals(serializationRepresentation)) {
 			System.out.println("Au lieu de retourner " + makeSerializationRepresentation() + " je retourne " + serializationRepresentation);
-		}
+		}*/
 
 		return serializationRepresentation;
 	}
