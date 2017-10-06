@@ -41,6 +41,7 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
@@ -112,10 +113,17 @@ public abstract class BindingValueListChangeListener<T2, T extends Collection<T2
 		}
 		else {
 			// Lists are sames, but values inside lists, may have changed
-			if ((lastKnownValues == null && newValue != null) || (lastKnownValues != null && !lastKnownValues.equals(newValue))) {
-				/*if (getDataBinding() != null) {
-					System.out.println("2-For " + getDataBinding().toString() + " notifying from " + lastKnownValues + " to " + newValue);
-				}*/
+			try {
+				if ((lastKnownValues == null && newValue != null) || (lastKnownValues != null && !lastKnownValues.equals(newValue))) {
+					/*if (getDataBinding() != null) {
+						System.out.println("2-For " + getDataBinding().toString() + " notifying from " + lastKnownValues + " to " + newValue);
+					}*/
+					lastKnownValues = (newValue != null ? new ArrayList<>(newValue) : null);
+					bindingValueChanged(evt.getSource(), newValue);
+					refreshObserving(false);
+				}
+			} catch (ConcurrentModificationException e) {
+				// List changed while equals() beeing computed: this is a good reason to fire change
 				lastKnownValues = (newValue != null ? new ArrayList<>(newValue) : null);
 				bindingValueChanged(evt.getSource(), newValue);
 				refreshObserving(false);
