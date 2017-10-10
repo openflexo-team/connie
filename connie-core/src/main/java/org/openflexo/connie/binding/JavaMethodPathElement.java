@@ -41,6 +41,7 @@ package org.openflexo.connie.binding;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -49,7 +50,10 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
 
 /**
@@ -167,6 +171,44 @@ public class JavaMethodPathElement extends FunctionPathElement {
 		}
 		return null;
 
+	}
+
+	public JavaMethodPathElement transform(ExpressionTransformer transformer) throws TransformException {
+
+		boolean hasBeenTransformed = false;
+		List<DataBinding<?>> transformedArgs = new ArrayList<>();
+
+		for (FunctionArgument arg : getArguments()) {
+			DataBinding<?> argValue = getParameter(arg);
+			if (argValue.isValid()) {
+				Expression currentExpression = argValue.getExpression();
+				Expression transformedExpression = currentExpression.transform(transformer);
+				if (!transformedExpression.equals(currentExpression)) {
+					hasBeenTransformed = true;
+					DataBinding<?> newTransformedBinding = new DataBinding<Object>(argValue.getOwner(), argValue.getDeclaredType(),
+							argValue.getBindingDefinitionType());
+					newTransformedBinding.setExpression(transformedExpression);
+					// TODO: better to do i think
+					newTransformedBinding.isValid();
+					transformedArgs.add(newTransformedBinding);
+					//System.out.println(
+					//		"On a transforme " + argValue + " en " + newTransformedBinding + " valid=" + newTransformedBinding.isValid());
+					hasBeenTransformed = true;
+				}
+				else {
+					transformedArgs.add(argValue);
+				}
+			}
+			else {
+				transformedArgs.add(argValue);
+			}
+		}
+
+		if (!hasBeenTransformed) {
+			return this;
+		}
+
+		return new JavaMethodPathElement(getParent(), getMethodDefinition(), transformedArgs);
 	}
 
 }

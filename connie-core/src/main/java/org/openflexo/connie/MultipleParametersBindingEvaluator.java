@@ -143,6 +143,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 									|| (!((NormalBindingPathElement) firstPathElement).property.equals("object"))
 											&& !parameters.contains(((NormalBindingPathElement) firstPathElement).property)) {
 								bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
+								bv.markedAsToBeReanalized();
 							}
 						}
 						return bv;
@@ -202,6 +203,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {
+			System.out.println("Invalid binding: " + binding);
 			System.out.println("not valid: " + binding.invalidBindingReason());
 			System.out.println("bm=" + getBindingModel());
 			throw new InvalidKeyValuePropertyException("Cannot interpret " + normalizedBindingPath);
