@@ -281,7 +281,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void setBindingName(String bindingName) {
-		// if (this.bindingName != bindingName) {
 		if (bindingName != null && !bindingName.equals(this.bindingName)) {
 			String oldBindingName = this.bindingName;
 			this.bindingName = bindingName;
@@ -382,7 +381,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					@Override
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
-							//System.out.println("Reanalysing: " + e);
+							// System.out.println("A reanalyser: " + e);
 							((BindingValue) e).markedAsToBeReanalized();
 						}
 					}
@@ -404,11 +403,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
-	 * Return boolean indicating whether this {@link DataBinding} is valid or not<br>
+	 * Return flag indicating whether this {@link DataBinding} is valid or not<br>
 	 * 
-	 * Note that this status relies on a cached value with is invalidated if monitoring scheme of {@link DataBinding} detects a modification
-	 * in {@link BindingModel}. If {@link BindingModel} has changed, validity status is recomputed.<br>
-	 * Calling this method is then safe in all cases
+	 * This method is efficient and relies on a caching scheme.
+	 * 
+	 * A internal scheme monitor the underlying {@link BindingModel} (typing model), and detect modifications of {@link BindingModel}, which
+	 * triggers recomputation of validity status. Thus, calling this method is always safe, regarding status of underlying
+	 * {@link BindingModel}
 	 * 
 	 * @return
 	 */
@@ -419,9 +420,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 
 		/*if (!valid && isSet()) {
-			System.out.println(
-					"Invalid binding: " + toString() + " avec " + (getOwner() != null && getOwner().getBindingModel() != null
-							? getOwner().getBindingModel().getDebugStructure() : "null"));
+			System.out.println("Invalid binding: " + toString() + " avec " + (getOwner() != null && getOwner().getBindingModel() != null
+					? getOwner().getBindingModel().getDebugStructure() : "null"));
 			System.out.println("reason: " + invalidBindingReason());
 		}*/
 
@@ -578,9 +578,15 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
-	 * Infer and return type addressed by this {@link DataBinding}, by validating {@link DataBinding} and examining it's contents.
+	 * Infer and return type of this {@link DataBinding}
 	 * 
-	 * @return
+	 * This method is efficient and relies on a caching scheme.
+	 * 
+	 * A internal scheme monitor the underlying {@link BindingModel} (typing model), and detect modifications of {@link BindingModel}, which
+	 * triggers recomputation of validity status. Thus, calling this method is always safe, regarding status of underlying
+	 * {@link BindingModel}
+	 * 
+	 * @return type as infered from {@link DataBinding} analysis
 	 */
 	public Type getAnalyzedType() {
 
@@ -591,27 +597,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return analyzedType;
 	}
 
-	/**
-	 * Return boolean indicating whether this {@link DataBinding} is set or not
-	 * 
-	 * @return
-	 */
 	public boolean isSet() {
 		return unparsedBinding != null || getExpression() != null;
 	}
 
-	/**
-	 * Return boolean indicating whether this {@link DataBinding} is not set
-	 * 
-	 * @return
-	 */
 	public boolean isUnset() {
 		return unparsedBinding == null && getExpression() == null;
 	}
 
-	/**
-	 * Reset this {@link DataBinding}
-	 */
 	public void reset() {
 		unparsedBinding = null;
 		expression = null;
@@ -747,8 +740,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		// Track structural changes inside a BindingModel
 		if (getOwner() != null && evt.getSource() instanceof BindingVariable) {
-
-			//System.out.println("Detecting BindingVariable changed " + evt);
 
 			if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its name,
@@ -924,8 +915,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 						return e;
 					}
 				});
-
-				// System.out.println("Du coup on passe de " + expression + " a " + resolvedExpression);
 
 				// At this point, all BindingValue are resolved, then evaluate
 				// the expression itself
