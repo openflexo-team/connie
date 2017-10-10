@@ -683,14 +683,18 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private void startListenTo(BindingModel bindingModel) {
 		bindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
 		for (BindingVariable bv : bindingModel.getAccessibleBindingVariables()) {
-			bv.getPropertyChangeSupport().addPropertyChangeListener(this);
+			if (bv != null && bv.getPropertyChangeSupport() != null) {
+				bv.getPropertyChangeSupport().addPropertyChangeListener(this);
+			}
 		}
 	}
 
 	private void stopListenTo(BindingModel bindingModel) {
 		bindingModel.getPropertyChangeSupport().removePropertyChangeListener(this);
 		for (BindingVariable bv : bindingModel.getAccessibleBindingVariables()) {
-			bv.getPropertyChangeSupport().removePropertyChangeListener(this);
+			if (bv != null && bv.getPropertyChangeSupport() != null) {
+				bv.getPropertyChangeSupport().removePropertyChangeListener(this);
+			}
 		}
 	}
 
@@ -706,10 +710,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			// System.out.println("was: " + evt.getOldValue());
 			// System.out.println("now: " + evt.getNewValue());
 			if (evt.getOldValue() instanceof BindingModel) {
-				((BindingModel) evt.getOldValue()).getPropertyChangeSupport().removePropertyChangeListener(this);
+				if (((BindingModel) evt.getOldValue()).getPropertyChangeSupport() != null) {
+					((BindingModel) evt.getOldValue()).getPropertyChangeSupport().removePropertyChangeListener(this);
+				}
 			}
 			if (evt.getNewValue() instanceof BindingModel) {
-				((BindingModel) evt.getNewValue()).getPropertyChangeSupport().addPropertyChangeListener(this);
+				if (((BindingModel) evt.getNewValue()).getPropertyChangeSupport() != null) {
+					((BindingModel) evt.getNewValue()).getPropertyChangeSupport().addPropertyChangeListener(this);
+				}
 			}
 			markedAsToBeReanalized();
 		}
