@@ -696,8 +696,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		// System.out.println("> Received propertyName=" + evt.getPropertyName()
-		// + " evt=" + evt);
+		// System.out.println("> Received propertyName=" + evt.getPropertyName() + " evt=" + evt);
 
 		// Track BindingModel changes
 		// We detect here that the owner of this DataBinding has changed its
@@ -720,6 +719,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_PROPERTY)) {
 				// We detect here that a BindingVariable was added or removed
 				// from BindingModel
+				if (evt.getNewValue() instanceof BindingVariable) {
+					// A new BindingVariable was added
+					((BindingVariable) evt.getNewValue()).getPropertyChangeSupport().addPropertyChangeListener(this);
+				}
+				else if (evt.getOldValue() instanceof BindingVariable) {
+					// A new BindingVariable was removed
+					((BindingVariable) evt.getOldValue()).getPropertyChangeSupport().removePropertyChangeListener(this);
+				}
 				markedAsToBeReanalized();
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_NAME_CHANGED)) {
