@@ -572,7 +572,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		boolean needsTransformation = false;
 
-		for (AbstractBindingPathElement e : getParsedBindingPath()) {
+		for (AbstractBindingPathElement e : new ArrayList<>(getParsedBindingPath())) {
 			if (e instanceof MethodCallBindingPathElement) {
 				needsTransformation = true;
 				break;
