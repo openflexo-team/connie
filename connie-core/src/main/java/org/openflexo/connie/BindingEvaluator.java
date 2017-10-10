@@ -155,8 +155,6 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 		String normalizedBindingPath = normalizeBindingPath(bindingPath);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
-		// FD redondant : binding.setDeclaredType(Object.class);
-		// FD redondant : binding.setBindingDefinitionType(BindingDefinitionType.GET);
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {

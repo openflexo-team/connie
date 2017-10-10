@@ -76,8 +76,8 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	private List<BindingVariable> accessibleBindingVariables;
 
 	public static final String BINDING_VARIABLE_PROPERTY = "bindingVariable";
-	public static final String BINDING_VARIABLE_NAME_CHANGED = "bindingVariableNameChanged";
-	public static final String BINDING_VARIABLE_TYPE_CHANGED = "bindingVariableTypeChanged";
+	// public static final String BINDING_VARIABLE_NAME_CHANGED = "bindingVariableNameChanged";
+	// public static final String BINDING_VARIABLE_TYPE_CHANGED = "bindingVariableTypeChanged";
 	public static final String BINDING_PATH_ELEMENT_NAME_CHANGED = "bindingPathElementNameChanged";
 	public static final String BINDING_PATH_ELEMENT_TYPE_CHANGED = "bindingPathElementTypeChanged";
 	public static final String BASE_BINDING_MODEL_PROPERTY = "baseBindingModel";

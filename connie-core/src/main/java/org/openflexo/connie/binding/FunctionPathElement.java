@@ -48,6 +48,8 @@ import java.util.logging.Logger;
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function.FunctionArgument;
+import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.expr.ExpressionTransformer;
 
 /**
  * Modelize a compound path element in a binding path, which is the symbolic representation of a call to a function and with a given amount
@@ -174,4 +176,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 	public boolean isNotifyingBindingPathChanged() {
 		return false;
 	}
+
+	public abstract FunctionPathElement transform(ExpressionTransformer transformer) throws TransformException;
+
 }
