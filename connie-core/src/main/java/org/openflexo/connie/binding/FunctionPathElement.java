@@ -157,6 +157,15 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		return function.getArguments();
 	}
 
+	public DataBinding<?> getParameter(String argumentName) {
+		for (FunctionArgument arg : getArguments()) {
+			if (arg.getArgumentName().equals(argumentName)) {
+				return parameters.get(arg);
+			}
+		}
+		return null;
+	}
+
 	public DataBinding<?> getParameter(Function.FunctionArgument argument) {
 		return parameters.get(argument);
 	}

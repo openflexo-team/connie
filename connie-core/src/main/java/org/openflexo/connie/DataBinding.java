@@ -156,9 +156,19 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private Map<BindingEvaluationContext, T> cachedValues = null;
 	private Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = null;
 
+	@Deprecated
+	private static int prout = 0;
+
 	private DataBinding() {
 		pcSupport = new PropertyChangeSupport(this);
 		initCache();
+		prout++;
+		if (prout % 100 == 0) {
+			System.out.println("Nouveau DataBinding " + (prout));
+		}
+		if (prout % 1000 == 0) {
+			Thread.dumpStack();
+		}
 	}
 
 	public DataBinding(Type declaredType, DataBinding.BindingDefinitionType bdType) {
@@ -168,7 +178,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
+		this(owner, declaredType, bdType, true);
+	}
+
+	private boolean trackBindingModelChanges;
+
+	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType, boolean trackBindingModelChanges) {
 		this(declaredType, bdType);
+		this.trackBindingModelChanges = trackBindingModelChanges;
 		setOwner(owner);
 	}
 
@@ -194,6 +211,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	@Override
 	public PropertyChangeSupport getPropertyChangeSupport() {
 		return pcSupport;
+	}
+
+	public void delete() {
+		System.out.println("On ne veut plus s'occuper du binding " + this);
+		stopListenToBindingModel();
+		getPropertyChangeSupport().firePropertyChange(getDeletedProperty(), false, true);
+		pcSupport = null;
 	}
 
 	@Override
@@ -259,6 +283,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			// analyseExpressionAfterParsing();
 			notifyBindingChanged(oldValue, value);
 		}
+
+		checkBindingModelListening();
 	}
 
 	public boolean isSettable() {
@@ -598,16 +624,17 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public boolean isSet() {
-		return unparsedBinding != null || getExpression() != null;
+		return StringUtils.isNotEmpty(unparsedBinding) || getExpression() != null;
 	}
 
 	public boolean isUnset() {
-		return unparsedBinding == null && getExpression() == null;
+		return StringUtils.isEmpty(unparsedBinding) && getExpression() == null;
 	}
 
 	public void reset() {
 		unparsedBinding = null;
 		expression = null;
+		checkBindingModelListening();
 	}
 
 	public boolean isExpression() {
@@ -649,6 +676,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			expression = null;
 			needsParsing = true;
 		}
+
+		checkBindingModelListening();
+
 		markedAsToBeReanalized();
 	}
 
@@ -666,35 +696,84 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				this.owner.getPropertyChangeSupport().removePropertyChangeListener(this);
 			}
 			if (this.owner != null && this.owner.getBindingModel() != null) {
-				stopListenTo(this.owner.getBindingModel());
+				stopListenToBindingModel();
 			}
 			this.owner = owner;
 			if (owner != null && owner.getPropertyChangeSupport() != null) {
 				owner.getPropertyChangeSupport().addPropertyChangeListener(this);
 			}
-			if (owner != null && owner.getBindingModel() != null && owner.getBindingModel().getPropertyChangeSupport() != null) {
-				startListenTo(owner.getBindingModel());
-			}
+
+			checkBindingModelListening();
 
 			markedAsToBeReanalized();
 		}
 	}
 
-	private void startListenTo(BindingModel bindingModel) {
-		bindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
-		for (BindingVariable bv : bindingModel.getAccessibleBindingVariables()) {
-			if (bv != null && bv.getPropertyChangeSupport() != null) {
-				bv.getPropertyChangeSupport().addPropertyChangeListener(this);
+	private BindingModel listenedBindingModel;
+	private List<BindingVariable> listenedBindingVariables = new ArrayList<>();
+
+	/**
+	 * Internally called to update listening
+	 */
+	private void checkBindingModelListening() {
+		if (isSet()) {
+			if (listenedBindingModel == null && owner != null && owner.getBindingModel() != null) {
+				startListenToBindingModel(owner.getBindingModel());
+			}
+		}
+		else {
+			if (listenedBindingModel != null) {
+				stopListenToBindingModel();
 			}
 		}
 	}
 
-	private void stopListenTo(BindingModel bindingModel) {
-		bindingModel.getPropertyChangeSupport().removePropertyChangeListener(this);
-		for (BindingVariable bv : bindingModel.getAccessibleBindingVariables()) {
-			if (bv != null && bv.getPropertyChangeSupport() != null) {
+	private void startListenToBindingModel(BindingModel bindingModel) {
+		listenedBindingModel = bindingModel;
+		listenedBindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
+
+		if (trackBindingModelChanges) {
+			updateListenedBindingVariables();
+		}
+	}
+
+	private void updateListenedBindingVariables() {
+
+		List<BindingVariable> listenedBindingVariableToDelete = new ArrayList<>(listenedBindingVariables);
+
+		if (listenedBindingModel != null) {
+			for (BindingVariable bv : listenedBindingModel.getAccessibleBindingVariables()) {
+				if (listenedBindingVariableToDelete.contains(bv)) {
+					// This binding variable is already listened, do not delete it
+					listenedBindingVariableToDelete.remove(bv);
+				}
+				else {
+					if (bv.getPropertyChangeSupport() != null) {
+						bv.getPropertyChangeSupport().addPropertyChangeListener(this);
+						listenedBindingVariables.add(bv);
+					}
+				}
+			}
+		}
+
+		for (BindingVariable bv : listenedBindingVariableToDelete) {
+			if (bv.getPropertyChangeSupport() != null) {
+				bv.getPropertyChangeSupport().removePropertyChangeListener(this);
+				listenedBindingVariables.remove(bv);
+			}
+		}
+
+	}
+
+	private void stopListenToBindingModel() {
+		for (BindingVariable bv : listenedBindingVariables) {
+			if (bv.getPropertyChangeSupport() != null) {
 				bv.getPropertyChangeSupport().removePropertyChangeListener(this);
 			}
+		}
+		listenedBindingVariables.clear();
+		if (listenedBindingModel != null) {
+			listenedBindingModel.getPropertyChangeSupport().removePropertyChangeListener(this);
 		}
 	}
 
@@ -749,6 +828,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
 				// We detect here that base BindingModel has changed
+				System.out.println("Le base binding model a change pour " + this);
+				updateListenedBindingVariables();
 				markedAsToBeReanalized();
 			}
 		}
@@ -799,6 +880,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			needsParsing = false;
 			analyseExpressionAfterParsing();
 		}
+		checkBindingModelListening();
 		needsParsing = false;
 
 		/*if (!isValid()) {
@@ -910,7 +992,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				// any evaluation of right operand is valid to determine
 				// that binding value is FALSE.
 
-				Expression resolvedExpression = expression.transform(new ExpressionTransformer() {
+				Expression resolvedExpression = expression.transform(getBindingValueEvaluator(context));
+
+				/*		
+						new ExpressionTransformer() {
 					@Override
 					public Expression performTransformation(Expression e) throws TransformException {
 						if (e instanceof BindingValue) {
@@ -929,7 +1014,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 						}
 						return e;
 					}
-				});
+				});*/
 
 				// At this point, all BindingValue are resolved, then evaluate
 				// the expression itself
@@ -1013,6 +1098,51 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 		}
 		return null;
+	}
+
+	// private final Map<BindingEvaluationContext, BindingValueEvaluator> evaluators = new HashMap<>();
+
+	private BindingValueEvaluator getBindingValueEvaluator(BindingEvaluationContext context) {
+		/*BindingValueEvaluator returned = evaluators.get(context);
+		if (returned == null) {
+			returned = new BindingValueEvaluator(context);
+			evaluators.put(context, returned);
+		}
+		return returned;*/
+		return new BindingValueEvaluator(context);
+	}
+
+	private class BindingValueEvaluator implements ExpressionTransformer {
+
+		private BindingEvaluationContext context;
+
+		public BindingValueEvaluator(BindingEvaluationContext context) {
+			this.context = context;
+		}
+
+		@Override
+		public Expression performTransformation(Expression e) throws TransformException {
+			if (e instanceof BindingValue) {
+				((BindingValue) e).setDataBinding(DataBinding.this);
+				try {
+					Object o = ((BindingValue) e).getBindingValue(context);
+					// System.out.println("On remplace " + e + " par " + o);
+					// System.out.println("For " + e + " getting " +
+					// o);
+					return Constant.makeConstant(o);
+				} catch (NullReferenceException nre) {
+					// System.out.println("NullReferenceException for "
+					// + e);
+					return new UnresolvedExpression();
+				}
+			}
+			return e;
+		}
+
+		@Override
+		public String toString() {
+			return "BindingValueEvaluator for " + DataBinding.this + " context=" + context;
+		}
 	}
 
 	/**

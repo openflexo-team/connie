@@ -42,7 +42,9 @@ package org.openflexo.connie.binding;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
@@ -173,7 +175,40 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 	}
 
+	private final Map<ExpressionTransformer, JavaMethodPathElement> transformedPathElements = new HashMap<>();
+
+	@Override
 	public JavaMethodPathElement transform(ExpressionTransformer transformer) throws TransformException {
+		JavaMethodPathElement returned = transformedPathElements.get(transformer);
+		if (returned == null) {
+			System.out.println("On recalcule un JavaMethodPathElement pour " + this + " transformer=" + transformer);
+			returned = makeTransformedPathElement(transformer);
+			transformedPathElements.put(transformer, returned);
+			System.out.println("CREATE On transforme " + toString() + " en " + returned.toString());
+		}
+		else {
+			System.out.println("Pas la peine de refaire un JavaMethodPathElement pour " + this + " transformer=" + transformer);
+			System.out.println("On met a jour quand meme");
+			updateTransformedPathElement(returned, transformer);
+			System.out.println("UPDATE On transforme " + toString() + " en " + returned.toString());
+		}
+		return returned;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getMethodName() + "(");
+		boolean isFirst = true;
+		for (FunctionArgument arg : getArguments()) {
+			sb.append((isFirst ? "" : ",") + getParameter(arg));
+			isFirst = false;
+		}
+		sb.append(")");
+		return sb.toString();
+	}
+
+	private JavaMethodPathElement makeTransformedPathElement(ExpressionTransformer transformer) throws TransformException {
 
 		boolean hasBeenTransformed = false;
 		List<DataBinding<?>> transformedArgs = new ArrayList<>();
@@ -186,13 +221,13 @@ public class JavaMethodPathElement extends FunctionPathElement {
 				if (!transformedExpression.equals(currentExpression)) {
 					hasBeenTransformed = true;
 					DataBinding<?> newTransformedBinding = new DataBinding<Object>(argValue.getOwner(), argValue.getDeclaredType(),
-							argValue.getBindingDefinitionType());
+							argValue.getBindingDefinitionType(), false);
 					newTransformedBinding.setExpression(transformedExpression);
 					// TODO: better to do i think
 					newTransformedBinding.isValid();
 					transformedArgs.add(newTransformedBinding);
-					//System.out.println(
-					//		"On a transforme " + argValue + " en " + newTransformedBinding + " valid=" + newTransformedBinding.isValid());
+					// System.out.println(
+					// "On a transforme " + argValue + " en " + newTransformedBinding + " valid=" + newTransformedBinding.isValid());
 					hasBeenTransformed = true;
 				}
 				else {
@@ -210,5 +245,33 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 		return new JavaMethodPathElement(getParent(), getMethodDefinition(), transformedArgs);
 	}
+
+	private JavaMethodPathElement updateTransformedPathElement(JavaMethodPathElement transformedPathElement,
+			ExpressionTransformer transformer) throws TransformException {
+
+		for (FunctionArgument arg : getArguments()) {
+			DataBinding<?> argValue = getParameter(arg);
+			if (argValue.isValid()) {
+				Expression currentExpression = argValue.getExpression();
+				Expression transformedExpression = currentExpression.transform(transformer);
+				if (!transformedExpression.equals(currentExpression)) {
+					DataBinding<?> transformedBinding = transformedPathElement.getParameter(arg.getArgumentName());
+					transformedBinding.setExpression(transformedExpression);
+					// TODO: better to do i think
+					transformedBinding.isValid();
+				}
+			}
+		}
+		return transformedPathElement;
+	}
+
+	// Stores temporary DataBinding created
+	// private final List<DataBinding<?>> transformedDataBindings = new ArrayList<>();
+
+	/*public void clearTransformedDataBinding() {
+		for (DataBinding<?> db : transformedDataBindings) {
+			db.delete();
+		}
+	}*/
 
 }
