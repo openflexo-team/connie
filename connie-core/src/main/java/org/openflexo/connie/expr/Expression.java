@@ -41,12 +41,12 @@ package org.openflexo.connie.expr;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
@@ -66,9 +66,9 @@ public abstract class Expression {
 
 	public abstract Expression transform(ExpressionTransformer transformer) throws TransformException;
 
-	public final Expression evaluate() throws TypeMismatchException, NullReferenceException {
+	public final Expression evaluate(BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException {
 		try {
-			return transform(new ExpressionEvaluator());
+			return transform(new ExpressionEvaluator(context));
 		} catch (TypeMismatchException e) {
 			throw e;
 		} catch (NullReferenceException e) {
@@ -209,7 +209,7 @@ public abstract class Expression {
 	 * @return
 	 * @throws TypeMismatchException
 	 */
-	@Deprecated
+	/*@Deprecated
 	public Expression evaluate(final Hashtable<String, ?> variables) throws TypeMismatchException {
 		try {
 			Expression resolvedExpression = transform(new ExpressionTransformer() {
@@ -224,12 +224,12 @@ public abstract class Expression {
 					return e;
 				}
 			});
-			return resolvedExpression.evaluate();
+			return resolvedExpression.evaluate(null);
 		} catch (TransformException e) {
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}*/
 
 	@Override
 	public int hashCode() {

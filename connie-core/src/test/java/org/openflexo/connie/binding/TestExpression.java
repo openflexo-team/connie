@@ -39,15 +39,9 @@
 
 package org.openflexo.connie.binding;
 
-import java.util.Hashtable;
 import java.util.List;
 
-import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.expr.Variable;
 import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
@@ -151,27 +145,26 @@ public class TestExpression extends TestCase {
 		}
 	}
 
-	public static Expression evaluate(Expression expr, final Hashtable<String, ?> variables) throws TypeMismatchException {
+	/*public static Expression evaluate(Expression expr, final Hashtable<String, ?> variables) throws TypeMismatchException {
+	
 		try {
-			Expression resolvedExpression = expr.transform(new ExpressionTransformer() {
+			System.out.println("On evalue " + expr);
+			System.out.println("variables=" + variables);
+			return expr.evaluate(new BindingEvaluationContext() {
 				@Override
-				public Expression performTransformation(Expression e) throws TransformException {
-					if (e instanceof BindingValue) {
-						BindingValue bv = (BindingValue) e;
-						if (bv.isSimpleVariable() && variables.get(bv.toString()) != null) {
-							return Constant.makeConstant(variables.get(bv.toString()));
-						}
-					}
-					return e;
+				public Object getValue(BindingVariable variable) {
+					System.out.println("hop avec " + variable);
+					System.out.println("On me demande " + variable.getVariableName() + " = " + variables.get(variable.toString()));
+					return variables.get(variable.toString());
 				}
 			});
-			return resolvedExpression.evaluate();
-		} catch (TransformException e) {
+		} catch (NullReferenceException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
 	}
-
+	
 	public void testEvaluate1() {
 		try {
 			Expression e = ExpressionParser.parse("a+(b-c)/2");
@@ -190,7 +183,7 @@ public class TestExpression extends TestCase {
 			fail();
 		}
 	}
-
+	
 	public void testEvaluate2() {
 		try {
 			Expression e = ExpressionParser.parse("a+(b-2-c)/2");
@@ -207,5 +200,5 @@ public class TestExpression extends TestCase {
 			e.printStackTrace();
 			fail();
 		}
-	}
+	}*/
 }

@@ -60,7 +60,6 @@ import org.openflexo.connie.binding.TargetObject;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NotSettableContextException;
 import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.CastExpression;
@@ -69,9 +68,7 @@ import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.expr.ExpressionVisitor;
-import org.openflexo.connie.expr.UnresolvedExpression;
 import org.openflexo.connie.expr.VisitorException;
 import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
@@ -156,19 +153,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private Map<BindingEvaluationContext, T> cachedValues = null;
 	private Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = null;
 
-	@Deprecated
-	private static int prout = 0;
-
 	private DataBinding() {
 		pcSupport = new PropertyChangeSupport(this);
 		initCache();
-		prout++;
-		if (prout % 100 == 0) {
-			System.out.println("Nouveau DataBinding " + (prout));
-		}
-		if (prout % 1000 == 0) {
-			Thread.dumpStack();
-		}
 	}
 
 	public DataBinding(Type declaredType, DataBinding.BindingDefinitionType bdType) {
@@ -828,7 +815,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
 				// We detect here that base BindingModel has changed
-				System.out.println("Le base binding model a change pour " + this);
 				updateListenedBindingVariables();
 				markedAsToBeReanalized();
 			}
@@ -992,34 +978,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				// any evaluation of right operand is valid to determine
 				// that binding value is FALSE.
 
-				Expression resolvedExpression = expression.transform(getBindingValueEvaluator(context));
+				// Evaluate the expression itself
 
-				/*		
-						new ExpressionTransformer() {
-					@Override
-					public Expression performTransformation(Expression e) throws TransformException {
-						if (e instanceof BindingValue) {
-							((BindingValue) e).setDataBinding(DataBinding.this);
-							try {
-								Object o = ((BindingValue) e).getBindingValue(context);
-								// System.out.println("On remplace " + e + " par " + o);
-								// System.out.println("For " + e + " getting " +
-								// o);
-								return Constant.makeConstant(o);
-							} catch (NullReferenceException nre) {
-								// System.out.println("NullReferenceException for "
-								// + e);
-								return new UnresolvedExpression();
-							}
-						}
-						return e;
-					}
-				});*/
-
-				// At this point, all BindingValue are resolved, then evaluate
-				// the expression itself
-
-				Expression evaluatedExpression = resolvedExpression.evaluate();
+				Expression evaluatedExpression = expression.evaluate(context);
 
 				T returned = null;
 
@@ -1089,37 +1050,36 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				throw e1;
 			} catch (TypeMismatchException e1) {
 				throw e1;
-			} catch (InvocationTargetTransformException e1) {
+			} /*catch (InvocationTargetTransformException e1) {
 				throw e1.getException();
-			} catch (TransformException e1) {
-				LOGGER.warning("Unexpected TransformException while evaluating " + expression + " " + e1.getMessage());
-				e1.printStackTrace();
-				return null;
-			}
+				} */ /*catch (TransformException e1) {
+					LOGGER.warning("Unexpected TransformException while evaluating " + expression + " " + e1.getMessage());
+					e1.printStackTrace();
+					return null;
+					}*/
 		}
 		return null;
 	}
 
 	// private final Map<BindingEvaluationContext, BindingValueEvaluator> evaluators = new HashMap<>();
 
-	private BindingValueEvaluator getBindingValueEvaluator(BindingEvaluationContext context) {
-		/*BindingValueEvaluator returned = evaluators.get(context);
+	/*private BindingValueEvaluator getBindingValueEvaluator(BindingEvaluationContext context) {
+		BindingValueEvaluator returned = evaluators.get(context);
 		if (returned == null) {
 			returned = new BindingValueEvaluator(context);
 			evaluators.put(context, returned);
 		}
-		return returned;*/
-		return new BindingValueEvaluator(context);
-	}
+		return returned;
+	}*/
 
-	private class BindingValueEvaluator implements ExpressionTransformer {
-
+	/*private class BindingValueEvaluator implements ExpressionTransformer {
+	
 		private BindingEvaluationContext context;
-
+	
 		public BindingValueEvaluator(BindingEvaluationContext context) {
 			this.context = context;
 		}
-
+	
 		@Override
 		public Expression performTransformation(Expression e) throws TransformException {
 			if (e instanceof BindingValue) {
@@ -1138,12 +1098,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 			return e;
 		}
-
+	
 		@Override
 		public String toString() {
 			return "BindingValueEvaluator for " + DataBinding.this + " context=" + context;
 		}
-	}
+	}*/
 
 	/**
 	 * Evaluate this binding in run-time evaluation context provided by supplied {@link BindingEvaluationContext} parameter. This evaluation

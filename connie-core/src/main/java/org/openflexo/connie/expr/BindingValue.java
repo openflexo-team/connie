@@ -567,20 +567,27 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return bv;
 	}
 
+	public boolean containsMethodCallWithParameters() {
+		for (AbstractBindingPathElement e : new ArrayList<>(getParsedBindingPath())) {
+			if (e instanceof MethodCallBindingPathElement && ((MethodCallBindingPathElement) e).args.size() > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 
-		boolean needsTransformation = false;
-
-		for (AbstractBindingPathElement e : new ArrayList<>(getParsedBindingPath())) {
-			if (e instanceof MethodCallBindingPathElement) {
-				needsTransformation = true;
-				break;
+		if (transformer instanceof ExpressionEvaluator) {
+			Expression returned = transformer.performTransformation(this);
+			if (returned instanceof Constant) {
+				return returned;
 			}
 		}
-		BindingValue bv;
-		if (needsTransformation) {
 
+		BindingValue bv;
+		if (containsMethodCallWithParameters()) {
 			if (isValid()) {
 				bv = makeTransformationForValidBindingValue(transformer);
 			}
@@ -944,6 +951,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// System.out.println(" > evaluate BindingValue " + this +
 		// " in context " + context);
 		if (isValid() && context != null) {
+			if (getBindingVariable() == null) {
+				return null;
+			}
 			Object current = context.getValue(getBindingVariable());
 			if (current == null) {
 				// If the binding variable is null, just return null
