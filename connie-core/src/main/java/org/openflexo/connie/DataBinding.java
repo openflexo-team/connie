@@ -143,6 +143,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private String invalidBindingReason;
 	private boolean needReanalysing = true;
 
+	private boolean trackBindingModelChanges;
+
 	private boolean needsParsing = false;
 	private String bindingName;
 
@@ -153,45 +155,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private Map<BindingEvaluationContext, T> cachedValues = null;
 	private Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = null;
 
-	private List<PropertyChangeListener> listenersList = new ArrayList<>();
-
-	public void debug() {
-		System.out.println("DEBUG DataBinding ");
-		System.out.println("valid=" + valid);
-		System.out.println("reason=" + invalidBindingReason);
-		System.out.println("expression=" + expression);
-		System.out.println("unparsedBinding=" + unparsedBinding);
-		System.out.println("needReanalysing=" + needReanalysing);
-		System.out.println("needsParsing=" + needsParsing);
-		System.out.println("analyzedType=" + analyzedType);
-		System.out.println("owner=" + owner);
-	}
-
 	private DataBinding() {
 
-		// System.out.println("coucou, je cree " + Integer.toHexString(hashCode()));
-		// Thread.dumpStack();
-		pcSupport = new PropertyChangeSupport(this) {
-			@Override
-			public void addPropertyChangeListener(PropertyChangeListener listener) {
-				// TODO Auto-generated method stub
-
-				if (listenersList.contains(listener)) {
-					System.out.println(">>>> Merde j'l'ai deja ce " + listener);
-				}
-				else {
-					listenersList.add(listener);
-					super.addPropertyChangeListener(listener);
-					System.out.println("le DataBinding " + Integer.toHexString(DataBinding.this.hashCode()) + " ecoute " + listener);
-				}
-			}
-
-			@Override
-			public void removePropertyChangeListener(PropertyChangeListener listener) {
-				super.removePropertyChangeListener(listener);
-				listenersList.remove(listener);
-			}
-		};
+		pcSupport = new PropertyChangeSupport(this);
 
 		initCache();
 	}
@@ -205,8 +171,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
 		this(owner, declaredType, bdType, true);
 	}
-
-	private boolean trackBindingModelChanges;
 
 	public DataBinding(Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType, boolean trackBindingModelChanges) {
 		this(declaredType, bdType);
@@ -239,11 +203,22 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void delete() {
-		System.out.println("On ne veut plus s'occuper du binding " + Integer.toHexString(hashCode()) + " " + this);
 		deleteContainedBindingValues();
 		stopListenToBindingModel();
 		getPropertyChangeSupport().firePropertyChange(getDeletedProperty(), false, true);
 		pcSupport = null;
+	}
+
+	public void debug() {
+		System.out.println("DEBUG DataBinding ");
+		System.out.println("valid=" + valid);
+		System.out.println("reason=" + invalidBindingReason);
+		System.out.println("expression=" + expression);
+		System.out.println("unparsedBinding=" + unparsedBinding);
+		System.out.println("needReanalysing=" + needReanalysing);
+		System.out.println("needsParsing=" + needsParsing);
+		System.out.println("analyzedType=" + analyzedType);
+		System.out.println("owner=" + owner);
 	}
 
 	private void deleteContainedBindingValues() {
@@ -936,6 +911,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		markedAsToBeReanalized();
 
+		// Perform isValid() now to be sure that parsed and analyzed are in sync
 		isValid();
 
 	}
@@ -1148,60 +1124,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				throw e1;
 			} catch (TypeMismatchException e1) {
 				throw e1;
-			} /*catch (InvocationTargetTransformException e1) {
-				throw e1.getException();
-				} */ /*catch (TransformException e1) {
-					LOGGER.warning("Unexpected TransformException while evaluating " + expression + " " + e1.getMessage());
-					e1.printStackTrace();
-					return null;
-					}*/
+			}
 		}
 		return null;
 	}
-
-	// private final Map<BindingEvaluationContext, BindingValueEvaluator> evaluators = new HashMap<>();
-
-	/*private BindingValueEvaluator getBindingValueEvaluator(BindingEvaluationContext context) {
-		BindingValueEvaluator returned = evaluators.get(context);
-		if (returned == null) {
-			returned = new BindingValueEvaluator(context);
-			evaluators.put(context, returned);
-		}
-		return returned;
-	}*/
-
-	/*private class BindingValueEvaluator implements ExpressionTransformer {
-	
-		private BindingEvaluationContext context;
-	
-		public BindingValueEvaluator(BindingEvaluationContext context) {
-			this.context = context;
-		}
-	
-		@Override
-		public Expression performTransformation(Expression e) throws TransformException {
-			if (e instanceof BindingValue) {
-				((BindingValue) e).setDataBinding(DataBinding.this);
-				try {
-					Object o = ((BindingValue) e).getBindingValue(context);
-					// System.out.println("On remplace " + e + " par " + o);
-					// System.out.println("For " + e + " getting " +
-					// o);
-					return Constant.makeConstant(o);
-				} catch (NullReferenceException nre) {
-					// System.out.println("NullReferenceException for "
-					// + e);
-					return new UnresolvedExpression();
-				}
-			}
-			return e;
-		}
-	
-		@Override
-		public String toString() {
-			return "BindingValueEvaluator for " + DataBinding.this + " context=" + context;
-		}
-	}*/
 
 	/**
 	 * Evaluate this binding in run-time evaluation context provided by supplied {@link BindingEvaluationContext} parameter. This evaluation
@@ -1247,6 +1173,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 	}
 
+	/**
+	 * Execute this binding in run-time evaluation context provided by supplied {@link BindingEvaluationContext} parameter.
+	 * 
+	 * @param context
+	 * @throws TypeMismatchException
+	 * @throws NullReferenceException
+	 * @throws InvocationTargetException
+	 */
 	public void execute(final BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
 		getBindingValue(context);
