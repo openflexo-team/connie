@@ -153,8 +153,46 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private Map<BindingEvaluationContext, T> cachedValues = null;
 	private Map<BindingEvaluationContext, BindingValueChangeListener<T>> cachedBindingValueChangeListeners = null;
 
+	private List<PropertyChangeListener> listenersList = new ArrayList<>();
+
+	public void debug() {
+		System.out.println("DEBUG DataBinding ");
+		System.out.println("valid=" + valid);
+		System.out.println("reason=" + invalidBindingReason);
+		System.out.println("expression=" + expression);
+		System.out.println("unparsedBinding=" + unparsedBinding);
+		System.out.println("needReanalysing=" + needReanalysing);
+		System.out.println("needsParsing=" + needsParsing);
+		System.out.println("analyzedType=" + analyzedType);
+		System.out.println("owner=" + owner);
+	}
+
 	private DataBinding() {
-		pcSupport = new PropertyChangeSupport(this);
+
+		// System.out.println("coucou, je cree " + Integer.toHexString(hashCode()));
+		// Thread.dumpStack();
+		pcSupport = new PropertyChangeSupport(this) {
+			@Override
+			public void addPropertyChangeListener(PropertyChangeListener listener) {
+				// TODO Auto-generated method stub
+
+				if (listenersList.contains(listener)) {
+					System.out.println(">>>> Merde j'l'ai deja ce " + listener);
+				}
+				else {
+					listenersList.add(listener);
+					super.addPropertyChangeListener(listener);
+					System.out.println("le DataBinding " + Integer.toHexString(DataBinding.this.hashCode()) + " ecoute " + listener);
+				}
+			}
+
+			@Override
+			public void removePropertyChangeListener(PropertyChangeListener listener) {
+				super.removePropertyChangeListener(listener);
+				listenersList.remove(listener);
+			}
+		};
+
 		initCache();
 	}
 
@@ -201,15 +239,34 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void delete() {
-		System.out.println("On ne veut plus s'occuper du binding " + this);
+		System.out.println("On ne veut plus s'occuper du binding " + Integer.toHexString(hashCode()) + " " + this);
+		deleteContainedBindingValues();
 		stopListenToBindingModel();
 		getPropertyChangeSupport().firePropertyChange(getDeletedProperty(), false, true);
 		pcSupport = null;
 	}
 
+	private void deleteContainedBindingValues() {
+		if (getExpression() != null) {
+			try {
+				getExpression().visit(new ExpressionVisitor() {
+					@Override
+					public void visit(Expression e) throws VisitorException {
+						if (e instanceof BindingValue) {
+							((BindingValue) e).delete();
+						}
+					}
+				});
+			} catch (VisitorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 	@Override
 	public String getDeletedProperty() {
-		return null;
+		return "deleted";
 	}
 
 	public CachingStrategy getCachingStrategy() {
@@ -263,6 +320,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		valid = false;
 		if ((this.expression == null && value != null) || (this.expression != null && !this.expression.equals(value))) {
 			// there is a change
+			deleteContainedBindingValues();
 			Expression oldValue = this.expression;
 			this.expression = value;
 			unparsedBinding = value != null ? value.toString() : null;
@@ -619,6 +677,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void reset() {
+		deleteContainedBindingValues();
 		unparsedBinding = null;
 		expression = null;
 		checkBindingModelListening();
@@ -718,6 +777,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private void startListenToBindingModel(BindingModel bindingModel) {
 		listenedBindingModel = bindingModel;
 		listenedBindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
+		System.out.println("Je suis " + Integer.toHexString(hashCode()) + " et j'ecoute " + listenedBindingModel);
 
 		if (trackBindingModelChanges) {
 			updateListenedBindingVariables();
@@ -766,7 +826,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		// System.out.println("> Received propertyName=" + evt.getPropertyName() + " evt=" + evt);
+
+		/*if (debug) {
+			System.out.println("> Received propertyName=" + evt.getPropertyName() + " evt=" + evt);
+		}*/
 
 		// Track BindingModel changes
 		// We detect here that the owner of this DataBinding has changed its
@@ -806,12 +869,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_NAME_CHANGED)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
-				markedAsToBeReanalized();
+				notifiedBindingModelStructurallyModified();
+
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_TYPE_CHANGED)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
-				markedAsToBeReanalized();
+				notifiedBindingModelStructurallyModified();
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
 				// We detect here that base BindingModel has changed
@@ -826,19 +890,53 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
-				markedAsToBeReanalized();
+				notifiedBindingModelStructurallyModified();
 			}
 			else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
-				markedAsToBeReanalized();
+				notifiedBindingModelStructurallyModified();
 			}
-			else if (evt.getPropertyName().equals(BindingVariable.DELETED_PROPERTY)) {
+			/*else if (evt.getPropertyName().equals(BindingVariable.DELETED_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
 				markedAsToBeReanalized();
+			}*/
+		}
+
+	}
+
+	/**
+	 * Called when a modification has been performed on a BindingModel (variable changed name or type, or path element changed name or type,
+	 * or something else...)
+	 * 
+	 * @return
+	 */
+	private void notifiedBindingModelStructurallyModified() {
+
+		// System.out.println(">>>> notifiedBindingModelStructurallyModified for " + this);
+
+		if (getExpression() != null) {
+			try {
+				getExpression().visit(new ExpressionVisitor() {
+					@Override
+					public void visit(Expression e) throws VisitorException {
+						if (e instanceof BindingValue) {
+							BindingValue bv = (BindingValue) e;
+							if (!bv.needsAnalysing()) {
+								bv.updateParsedBindingPathFromBindingPath();
+							}
+						}
+					}
+				});
+			} catch (VisitorException e) {
+				e.printStackTrace();
 			}
 		}
+
+		markedAsToBeReanalized();
+
+		isValid();
 
 	}
 
