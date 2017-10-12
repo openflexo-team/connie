@@ -53,7 +53,7 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  */
 public abstract class SimplePathElement implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
 
-	private BindingPathElement parent;
+	private IBindingPathElement parent;
 	private String propertyName;
 	private Type type;
 	private PropertyChangeSupport pcSupport;
@@ -63,7 +63,7 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	public static final String TYPE_PROPERTY = "type";
 	public static final String DELETED_PROPERTY = "deleted";
 
-	public SimplePathElement(BindingPathElement parent, String propertyName, Type type) {
+	public SimplePathElement(IBindingPathElement parent, String propertyName, Type type) {
 		this.parent = parent;
 		this.propertyName = propertyName;
 		this.type = type;
@@ -111,7 +111,7 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	}
 
 	@Override
-	public BindingPathElement getParent() {
+	public IBindingPathElement getParent() {
 		return parent;
 	}
 

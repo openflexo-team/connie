@@ -48,19 +48,26 @@ import java.util.List;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 
+/**
+ * API for a factory which explore related {@link BindingModel} to build {@link BindingPathElement}
+ * 
+ * @author sylvain
+ *
+ */
 public interface BindingFactory {
 
-	List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent);
+	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
 
-	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(BindingPathElement parent);
+	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent);
 
-	SimplePathElement makeSimplePathElement(BindingPathElement father, String propertyName);
+	SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName);
 
 	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
 
-	FunctionPathElement makeFunctionPathElement(BindingPathElement father, Function function, List<DataBinding<?>> args);
+	FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
 
 	public Type getTypeForObject(Object object);
 }

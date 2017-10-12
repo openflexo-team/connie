@@ -43,7 +43,7 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import org.openflexo.connie.binding.BindingPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.exception.NullReferenceException;
@@ -52,7 +52,7 @@ import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.ToolBox;
 
-public class BindingVariable implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
+public class BindingVariable implements IBindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(BindingVariable.class.getPackage().getName());
@@ -183,11 +183,6 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	}
 
 	@Override
-	public BindingPathElement getParent() {
-		return null;
-	}
-
-	@Override
 	public PropertyChangeSupport getPropertyChangeSupport() {
 		return pcSupport;
 	}
@@ -223,37 +218,8 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		return false;
 	}
 
-	/**
-	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
-	 */
 	@Override
-	public void activate() {
-		this.activated = true;
-	}
-
-	/**
-	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
-	 */
-	@Override
-	public void desactivate() {
-		this.activated = false;
-	}
-
-	/**
-	 * Return boolean indicating if this {@link BindingPathElement} is activated
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isActivated() {
-		return activated;
-	}
-
-	@Override
-	public final void delete() {
-		if (isActivated()) {
-			desactivate();
-		}
+	public void delete() {
 		if (pcSupport != null) {
 			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
 			pcSupport = null;

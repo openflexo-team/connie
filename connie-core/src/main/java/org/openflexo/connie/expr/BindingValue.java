@@ -59,6 +59,7 @@ import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.binding.FunctionPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.JavaMethodPathElement;
 import org.openflexo.connie.binding.JavaPropertyPathElement;
 import org.openflexo.connie.binding.SettableBindingEvaluationContext;
@@ -278,7 +279,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * Return the last binding path element, which is the binding variable itself if the binding path is empty, or the last binding path
 	 * element registered in the binding path
 	 */
-	public BindingPathElement getLastBindingPathElement() {
+	public IBindingPathElement getLastBindingPathElement() {
 		if (getBindingPath() != null && getBindingPath().size() > 0) {
 			return getBindingPath().get(getBindingPath().size() - 1);
 		}
@@ -291,7 +292,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @param element
 	 * @return
 	 */
-	public boolean isLastBindingPathElement(BindingPathElement element) {
+	public boolean isLastBindingPathElement(IBindingPathElement element) {
 
 		if (bindingPath.size() == 0) {
 			return element.equals(getBindingVariable());
@@ -320,7 +321,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
 			}
 			bindingVariable = aBindingVariable;
-			bindingVariable.activate();
 			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
 				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
 				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
@@ -594,12 +594,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			bindingPath.clear();
 		}
-		if (bindingVariable != null) {
-			if (bindingVariable.isActivated()) {
-				bindingVariable.desactivate();
-			}
-			bindingVariable = null;
-		}
+		bindingVariable = null;
 	}
 
 	public boolean needsAnalysing() {
@@ -710,7 +705,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return false;
 		}
 		Type currentType = getBindingVariable().getType();
-		BindingPathElement currentElement = getBindingVariable();
+		IBindingPathElement currentElement = getBindingVariable();
 		if (currentType == null) {
 			invalidBindingReason = "currentType is null";
 			return false;
@@ -819,7 +814,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// Seems to be valid
 			internallySetBindingVariable(dataBinding.getOwner().getBindingModel()
 					.bindingVariableNamed(((NormalBindingPathElement) getParsedBindingPath().get(0)).property));
-			BindingPathElement current = bindingVariable;
+			IBindingPathElement current = bindingVariable;
 			// System.out.println("Found binding variable " + bindingVariable);
 			if (bindingVariable == null) {
 				invalidBindingReason = "cannot find binding variable " + ((NormalBindingPathElement) getParsedBindingPath().get(0)).property
@@ -939,7 +934,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				// If the binding variable is null, just return null
 				return null;
 			}
-			BindingPathElement previous = getBindingVariable();
+			IBindingPathElement previous = getBindingVariable();
 			for (BindingPathElement e : getBindingPath()) {
 				if (current == null) {
 					throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + getParsedBindingPath()
@@ -988,7 +983,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		// System.out.println("Sets value: "+value);
 		// System.out.println("Binding: "+getStringRepresentation());
 
-		BindingPathElement lastEvaluatedPathElement = getBindingVariable();
+		IBindingPathElement lastEvaluatedPathElement = getBindingVariable();
 		Object lastEvaluated = null;
 		Object returned = context.getValue(getBindingVariable());
 

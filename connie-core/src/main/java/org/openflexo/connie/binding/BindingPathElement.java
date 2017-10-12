@@ -39,83 +39,20 @@
 
 package org.openflexo.connie.binding;
 
-import java.lang.reflect.Type;
-import java.util.Comparator;
-
-import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.BindingFactory;
-import org.openflexo.connie.exception.InvocationTargetTransformException;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.type.Typed;
-
 /**
- * This interface is implemented by all classes modeling an element of a formal binding path, whichever type it is.
+ * General API for an non-root element of a formal binding path, which has at least one parent
  * 
  * @author sylvain
  * 
  */
-public interface BindingPathElement extends Typed {
-
-	public final String BINDING_PATH_CHANGED = "BindingPathChanged";
-
-	Comparator<BindingPathElement> COMPARATOR = new Comparator<BindingPathElement>() {
-
-		@Override
-		public int compare(BindingPathElement o1, BindingPathElement o2) {
-			if (o1.getLabel() == null) {
-				if (o2.getLabel() == null) {
-					return 0;
-				}
-				else {
-					return -1;
-				}
-			}
-			else if (o2.getLabel() == null) {
-				return 1;
-			}
-			return o1.getLabel().compareTo(o2.getLabel());
-		}
-	};
-
-	@Override
-	Type getType();
-
-	String getSerializationRepresentation();
-
-	String getLabel();
-
-	String getTooltipText(Type resultingType);
+public interface BindingPathElement extends IBindingPathElement {
 
 	/**
-	 * Return a flag indicating if this path element is settable or not (settable indicates that a new value can be set)
-	 */
-	boolean isSettable();
-
-	/**
-	 * Evaluate and return value for related path element, given a binding evaluation context
-	 * 
-	 * @param target
-	 *            : address object as target of parent path: the object on which setting will be performed
-	 * @param context
-	 *            : binding evaluation context
-	 * @return accessed value
-	 * @throws NullReferenceException
-	 * @throws TypeMismatchException
-	 */
-	Object getBindingValue(Object target, BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException;
-
-	BindingPathElement getParent();
-
-	/**
-	 * When set to true, means that this path element is beeing changing, and that available accessible path elements following this path
-	 * element are to be recomputed<br>
-	 * This method is generally called from {@link BindingFactory}
+	 * Return parent of this BindingPathElement
 	 * 
 	 * @return
 	 */
-	public boolean isNotifyingBindingPathChanged();
+	IBindingPathElement getParent();
 
 	/**
 	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
@@ -134,6 +71,4 @@ public interface BindingPathElement extends Typed {
 	 */
 	public boolean isActivated();
 
-	// Do not use yet
-	public void delete();
 }

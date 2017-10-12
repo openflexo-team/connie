@@ -143,7 +143,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private String invalidBindingReason;
 	private boolean needReanalysing = true;
 
-	private boolean trackBindingModelChanges;
+	private boolean trackBindingModelChanges = true;
 
 	private boolean needsParsing = false;
 	private String bindingName;
@@ -750,13 +750,18 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	private void startListenToBindingModel(BindingModel bindingModel) {
+
+		// System.out.println("DEBUT Je suis " + this + " et j'ecoute " + bindingModel);
+		// System.out.println("trackBindingModelChanges=" + trackBindingModelChanges);
+
 		listenedBindingModel = bindingModel;
 		listenedBindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
-		System.out.println("Je suis " + Integer.toHexString(hashCode()) + " et j'ecoute " + listenedBindingModel);
 
 		if (trackBindingModelChanges) {
 			updateListenedBindingVariables();
 		}
+
+		// System.out.println("FIN Je suis " + this + " et j'ecoute " + bindingModel);
 	}
 
 	private void updateListenedBindingVariables() {
@@ -802,9 +807,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
-		/*if (debug) {
-			System.out.println("> Received propertyName=" + evt.getPropertyName() + " evt=" + evt);
-		}*/
+		// if (debug) {
+		// System.out.println("> Received propertyName=" + evt.getPropertyName() + " source=" + evt.getSource() + " evt=" + evt);
+		// }
 
 		// Track BindingModel changes
 		// We detect here that the owner of this DataBinding has changed its
@@ -889,7 +894,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 */
 	private void notifiedBindingModelStructurallyModified() {
 
-		// System.out.println(">>>> notifiedBindingModelStructurallyModified for " + this);
+		if (!isSet()) {
+			return;
+		}
+
+		//System.out.println(">>>> START notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
+
+		// Thread.dumpStack();
 
 		if (getExpression() != null) {
 			try {
@@ -914,6 +925,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// Perform isValid() now to be sure that parsed and analyzed are in sync
 		isValid();
 
+		//System.out.println(">>>> STOP notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
 	}
 
 	/**

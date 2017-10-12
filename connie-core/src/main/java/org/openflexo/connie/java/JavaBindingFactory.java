@@ -54,9 +54,9 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.JavaMethodPathElement;
 import org.openflexo.connie.binding.JavaPropertyPathElement;
 import org.openflexo.connie.binding.MethodDefinition;
@@ -90,7 +90,7 @@ public class JavaBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent) {
+	public List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent) {
 
 		if (parent.getType() != null) {
 
@@ -125,7 +125,7 @@ public class JavaBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public List<? extends FunctionPathElement> getAccessibleFunctionPathElements(BindingPathElement parent) {
+	public List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent) {
 		if (parent.getType() != null) {
 
 			List<? extends FunctionPathElement> returned = accessibleFunctionPathElements.get(parent.getType());
@@ -153,7 +153,7 @@ public class JavaBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public SimplePathElement makeSimplePathElement(BindingPathElement father, String propertyName) {
+	public SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName) {
 		Type fatherType = father.getType();
 		if (fatherType instanceof Class && ((Class<?>) fatherType).isPrimitive()) {
 			fatherType = TypeUtils.fromPrimitive((Class<?>) fatherType);
@@ -166,7 +166,7 @@ public class JavaBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public FunctionPathElement makeFunctionPathElement(BindingPathElement father, Function function, List<DataBinding<?>> args) {
+	public FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args) {
 		if (function instanceof MethodDefinition) {
 			return new JavaMethodPathElement(father, (MethodDefinition) function, args);
 		}

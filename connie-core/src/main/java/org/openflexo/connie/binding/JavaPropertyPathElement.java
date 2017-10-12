@@ -63,7 +63,7 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	private final KeyValueProperty keyValueProperty;
 
-	public JavaPropertyPathElement(BindingPathElement parent, String propertyName) {
+	public JavaPropertyPathElement(IBindingPathElement parent, String propertyName) {
 		super(parent, propertyName, Object.class);
 		keyValueProperty = KeyValueLibrary.getKeyValueProperty(parent.getType(), propertyName);
 
@@ -78,14 +78,14 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	}
 
-	public JavaPropertyPathElement(BindingPathElement parent, KeyValueProperty property) {
+	public JavaPropertyPathElement(IBindingPathElement parent, KeyValueProperty property) {
 		super(parent, property.getName(), property.getType());
 		keyValueProperty = property;
 
 		warnWhenInconsistentData(parent, property.getName());
 	}
 
-	private void warnWhenInconsistentData(BindingPathElement parent, String propertyName) {
+	private void warnWhenInconsistentData(IBindingPathElement parent, String propertyName) {
 
 		if (keyValueProperty.getGetMethod() != null) {
 			Type declaringType = keyValueProperty.getGetMethod().getDeclaringClass();

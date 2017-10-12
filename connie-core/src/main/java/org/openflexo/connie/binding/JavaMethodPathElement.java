@@ -68,7 +68,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 	static final Logger LOGGER = Logger.getLogger(JavaMethodPathElement.class.getPackage().getName());
 
-	public JavaMethodPathElement(BindingPathElement parent, MethodDefinition method, List<DataBinding<?>> args) {
+	public JavaMethodPathElement(IBindingPathElement parent, MethodDefinition method, List<DataBinding<?>> args) {
 		super(parent, method, args);
 		if (getMethodDefinition() != null) {
 			for (FunctionArgument arg : getMethodDefinition().getArguments()) {

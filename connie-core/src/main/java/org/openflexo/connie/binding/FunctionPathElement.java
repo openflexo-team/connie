@@ -62,13 +62,13 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 
 	private static final Logger LOGGER = Logger.getLogger(FunctionPathElement.class.getPackage().getName());
 
-	private final BindingPathElement parent;
+	private final IBindingPathElement parent;
 	private final Function function;
 	private Type type;
 	private final HashMap<Function.FunctionArgument, DataBinding<?>> parameters;
 	private boolean activated = false;
 
-	public FunctionPathElement(BindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
+	public FunctionPathElement(IBindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
 		this.parent = parent;
 		this.function = function;
 		parameters = new HashMap<>();
@@ -117,7 +117,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 	}
 
 	@Override
-	public void delete() {
+	public final void delete() {
 		if (isActivated()) {
 			desactivate();
 		}
@@ -142,7 +142,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 	}
 
 	@Override
-	public BindingPathElement getParent() {
+	public IBindingPathElement getParent() {
 		return parent;
 	}
 
