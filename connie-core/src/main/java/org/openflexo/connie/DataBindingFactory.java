@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.reflect.TypeToken;
 
+@SuppressWarnings("serial")
 public class DataBindingFactory {
 
 	public static DataBinding<Boolean> makeTrueBinding() {
