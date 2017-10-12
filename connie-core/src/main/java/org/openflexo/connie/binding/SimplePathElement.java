@@ -57,6 +57,7 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	private String propertyName;
 	private Type type;
 	private PropertyChangeSupport pcSupport;
+	private boolean activated = false;
 
 	public static final String NAME_PROPERTY = "propertyName";
 	public static final String TYPE_PROPERTY = "type";
@@ -69,9 +70,41 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		pcSupport = new PropertyChangeSupport(this);
 	}
 
-	public void delete() {
-		getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
-		pcSupport = null;
+	/**
+	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
+	 */
+	@Override
+	public void activate() {
+		this.activated = true;
+	}
+
+	/**
+	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
+	 */
+	@Override
+	public void desactivate() {
+		this.activated = false;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is activated
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isActivated() {
+		return activated;
+	}
+
+	@Override
+	public final void delete() {
+		if (isActivated()) {
+			desactivate();
+		}
+		if (pcSupport != null) {
+			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+			pcSupport = null;
+		}
 		parent = null;
 		propertyName = null;
 		type = null;
@@ -174,6 +207,7 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		return getPropertyName().hashCode();
 	}*/
 
+	@Override
 	public boolean isNotifyingBindingPathChanged() {
 		return false;
 	}

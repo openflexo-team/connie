@@ -81,13 +81,7 @@ public interface BindingPathElement extends Typed {
 	@Override
 	Type getType();
 
-	// public void addObserver(Observer o);
-
-	// public void deleteObserver(Observer o);
-
 	String getSerializationRepresentation();
-
-	// public boolean isBindingValid();
 
 	String getLabel();
 
@@ -123,4 +117,23 @@ public interface BindingPathElement extends Typed {
 	 */
 	public boolean isNotifyingBindingPathChanged();
 
+	/**
+	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
+	 */
+	public void activate();
+
+	/**
+	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
+	 */
+	public void desactivate();
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is activated
+	 * 
+	 * @return
+	 */
+	public boolean isActivated();
+
+	// Do not use yet
+	public void delete();
 }

@@ -54,12 +54,14 @@ import org.openflexo.toolbox.ToolBox;
 
 public class BindingVariable implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(BindingVariable.class.getPackage().getName());
 
 	private String variableName;
 	protected Type type;
 	private boolean settable = false;
 	private PropertyChangeSupport pcSupport;
+	private boolean activated = false;
 
 	public static final String VARIABLE_NAME_PROPERTY = "variableName";
 	public static final String TYPE_PROPERTY = "type";
@@ -75,16 +77,6 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	public BindingVariable(String variableName, Type type, boolean settable) {
 		this(variableName, type);
 		setSettable(settable);
-	}
-
-	/**
-	 * Delete this {@link BindingModel}
-	 */
-	public void delete() {
-		if (pcSupport != null) {
-			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
-			pcSupport = null;
-		}
 	}
 
 	@Override
@@ -119,7 +111,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 
 	@Override
 	public String getSerializationRepresentation() {
-		return variableName;
+		return getVariableName();
 	}
 
 	@Override
@@ -229,6 +221,45 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	@Override
 	public boolean isNotifyingBindingPathChanged() {
 		return false;
+	}
+
+	/**
+	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
+	 */
+	@Override
+	public void activate() {
+		this.activated = true;
+	}
+
+	/**
+	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
+	 */
+	@Override
+	public void desactivate() {
+		this.activated = false;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is activated
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isActivated() {
+		return activated;
+	}
+
+	@Override
+	public final void delete() {
+		if (isActivated()) {
+			desactivate();
+		}
+		if (pcSupport != null) {
+			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+			pcSupport = null;
+		}
+		variableName = null;
+		type = null;
 	}
 
 }

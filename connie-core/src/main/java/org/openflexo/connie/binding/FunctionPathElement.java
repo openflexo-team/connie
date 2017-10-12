@@ -66,6 +66,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 	private final Function function;
 	private Type type;
 	private final HashMap<Function.FunctionArgument, DataBinding<?>> parameters;
+	private boolean activated = false;
 
 	public FunctionPathElement(BindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
 		this.parent = parent;
@@ -87,6 +88,40 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 				}
 			}
 		}
+	}
+
+	/**
+	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
+	 */
+	@Override
+	public void activate() {
+		this.activated = true;
+	}
+
+	/**
+	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
+	 */
+	@Override
+	public void desactivate() {
+		this.activated = false;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is activated
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isActivated() {
+		return activated;
+	}
+
+	@Override
+	public void delete() {
+		if (isActivated()) {
+			desactivate();
+		}
+		type = null;
 	}
 
 	public void instanciateParameters(Bindable bindable) {
@@ -124,7 +159,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		this.type = type;
 	}
 
-	private String serializationRepresentation = null;
+	protected String serializationRepresentation = null;
 
 	@Override
 	public String getSerializationRepresentation() {
