@@ -377,6 +377,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// LOGGER.info("Analysing " + Integer.toHexString(hashCode()) + " " + (analysisCount++) + " " + (expression != null
 		// ? "expression: [" + expression.getClass().getSimpleName() + "]/" + expression : "unparsed: " + unparsedBinding));
 
+
 		if (isNull()) {
 			return ExplicitNullType.INSTANCE;
 		}
@@ -387,11 +388,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			else if (getExpression() instanceof CastExpression) {
 				return ((CastExpression) getExpression()).getCastType().getType();
 			}
-			else if (expression instanceof Constant) {
-				return ((Constant<?>) expression).getType();
+			else if (getExpression() instanceof Constant) {
+				return ((Constant<?>) getExpression()).getType();
 			}
-			else if (expression instanceof ConditionalExpression) {
-				return ((ConditionalExpression) expression).getAccessedType();
+			else if (getExpression() instanceof ConditionalExpression) {
+				return ((ConditionalExpression) getExpression()).getAccessedType();
 			}
 			else {
 				try {
@@ -565,17 +566,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 		}
 
-		// NO need to check target type for EXECUTE bindings (we don't need
-		// return type nor value)
-		if (isExecutable()) {
-			valid = true;
-			return true;
-		}
-
 		if (isNull()) {
 			// A null expression is valid (otherwise return Object.class as
 			// analyzed type, and type checking will fail in next test
 			valid = true;
+			analyzedType = ExplicitNullType.INSTANCE;
 			return true;
 		}
 
@@ -588,6 +583,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 			valid = false;
 			return false;
+		}
+
+		// NO need to check target type for EXECUTE bindings (we don't need
+		// return type nor value)
+		if (isExecutable()) {
+			valid = true;
+			return true;
 		}
 
 		if (getDeclaredType() != null && TypeUtils.isTypeAssignableFrom(getDeclaredType(), analyzedType, true)) {

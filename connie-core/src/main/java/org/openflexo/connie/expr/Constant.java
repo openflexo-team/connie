@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.toolbox.Duration;
 
 public abstract class Constant<V> extends Expression {
@@ -467,7 +468,12 @@ public abstract class Constant<V> extends Expression {
 			this.symbol = symbol;
 		}
 
-		public static final ObjectSymbolicConstant NULL = new ObjectSymbolicConstant("null");
+		public static final ObjectSymbolicConstant NULL = new ObjectSymbolicConstant("null") {
+			@Override
+			public Type getType() {
+				return ExplicitNullType.INSTANCE;
+			}
+		};
 		public static final ObjectSymbolicConstant THIS = new ObjectSymbolicConstant("this");
 
 		@Override
