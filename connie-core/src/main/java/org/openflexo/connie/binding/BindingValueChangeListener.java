@@ -211,7 +211,13 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		}
 
 		List<TargetObject> newDependingObjects = new ArrayList<>();
-		List<TargetObject> oldDependingObjects = new ArrayList<>(dependingObjects);
+		List<TargetObject> oldDependingObjects;
+		if (dependingObjects != null) {
+			oldDependingObjects = new ArrayList<>(dependingObjects);
+		}
+		else {
+			oldDependingObjects = new ArrayList<>();
+		}
 		for (TargetObject o : updatedDependingObjects) {
 			if (oldDependingObjects.contains(o)) {
 				oldDependingObjects.remove(o);
