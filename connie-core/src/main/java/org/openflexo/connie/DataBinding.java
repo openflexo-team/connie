@@ -898,7 +898,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return;
 		}
 
-		//System.out.println(">>>> START notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
+		// System.out.println(">>>> START notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
 
 		// Thread.dumpStack();
 
@@ -909,7 +909,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) throws VisitorException {
 						if (e instanceof BindingValue) {
 							BindingValue bv = (BindingValue) e;
-							if (!bv.needsAnalysing()) {
+							/*if (!bv.needsAnalysing()) {
+								bv.updateParsedBindingPathFromBindingPath();
+							}*/
+							if (bv.isValid()) {
 								bv.updateParsedBindingPathFromBindingPath();
 							}
 						}
@@ -925,7 +928,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// Perform isValid() now to be sure that parsed and analyzed are in sync
 		isValid();
 
-		//System.out.println(">>>> STOP notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
+		// System.out.println(">>>> STOP notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
 	}
 
 	/**
