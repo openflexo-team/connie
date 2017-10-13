@@ -290,6 +290,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void setExpression(Expression value) {
+		setExpression(value, true);
+	}
+
+	public void setExpression(Expression value, boolean notify) {
 		// logger.info("setExpression() with " + value);
 		needsParsing = false;
 		valid = false;
@@ -301,7 +305,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			unparsedBinding = value != null ? value.toString() : null;
 			// LOGGER.info("Binding takes now value " + value);
 			// analyseExpressionAfterParsing();
-			notifyBindingChanged(oldValue, value);
+			if (notify) {
+				notifyBindingChanged(oldValue, value);
+			}
 		}
 
 		checkBindingModelListening();

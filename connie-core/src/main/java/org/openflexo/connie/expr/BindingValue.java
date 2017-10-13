@@ -823,6 +823,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				return false;
 			}
 			int i = 0;
+
+			// System.out.println("Analysing BindingValue " + Integer.toHexString(hashCode()) + " with " + getParsedBindingPath());
+
 			for (AbstractBindingPathElement pathElement : getParsedBindingPath()) {
 				if (i > 0) {
 					if (pathElement instanceof NormalBindingPathElement) {
@@ -853,7 +856,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 									DataBinding.BindingDefinitionType.GET);
 							argDataBinding.setBindingName("arg" + argIndex);
 							if (arg != null) {
-								argDataBinding.setExpression(arg);
+								// Avoid to notify yet, otherwise it may loop
+								argDataBinding.setExpression(arg, false);
 							}
 							else {
 								argDataBinding.setExpression(ObjectSymbolicConstant.NULL);
