@@ -216,6 +216,19 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	public void updateParsedBindingPathFromBindingPath() {
+
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- updateParsedBindingPathFromBindingPath() for " + this);
+			/*System.out.println("Avec BVar=" + getBindingVariable());
+			System.out.println("BindingPath=" + bindingPath.size() + " " + bindingPath);
+			if (bindingPath.size() == 0) {
+				dataBinding.debug();
+				debug();
+				Thread.dumpStack();
+			}*/
+
+		}
+
 		parsedBindingPath.clear();
 		if (getBindingVariable() != null) {
 			parsedBindingPath.add(new NormalBindingPathElement(getVariableName()));
@@ -580,12 +593,18 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	public void markedAsToBeReanalized() {
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- markedAsToBeReanalized() for " + this);
+		}
 		needsAnalysing = true;
 		clearSerializationRepresentation();
 		clearBindingPathAndBindingVariable();
 	}
 
 	private void clearBindingPathAndBindingVariable() {
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- clearBindingPathAndBindingVariable() for " + this);
+		}
 		if (bindingPath != null) {
 			for (BindingPathElement e : bindingPath) {
 				if (e.isActivated()) {
@@ -665,6 +684,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	private String serializationRepresentation = null;
 
 	public void clearSerializationRepresentation() {
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- clearSerializationRepresentation() for " + this);
+		}
 		serializationRepresentation = null;
 	}
 
@@ -699,6 +721,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	private boolean _checkBindingPathValid() {
+
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- _checkBindingPathValid() for " + this);
+		}
 
 		if (getBindingVariable() == null) {
 			invalidBindingReason = "binding variable is null";
@@ -781,6 +807,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	// Developer's note: This method is flagged as synchronized and it is important, as it is a critical code
 	// Many threads may access to this at same time, causing BindingPath to be mixed
 	public synchronized boolean buildBindingPathFromParsedBindingPath(DataBinding<?> dataBinding) {
+
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- buildBindingPathFromParsedBindingPath() for " + this);
+		}
 
 		// logger.info("buildBindingPathFromParsedBindingPath() for " +
 		// getParsedBindingPath());
@@ -916,8 +946,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			analysingSuccessfull = true;
 		}
 		else {
-			// LOGGER.warning("Invalid binding value " + this);
-			// Thread.dumpStack();
+			invalidBindingReason = "Empty binding";
 			analysingSuccessfull = false;
 		}
 

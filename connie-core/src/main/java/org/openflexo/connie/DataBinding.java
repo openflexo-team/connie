@@ -377,7 +377,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// LOGGER.info("Analysing " + Integer.toHexString(hashCode()) + " " + (analysisCount++) + " " + (expression != null
 		// ? "expression: [" + expression.getClass().getSimpleName() + "]/" + expression : "unparsed: " + unparsedBinding));
 
-
 		if (isNull()) {
 			return ExplicitNullType.INSTANCE;
 		}
@@ -425,6 +424,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 */
 	public void markedAsToBeReanalized() {
 
+		if (debug) {
+			System.out.println("DEBUG -- Connie -- markedAsToBeReanalized for " + this);
+		}
+
 		needReanalysing = true;
 
 		valid = false;
@@ -469,6 +472,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public boolean isValid() {
 		if (needReanalysing) {
 			valid = performComputeValididy();
+			if (debug) {
+				System.out.println("DEBUG -- Connie -- DONE performComputeValididy for " + this);
+				debug();
+			}
 			needReanalysing = false;
 		}
 
@@ -494,6 +501,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @return
 	 */
 	private boolean performComputeValididy() {
+
+		if (debug) {
+			System.out.println("DEBUG -- Connie -- performComputeValididy for " + this);
+		}
 
 		if (getOwner() == null) {
 			invalidBindingReason = "null owner";
@@ -910,7 +921,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		// Thread.dumpStack();
 
-		if (getExpression() != null) {
+		if (getExpression() != null && isValid()) {
 			try {
 				getExpression().visit(new ExpressionVisitor() {
 					@Override
@@ -1292,5 +1303,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			cachedValues.remove(context);
 		}
 	}
+
+	// Used for debug only
+	public boolean debug = false;
 
 }
