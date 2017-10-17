@@ -39,11 +39,14 @@
 
 package org.openflexo.connie.binding;
 
+import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.type.CustomType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.KeyValueLibrary;
@@ -127,6 +130,28 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	public KeyValueProperty getKeyValueProperty() {
 		return keyValueProperty;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
+	 * 
+	 * A {@link JavaPropertyPathElement} is notification-safe when related get method is not tagged with {@link NotificationUnsafe}
+	 * annotation
+	 * 
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isNotificationSafe() {
+
+		KeyValueProperty kvProperty = getKeyValueProperty();
+		Method m = kvProperty.getGetMethod();
+		if (m == null || m.getAnnotation(NotificationUnsafe.class) != null) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

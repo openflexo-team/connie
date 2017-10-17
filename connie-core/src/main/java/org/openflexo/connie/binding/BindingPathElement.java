@@ -39,6 +39,10 @@
 
 package org.openflexo.connie.binding;
 
+import java.beans.PropertyChangeSupport;
+
+import org.openflexo.connie.DataBinding;
+
 /**
  * General API for an non-root element of a formal binding path, which has at least one parent
  * 
@@ -71,4 +75,15 @@ public interface BindingPathElement extends IBindingPathElement {
 	 */
 	public boolean isActivated();
 
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
+	 * 
+	 * When tagged as unsafe, disable caching while evaluating related {@link DataBinding}.
+	 * 
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
+	public boolean isNotificationSafe();
 }

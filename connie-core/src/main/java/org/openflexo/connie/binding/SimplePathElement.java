@@ -221,4 +221,9 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		}
 		return getLabel();
 	}
+
+	@Override
+	public boolean isNotificationSafe() {
+		return true;
+	}
 }

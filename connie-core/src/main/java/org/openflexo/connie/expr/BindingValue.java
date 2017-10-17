@@ -41,8 +41,8 @@ package org.openflexo.connie.expr;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,14 +54,11 @@ import java.util.logging.Logger;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
-import org.openflexo.connie.binding.JavaMethodPathElement;
-import org.openflexo.connie.binding.JavaPropertyPathElement;
 import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
@@ -76,7 +73,6 @@ import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
-import org.openflexo.kvc.KeyValueProperty;
 
 /**
  * Represents a binding path, as formed by an access to a binding variable and a path of BindingPathElement<br>
@@ -412,7 +408,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * A {@link BindingValue} is cacheable if
 	 * <ul>
 	 * <li>related {@link BindingVariable} is cacheable</li>
-	 * <li>this {@link BindingValue} should be notification-safe</li>
+	 * <li>this {@link BindingValue} is notification-safe (all path elements are notification-safe)</li>
 	 * </ul>
 	 * 
 	 * @return
@@ -422,10 +418,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	/**
-	 * Return boolean indicating if this {@link BindingValue} is notification-safe<br>
-	 * 
-	 * A {@link BindingValue} is unsafe when any involved method is annotated with {@link NotificationUnsafe} annotation<br>
-	 * Otherwise return true
+	 * Return boolean indicating if this {@link BindingValue} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
 	 * 
 	 * @return
 	 */
@@ -434,20 +428,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return false;
 		}
 		for (BindingPathElement pathElement : new ArrayList<>(getBindingPath())) {
-			if (pathElement instanceof JavaPropertyPathElement) {
-				JavaPropertyPathElement propertyPathElement = (JavaPropertyPathElement) pathElement;
-				KeyValueProperty kvProperty = propertyPathElement.getKeyValueProperty();
-				Method m = kvProperty.getGetMethod();
-				if (m != null && m.getAnnotation(NotificationUnsafe.class) != null) {
-					return false;
-				}
-			}
-			else if (pathElement instanceof JavaMethodPathElement) {
-				JavaMethodPathElement methodPathElement = (JavaMethodPathElement) pathElement;
-				Method m = methodPathElement.getMethodDefinition().getMethod();
-				if (m != null && m.getAnnotation(NotificationUnsafe.class) != null) {
-					return false;
-				}
+			if (!pathElement.isNotificationSafe()) {
+				return false;
 			}
 		}
 		return true;

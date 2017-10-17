@@ -39,7 +39,9 @@
 
 package org.openflexo.connie.binding;
 
+import java.beans.PropertyChangeSupport;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +51,7 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
@@ -113,6 +116,26 @@ public class JavaMethodPathElement extends FunctionPathElement {
 	@Override
 	public void setType(Type type) {
 		customType = type;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
+	 * 
+	 * A {@link JavaPropertyPathElement} is notification-safe when related method is not tagged with {@link NotificationUnsafe} annotation
+	 * 
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isNotificationSafe() {
+
+		Method m = getMethodDefinition().getMethod();
+		if (m == null || m.getAnnotation(NotificationUnsafe.class) != null) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
