@@ -838,7 +838,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 			// System.out.println("Analysing BindingValue " + Integer.toHexString(hashCode()) + " with " + getParsedBindingPath());
 
-			for (AbstractBindingPathElement pathElement : getParsedBindingPath()) {
+			for (AbstractBindingPathElement pathElement : new ArrayList<>(getParsedBindingPath())) {
 				if (i > 0) {
 					if (pathElement instanceof NormalBindingPathElement) {
 						SimplePathElement newPathElement = dataBinding.getOwner().getBindingFactory().makeSimplePathElement(current,
