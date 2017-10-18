@@ -399,8 +399,8 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			if (getDefaultValue() == null) {
 				// When computing the new value, a NullReferenceException has raised:
 				// This might be normal, but we warn it to make the developer think of what should be returned here as default value
-				LOGGER.warning(
-						"Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
+				// LOGGER.warning(
+				// "Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
 			}
 			newValue = getDefaultValue();
 		}
