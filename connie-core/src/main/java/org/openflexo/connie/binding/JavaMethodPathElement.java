@@ -192,6 +192,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			/*e.printStackTrace();
 			logger.info("Caused by:");
 			e.getTargetException().printStackTrace();*/
+			e.getTargetException().printStackTrace();
 			throw new InvocationTargetTransformException(e);
 		}
 		return null;
