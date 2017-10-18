@@ -85,6 +85,9 @@ public class TypeUtils {
 		if (aType == null) {
 			return null;
 		}
+		if (aType == ExplicitNullType.INSTANCE) {
+			return Object.class;
+		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).getBaseClass();
 		}
