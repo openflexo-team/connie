@@ -1123,7 +1123,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			returned.add(new TargetObject(current, element.getLabel()));
 			try {
-				current = element.getBindingValue(current, context);
+				if (element == getLastBindingPathElement()) {
+					// No need to analyze deeply, this is the last one
+					current = null;
+				}
+				else {
+					current = element.getBindingValue(current, context);
+				}
 			} catch (TypeMismatchException e) {
 				current = null;
 				// We silently escape...
