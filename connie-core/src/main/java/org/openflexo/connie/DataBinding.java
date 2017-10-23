@@ -488,6 +488,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return valid;
 	}
 
+	private boolean isPerformingValidity = false;
+
 	/**
 	 * Internally compute validity<br>
 	 * 
@@ -529,9 +531,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		isCacheable = true;
 		analyzedType = Object.class;
 
+		if (isPerformingValidity) {
+			System.err.println("Stackoverflow prevented while performing validity for " + this);
+			return false;
+		}
+
 		if (getOwner() != null) {
 
 			try {
+				isPerformingValidity = true;
+
 				expression.visit(new ExpressionVisitor() {
 					@Override
 					public void visit(Expression e) throws InvalidBindingValue {
@@ -562,6 +571,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				LOGGER.warning("TransformException while transforming " + expression);
 				valid = false;
 				return false;
+			} finally {
+				isPerformingValidity = false;
 			}
 		}
 
