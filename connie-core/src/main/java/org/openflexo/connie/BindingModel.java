@@ -250,7 +250,7 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 		StringBuffer sb = new StringBuffer();
 		boolean isFirst = true;
 		sb.append("[");
-		for (BindingVariable bv : declaredBindingVariables) {
+		for (BindingVariable bv : new ArrayList<>(declaredBindingVariables)) {
 			sb.append((isFirst ? "" : ",") + bv.getVariableName() + "/" + TypeUtils.simpleRepresentation(bv.getType()));
 			isFirst = false;
 		}
