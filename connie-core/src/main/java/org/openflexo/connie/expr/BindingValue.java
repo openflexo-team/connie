@@ -1003,7 +1003,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		Object returned = context.getValue(getBindingVariable());
 
 		if (returned == null) {
-			throw new NullReferenceException("null occured when evaluating " + lastEvaluatedPathElement + " from " + lastEvaluated);
+			throw new NullReferenceException("while evaluating " + getParsedBindingPath() + ": null occured when evaluating "
+					+ lastEvaluatedPathElement + " from " + context);
 		}
 		// System.out.println("For variable "+_bindingVariable+" object is "+returned);
 
@@ -1013,7 +1014,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				lastEvaluatedPathElement = element;
 				returned = element.getBindingValue(returned, context);
 				if (returned == null) {
-					throw new NullReferenceException("null occured when evaluating " + lastEvaluatedPathElement + " from " + lastEvaluated);
+					throw new NullReferenceException("while evaluating " + getParsedBindingPath() + ": null occured when evaluating "
+							+ lastEvaluatedPathElement + " from " + lastEvaluated);
 				}
 				lastEvaluated = returned;
 				// System.out.println("Obtain "+returned);
