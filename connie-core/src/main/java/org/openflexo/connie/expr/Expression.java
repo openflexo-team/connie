@@ -39,6 +39,7 @@
 
 package org.openflexo.connie.expr;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,6 +49,7 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -66,13 +68,18 @@ public abstract class Expression {
 
 	public abstract Expression transform(ExpressionTransformer transformer) throws TransformException;
 
-	public final Expression evaluate(BindingEvaluationContext context) throws TypeMismatchException, NullReferenceException {
+	public final Expression evaluate(BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
 		try {
 			return transform(new ExpressionEvaluator(context));
 		} catch (TypeMismatchException e) {
 			throw e;
 		} catch (NullReferenceException e) {
 			throw e;
+		} catch (InvocationTargetTransformException e) {
+			LOGGER.warning("Unexpected exception occured during evaluation " + e.getException());
+			e.getException().printStackTrace();
+			throw new InvocationTargetException(e.getException());
 		} catch (TransformException e) {
 			LOGGER.warning("Unexpected exception occured during evaluation " + e);
 			e.printStackTrace();

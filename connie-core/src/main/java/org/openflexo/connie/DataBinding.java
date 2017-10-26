@@ -1169,6 +1169,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				throw e1;
 			} catch (TypeMismatchException e1) {
 				throw e1;
+			} catch (InvocationTargetException e) {
+				throw e;
 			}
 		}
 		return null;

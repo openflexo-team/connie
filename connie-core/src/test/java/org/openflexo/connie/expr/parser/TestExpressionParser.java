@@ -39,6 +39,8 @@
 
 package org.openflexo.connie.expr.parser;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
@@ -129,6 +131,10 @@ public class TestExpressionParser extends TestCase {
 			else {
 				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
 			}
+			return null;
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			fail();
 			return null;
 		}
 
