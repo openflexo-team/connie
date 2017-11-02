@@ -377,8 +377,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	@Override
 	public Type getAccessedType() {
-		if (isValid() && getLastBindingPathElement() != null) {
+		/*if (isValid() && getLastBindingPathElement() != null) {
 			return getLastBindingPathElement().getType();
+		}*/
+		if (isValid()) {
+			return analyzedType;
 		}
 		return null;
 	}
@@ -702,7 +705,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return invalidBindingReason;
 	}
 
+	private Type analyzedType;
+
 	private boolean _checkBindingPathValid() {
+
+		analyzedType = Object.class;
 
 		if (dataBinding != null && dataBinding.debug) {
 			System.out.println("DEBUG -- Connie -- _checkBindingPathValid() for " + this);
@@ -713,6 +720,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return false;
 		}
 		Type currentType = getBindingVariable().getType();
+
 		IBindingPathElement currentElement = getBindingVariable();
 		if (currentType == null) {
 			invalidBindingReason = "currentType is null";
@@ -757,8 +765,12 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				return false;
 			}
 			currentElement = element;
-			currentType = currentElement.getType();
+
+			currentType = TypeUtils.makeInstantiatedType(currentElement.getType(), currentType);
+
 		}
+
+		analyzedType = currentType;
 
 		clearSerializationRepresentation();
 

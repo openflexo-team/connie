@@ -813,6 +813,10 @@ public class TypeUtils {
 			return null;
 		}
 
+		if (context instanceof JavaCustomType) {
+			return makeInstantiatedType(type, ((JavaCustomType) context).getJavaType());
+		}
+
 		if (!isGeneric(type)) {
 			return type;
 		}
