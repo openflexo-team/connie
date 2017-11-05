@@ -155,6 +155,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			return;
 		}
 
+		if (deleted) {
+			return;
+		}
+
 		// Kept for future debug use
 		/*if (dataBinding.toString().equals("data.canUndo()")) {
 			debug = true;
