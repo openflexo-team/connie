@@ -86,4 +86,15 @@ public interface BindingPathElement extends IBindingPathElement {
 	 * @return
 	 */
 	public boolean isNotificationSafe();
+
+	/**
+	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
+	 * 
+	 * Default behaviour return false
+	 * 
+	 * @return
+	 */
+	default boolean supportsNullValues() {
+		return false;
+	}
 }
