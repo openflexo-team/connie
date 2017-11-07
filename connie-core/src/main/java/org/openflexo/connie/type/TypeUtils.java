@@ -49,6 +49,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -306,6 +307,13 @@ public class TypeUtils {
 			return false;
 		}
 		return type.equals(String.class);
+	}
+
+	public static boolean isDate(Type type) {
+		if (type == null) {
+			return false;
+		}
+		return type.equals(Date.class);
 	}
 
 	public static boolean isVoid(Type type) {

@@ -59,6 +59,12 @@ public enum PrimitiveType {
 			return String.class;
 		}
 	},
+	Date {
+		@Override
+		public Type getType() {
+			return java.util.Date.class;
+		}
+	},
 	Integer {
 		@Override
 		public Type getType() {
