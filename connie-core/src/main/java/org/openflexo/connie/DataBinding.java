@@ -184,7 +184,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public DataBinding(String unparsed, Bindable owner, DataBinding<?> db) {
-		this(unparsed, owner, db.declaredType, db.bdType);
+		this(unparsed, owner, db != null ? db.declaredType : Object.class, db != null ? db.bdType : BindingDefinitionType.GET);
 	}
 
 	public DataBinding(String unparsed) {
