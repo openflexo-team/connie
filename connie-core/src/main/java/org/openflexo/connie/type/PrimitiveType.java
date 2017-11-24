@@ -71,6 +71,12 @@ public enum PrimitiveType {
 			return Integer.class;
 		}
 	},
+	Long {
+		@Override
+		public Type getType() {
+			return Long.class;
+		}
+	},
 	Float {
 		@Override
 		public Type getType() {
