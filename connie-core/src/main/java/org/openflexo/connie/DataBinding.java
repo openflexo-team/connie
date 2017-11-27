@@ -785,7 +785,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// System.out.println("trackBindingModelChanges=" + trackBindingModelChanges);
 
 		listenedBindingModel = bindingModel;
-		listenedBindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
+		if (listenedBindingModel != null && listenedBindingModel.getPropertyChangeSupport() != null) {
+			listenedBindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
+		}
 
 		if (trackBindingModelChanges) {
 			updateListenedBindingVariables();
