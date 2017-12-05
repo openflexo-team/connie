@@ -78,7 +78,7 @@ public abstract class Expression {
 			throw e;
 		} catch (InvocationTargetTransformException e) {
 			LOGGER.warning("Unexpected exception occured during evaluation " + e.getException());
-			e.getException().printStackTrace();
+			// e.getException().printStackTrace();
 			throw new InvocationTargetException(e.getException());
 		} catch (TransformException e) {
 			LOGGER.warning("Unexpected exception occured during evaluation " + e);
