@@ -359,6 +359,11 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
+		if (evt.getSource() instanceof HasPropertyChangeSupport
+				&& evt.getPropertyName().equals(((HasPropertyChangeSupport) evt.getSource()).getDeletedProperty())) {
+			// What if it is deletion notification ???
+		}
+
 		// Kept for future debug use
 		/*if (getDataBinding().toString().equals("data.currentStep.issueMessageIcon.image")) {
 			System.out.println("Received propertyChange with " + evt);
