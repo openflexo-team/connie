@@ -43,6 +43,7 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
 import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.DataBinding;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
@@ -222,6 +223,16 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		return getLabel();
 	}
 
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
+	 * 
+	 * When tagged as unsafe, disable caching while evaluating related {@link DataBinding}.
+	 * 
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
 	@Override
 	public boolean isNotificationSafe() {
 		return true;
