@@ -843,9 +843,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// System.out.println("> Received propertyName=" + evt.getPropertyName() + " source=" + evt.getSource() + " evt=" + evt);
 		// }
 
+		// Track BindingFactory changes
+		// We detect here that the owner of this DataBinding has changed its BindingFactory
+		if (evt.getSource() == owner && evt.getPropertyName() != null && evt.getPropertyName().equals(Bindable.BINDING_FACTORY_PROPERTY)) {
+			markedAsToBeReanalized();
+		}
+
 		// Track BindingModel changes
-		// We detect here that the owner of this DataBinding has changed its
-		// BindingModel
+		// We detect here that the owner of this DataBinding has changed its BindingModel
 		if (evt.getSource() == owner && evt.getPropertyName() != null && evt.getPropertyName().equals(Bindable.BINDING_MODEL_PROPERTY)) {
 			// System.out.println("BindingModel changed for " + getOwner());
 			// System.out.println("was: " + evt.getOldValue());
