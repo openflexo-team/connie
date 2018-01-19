@@ -42,7 +42,7 @@ package org.openflexo.connie.expr;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Vector;
-import org.openflexo.connie.exception.NullReferenceException;
+
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 
@@ -138,26 +138,8 @@ public class BinaryOperatorExpression extends Expression {
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 
 		Expression expression = this;
-		Expression transformedLeftArgument;
-		try {
-			transformedLeftArgument = leftArgument.transform(transformer);
-		} catch (NullReferenceException e) {
-			throw e;
-		} catch (Exception e) {
-			System.out.println("Exception while evaluating " + this);
-			e.printStackTrace();
-			transformedLeftArgument = Constant.BooleanConstant.FALSE;
-		}
-		Expression transformedRightArgument;
-		try {
-			transformedRightArgument = rightArgument.transform(transformer);
-		} catch (NullReferenceException e) {
-			throw e;
-		} catch (Exception e) {
-			System.out.println("Exception while evaluating " + this);
-			e.printStackTrace();
-			transformedRightArgument = Constant.BooleanConstant.FALSE;
-		}
+		Expression transformedLeftArgument = leftArgument.transform(transformer);
+		Expression transformedRightArgument = rightArgument.transform(transformer);
 
 		if (!transformedLeftArgument.equals(leftArgument) || !transformedRightArgument.equals(rightArgument)) {
 			expression = new BinaryOperatorExpression(operator, transformedLeftArgument, transformedRightArgument);
@@ -199,9 +181,8 @@ public class BinaryOperatorExpression extends Expression {
 	public boolean equals(Object obj) {
 		if (obj instanceof BinaryOperatorExpression) {
 			BinaryOperatorExpression e = (BinaryOperatorExpression) obj;
-			return 	Objects.equals(getOperator(), e.getOperator()) &&
-					Objects.equals(getLeftArgument(), e.getLeftArgument()) &&
-					Objects.equals(getRightArgument(), e.getRightArgument());
+			return Objects.equals(getOperator(), e.getOperator()) && Objects.equals(getLeftArgument(), e.getLeftArgument())
+					&& Objects.equals(getRightArgument(), e.getRightArgument());
 		}
 		return super.equals(obj);
 	}

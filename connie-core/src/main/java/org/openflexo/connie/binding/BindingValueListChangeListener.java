@@ -39,6 +39,7 @@
 package org.openflexo.connie.binding;
 
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -84,6 +85,10 @@ public abstract class BindingValueListChangeListener<T2, T extends Collection<T2
 		} catch (NullReferenceException e) {
 			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext()
 					+ " because NullReferenceException has raised");
+			newValue = null;
+		} catch (InvocationTargetException e) {
+			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext() + " because Exception has raised: "
+					+ e.getTargetException());
 			newValue = null;
 		} catch (ClassCastException e) {
 			LOGGER.warning("ClassCastException while evaluating " + getDataBinding() + " with context " + getContext());
