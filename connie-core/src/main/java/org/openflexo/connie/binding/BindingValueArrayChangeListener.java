@@ -38,6 +38,7 @@
 
 package org.openflexo.connie.binding;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
@@ -62,6 +63,7 @@ public abstract class BindingValueArrayChangeListener<T> extends BindingValueCha
 		super(dataBinding, context);
 	}
 
+	@Override
 	public void delete() {
 		super.delete();
 	}
@@ -75,18 +77,25 @@ public abstract class BindingValueArrayChangeListener<T> extends BindingValueCha
 			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext()
 					+ " because NullReferenceException has raised");
 			newValue = null;
+		} catch (InvocationTargetException e) {
+			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext() + " because Exception has raised: "
+					+ e.getTargetException());
+			newValue = null;
 		}
 		if (newValue != lastNotifiedValue) {
 			lastNotifiedValue = newValue;
 			bindingValueChanged(source, newValue);
-		} else {
+		}
+		else {
 			// Arrays are sames, but values inside arrays, may have changed
 
 			if (lastKnownValues == null || newValue == null) {
 				// We continue
-			} else if (lastKnownValues.length != newValue.length) {
+			}
+			else if (lastKnownValues.length != newValue.length) {
 				// We continue
-			} else {
+			}
+			else {
 				boolean valuesAreSame = true;
 				for (int i = 0; i < lastKnownValues.length; i++) {
 					if (!lastKnownValues[i].equals(newValue[i])) {
