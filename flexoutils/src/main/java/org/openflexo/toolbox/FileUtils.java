@@ -653,6 +653,25 @@ public class FileUtils {
 	}
 
 	/**
+	 * Deletes a file and log a configurable warning if the deletion fails.
+	 * 
+	 * @param file
+	 *            file to delete
+	 * @param warnMsg
+	 *            warning message. It will be translated with {@code tr()} and must contain a single parameter <code>{0}</code> for the file
+	 *            path
+	 * @return {@code true} if and only if the file is successfully deleted; {@code false} otherwise
+	 * @since 9296
+	 */
+	public static boolean deleteFile(File file) {
+		boolean result = file.delete();
+		if (!result) {
+			System.err.println("Cannot delete " + file);
+		}
+		return result;
+	}
+
+	/**
 	 * @param dir
 	 */
 	public static void deleteDir(File dir) {

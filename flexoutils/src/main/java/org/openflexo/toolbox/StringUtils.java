@@ -53,6 +53,8 @@ import java.util.regex.Pattern;
 
 public class StringUtils {
 
+	private static final char[] DEFAULT_STRIP = { '\u200B', '\uFEFF' };
+
 	public static String getString(InputStream is, String encoding) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding));
 		StringWriter sw = new StringWriter();
@@ -670,6 +672,90 @@ public class StringUtils {
 
 		// the distance is the cost for transforming all letters in both strings
 		return cost[len0 - 1];
+	}
+
+	/**
+	 * An alternative to {@link String#trim()} to effectively remove all leading and trailing white characters, including Unicode ones.
+	 * 
+	 * @param str
+	 *            The string to strip
+	 * @return <code>str</code>, without leading and trailing characters, according to {@link Character#isWhitespace(char)} and
+	 *         {@link Character#isSpaceChar(char)}.
+	 * @see <a href="http://closingbraces.net/2008/11/11/javastringtrim/">Java String.trim has a strange idea of whitespace</a>
+	 * @see <a href="https://bugs.openjdk.java.net/browse/JDK-4080617">JDK bug 4080617</a>
+	 * @see <a href="https://bugs.openjdk.java.net/browse/JDK-7190385">JDK bug 7190385</a>
+	 * @since 5772
+	 */
+	public static String strip(final String str) {
+		if (str == null || str.isEmpty()) {
+			return str;
+		}
+		return strip(str, DEFAULT_STRIP);
+	}
+
+	/**
+	 * An alternative to {@link String#trim()} to effectively remove all leading and trailing white characters, including Unicode ones.
+	 * 
+	 * @param str
+	 *            The string to strip
+	 * @param skipChars
+	 *            additional characters to skip
+	 * @return <code>str</code>, without leading and trailing characters, according to {@link Character#isWhitespace(char)},
+	 *         {@link Character#isSpaceChar(char)} and skipChars.
+	 * @since 8435
+	 */
+	public static String strip(final String str, final String skipChars) {
+		if (str == null || str.isEmpty()) {
+			return str;
+		}
+		return strip(str, stripChars(skipChars));
+	}
+
+	private static String strip(final String str, final char... skipChars) {
+
+		int start = 0;
+		int end = str.length();
+		boolean leadingSkipChar = true;
+		while (leadingSkipChar && start < end) {
+			leadingSkipChar = isStrippedChar(str.charAt(start), skipChars);
+			if (leadingSkipChar) {
+				start++;
+			}
+		}
+		boolean trailingSkipChar = true;
+		while (trailingSkipChar && end > start + 1) {
+			trailingSkipChar = isStrippedChar(str.charAt(end - 1), skipChars);
+			if (trailingSkipChar) {
+				end--;
+			}
+		}
+
+		return str.substring(start, end);
+	}
+
+	private static boolean isStrippedChar(char c, final char... skipChars) {
+		return Character.isWhitespace(c) || Character.isSpaceChar(c) || stripChar(skipChars, c);
+	}
+
+	private static char[] stripChars(final String skipChars) {
+		if (skipChars == null || skipChars.isEmpty()) {
+			return DEFAULT_STRIP;
+		}
+
+		char[] chars = new char[DEFAULT_STRIP.length + skipChars.length()];
+		System.arraycopy(DEFAULT_STRIP, 0, chars, 0, DEFAULT_STRIP.length);
+		skipChars.getChars(0, skipChars.length(), chars, DEFAULT_STRIP.length);
+
+		return chars;
+	}
+
+	private static boolean stripChar(final char[] strip, char c) {
+		for (char s : strip) {
+			if (c == s) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

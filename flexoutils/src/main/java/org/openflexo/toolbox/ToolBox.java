@@ -49,21 +49,30 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.AccessibleObject;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.AccessController;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivilegedAction;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -496,7 +505,7 @@ public class ToolBox {
 			Enumeration<String> en = param.keys();
 			while (en.hasMoreElements()) {
 				String key = en.nextElement();
-				String value = (String) param.get(key);
+				String value = param.get(key);
 				try {
 					paramsAsString.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
@@ -543,8 +552,8 @@ public class ToolBox {
 			if (parameters != null && parameters.size() > 0) {
 				Enumeration<String> en = parameters.keys();
 				while (en.hasMoreElements()) {
-					String key = (String) en.nextElement();
-					String value = (String) parameters.get(key);
+					String key = en.nextElement();
+					String value = parameters.get(key);
 					data.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
 					if (en.hasMoreElements()) {
 						data.append("&");
@@ -1141,4 +1150,182 @@ public class ToolBox {
 	public static boolean isNimbusLaf() {
 		return UIManager.getLookAndFeel().getName().equals("Nimbus");
 	}
+
+	/**
+	 * Returns the Java version as an int value.
+	 * 
+	 * @return the Java version as an int value (8, 9, etc.)
+	 * @since 12130
+	 */
+	public static int getJavaVersion() {
+		String version = System.getProperty("java.version");
+		if (version.startsWith("1.")) {
+			version = version.substring(2);
+		}
+		// Allow these formats:
+		// 1.8.0_72-ea
+		// 9-ea
+		// 9
+		// 9.0.1
+		int dotPos = version.indexOf('.');
+		int dashPos = version.indexOf('-');
+		return Integer.parseInt(version.substring(0, dotPos > -1 ? dotPos : dashPos > -1 ? dashPos : 1));
+	}
+
+	/**
+	 * Returns the Java update as an int value.
+	 * 
+	 * @return the Java update as an int value (121, 131, etc.)
+	 * @since 12217
+	 */
+	public static int getJavaUpdate() {
+		String version = System.getProperty("java.version");
+		if (version.startsWith("1.")) {
+			version = version.substring(2);
+		}
+		// Allow these formats:
+		// 1.8.0_72-ea
+		// 9-ea
+		// 9
+		// 9.0.1
+		int undePos = version.indexOf('_');
+		int dashPos = version.indexOf('-');
+		if (undePos > -1) {
+			return Integer.parseInt(version.substring(undePos + 1, dashPos > -1 ? dashPos : version.length()));
+		}
+		int firstDotPos = version.indexOf('.');
+		int lastDotPos = version.lastIndexOf('.');
+		if (firstDotPos == lastDotPos) {
+			return 0;
+		}
+		return firstDotPos > -1 ? Integer.parseInt(version.substring(firstDotPos + 1, lastDotPos > -1 ? lastDotPos : version.length())) : 0;
+	}
+
+	/**
+	 * Returns the Java build number as an int value.
+	 * 
+	 * @return the Java build number as an int value (0, 1, etc.)
+	 * @since 12217
+	 */
+	public static int getJavaBuild() {
+		String version = System.getProperty("java.runtime.version");
+		int bPos = version.indexOf('b');
+		int pPos = version.indexOf('+');
+		try {
+			return Integer.parseInt(version.substring(bPos > -1 ? bPos + 1 : pPos + 1, version.length()));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	/**
+	 * Returns the JRE expiration date.
+	 * 
+	 * @return the JRE expiration date, or null
+	 * @since 12219
+	 */
+	public static Date getJavaExpirationDate() {
+		try {
+			Object value = null;
+			Class<?> c = Class.forName("com.sun.deploy.config.BuiltInProperties");
+			try {
+				value = c.getDeclaredField("JRE_EXPIRATION_DATE").get(null);
+			} catch (NoSuchFieldException e) {
+				// Field is gone with Java 9, there's a method instead
+				e.printStackTrace();
+				value = c.getDeclaredMethod("getProperty", String.class).invoke(null, "JRE_EXPIRATION_DATE");
+			}
+			if (value instanceof String) {
+				return DateFormat.getDateInstance(3, Locale.US).parse((String) value);
+			}
+		} catch (IllegalArgumentException | ReflectiveOperationException | SecurityException | ParseException e) {
+			System.err.println("Cannot find class: com.sun.deploy.config.BuiltInProperties");
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the latest version of Java, from Oracle website.
+	 * 
+	 * @return the latest version of Java, from Oracle website
+	 * @since 12219
+	 */
+	public static String getJavaLatestVersion() {
+		/*try {
+			return HttpClient.create(new URL(
+					Config.getPref().get("java.baseline.version.url", "http://javadl-esd-secure.oracle.com/update/baseline.version")))
+					.connect().fetchContent().split("\n")[0];
+		} catch (IOException e) {
+			Logging.error(e);
+		}*/
+		return null;
+	}
+
+	/**
+	 * Updates a given system property.
+	 * 
+	 * @param key
+	 *            The property key
+	 * @param value
+	 *            The property value
+	 * @return the previous value of the system property, or {@code null} if it did not have one.
+	 * @since 7894
+	 */
+	public static String updateSystemProperty(String key, String value) {
+		if (value != null) {
+			String old = System.setProperty(key, value);
+			/*if (Logging.isDebugEnabled() && !value.equals(old)) {
+			    if (!key.toLowerCase(Locale.ENGLISH).contains("password")) {
+			        Logging.debug("System property '" + key + "' set to '" + value + "'. Old value was '" + old + '\'');
+			    } else {
+			        Logging.debug("System property '" + key + "' changed.");
+			    }
+			}*/
+			return old;
+		}
+		return null;
+	}
+
+	public static String execOutput(List<String> command) throws IOException, ExecutionException, InterruptedException {
+		Process p = new ProcessBuilder(command).start();
+		try (BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+			StringBuilder all = null;
+			String line;
+			while ((line = input.readLine()) != null) {
+				if (all == null) {
+					all = new StringBuilder(line);
+				}
+				else {
+					all.append('\n');
+					all.append(line);
+				}
+			}
+			String msg = all != null ? all.toString() : null;
+			if (p.waitFor() != 0) {
+				throw new ExecutionException(msg, null);
+			}
+			return msg;
+		}
+	}
+
+	/**
+	 * Sets {@code AccessibleObject}(s) accessible.
+	 * 
+	 * @param objects
+	 *            objects
+	 * @see AccessibleObject#setAccessible
+	 * @since 10223
+	 */
+	public static void setObjectsAccessible(final AccessibleObject... objects) {
+		if (objects != null && objects.length > 0) {
+			AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+				for (AccessibleObject o : objects) {
+					o.setAccessible(true);
+				}
+				return null;
+			});
+		}
+	}
+
 }
