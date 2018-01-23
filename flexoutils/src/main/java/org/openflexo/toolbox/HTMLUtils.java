@@ -40,28 +40,10 @@
 package org.openflexo.toolbox;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParsePosition;
-import java.util.regex.Pattern;
-
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML.Tag;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.parser.ParserDelegator;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.filter.ElementFilter;
-import org.jdom2.input.SAXBuilder;
 
 public class HTMLUtils {
-	private static final String START_HTML_TAG = "<html>";
-	private static final String END_HTML_TAG = "</html>";
+	// Unused private static final String START_HTML_TAG = "<html>";
+	// Unused private static final String END_HTML_TAG = "</html>";
 	// Unused private static final String START_HEAD_TAG = "<HEAD>";
 	// Unused private static final String END_HEAD_TAG = "</HEAD>";
 	private static final String START_BODY_TAG = "<BODY>";
@@ -81,54 +63,54 @@ public class HTMLUtils {
 	// Unused private static final String END_LIST_ITEM_TAG = "</LI>";
 
 	// Unused private static final String BREAK = "<BR>";
-	private static final String XHTML_BREAK = "<BR/>";
-	private static final String START_PARAGRAPH_TAG = "<P>";
-	private static final String END_PARAGRAPH_TAG = "</P>";
+	// Unused private static final String XHTML_BREAK = "<BR/>";
+	// Unused private static final String START_PARAGRAPH_TAG = "<P>";
+	// Unused private static final String END_PARAGRAPH_TAG = "</P>";
 
-	private static final String SMALLER = "&lt;";
-	private static final String GREATER = "&gt;";
-	private static final String AMPERSAND = "&amp;";
-	private static final String QUOTE = "&quot;";
-	private static final String a_GRAVE = "&agrave;";
-	private static final String A_GRAVE = "&Agrave;";
-	private static final String a_CIRC = "&acirc;";
-	private static final String A_CIRC = "&Acirc;";
-	private static final String a_UML = "&auml;";
-	private static final String A_UML = "&Auml;";
-	private static final String a_RING = "&aring;";
-	private static final String A_RING = "&Aring;";
-	private static final String ae_LIGATURE = "&aelig;";
-	private static final String AE_LIGATURE = "&AElig;";
-	private static final String c_CEDILLA = "&ccedil;";
-	private static final String C_CEDILLA = "&Ccedil;";
-	private static final String e_ACUTE = "&eacute;";
-	private static final String E_ACUTE = "&Eacute;";
-	private static final String e_GRAVE = "&egrave;";
-	private static final String E_GRAVE = "&Egrave;";
-	private static final String e_CIRC = "&ecirc;";
-	private static final String E_CIRC = "&Ecirc;";
-	private static final String e_UML = "&euml;";
-	private static final String E_UML = "&Euml;";
-	private static final String i_UML = "&iuml;";
-	private static final String I_UML = "&Iuml;";
-	private static final String o_CIRC = "&ocirc;";
-	private static final String O_CIRC = "&Ocirc;";
-	private static final String o_UML = "&ouml;";
-	private static final String O_UML = "&Ouml;";
-	private static final String u_GRAVE = "&ugrave;";
-	private static final String U_GRAVE = "&Ugrave;";
-	private static final String u_CIRC = "&ucirc;";
-	private static final String U_CIRC = "&Ucirc;";
-	private static final String u_UML = "&uuml;";
-	private static final String U_UML = "&Uuml;";
-	private static final String REGISTERED = "&reg;";
-	private static final String COPYRIGHT = "&copy;";
-	private static final String EURO = "&euro;";
+	// Unused private static final String SMALLER = "&lt;";
+	// Unused private static final String GREATER = "&gt;";
+	// Unused private static final String AMPERSAND = "&amp;";
+	// Unused private static final String QUOTE = "&quot;";
+	// Unused private static final String a_GRAVE = "&agrave;";
+	// Unused private static final String A_GRAVE = "&Agrave;";
+	// Unused private static final String a_CIRC = "&acirc;";
+	// Unused private static final String A_CIRC = "&Acirc;";
+	// Unused private static final String a_UML = "&auml;";
+	// Unused private static final String A_UML = "&Auml;";
+	// Unused private static final String a_RING = "&aring;";
+	// Unused private static final String A_RING = "&Aring;";
+	// Unused private static final String ae_LIGATURE = "&aelig;";
+	// Unused private static final String AE_LIGATURE = "&AElig;";
+	// Unused private static final String c_CEDILLA = "&ccedil;";
+	// Unused private static final String C_CEDILLA = "&Ccedil;";
+	// Unused private static final String e_ACUTE = "&eacute;";
+	// Unused private static final String E_ACUTE = "&Eacute;";
+	// Unused private static final String e_GRAVE = "&egrave;";
+	// Unused private static final String E_GRAVE = "&Egrave;";
+	// Unused private static final String e_CIRC = "&ecirc;";
+	// Unused private static final String E_CIRC = "&Ecirc;";
+	// Unused private static final String e_UML = "&euml;";
+	// Unused private static final String E_UML = "&Euml;";
+	// Unused private static final String i_UML = "&iuml;";
+	// Unused private static final String I_UML = "&Iuml;";
+	// Unused private static final String o_CIRC = "&ocirc;";
+	// Unused private static final String O_CIRC = "&Ocirc;";
+	// Unused private static final String o_UML = "&ouml;";
+	// Unused private static final String O_UML = "&Ouml;";
+	// Unused private static final String u_GRAVE = "&ugrave;";
+	// Unused private static final String U_GRAVE = "&Ugrave;";
+	// Unused private static final String u_CIRC = "&ucirc;";
+	// Unused private static final String U_CIRC = "&Ucirc;";
+	// Unused private static final String u_UML = "&uuml;";
+	// Unused private static final String U_UML = "&Uuml;";
+	// Unused private static final String REGISTERED = "&reg;";
+	// Unused private static final String COPYRIGHT = "&copy;";
+	// Unused private static final String EURO = "&euro;";
 	// Unused private static final String NON_BREAKING_SPACE = "&nbsp;";
 	// Unused private static final String FOOTNOTE_TAG = "footnote";
 
-	private static final String EMPTY_PARAGRAPH_REGEXP = "\\s*" + START_PARAGRAPH_TAG + "\\s*" + END_PARAGRAPH_TAG + "\\s*";
-	private static final Pattern EMPTY_PARAGRAPH_PATTERN = Pattern.compile(EMPTY_PARAGRAPH_REGEXP, Pattern.CASE_INSENSITIVE);
+	// Unused private static final String EMPTY_PARAGRAPH_REGEXP = "\\s*" + START_PARAGRAPH_TAG + "\\s*" + END_PARAGRAPH_TAG + "\\s*";
+	// Unused private static final Pattern EMPTY_PARAGRAPH_PATTERN = Pattern.compile(EMPTY_PARAGRAPH_REGEXP, Pattern.CASE_INSENSITIVE);
 
 	/* Unused
 	private static String extractImageHeight(String img) {
@@ -227,162 +209,163 @@ public class HTMLUtils {
 		return html.substring(startBodyIndex, endBodyIndex);
 	}
 
-	public static String escapeStringForHTML(String s, boolean removeNewLine) {
-		if (s == null) {
-			return null;
-		}
-		StringBuffer sb = new StringBuffer();
-		int n = s.length();
-		for (int i = 0; i < n; i++) {
-			char c = s.charAt(i);
-			switch (c) {
-				case '<':
-					sb.append(SMALLER);
-					break;
-				case '>':
-					sb.append(GREATER);
-					break;
-				case '&':
-					sb.append(AMPERSAND);
-					break;
-				case '"':
-					sb.append(QUOTE);
-					break;
-				case '\'':
-					sb.append("&#146;");
-					break;
-				case '\n':
-					if (!removeNewLine) {
-						sb.append(XHTML_BREAK);
-					}
-					else {
-						sb.append(' ');
-					}
-					break;
-				case '\r':
-					break;
-				case 'à':
-					sb.append(a_GRAVE);
-					break;
-				case 'À':
-					sb.append(A_GRAVE);
-					break;
-				case 'â':
-					sb.append(a_CIRC);
-					break;
-				case 'Â':
-					sb.append(A_CIRC);
-					break;
-				case 'ä':
-					sb.append(a_UML);
-					break;
-				case 'Ä':
-					sb.append(A_UML);
-					break;
-				case 'å':
-					sb.append(a_RING);
-					break;
-				case 'Å':
-					sb.append(A_RING);
-					break;
-				case 'æ':
-					sb.append(ae_LIGATURE);
-					break;
-				case 'Æ':
-					sb.append(AE_LIGATURE);
-					break;
-				case 'ç':
-					sb.append(c_CEDILLA);
-					break;
-				case 'Ç':
-					sb.append(C_CEDILLA);
-					break;
-				case 'é':
-					sb.append(e_ACUTE);
-					break;
-				case 'É':
-					sb.append(E_ACUTE);
-					break;
-				case 'è':
-					sb.append(e_GRAVE);
-					break;
-				case 'È':
-					sb.append(E_GRAVE);
-					break;
-				case 'ê':
-					sb.append(e_CIRC);
-					break;
-				case 'Ê':
-					sb.append(E_CIRC);
-					break;
-				case 'ë':
-					sb.append(e_UML);
-					break;
-				case 'Ë':
-					sb.append(E_UML);
-					break;
-				case 'ï':
-					sb.append(i_UML);
-					break;
-				case 'Ï':
-					sb.append(I_UML);
-					break;
-				case 'ô':
-					sb.append(o_CIRC);
-					break;
-				case 'Ô':
-					sb.append(O_CIRC);
-					break;
-				case 'ö':
-					sb.append(o_UML);
-					break;
-				case 'Ö':
-					sb.append(O_UML);
-					break;
-				case 'ø':
-					sb.append("&oslash;");
-					break;
-				case 'Ø':
-					sb.append("&Oslash;");
-					break;
-				case 'ß':
-					sb.append("&szlig;");
-					break;
-				case 'ù':
-					sb.append(u_GRAVE);
-					break;
-				case 'Ù':
-					sb.append(U_GRAVE);
-					break;
-				case 'û':
-					sb.append(u_CIRC);
-					break;
-				case 'Û':
-					sb.append(U_CIRC);
-					break;
-				case 'ü':
-					sb.append(u_UML);
-					break;
-				case 'Ü':
-					sb.append(U_UML);
-					break;
-				case '®':
-					sb.append(REGISTERED);
-					break;
-				case '©':
-					sb.append(COPYRIGHT);
-					break;
-				case '€':
-					sb.append(EURO);
-					break;
-				default:
-					sb.append(c);
-					break;
+	/* Unused
+		public static String escapeStringForHTML(String s, boolean removeNewLine) {
+			if (s == null) {
+				return null;
 			}
+			StringBuffer sb = new StringBuffer();
+			int n = s.length();
+			for (int i = 0; i < n; i++) {
+				char c = s.charAt(i);
+				switch (c) {
+					case '<':
+						sb.append(SMALLER);
+						break;
+					case '>':
+						sb.append(GREATER);
+						break;
+					case '&':
+						sb.append(AMPERSAND);
+						break;
+					case '"':
+						sb.append(QUOTE);
+						break;
+					case '\'':
+						sb.append("&#146;");
+						break;
+					case '\n':
+						if (!removeNewLine) {
+							sb.append(XHTML_BREAK);
+						}
+						else {
+							sb.append(' ');
+						}
+						break;
+					case '\r':
+						break;
+					case 'à':
+						sb.append(a_GRAVE);
+						break;
+					case 'À':
+						sb.append(A_GRAVE);
+						break;
+					case 'â':
+						sb.append(a_CIRC);
+						break;
+					case 'Â':
+						sb.append(A_CIRC);
+						break;
+					case 'ä':
+						sb.append(a_UML);
+						break;
+					case 'Ä':
+						sb.append(A_UML);
+						break;
+					case 'å':
+						sb.append(a_RING);
+						break;
+					case 'Å':
+						sb.append(A_RING);
+						break;
+					case 'æ':
+						sb.append(ae_LIGATURE);
+						break;
+					case 'Æ':
+						sb.append(AE_LIGATURE);
+						break;
+					case 'ç':
+						sb.append(c_CEDILLA);
+						break;
+					case 'Ç':
+						sb.append(C_CEDILLA);
+						break;
+					case 'é':
+						sb.append(e_ACUTE);
+						break;
+					case 'É':
+						sb.append(E_ACUTE);
+						break;
+					case 'è':
+						sb.append(e_GRAVE);
+						break;
+					case 'È':
+						sb.append(E_GRAVE);
+						break;
+					case 'ê':
+						sb.append(e_CIRC);
+						break;
+					case 'Ê':
+						sb.append(E_CIRC);
+						break;
+					case 'ë':
+						sb.append(e_UML);
+						break;
+					case 'Ë':
+						sb.append(E_UML);
+						break;
+					case 'ï':
+						sb.append(i_UML);
+						break;
+					case 'Ï':
+						sb.append(I_UML);
+						break;
+					case 'ô':
+						sb.append(o_CIRC);
+						break;
+					case 'Ô':
+						sb.append(O_CIRC);
+						break;
+					case 'ö':
+						sb.append(o_UML);
+						break;
+					case 'Ö':
+						sb.append(O_UML);
+						break;
+					case 'ø':
+						sb.append("&oslash;");
+						break;
+					case 'Ø':
+						sb.append("&Oslash;");
+						break;
+					case 'ß':
+						sb.append("&szlig;");
+						break;
+					case 'ù':
+						sb.append(u_GRAVE);
+						break;
+					case 'Ù':
+						sb.append(U_GRAVE);
+						break;
+					case 'û':
+						sb.append(u_CIRC);
+						break;
+					case 'Û':
+						sb.append(U_CIRC);
+						break;
+					case 'ü':
+						sb.append(u_UML);
+						break;
+					case 'Ü':
+						sb.append(U_UML);
+						break;
+					case '®':
+						sb.append(REGISTERED);
+						break;
+					case '©':
+						sb.append(COPYRIGHT);
+						break;
+					case '€':
+						sb.append(EURO);
+						break;
+					default:
+						sb.append(c);
+						break;
+				}
+			}
+			return sb.toString();
 		}
-		return sb.toString();
-	}
-
+	*/
 	/**
 	 * Return a new string containing plain text defined in supplied HTML text. All HTML tags will be removed, but contents of them are kept
 	 * in the returned string
@@ -425,18 +408,12 @@ public class HTMLUtils {
 		return sb.toString();
 	}
 
+	/* Unused
 	public static boolean isEmtpyParagraph(String html) {
 		return html != null && EMPTY_PARAGRAPH_PATTERN.matcher(html).matches();
 	}
-
-	public static void main(String[] args) {
-		System.err.println(toHexString(Color.WHITE));
-		System.err.println(toHexString(Color.BLACK));
-		System.err.println(toHexString(new Color(1, 2, 3)));
-	}
-
+	*/
 	public enum HTMLColors {
-
 		indianred("#cd5c5c"),
 		lightcoral("#f08080"),
 		salmon("#fa8072"),
@@ -588,12 +565,18 @@ public class HTMLUtils {
 		public String getHexValue() {
 			return hexValue;
 		}
-
-		public Color getColor() {
-			return extractColorFromHexValue(getHexValue().substring(1));
-		}
+		/*
+				public Color getColor() {
+					return extractColorFromHexValue(getHexValue().substring(1));
+				}*/
 	}
 
+	public static String toHexString(Color color) {
+		return String.format("%1$02X%2$02X%3$02X", color.getRed(), color.getGreen(), color.getBlue());
+	}
+
+	/* Unused
+	
 	public static Color extractColorFromString(String color) {
 		color = color.trim();
 		try {
@@ -632,7 +615,7 @@ public class HTMLUtils {
 		System.err.println("String color '" + color + "' is not a valid string color");
 		return null;
 	}
-
+	
 	private static Color extractColorFromHexValue(String color) {
 		if (color.length() == 3) {
 			color = String.valueOf(color.charAt(0)) + color.charAt(0) + color.charAt(1) + color.charAt(1) + color.charAt(2)
@@ -644,11 +627,9 @@ public class HTMLUtils {
 		}
 		return null;
 	}
-
-	public static String toHexString(Color color) {
-		return String.format("%1$02X%2$02X%3$02X", color.getRed(), color.getGreen(), color.getBlue());
-	}
-
+	
+	
+	
 	public static String extractSourceFromEmbeddedTag(String htmlCode) {
 		if (htmlCode == null || htmlCode.length() < 7) {
 			return null;
@@ -724,27 +705,27 @@ public class HTMLUtils {
 		}
 		return null;
 	}
-
+	
 	public static Integer getFontSizeInPoints(String fontSizeWithUnit) {
 		fontSizeWithUnit = fontSizeWithUnit.trim();
-
+	
 		DecimalFormat formatter = new DecimalFormat();
 		DecimalFormatSymbols formatterSymbol = new DecimalFormatSymbols();
 		formatterSymbol.setDecimalSeparator('.');
 		formatter.setDecimalFormatSymbols(formatterSymbol);
-
+	
 		ParsePosition position = new ParsePosition(0);
 		Number size = formatter.parse(fontSizeWithUnit, position);
-
+	
 		if (size == null) {
 			return null;
 		}
-
+	
 		String unit = "px";
 		if (position.getIndex() < fontSizeWithUnit.length()) {
 			unit = fontSizeWithUnit.substring(position.getIndex()).trim().toLowerCase();
 		}
-
+	
 		if ("px".equals(unit)) {
 			return new Double(size.doubleValue() * (92 / 72)).intValue(); // Round to transform px to points, 92 dpi usually, 1 inch = 72
 		}
@@ -752,12 +733,12 @@ public class HTMLUtils {
 		if ("pt".equals(unit)) {
 			return new Double(size.doubleValue()).intValue();
 		}
-
+	
 		// Don't handle % or em
-
+	
 		return null;
 	}
-
+	
 	public static Integer getFontSizeInPointsFromFontValue(String fontSizeString) {
 		fontSizeString = fontSizeString.trim();
 		try {
@@ -766,10 +747,10 @@ public class HTMLUtils {
 		} catch (NumberFormatException e) {
 			// Ok not a number, lets return null
 		}
-
+	
 		return null;
 	}
-
+	
 	public static Integer getFontSizeInPointsFromFontValue(int fontSize) {
 		switch (fontSize) {
 			case 1:
@@ -790,32 +771,32 @@ public class HTMLUtils {
 				return 36 + fontSize;
 		}
 	}
-
 	public static int getFontValueFromFontSizeInPoints(int fontSizeInPoints) {
 		if (fontSizeInPoints <= 8) {
 			return 1;
 		}
-
+	
 		if (fontSizeInPoints <= 11) {
 			return 2;
 		}
-
+	
 		if (fontSizeInPoints <= 13) {
 			return 3;
 		}
-
+	
 		if (fontSizeInPoints <= 16) {
 			return 4;
 		}
-
+	
 		if (fontSizeInPoints <= 21) {
 			return 5;
 		}
-
+	
 		if (fontSizeInPoints <= 30) {
 			return 6;
 		}
-
+	
 		return 7;
 	}
+	*/
 }
