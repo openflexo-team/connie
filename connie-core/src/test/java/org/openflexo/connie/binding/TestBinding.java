@@ -72,7 +72,7 @@ public class TestBinding extends TestCase {
 		public static int anInt = 7;
 		public static List<String> aList = new ArrayList<>();
 		public static String aUTF8string = "Á à é ð";
-		public static Float unMontant = new Float(18.0);
+		public static Float unMontant = Float.valueOf((float) 18.0);
 
 		static {
 			aList.add("this");
@@ -422,7 +422,7 @@ public class TestBinding extends TestCase {
 
 	public void testUTF8_2() {
 		System.out.println("*********** test UTF-8 2");
-		TestBindingContext.unMontant = new Float(120.0);
+		TestBindingContext.unMontant = Float.valueOf((float) 120.0);
 		genericTest("des€ > 12.0", Boolean.TYPE, true);
 	}
 
