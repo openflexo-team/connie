@@ -16,3 +16,5 @@ target/
 build/
 *.iml
 **/out/
+/bugs.txt
+/infer-out/
