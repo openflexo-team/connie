@@ -153,7 +153,7 @@ public class FileSystemMetaDataManager {
 			}
 
 			String currentValue = getProperty(key, f);
-			if ((value == null && currentValue != null) || (value != null && !value.equals(currentValue))) {
+			if (!value.equals(currentValue)) {
 				if (f.equals(directory)) {
 					setProperty(key, value);
 				}
