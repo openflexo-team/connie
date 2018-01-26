@@ -120,37 +120,22 @@ public class FileUtils {
 
 	public static byte[] getBytes(File f) {
 		byte[] b = new byte[(int) f.length()];
-		FileInputStream fis;
-		try {
-			fis = new FileInputStream(f);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-		try {
+		try (FileInputStream fis = new FileInputStream(f)) {
 			fis.read(b);
 			return b;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				fis.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 		return null;
 	}
 
 	public static byte[] getBytes(File f, int nBytes) throws IOException {
 		byte[] b = new byte[nBytes];
-		FileInputStream fis;
-		fis = new FileInputStream(f);
-		try {
+		try (FileInputStream fis = new FileInputStream(f)) {
 			fis.read(b);
 			return b;
-		} finally {
-			fis.close();
 		}
 	}
 

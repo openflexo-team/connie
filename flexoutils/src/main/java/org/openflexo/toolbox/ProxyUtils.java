@@ -148,20 +148,19 @@ public class ProxyUtils {
 				if (autoDetectNetworkSettings) {
 					// OK let's go for WPAD
 					autoConfigURL = WPADURL();
-				}*/
-				if (autoConfigURL == null) {
-					String autoConfig = WinRegistryAccess.getRegistryValue(WIN_REG_PROXY_PATH, WIN_REG_AUTO_CONFIG_URL,
-							WinRegistryAccess.REG_SZ_TOKEN);
-					if (autoConfig != null) {
-						try {
-							return new URL(autoConfig);
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
-							return null;
-						}
+				}
+				if (autoConfigURL == null) {*/
+				String autoConfig = WinRegistryAccess.getRegistryValue(WIN_REG_PROXY_PATH, WIN_REG_AUTO_CONFIG_URL,
+						WinRegistryAccess.REG_SZ_TOKEN);
+				if (autoConfig != null) {
+					try {
+						return new URL(autoConfig);
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+						return null;
 					}
 				}
-
+				// }
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
