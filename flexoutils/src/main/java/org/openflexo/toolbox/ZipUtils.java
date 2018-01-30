@@ -125,22 +125,15 @@ public class ZipUtils {
 				}
 			}
 			FileUtils.createNewFile(outputFile);
-			InputStream zipStream = null;
-			FileOutputStream fos = null;
-			try {
-				zipStream = zipFile.getInputStream(entry);
+			try (InputStream zipStream = zipFile.getInputStream(entry); FileOutputStream fos = new FileOutputStream(outputFile)) {
 				if (zipStream == null) {
 					System.err.println("Could not find input stream for entry: " + entry.getName());
 					continue;
 				}
-				fos = new FileOutputStream(outputFile);
 				copyInputStream(zipStream, new BufferedOutputStream(fos));
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.err.println("Could not extract: " + outputFile.getAbsolutePath() + " maybe some files contains invalid characters.");
-			} finally {
-				IOUtils.closeQuietly(zipStream);
-				IOUtils.closeQuietly(fos);
 			}
 		}
 		Collection<File> listFiles = org.apache.commons.io.FileUtils.listFiles(outputDir, null, true);
@@ -213,7 +206,8 @@ public class ZipUtils {
 					progress.resetSecondaryProgress(FileUtils.countFilesInDirectory(fileToZip, true) + 1);
 				}
 				zipDir(fileToZip.getParentFile().getAbsolutePath().length() + 1, fileToZip, zos, progress, filter);
-			} else {
+			}
+			else {
 				zipFile(fileToZip, zos, progress);
 			}
 		} finally {
@@ -289,7 +283,8 @@ public class ZipUtils {
 			if (filter == null || f != null && filter.accept(f)) {
 				if (f.isDirectory()) {
 					zipDir(pathPrefixSize, f, zos, progress, filter);
-				} else {
+				}
+				else {
 					zipFile(pathPrefixSize, f, zos, progress);
 				}
 			}
