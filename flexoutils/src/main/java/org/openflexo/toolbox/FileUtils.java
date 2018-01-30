@@ -356,17 +356,16 @@ public class FileUtils {
 	}
 
 	public static File copyFileToDir(File src, File dest) throws IOException {
-		return copyFileToDir(new FileInputStream(src), src.getName(), dest);
+		try (FileInputStream fis = new FileInputStream(src)) {
+			return copyFileToDir(fis, src.getName(), dest);
+		}
 	}
 
 	public static void saveToFile(File dest, byte[] b) throws IOException {
 		createNewFile(dest);
-		FileOutputStream fos = new FileOutputStream(dest);
-		try {
+		try (FileOutputStream fos = new FileOutputStream(dest)) {
 			fos.write(b);
 			fos.flush();
-		} finally {
-			fos.close();
 		}
 	}
 
@@ -447,11 +446,8 @@ public class FileUtils {
 	}
 
 	public static String fileContents(File aFile, String encoding) throws IOException {
-		FileInputStream fis = new FileInputStream(aFile);
-		try {
+		try (FileInputStream fis = new FileInputStream(aFile)) {
 			return fileContents(fis, encoding);
-		} finally {
-			fis.close();
 		}
 	}
 
