@@ -244,7 +244,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 				Expression transformedExpression = currentExpression.transform(transformer);
 				if (!transformedExpression.equals(currentExpression)) {
 					hasBeenTransformed = true;
-					DataBinding<?> newTransformedBinding = new DataBinding<Object>(argValue.getOwner(), argValue.getDeclaredType(),
+					DataBinding<?> newTransformedBinding = new DataBinding<>(argValue.getOwner(), argValue.getDeclaredType(),
 							argValue.getBindingDefinitionType(), false);
 					newTransformedBinding.setExpression(transformedExpression);
 					// TODO: better to do i think
