@@ -1053,8 +1053,9 @@ public class ToolBox {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		int httpStatus = conn.getResponseCode();
 		if (httpStatus > 199 && httpStatus < 300) {
-			InputStream is = conn.getInputStream();
-			return getContentFromInputStream(is);
+			try (InputStream is = conn.getInputStream()) {
+				return getContentFromInputStream(is);
+			}
 		}
 		else if (httpStatus > 299 && httpStatus < 400) {
 			return getContentAtHTTPURL(new URL(conn.getHeaderField("Location")));
