@@ -129,14 +129,14 @@ public class HTTPFileUtils {
 			  connection.setRequestProperty ("Authorization", basicAuth);*/
 
 			InputStream response = connection.getInputStream();
-			BufferedReader bufReader = new BufferedReader(new InputStreamReader(response));
-			String sLine;
+			try (BufferedReader bufReader = new BufferedReader(new InputStreamReader(response))) {
+				String sLine;
 
-			while ((sLine = bufReader.readLine()) != null) {
-				sb.append(sLine);
-				sb.append(lineSepatator);
+				while ((sLine = bufReader.readLine()) != null) {
+					sb.append(sLine);
+					sb.append(lineSepatator);
+				}
 			}
-
 			connection.disconnect();
 		} catch (ConnectException ctx) {
 			ctx.printStackTrace();
