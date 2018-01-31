@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.AccessibleObject;
 import java.net.HttpURLConnection;
@@ -81,10 +80,6 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
-
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 
 /**
  * @author bmangez
@@ -784,11 +779,12 @@ public class ToolBox {
 		return sb.toString();
 	}
 
-	public static Document parseXMLData(StringReader xmlStream) throws IOException, JDOMException {
-		SAXBuilder parser = new SAXBuilder();
-		return parser.build(xmlStream);
-	}
-
+	/*
+		public static Document parseXMLData(StringReader xmlStream) throws IOException, JDOMException {
+			SAXBuilder parser = new SAXBuilder();
+			return parser.build(xmlStream);
+		}
+	*/
 	private static Boolean fileChooserRequiresFix;
 
 	public static boolean fileChooserRequiresFix() {
