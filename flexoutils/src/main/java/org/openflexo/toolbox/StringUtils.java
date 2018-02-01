@@ -41,31 +41,24 @@ package org.openflexo.toolbox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URL;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class StringUtils {
 
 	private static final char[] DEFAULT_STRIP = { '\u200B', '\uFEFF' };
 
-	public static String getString(InputStream is, String encoding) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding));
-		StringWriter sw = new StringWriter();
-		String line = null;
-		while ((line = br.readLine()) != null) {
-			sw.write(line);
-			sw.write(LINE_SEPARATOR);
+	/*
+		public static String getString(InputStream is, String encoding) throws IOException {
+			BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding));
+			StringWriter sw = new StringWriter();
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				sw.write(line);
+				sw.write(LINE_SEPARATOR);
+			}
+			return sw.toString();
 		}
-		return sw.toString();
-	}
-
+	
 	public static String reverse(String s) {
 		if (s == null) {
 			return s;
@@ -76,7 +69,7 @@ public class StringUtils {
 		}
 		return sb.toString();
 	}
-
+	
 	public static String circularOffset(String s, int offset) {
 		if (offset == 0) {
 			return s;
@@ -94,6 +87,7 @@ public class StringUtils {
 		}
 		return sb.toString();
 	}
+	*/
 
 	public static String convertAccents(String s) {
 		StringBuilder sb = new StringBuilder();
@@ -191,10 +185,11 @@ public class StringUtils {
 		return sb.toString();
 	}
 
+	/*
 	public static String replaceNonMatchingPatterns(String string, String regexp, String replacement) {
 		return replaceNonMatchingPatterns(string, regexp, replacement, false);
 	}
-
+	
 	public static String replaceNonMatchingPatterns(String string, String regexp, String replacement, boolean replaceEachCharacter) {
 		if (string == null || string.length() == 0) {
 			return string;
@@ -224,7 +219,7 @@ public class StringUtils {
 		}
 		return sb.toString();
 	}
-
+	
 	public static Hashtable<String, String> getQueryFromURL(URL url) {
 		if (url == null || url.getQuery() == null) {
 			return new Hashtable<>();
@@ -246,6 +241,7 @@ public class StringUtils {
 		}
 		return returned;
 	}
+	*/
 
 	public static int countMatches(String str, String sub) {
 		if (isEmpty(str) || isEmpty(sub)) {
@@ -264,9 +260,7 @@ public class StringUtils {
 		if (str1 == null) {
 			return str2 == null;
 		}
-		else {
-			return str1.equals(str2);
-		}
+		return str1.equals(str2);
 	}
 
 	public static boolean isEmpty(String str) {
@@ -282,42 +276,45 @@ public class StringUtils {
 	 */
 	public static int linesNb(String aString) {
 		int returned = 0;
-		BufferedReader rdr = new BufferedReader(new StringReader(aString));
-		for (;;) {
-			String line = null;
-			try {
-				line = rdr.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
+		try (BufferedReader rdr = new BufferedReader(new StringReader(aString))) {
+			for (;;) {
+				String line = null;
+				try {
+					line = rdr.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				if (line == null) {
+					break;
+				}
+				returned++;
 			}
-			if (line == null) {
-				break;
-			}
-			returned++;
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return returned;
 	}
 
 	public static final String LINE_SEPARATOR = "\n";/*System.getProperty("line.separator");*/
-
-	public static String extractStringFromLine(String aString, int lineNb) {
-		StringBuilder sb = new StringBuilder();
-		int n = 0;
-		for (int i = 0; i < aString.length(); i++) {
-			char c = aString.charAt(i);
-			if (n >= lineNb) {
-				sb.append(c);
+	/*
+		public static String extractStringFromLine(String aString, int lineNb) {
+			StringBuilder sb = new StringBuilder();
+			int n = 0;
+			for (int i = 0; i < aString.length(); i++) {
+				char c = aString.charAt(i);
+				if (n >= lineNb) {
+					sb.append(c);
+				}
+				if (c == '\n') {
+					n++;
+				}
+				if (c == '\r' && i + 1 < aString.length() && aString.charAt(i + 1) != '\n') {
+					n++;
+				}
 			}
-			if (c == '\n') {
-				n++;
-			}
-			if (c == '\r' && i + 1 < aString.length() && aString.charAt(i + 1) != '\n') {
-				n++;
-			}
+			return sb.toString();
 		}
-		return sb.toString();
-	}
-
+	
 	public static String extractStringFromLineOld(String aString, int lineNb) {
 		StringBuffer returned = new StringBuffer();
 		int n = 0;
@@ -339,17 +336,7 @@ public class StringUtils {
 		}
 		return returned.toString();
 	}
-
-	public static void main(String[] args) {
-		String s = "12345";
-		System.err.println(reverse(s));
-		System.err.println(circularOffset(s, 2));
-		System.err.println(circularOffset(circularOffset(s, -9), 9));
-		String s1 = "12";
-		System.err.println(circularOffset(circularOffset(s1, -2), 2));
-		System.err.println(circularOffset(circularOffset("", -2), 2));
-		System.err.println(circularOffset(circularOffset("1", -2), 2));
-	}
+	*/
 
 	public static String extractStringAtLine(String aString, int lineNb) {
 		int n = 0;
@@ -372,17 +359,18 @@ public class StringUtils {
 		return null;
 	}
 
-	public static String extractWhiteSpace(String aString) {
-		if (aString == null) {
-			return null;
+	/*
+		public static String extractWhiteSpace(String aString) {
+			if (aString == null) {
+				return null;
+			}
+			int index = 0;
+			while (index < aString.length() && aString.charAt(index) < ' ') {
+				index++;
+			}
+			return aString.substring(0, index);
 		}
-		int index = 0;
-		while (index < aString.length() && aString.charAt(index) < ' ') {
-			index++;
-		}
-		return aString.substring(0, index);
-	}
-
+	*/
 	public static String buildString(char c, int length) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < length; i++) {
@@ -395,46 +383,48 @@ public class StringUtils {
 		return buildString(' ', length);
 	}
 
-	public static int indexOfEscapingJava(char searchedChar, String someJavaCode) {
-		int parentLevel = 0; /* () */
-		int bracketLevel = 0; /* [] */
-		int curlyLevel = 0; /* {} */
-
-		int index = 0;
-
-		while (index < someJavaCode.length()) {
-			char current = someJavaCode.charAt(index);
-			if (current == '(') {
-				parentLevel++;
-			}
-			if (current == ')') {
-				parentLevel--;
-			}
-			if (current == '[') {
-				bracketLevel++;
-			}
-			if (current == ']') {
-				bracketLevel--;
-			}
-			if (current == '{') {
-				curlyLevel++;
-			}
-			if (current == '}') {
-				curlyLevel--;
-			}
-			if (parentLevel == 0 && bracketLevel == 0 && curlyLevel == 0 && current == searchedChar) {
-				return index;
-			}
-			index++;
+	/*
+		public static int indexOfEscapingJava(char searchedChar, String someJavaCode) {
+			int parentLevel = 0; // ()
+	int bracketLevel = 0; // [] 
+	int curlyLevel = 0; // {} 
+	
+	int index = 0;
+	
+	while(index<someJavaCode.length())
+	{
+		char current = someJavaCode.charAt(index);
+		if (current == '(') {
+			parentLevel++;
 		}
-
-		return -1;
+		if (current == ')') {
+			parentLevel--;
+		}
+		if (current == '[') {
+			bracketLevel++;
+		}
+		if (current == ']') {
+			bracketLevel--;
+		}
+		if (current == '{') {
+			curlyLevel++;
+		}
+		if (current == '}') {
+			curlyLevel--;
+		}
+		if (parentLevel == 0 && bracketLevel == 0 && curlyLevel == 0 && current == searchedChar) {
+			return index;
+		}
+		index++;
 	}
-
+	
+	return-1;
+	}
+	
 	public static String replaceBreakLinesBy(String value, String replacement) {
 		return value.replaceAll("(\r\n|\r|\n|\n\r)", replacement);
 	}
-
+	*/
 	/**
 	 * Returns the specified string into "camel case" : each word are appended without white-spaces, but with a capital letter.<br>
 	 * Note that, except for the first word, if the whole word is uppercase, it will be converted into lowercase.
@@ -502,7 +492,7 @@ public class StringUtils {
 	 *            the string to transform.
 	 * @return the same string with the first char upper case.
 	 */
-	public static String firstUpper(String value) {
+	private static String firstUpper(String value) {
 		if (value == null) {
 			return null;
 		}
@@ -553,6 +543,7 @@ public class StringUtils {
 	 * @param minimumMatchingChars
 	 * @return
 	 */
+	/*
 	public static <E extends Enum<?>> E getBestEnumValue(String valueAsString, Class<? extends E> enumType, int minimumMatchingChars) {
 		if (StringUtils.isEmpty(valueAsString)) {
 			return null;
@@ -570,7 +561,7 @@ public class StringUtils {
 		}
 		return bestValue;
 	}
-
+	*/
 	/**
 	 * A quick and dirty method used to lookup a string in an other one<br>
 	 * Return number of matchings chars, asserting that first char lookup wil be the optimum (this is generally not the case)
@@ -579,6 +570,8 @@ public class StringUtils {
 	 * @param s2
 	 * @return
 	 */
+
+	/*
 	public static int matchingChars(String s1, String s2) {
 		if (s1.length() > s2.length()) {
 			return matchingChars(s2, s1);
@@ -600,7 +593,7 @@ public class StringUtils {
 		}
 		return 0;
 	}
-
+	*/
 	/**
 	 * Returns true if the name have one of the given extensions. It supports multiple extensions ('.foo.bar').
 	 * 
@@ -610,12 +603,14 @@ public class StringUtils {
 	 *            the possible extensions in <b>lower case</b>.
 	 * @return true if one extension is found, false otherwise.
 	 */
+
+	/*
 	public static boolean hasExtension(String name, String... possibleExtensions) {
 		name = name.toLowerCase();
-
+	
 		int dotIndex = name.indexOf('.');
 		while (dotIndex >= 0) {
-
+	
 			String extension = name.substring(dotIndex);
 			for (String possibleExtension : possibleExtensions) {
 				if (possibleExtension.equals(extension))
@@ -625,7 +620,7 @@ public class StringUtils {
 		}
 		return false;
 	}
-
+	*/
 	/**
 	 * Computes levebshtein distance between 2 strings<br>
 	 * Original code from https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance<br>
@@ -704,13 +699,14 @@ public class StringUtils {
 	 *         {@link Character#isSpaceChar(char)} and skipChars.
 	 * @since 8435
 	 */
+	/*
 	public static String strip(final String str, final String skipChars) {
 		if (str == null || str.isEmpty()) {
 			return str;
 		}
 		return strip(str, stripChars(skipChars));
 	}
-
+	*/
 	private static String strip(final String str, final char... skipChars) {
 
 		int start = 0;
@@ -737,18 +733,19 @@ public class StringUtils {
 		return Character.isWhitespace(c) || Character.isSpaceChar(c) || stripChar(skipChars, c);
 	}
 
-	private static char[] stripChars(final String skipChars) {
-		if (skipChars == null || skipChars.isEmpty()) {
-			return DEFAULT_STRIP;
+	/*
+		private static char[] stripChars(final String skipChars) {
+			if (skipChars == null || skipChars.isEmpty()) {
+				return DEFAULT_STRIP;
+			}
+	
+			char[] chars = new char[DEFAULT_STRIP.length + skipChars.length()];
+			System.arraycopy(DEFAULT_STRIP, 0, chars, 0, DEFAULT_STRIP.length);
+			skipChars.getChars(0, skipChars.length(), chars, DEFAULT_STRIP.length);
+	
+			return chars;
 		}
-
-		char[] chars = new char[DEFAULT_STRIP.length + skipChars.length()];
-		System.arraycopy(DEFAULT_STRIP, 0, chars, 0, DEFAULT_STRIP.length);
-		skipChars.getChars(0, skipChars.length(), chars, DEFAULT_STRIP.length);
-
-		return chars;
-	}
-
+	*/
 	private static boolean stripChar(final char[] strip, char c) {
 		for (char s : strip) {
 			if (c == s) {
