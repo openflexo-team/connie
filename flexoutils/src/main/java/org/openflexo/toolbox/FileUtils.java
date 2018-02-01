@@ -760,7 +760,7 @@ public class FileUtils {
 	 */
 
 	public static void makeFileHidden(File f) {
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			try {
 				Runtime.getRuntime().exec("attrib +H \"" + f.getAbsolutePath() + "\"");
 			} catch (IOException e) {
@@ -776,7 +776,7 @@ public class FileUtils {
 	 */
 
 	public static void unmakeFileHidden(File f) {
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			try {
 				Runtime.getRuntime().exec("attrib -H \"" + f.getAbsolutePath() + "\"");
 			} catch (IOException e) {
@@ -791,7 +791,7 @@ public class FileUtils {
 	 * @param f
 	 */
 	public static void makeFileSystem(File f) {
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			try {
 				Runtime.getRuntime().exec("attrib +S \"" + f.getAbsolutePath() + "\"");
 			} catch (IOException e) {
@@ -806,7 +806,7 @@ public class FileUtils {
 	 * @param f
 	 */
 	public static void unmakeFileSystem(File f) {
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			try {
 				Runtime.getRuntime().exec("attrib -S \"" + f.getAbsolutePath() + "\"");
 			} catch (IOException e) {
@@ -1140,7 +1140,7 @@ public class FileUtils {
 
 	public static File getApplicationDataDirectory() {
 		File dir = new File(System.getProperty("user.home"), ".openflexo");
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			String appData = System.getenv("APPDATA");
 			if (appData != null) {
 				File f = new File(appData);
@@ -1149,7 +1149,7 @@ public class FileUtils {
 				}
 			}
 		}
-		else if (ToolBox.getPLATFORM() == ToolBox.MACOS) {
+		else if (ToolBox.isMacOS()) {
 			dir = new File(new File(System.getProperty("user.home")), "Library/OpenFlexo");
 		}
 		return dir;

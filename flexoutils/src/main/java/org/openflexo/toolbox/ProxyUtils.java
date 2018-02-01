@@ -59,7 +59,7 @@ public class ProxyUtils {
 	private static final Pattern PROXY_PATTERN = Pattern.compile("PROXY\\s+([a-zA-Z-.0-9]+)(:(\\p{Digit}+))?");
 
 	public static boolean isProxyEnabled() {
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			return Integer.decode(
 					WinRegistryAccess.getRegistryValue(WIN_REG_PROXY_PATH, WIN_REG_PROXY_ENABLE, WinRegistryAccess.REG_DWORD_TOKEN)) != 0;
 		}
@@ -67,7 +67,7 @@ public class ProxyUtils {
 	}
 
 	public static boolean autoDetectSettingsEnabled() {
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			return WinRegistryAccess.getRegistryValue(WIN_REG_PROXY_PATH, WIN_REG_AUTO_CONFIG_URL, WinRegistryAccess.REG_SZ_TOKEN) != null;
 		}
 		return false;
@@ -75,7 +75,7 @@ public class ProxyUtils {
 
 	public static String[] getHTTPProxyPort(boolean secure) {
 		String[] proxyHost = null;
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			try {
 				String proxyServer = WinRegistryAccess.getRegistryValue(WIN_REG_PROXY_PATH, WIN_REG_PROXY_SERVER,
 						WinRegistryAccess.REG_SZ_TOKEN);
@@ -139,7 +139,7 @@ public class ProxyUtils {
 
 	public static URL getAutoConfigURL() {
 		URL autoConfigURL = null;
-		if (ToolBox.getPLATFORM() == ToolBox.WINDOWS) {
+		if (ToolBox.isWindows()) {
 			try {
 				/*String proxyPath = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Connections";
 				String s ="DefaultConnectionSettings";
