@@ -39,8 +39,6 @@
 
 package org.openflexo.toolbox;
 
-import java.awt.Color;
-
 public class HTMLUtils {
 	// Unused private static final String START_HTML_TAG = "<html>";
 	// Unused private static final String END_HTML_TAG = "</html>";
@@ -182,11 +180,11 @@ public class HTMLUtils {
 		}
 		return null;
 	}
-	*/
-
-	public static String extractBodyContent(String html) {
+	
+	private static String extractBodyContent(String html) {
 		return extractBodyContent(html, false);
 	}
+	*/
 
 	public static String extractBodyContent(String html, boolean returnHtmlIfNoBodyFound) {
 		if (html == null) {
@@ -412,7 +410,7 @@ public class HTMLUtils {
 	public static boolean isEmtpyParagraph(String html) {
 		return html != null && EMPTY_PARAGRAPH_PATTERN.matcher(html).matches();
 	}
-	*/
+	
 	public enum HTMLColors {
 		indianred("#cd5c5c"),
 		lightcoral("#f08080"),
@@ -555,27 +553,24 @@ public class HTMLUtils {
 		slategray("#708090"),
 		darkslategray("#2f4f4f"),
 		black("#000000");
-
+	
 		private String hexValue;
-
+	
 		private HTMLColors(String hexValue) {
 			this.hexValue = hexValue;
 		}
-
+	
 		public String getHexValue() {
 			return hexValue;
 		}
-		/*
 				public Color getColor() {
 					return extractColorFromHexValue(getHexValue().substring(1));
-				}*/
+				}
 	}
-
+	
 	public static String toHexString(Color color) {
 		return String.format("%1$02X%2$02X%3$02X", color.getRed(), color.getGreen(), color.getBlue());
 	}
-
-	/* Unused
 	
 	public static Color extractColorFromString(String color) {
 		color = color.trim();

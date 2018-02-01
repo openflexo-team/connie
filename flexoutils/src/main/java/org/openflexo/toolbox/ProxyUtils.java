@@ -40,11 +40,8 @@
 package org.openflexo.toolbox;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -173,6 +170,7 @@ public class ProxyUtils {
 	 * 
 	 * @return
 	 */
+	/*
 	public static URL WPADURL() {
 		try {
 			InetAddress addr = InetAddress.getLocalHost();
@@ -200,7 +198,7 @@ public class ProxyUtils {
 		}
 		return null;
 	}
-
+	
 	public static String getLocalDomain() {
 		try {
 			InetAddress localaddr = InetAddress.getLocalHost();
@@ -218,10 +216,5 @@ public class ProxyUtils {
 		}
 		return null;
 	}
-
-	public static void main(String[] args) {
-		System.err.println("Proxy enabled?" + isProxyEnabled());
-		System.err.println("Autodetect?" + autoDetectSettingsEnabled());
-	}
-
+	*/
 }

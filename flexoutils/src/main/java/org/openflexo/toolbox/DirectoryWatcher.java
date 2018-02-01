@@ -41,14 +41,12 @@ package org.openflexo.toolbox;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -407,41 +405,43 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 	protected abstract void fileRenamed(File oldFile, File renamedFile);
 
+	/*
 	public static void main(String[] args) {
 		TimerTask task = new DirectoryWatcher(new File("/Users/sylvain/Temp")) {
 			@Override
 			protected void fileModified(File file) {
 				System.out.println("File MODIFIED " + file.getName() + " in " + file.getParentFile().getAbsolutePath());
 			}
-
+	
 			@Override
 			protected void fileAdded(File file) {
 				System.out.println("File ADDED " + file.getName() + " in " + file.getParentFile().getAbsolutePath());
 			}
-
+	
 			@Override
 			protected void fileDeleted(File file) {
 				System.out.println("File DELETED " + file.getName() + " in " + file.getParentFile().getAbsolutePath());
 			}
-
+	
 			@Override
 			protected void fileRenamed(File oldFile, File renamedFile) {
 				System.out.println("File RENAMED from " + oldFile.getName() + " to " + renamedFile.getName() + " in "
 						+ renamedFile.getParentFile().getAbsolutePath());
 			}
 		};
-
+	
 		Timer timer = new Timer();
 		timer.schedule(task, new Date(), 1000);
-
+	
 	}
+	*/
 
-	boolean waitNextWatchingRequested = false;
-	boolean waitNextWatchingDone = false;
+	private boolean waitNextWatchingRequested = false;
+	private boolean waitNextWatchingDone = false;
 
-	public Status status = null;
+	private Status status = null;
 
-	public enum Status {
+	private enum Status {
 		INIT, FIRST_RUN, RUNNING, IDLE
 	}
 
@@ -467,7 +467,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 	private boolean isWaitingCurrentExecution = false;
 
 	/**
-	 * Wait for the currnt execution to be performed
+	 * Wait for the current execution to be performed
 	 */
 	public void waitCurrentExecution() {
 		isWaitingCurrentExecution = true;

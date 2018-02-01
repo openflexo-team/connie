@@ -61,7 +61,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
 
 import javax.swing.Icon;
 import javax.swing.UIManager;
@@ -176,7 +175,7 @@ public class ToolBox {
 			return newString + message;
 	
 		}
-	*/
+	
 	private static String capitalize(String s, boolean removeStartingUnderscore) {
 		if (s == null) {
 			return null;
@@ -194,14 +193,13 @@ public class ToolBox {
 			return s.toUpperCase();
 		}
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
-
+	
 	}
-
+	
 	private static String capitalize(String s) {
 		return capitalize(s, false);
 	}
-
-	/*
+	
 		public static String uncapitalize(String s) {
 			if (s == null) {
 				return null;
@@ -237,39 +235,6 @@ public class ToolBox {
 				ToolBox.replaceStringByStringInString("\"", " ", ToolBox.replaceStringByStringInString("'", " ", comment))));
 	}
 	*/
-
-	/**
-	 * @deprecated use methods from JavaUtils
-	 * @param name
-	 * @return a java name ( starts with a minuscule, and no blanks, dot,..., convert accentuated characters)
-	 */
-	@Deprecated
-	public static String getJavaName(String name) {
-		if (name == null) {
-			return null;
-		}
-		if (name.equals("")) {
-			return name;
-		}
-		name = StringUtils.convertAccents(name);
-		StringBuffer sb = new StringBuffer();
-		Matcher m = JavaUtils.JAVA_VARIABLE_ACCEPTABLE_PATTERN.matcher(name);
-		while (m.find()) {
-			String group = m.group();
-			if (sb.length() == 0 && !group.matches(JavaUtils.JAVA_BEGIN_VARIABLE_NAME_REGEXP)) {
-				sb.append('_');
-			}
-			sb.append(group);
-		}
-		name = sb.toString();
-		if (name.equals("")) {
-			return "_";
-		}
-		if (ReservedKeyword.contains(name)) {
-			return "_" + name;
-		}
-		return name;
-	}
 
 	/**
 	 * 
