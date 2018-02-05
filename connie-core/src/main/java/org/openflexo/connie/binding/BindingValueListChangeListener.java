@@ -71,6 +71,10 @@ public abstract class BindingValueListChangeListener<T2, T extends Collection<T2
 		super(dataBinding, context);
 	}
 
+	public BindingValueListChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context, boolean initAsChange) {
+		super(dataBinding, context, initAsChange);
+	}
+
 	@Override
 	public void delete() {
 		super.delete();
