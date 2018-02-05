@@ -102,21 +102,22 @@ public class XMLRootElementReader {
 	 * @throws IOException
 	 */
 	synchronized public XMLRootElementInfo readRootElement(Resource rsc) throws IOException {
-
-		InputStream input = rsc.openInputStream();
-		return readRootElement(input);
+		try (InputStream input = rsc.openInputStream()) {
+			return readRootElement(input);
+		}
 	}
 
 	synchronized public XMLRootElementInfo readRootElement(File xmlFile) throws IOException {
-		InputStream input = new FileInputStream(xmlFile);
-		return readRootElement(input);
+		try (InputStream input = new FileInputStream(xmlFile)) {
+			return readRootElement(input);
+		}
 	}
 
 	synchronized public XMLRootElementInfo readRootElement(InputStream input) throws IOException {
 
 		XMLRootElementInfo info = new XMLRootElementInfo(parseFirstLevelElements, firstLevelElementName);
 
-		if (info != null && input != null) {
+		if (input != null) {
 
 			try {
 				handler.setInfo(info);

@@ -44,13 +44,9 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class ExtendedSet<E> extends AbstractSet<E> implements Cloneable {
+public class ExtendedSet<E> extends AbstractSet<E> {
 
-	private transient HashMap<E, E> map;
-
-	public ExtendedSet() {
-		map = new HashMap<>();
-	}
+	private transient HashMap<E, E> map = new HashMap<>();
 
 	/**
 	 * Returns an iterator over the elements in this set. The elements are returned in no particular order.
@@ -148,16 +144,16 @@ public class ExtendedSet<E> extends AbstractSet<E> implements Cloneable {
 	 * 
 	 * @return a shallow copy of this set
 	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public Object clone() {
-		try {
-			ExtendedSet<E> newSet = (ExtendedSet<E>) super.clone();
-			newSet.map = (HashMap<E, E>) map.clone();
-			return newSet;
-		} catch (CloneNotSupportedException e) {
-			throw new InternalError();
+	/*
+		@Override
+		public Object clone() {
+			try {
+				ExtendedSet<E> newSet = (ExtendedSet<E>) super.clone();
+				newSet.map = (HashMap<E, E>) map.clone();
+				return newSet;
+			} catch (CloneNotSupportedException e) {
+				throw new InternalError();
+			}
 		}
-	}
-
+	*/
 }

@@ -43,7 +43,6 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.exception.NullReferenceException;
@@ -52,7 +51,7 @@ import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.ToolBox;
 
-public class BindingVariable implements IBindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
+public class BindingVariable implements SettableBindingPathElement, HasPropertyChangeSupport {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(BindingVariable.class.getPackage().getName());

@@ -102,8 +102,8 @@ public class FileSystemMetaDataManager {
 			this.directory = directory;
 			metaDataFile = new File(directory, ".metadata");
 			if (metaDataFile.exists()) {
-				try {
-					load(new FileInputStream(metaDataFile));
+				try (FileInputStream fis = new FileInputStream(metaDataFile)) {
+					load(fis);
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -170,8 +170,8 @@ public class FileSystemMetaDataManager {
 		}
 
 		private void save() {
-			try {
-				store(new FileOutputStream(metaDataFile), "Metadata for directory " + directory);
+			try (FileOutputStream fos = new FileOutputStream(metaDataFile)) {
+				store(fos, "Metadata for directory " + directory);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

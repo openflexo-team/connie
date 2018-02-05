@@ -45,7 +45,6 @@ package org.openflexo.toolbox;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,15 +53,14 @@ import java.util.regex.Pattern;
  * @author Nicolas Daniels
  */
 public class JavaUtils {
-
-	public static final String JAVA_CHAR_TO_ESCAPE_IN_STRINGS_REG_EXP = "[\"\\\\]";
-	public static final Pattern JAVA_CHAR_TO_ESCAPE_IN_STRINGS_PATTERN = Pattern.compile(JAVA_CHAR_TO_ESCAPE_IN_STRINGS_REG_EXP);
-	public static final String JAVA_BEGIN_VARIABLE_NAME_REGEXP = "^[_A-Za-z].*";
-	public static final Pattern JAVA_BEGIN_VARIABLE_NAME_PATTERN = Pattern.compile(JAVA_BEGIN_VARIABLE_NAME_REGEXP);
-	public static final String JAVA_VARIABLE_ACCEPTABLE_CHARS = "[_A-Za-z0-9]+";
-	public static final Pattern JAVA_VARIABLE_ACCEPTABLE_PATTERN = Pattern.compile(JAVA_VARIABLE_ACCEPTABLE_CHARS);
-	public static final String JAVA_CLASS_NAME_REGEXP = "[_A-Za-z][_A-Za-z0-9]*";
-	public static final Pattern JAVA_CLASS_NAME_PATTERN = Pattern.compile(JAVA_CLASS_NAME_REGEXP);
+	// Unused private static final String JAVA_CHAR_TO_ESCAPE_IN_STRINGS_REG_EXP = "[\"\\\\]";
+	// Unused private static final Pattern JAVA_CHAR_TO_ESCAPE_IN_STRINGS_PATTERN = Pattern.compile(JAVA_CHAR_TO_ESCAPE_IN_STRINGS_REG_EXP);
+	private static final String JAVA_BEGIN_VARIABLE_NAME_REGEXP = "^[_A-Za-z].*";
+	// Unused private static final Pattern JAVA_BEGIN_VARIABLE_NAME_PATTERN = Pattern.compile(JAVA_BEGIN_VARIABLE_NAME_REGEXP);
+	private static final String JAVA_VARIABLE_ACCEPTABLE_CHARS = "[_A-Za-z0-9]+";
+	private static final Pattern JAVA_VARIABLE_ACCEPTABLE_PATTERN = Pattern.compile(JAVA_VARIABLE_ACCEPTABLE_CHARS);
+	// Unused private static final String JAVA_CLASS_NAME_REGEXP = "[_A-Za-z][_A-Za-z0-9]*";
+	// Unused private static final Pattern JAVA_CLASS_NAME_PATTERN = Pattern.compile(JAVA_CLASS_NAME_REGEXP);
 
 	public static final Set<String> JAVA_RESERVED_KEYWORDS = new HashSet<>(
 			Arrays.asList("abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean",
@@ -91,10 +89,11 @@ public class JavaUtils {
 	 *            the string to transform, can be null, in such case null is returned
 	 * @return the transformed string
 	 */
+	/*
 	public static String getConstantName(String name) {
 		return name == null ? name : getJavaName(name, false).toUpperCase();
 	}
-
+	*/
 	/**
 	 * Transform the specified {@code value} to be used as a java class name. <br>
 	 * Basically, it will remove all special/whiteSpace characters, ensure it starts with a upper case and ensure it doesn't start with a
@@ -117,6 +116,7 @@ public class JavaUtils {
 	 *            the string to transform, can be null, in such case null is returned
 	 * @return the transformed string
 	 */
+	/*
 	public static String getPackageName(String value) {
 		if (value == null) {
 			return null;
@@ -124,7 +124,7 @@ public class JavaUtils {
 		if (value.length() == 0) {
 			return value;
 		}
-
+	
 		StringBuilder sb = new StringBuilder();
 		for (String s : value.split("\\.")) {
 			String part = getVariableName(s).toLowerCase();
@@ -133,12 +133,13 @@ public class JavaUtils {
 			}
 			sb.append(part);
 		}
-
+	
 		if (sb.length() == 0) {
 			return "_";
 		}
 		return sb.toString();
 	}
+	*/
 
 	/**
 	 * Transform the specified {@code value} to be used as a java string. <br>
@@ -148,7 +149,8 @@ public class JavaUtils {
 	 *            the string to transform, can be null, in such case null is returned
 	 * @return the transformed string
 	 */
-	public static String getJavaString(String value) {
+	/*
+	private static String getJavaString(String value) {
 		if (value == null) {
 			return null;
 		}
@@ -164,6 +166,7 @@ public class JavaUtils {
 		}
 		return sb.toString().replaceAll("[\n]", "\\\\n");
 	}
+	*/
 
 	/**
 	 * Transform the specified {@code value} to be used as javadoc. <br>
@@ -171,34 +174,44 @@ public class JavaUtils {
 	 * @param value
 	 * @return the transformed string
 	 */
-	public static String getJavaDocString(String value) {
-		if (value == null) {
-			return "";
-		}
-		value = ToolBox.replaceStringByStringInString("*/", "* /", value);
-		StringTokenizer st = new StringTokenizer(value, StringUtils.LINE_SEPARATOR, false);
-		StringBuilder sb = new StringBuilder();
-		while (st.hasMoreTokens()) {
-			String str = st.nextToken();
-			if (str.length() > 0) {
-				sb.append(str.trim());
-				sb.append(StringUtils.LINE_SEPARATOR);
-				if (st.hasMoreTokens()) {
-					sb.append("    * ");
+	/*
+		public static String getJavaDocString(String value) {
+			if (value == null) {
+				return "";
+			}
+			value = ToolBox.replaceStringByStringInString("ENDCOMMENT", "ENDCOMMENT", value);// Beware ENDCOMMENT should replaced by the Java end comment
+	
+			StringTokenizer st = new StringTokenizer(value, StringUtils.LINE_SEPARATOR, false);
+			StringBuilder sb = new StringBuilder();
+			while (st.hasMoreTokens()) {
+				String str = st.nextToken();
+				if (str.length() > 0) {
+					sb.append(str.trim());
+					sb.append(StringUtils.LINE_SEPARATOR);
+					if (st.hasMoreTokens()) {
+						sb.append("    * ");
+					}
 				}
 			}
+			return sb.toString();
 		}
-		return sb.toString();
-	}
+	*/
 
 	private static String getJavaName(String name, boolean lowerFirstChar) {
+		return getJavaName(name, lowerFirstChar, true);
+	}
+
+	private static String getJavaName(String name, boolean lowerFirstChar, boolean camelCaseTransform) {
 		if (name == null) {
 			return null;
 		}
 		if (name.length() == 0) {
 			return name;
 		}
-		name = StringUtils.camelCase(StringUtils.convertAccents(name), !lowerFirstChar);
+		name = StringUtils.convertAccents(name);
+		if (camelCaseTransform) {
+			name = StringUtils.camelCase(name, !lowerFirstChar);
+		}
 		StringBuffer sb = new StringBuffer();
 		Matcher m = JAVA_VARIABLE_ACCEPTABLE_PATTERN.matcher(name);
 		while (m.find()) {
@@ -216,5 +229,9 @@ public class JavaUtils {
 			return "_" + name;
 		}
 		return name;
+	}
+
+	public static String getJavaName(String name) {
+		return getJavaName(name, false, false);
 	}
 }

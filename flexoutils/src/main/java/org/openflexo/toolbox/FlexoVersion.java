@@ -44,10 +44,11 @@ import java.util.StringTokenizer;
 
 public class FlexoVersion implements Comparable<FlexoVersion> {
 
+	/*
 	public FlexoVersion copy() {
 		return new FlexoVersion(major, minor, patch, rc, isAlpha, isBeta);
 	}
-
+	
 	public static boolean isValidVersionString(String version) {
 		StringTokenizer st = new StringTokenizer(version, ".");
 		if (st.hasMoreTokens()) {
@@ -80,6 +81,7 @@ public class FlexoVersion implements Comparable<FlexoVersion> {
 		}
 		return true;
 	}
+	*/
 
 	public int major = 0;
 
@@ -87,13 +89,13 @@ public class FlexoVersion implements Comparable<FlexoVersion> {
 
 	public int patch = 0;
 
-	public int rc = -1;
+	private int rc = -1;
 
 	public boolean isAlpha = false;
 
 	public boolean isBeta = false;
 
-	public boolean isSnapshot = false;
+	private boolean isSnapshot = false;
 
 	public static FlexoVersion versionByIncrementing(FlexoVersion v, int majorInc, int minorInc, int patchInc) {
 		return new FlexoVersion(v.major + majorInc, v.minor + minorInc, v.patch + patchInc, 0, false, false);
@@ -282,8 +284,6 @@ public class FlexoVersion implements Comparable<FlexoVersion> {
 		}
 	}
 
-	public static final VersionComparator comparator = new VersionComparator();
-
 	/**
 	 * Version have the following format MAJOR.MINOR.PATCH(RCX|alpha|beta) members in parenthesis are optional and are called additional
 	 * members Priority of members is this (bigger the greater, of course): 1) MAJOR 2) MINOR 3) PATCH 4) NO additional member 5) beta 6)
@@ -292,12 +292,7 @@ public class FlexoVersion implements Comparable<FlexoVersion> {
 	 * @author gpolet
 	 * 
 	 */
-	public static class VersionComparator implements Comparator<FlexoVersion> {
-
-		public VersionComparator() {
-			super();
-		}
-
+	private static final Comparator<FlexoVersion> comparator = new Comparator<FlexoVersion>() {
 		@Override
 		public int compare(FlexoVersion v1, FlexoVersion v2) {
 			if (v1.major < v2.major) {
@@ -326,9 +321,7 @@ public class FlexoVersion implements Comparable<FlexoVersion> {
 								if (v2.isAlpha) {
 									return 0;
 								}
-								else {
-									return -1;
-								}
+								return -1;
 							}
 							else if (v1.isBeta) {
 								if (v2.isAlpha) {
@@ -345,9 +338,7 @@ public class FlexoVersion implements Comparable<FlexoVersion> {
 								if (v2.isAlpha || v2.isBeta) {
 									return 1;
 								}
-								else {
-									return 0;
-								}
+								return 0;
 							}
 						}
 						else if (v1.rc < 0 && v2.rc > -1 && !v1.isAlpha && !v1.isBeta) {
@@ -372,30 +363,5 @@ public class FlexoVersion implements Comparable<FlexoVersion> {
 				}
 			}
 		}
-
-	}
-
-	public static void main(String[] args) {
-		String[] s = { "0.9.0", "0.9.1", "0.9.0RC1", "0.9.0RC2", "0.9.0alpha", "0.9.0beta", "0.10.0", "0.10.1", "0.10.0RC1", "0.10.0RC2",
-				"0.10.0alpha", "0.10.0beta", "0.9", "1.0alpha", "1.1alpha", "1.1RC8" };
-		for (int i = 0; i < s.length; i++) {
-			String string = s[i];
-			FlexoVersion v = new FlexoVersion(string);
-			for (int j = 0; j < s.length; j++) {
-				String s2 = s[j];
-				FlexoVersion v2 = new FlexoVersion(s2);
-				if (v.isLesserThan(v2)) {
-					System.out.println(string + " is smaller than " + s2 + "[" + v2.toString() + "]");
-				}
-				if (v.isGreaterThan(v2)) {
-					System.out.println(string + " is bigger than " + s2 + "[" + v2.toString() + "]");
-				}
-				if (v.equals(v2)) {
-					System.out.println(string + " equals " + s2 + "[" + v2.toString() + "]");
-				}
-			}
-		}
-
-	}
-
+	};
 }

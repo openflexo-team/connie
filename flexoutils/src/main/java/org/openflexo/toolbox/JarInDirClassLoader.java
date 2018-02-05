@@ -36,7 +36,6 @@
  * 
  */
 
-
 package org.openflexo.toolbox;
 
 import java.io.File;
@@ -47,32 +46,27 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+
 /**
  * 
- * This class Loader looks for classes and resources in a set of jars found in a set of directories
- * Any Jar in the directory List ist 
+ * This class Loader looks for classes and resources in a set of jars found in a set of directories Any Jar in the directory List ist
  * 
- * Directories can anly be added to the list and not removed.
+ * Directories can only be added to the list and not removed.
  * 
  * @author sylvain,xtof
  *
  */
 
 public class JarInDirClassLoader extends URLClassLoader {
-
-
-	private static final java.util.logging.Logger LOGGER = org.openflexo.logging.FlexoLogger.getLogger(JarInDirClassLoader.class.getPackage()
-			.getName());
-
-
+	private static final java.util.logging.Logger LOGGER = org.openflexo.logging.FlexoLogger
+			.getLogger(JarInDirClassLoader.class.getPackage().getName());
 
 	private final List<File> jarDirectories;
 
-
 	public JarInDirClassLoader(List<File> jarDirectories) {
-		super(new URL[]{}, JarInDirClassLoader.class.getClassLoader());
+		super(new URL[] {}, JarInDirClassLoader.class.getClassLoader());
 		this.jarDirectories = jarDirectories;
-		for (File jarDir : jarDirectories){
+		for (File jarDir : jarDirectories) {
 			addFilesFromDirectory(jarDir);
 		}
 	}
@@ -82,20 +76,19 @@ public class JarInDirClassLoader extends URLClassLoader {
 		LOGGER.info("Finalizing Jar Class Loader");
 		super.finalize();
 	}
-	
+
 	/**
 	 * adds a Directory in the list of directories to search for
 	 * 
 	 * @param directory
 	 */
 
-	public void addJarDirectory(File directory){
-		if (directory != null && directory.isDirectory()){
+	public void addJarDirectory(File directory) {
+		if (directory != null && directory.isDirectory()) {
 			this.jarDirectories.add(directory);
 			addFilesFromDirectory(directory);
 		}
 	}
-
 
 	/**
 	 * 
@@ -103,10 +96,10 @@ public class JarInDirClassLoader extends URLClassLoader {
 	 * 
 	 * @param jarDir
 	 */
-	private void addFilesFromDirectory(File jarDir){
-		if (jarDir != null && jarDir.isDirectory()){
+	private void addFilesFromDirectory(File jarDir) {
+		if (jarDir != null && jarDir.isDirectory()) {
 			Collection<File> lstFile = FileUtils.listFiles(jarDir, new String[] { "jar" }, false);
-			for (File f : lstFile){
+			for (File f : lstFile) {
 				try {
 					this.addURL(f.toURI().toURL());
 				} catch (MalformedURLException e) {
@@ -115,6 +108,5 @@ public class JarInDirClassLoader extends URLClassLoader {
 			}
 		}
 	}
-
 
 }

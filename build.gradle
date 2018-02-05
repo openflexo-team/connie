@@ -16,9 +16,11 @@ allprojects { version = "1.4.1-SNAPSHOT" }
 
 subprojects {
     apply plugin: 'java'
-}
-
-subprojects {
+    
+    tasks.withType(Test) {
+		jvmArgs += ["-Djava.awt.headless=true"]
+	}
+    
     //  apply plugin: 'checkstyle'
     apply plugin: 'pmd'
     apply plugin: 'findbugs'
