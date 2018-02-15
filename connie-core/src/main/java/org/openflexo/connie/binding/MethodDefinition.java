@@ -42,8 +42,9 @@ package org.openflexo.connie.binding;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.logging.Logger;
 
@@ -57,13 +58,20 @@ public final class MethodDefinition extends Observable implements Function {
 	private final Type declaringType;
 	private final Method method;
 	private final ArrayList<Function.FunctionArgument> arguments;
-	private static Hashtable<Method, MethodDefinition> cache = new Hashtable<>();
+	private static Map<Method, Map<Type, MethodDefinition>> cache = new HashMap<>();
 
 	public static MethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
-		MethodDefinition returned = cache.get(method);
+
+		Map<Type, MethodDefinition> mapForMethod = cache.get(method);
+		if (mapForMethod == null) {
+			mapForMethod = new HashMap<>();
+			cache.put(method, mapForMethod);
+		}
+
+		MethodDefinition returned = mapForMethod.get(aDeclaringType);
 		if (returned == null) {
 			returned = new MethodDefinition(aDeclaringType, method);
-			cache.put(method, returned);
+			mapForMethod.put(aDeclaringType, returned);
 		}
 		return returned;
 	}
@@ -181,7 +189,7 @@ public final class MethodDefinition extends Observable implements Function {
 		return returned.toString();
 	}*/
 
-	@Override
+	/*@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof MethodDefinition) {
 			// System.out.println("Compare "+getMethod()+" and "+((MethodDefinition)obj).getMethod());
@@ -189,11 +197,11 @@ public final class MethodDefinition extends Observable implements Function {
 		}
 		return super.equals(obj);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return getMethod().hashCode();
-	}
+	}*/
 
 	@Override
 	public String toString() {
