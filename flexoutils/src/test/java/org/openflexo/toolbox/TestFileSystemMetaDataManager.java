@@ -109,7 +109,7 @@ public class TestFileSystemMetaDataManager extends TestCase {
 
 	@Test
 	@TestOrder(3)
-	public void testGetProperties() throws IOException {
+	public void testGetProperties() {
 
 		assertEquals("value1", fsMetaDataManager.getProperty("key1", testDirectory));
 		assertEquals("value2", fsMetaDataManager.getProperty("key2", dir1));

@@ -111,7 +111,7 @@ public class ExpressionEvaluator implements ExpressionTransformer {
 		return e;
 	}
 
-	private static Expression transformConditionalExpression(ConditionalExpression e) throws TransformException {
+	private static Expression transformConditionalExpression(ConditionalExpression e) {
 		if (e.getCondition() == BooleanConstant.TRUE) {
 			return e.getThenExpression();
 		}

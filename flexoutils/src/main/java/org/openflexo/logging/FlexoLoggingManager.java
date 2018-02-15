@@ -86,7 +86,7 @@ public class FlexoLoggingManager {
 	}
 
 	public static FlexoLoggingManager initialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, Resource configurationFile,
-			Level logLevel, LoggingManagerDelegate delegate) throws SecurityException, IOException {
+			Level logLevel, LoggingManagerDelegate delegate) throws SecurityException {
 		if (isInitialized()) {
 			return _instance;
 		}
