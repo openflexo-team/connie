@@ -192,11 +192,9 @@ public class FileUtils {
 			try {
 				f.createNewFile();
 				if (f.exists()) {
-					InputStream in = rsc.openInputStream();
-					OutputStream out = new FileOutputStream(f);
-					IOUtils.copy(in, out);
-					in.close();
-					out.close();
+					try (InputStream in = rsc.openInputStream(); OutputStream out = new FileOutputStream(f)) {
+						IOUtils.copy(in, out);
+					}
 				}
 				else {
 					LOGGER.severe("Unable to copy InJarResource: " + rsc);
@@ -318,38 +316,27 @@ public class FileUtils {
 	}
 
 	public static void copyFileToFile(File curFile, File newFile) throws IOException {
-		FileInputStream is = new FileInputStream(curFile);
-		try {
-			createNewFile(newFile);
-			FileOutputStream os = new FileOutputStream(newFile);
-			try {
-				while (is.available() > 0) {
-					byte[] byteArray = new byte[is.available()];
-					is.read(byteArray);
-					os.write(byteArray);
-				}
-				os.flush();
-			} finally {
-				os.close();
-			}
-		} finally {
-			is.close();
-		}
-	}
-
-	public static File copyFileToDir(FileInputStream is, String newFileName, File dest) throws IOException {
-		File newFile = new File(dest, newFileName);
 		createNewFile(newFile);
-		FileOutputStream os = new FileOutputStream(newFile);
-		try {
+		try (FileInputStream is = new FileInputStream(curFile); FileOutputStream os = new FileOutputStream(newFile)) {
 			while (is.available() > 0) {
 				byte[] byteArray = new byte[is.available()];
 				is.read(byteArray);
 				os.write(byteArray);
 			}
 			os.flush();
-		} finally {
-			os.close();
+		}
+	}
+
+	public static File copyFileToDir(FileInputStream is, String newFileName, File dest) throws IOException {
+		File newFile = new File(dest, newFileName);
+		createNewFile(newFile);
+		try (FileOutputStream os = new FileOutputStream(newFile)) {
+			while (is.available() > 0) {
+				byte[] byteArray = new byte[is.available()];
+				is.read(byteArray);
+				os.write(byteArray);
+			}
+			os.flush();
 		}
 		return newFile;
 	}
@@ -401,23 +388,15 @@ public class FileUtils {
 
 	public static void saveToFile(File dest, String fileContent, String encoding) throws IOException {
 		createNewFile(dest);
-		FileOutputStream fos = new FileOutputStream(dest);
 		BufferedReader bufferedReader = new BufferedReader(new StringReader(fileContent));
-		OutputStreamWriter fw = new OutputStreamWriter(fos, Charset.forName(encoding != null ? encoding : "UTF-8"));
-		String line = null;
-		try {
+		try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(dest),
+				Charset.forName(encoding != null ? encoding : "UTF-8"))) {
+			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
 				fw.write(line);
 				fw.write(LINE_SEPARATOR);
 			}
 			fw.flush();
-		} finally {
-			if (fos != null) {
-				fos.close();
-			}
-			if (fw != null) {
-				fw.close();
-			}
 		}
 	}
 
