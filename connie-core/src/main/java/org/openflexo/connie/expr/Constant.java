@@ -87,9 +87,10 @@ public abstract class Constant<V> extends Expression {
 		}
 		else if (value instanceof Byte) {
 			return new Constant.IntegerConstant(((Byte) value).longValue());
-		} /*else if (value instanceof DateValue) {
-			return new Constant.DateConstant(((DateValue) value).getDateValue());
-			} else if (value instanceof DurationValue) {
+		}
+		else if (value instanceof Date) {
+			return new Constant.DateConstant((Date) value);
+		} /*else if (value instanceof DurationValue) {
 			return new Constant.DurationConstant(((DurationValue) value).getDurationValue());
 			}*/
 		return new Constant.ObjectConstant(value);
