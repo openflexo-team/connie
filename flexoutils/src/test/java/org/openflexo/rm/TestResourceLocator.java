@@ -87,7 +87,8 @@ public class TestResourceLocator {
 		assertTrue(r3 instanceof FileResourceImpl);
 
 		assertTrue(((FileResourceImpl) r).getFile().getAbsolutePath().contains("Config"));
-		assertTrue(((FileResourceImpl) r2).getFile().getAbsolutePath().contains("src"+File.separator+"main"+File.separator+"resources"));
+		assertTrue(((FileResourceImpl) r2).getFile().getAbsolutePath()
+				.contains("src" + File.separator + "main" + File.separator + "resources"));
 
 		assertSame(r2, r3);
 
