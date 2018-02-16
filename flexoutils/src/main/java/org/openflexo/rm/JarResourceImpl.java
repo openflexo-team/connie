@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
  *
  */
 
-public class JarResourceImpl extends BasicResourceImpl implements Resource {
+public class JarResourceImpl extends BasicResourceImpl {
 
 	private static final Logger LOGGER = Logger.getLogger(JarResourceImpl.class.getPackage().getName());
 

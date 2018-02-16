@@ -49,7 +49,7 @@ public class Duration implements Cloneable, Comparable<Duration> {
 	private long value;
 	private DurationUnit unit;
 
-	public enum DurationUnit implements Comparable<DurationUnit> {
+	public enum DurationUnit {
 		MILLIS, SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS;
 
 		public String getSymbol() {
