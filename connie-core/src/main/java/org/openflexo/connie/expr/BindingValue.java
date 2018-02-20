@@ -417,7 +417,29 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @return
 	 */
 	public boolean isCacheable() {
-		return getBindingVariable() != null && getBindingVariable().isCacheable() && isNotificationSafe();
+		return fullyRelyOnCacheableBindingVariables() && isNotificationSafe();
+	}
+
+	/**
+	 * Indicates if this {@link BindingValue} only rely on {@link BindingVariable} identified as cacheable
+	 * 
+	 * @return
+	 */
+	private boolean fullyRelyOnCacheableBindingVariables() {
+		if (getBindingVariable() == null || !getBindingVariable().isCacheable()) {
+			return false;
+		}
+		for (BindingPathElement pathElement : new ArrayList<>(getBindingPath())) {
+			if (pathElement instanceof FunctionPathElement) {
+				FunctionPathElement functionPathElement = (FunctionPathElement) pathElement;
+				for (FunctionArgument functionArgument : functionPathElement.getArguments()) {
+					if (!functionPathElement.getParameter(functionArgument).isCacheable()) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	/**
