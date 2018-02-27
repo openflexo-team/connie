@@ -256,4 +256,10 @@ public class JavaBindingFactory implements BindingFactory {
 			return null;
 		}
 	}
+
+	public void clear() {
+		accessibleSimplePathElements.clear();
+		accessibleFunctionPathElements.clear();
+		storedFunctions.clear();
+	}
 }
