@@ -61,7 +61,7 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 		}
 
 		@Override
-		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException {
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant) {
 				if (rightArg instanceof ArithmeticConstant) {
 					if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
@@ -117,6 +117,9 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 			// Special case to handle String concatenation with null
 			if (leftArg == ObjectSymbolicConstant.NULL && rightArg instanceof StringConstant) {
 				return evaluate(new StringConstant("null"), rightArg);
+			}
+			if (leftArg == ObjectSymbolicConstant.NULL && rightArg == ObjectSymbolicConstant.NULL) {
+				throw new NullReferenceException();
 			}
 			// System.out.println("leftArg=" + leftArg + " of " + leftArg.getClass() + " eval type =" + leftArg.getEvaluationType());
 			// System.out.println("rightArg=" + rightArg + " of " + rightArg.getClass() + " eval type =" + rightArg.getEvaluationType());

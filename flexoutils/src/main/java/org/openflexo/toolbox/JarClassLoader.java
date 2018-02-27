@@ -23,7 +23,6 @@
  */
 package org.openflexo.toolbox;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,17 +44,6 @@ import java.util.jar.JarFile;
  *
  */
 public class JarClassLoader extends URLClassLoader {
-
-	private static void close(Closeable closeable) {
-		if (closeable != null) {
-			try {
-				closeable.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	private static boolean isJar(String fileName) {
 		return fileName != null && fileName.toLowerCase().endsWith(".jar");
 	}
