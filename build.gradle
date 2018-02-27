@@ -40,3 +40,8 @@ task analyze() {
     dependsOn subprojects.pmdMain
     dependsOn subprojects.findbugsMain
 }
+
+task gitPull(type: Exec) {
+    description 'Pulls git.'
+    commandLine "git", "pull"
+}
