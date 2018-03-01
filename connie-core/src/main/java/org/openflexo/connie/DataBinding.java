@@ -272,10 +272,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (expression != null) {
 			return expression.toString();
 		}
+		// Beware some code relies on the fact that toString contains exactly the binding
 		if (StringUtils.isEmpty(unparsedBinding)) {
-			return "\"\"";
+			return "";
 		}
-		return "\"" + unparsedBinding + "\"";
+		return "" + unparsedBinding + "";
 	}
 
 	public void decode() {
