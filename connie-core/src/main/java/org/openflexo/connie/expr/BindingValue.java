@@ -52,6 +52,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.BindingPathElement;
@@ -652,10 +653,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		if (needsAnalysing) {
 			buildBindingPathFromParsedBindingPath(dataBinding);
+			needsAnalysing = false;
 		}
-		needsAnalysing = false;
 
-		if (!analysingSuccessfull && !needsAnalysing) {
+		if (!analysingSuccessfull) {
 			return false;
 		}
 
@@ -864,7 +865,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			// System.out.println("Found binding variable " + bindingVariable);
 			if (bindingVariable == null) {
 				invalidBindingReason = "cannot find binding variable " + ((NormalBindingPathElement) getParsedBindingPath().get(0)).property
-						+ " BindingModel=" + dataBinding.getOwner().getBindingModel();
+						+ " BindingModel=" ;// + dataBinding.getOwner().getBindingModel();
 				analysingSuccessfull = false;
 				return false;
 			}

@@ -273,9 +273,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return expression.toString();
 		}
 		if (StringUtils.isEmpty(unparsedBinding)) {
-			return "";
+			return "\"\"";
 		}
-		return unparsedBinding;
+		return "\"" + unparsedBinding + "\"";
 	}
 
 	public void decode() {
@@ -520,13 +520,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return false;
 		}
 
-		invalidBindingReason = "unknown";
-
 		if (getExpression() == null) {
 			invalidBindingReason = "null expression";
 			valid = false;
 			return false;
 		}
+
+		invalidBindingReason = "unknown";
 
 		isCacheable = true;
 		analyzedType = Object.class;
@@ -536,8 +536,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			return false;
 		}
 
+		// TODO FD, I think it always true as if getOwner() was null we already returned except if somebody has change the owner in
+		// between...
 		if (getOwner() != null) {
-
 			try {
 				isPerformingValidity = true;
 
@@ -548,6 +549,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 							if (!((BindingValue) e).isValid(DataBinding.this)) {
 								((BindingValue) e).markedAsToBeReanalized();
 							}
+							// TODO is it intentional to recompute isValid?
 							if (!((BindingValue) e).isValid(DataBinding.this)) {
 								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
