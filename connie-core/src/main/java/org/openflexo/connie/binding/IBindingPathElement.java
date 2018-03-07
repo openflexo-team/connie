@@ -60,16 +60,13 @@ public interface IBindingPathElement extends Typed {
 	public final String BINDING_PATH_CHANGED = "BindingPathChanged";
 
 	Comparator<IBindingPathElement> COMPARATOR = new Comparator<IBindingPathElement>() {
-
 		@Override
 		public int compare(IBindingPathElement o1, IBindingPathElement o2) {
 			if (o1.getLabel() == null) {
 				if (o2.getLabel() == null) {
 					return 0;
 				}
-				else {
-					return -1;
-				}
+				return -1;
 			}
 			else if (o2.getLabel() == null) {
 				return 1;

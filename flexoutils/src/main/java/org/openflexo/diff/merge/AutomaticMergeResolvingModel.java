@@ -81,20 +81,20 @@ public class AutomaticMergeResolvingModel implements AutomaticMergeResolvingMode
 				return false;
 				// return null;
 			}
-			else {
-				// This is a change that might be tokenized
-				// Before to analyse deeply, look if a primary
-				// rule may resolve conflict
-				for (AutomaticMergeResolvingRule rule : _primaryRules) {
-					if (rule.isApplicable(change)) {
-						// This rule apply, ok return result
-						// return rule.getMergedResult(change);
-						change.setAutomaticResolvedMerge(rule.getMergedResult(change));
-						change.setAutomaticMergeReason(localizedForKey(rule.getDescription()));
-						return true;
-					}
+			// This is a change that might be tokenized
+			// Before to analyse deeply, look if a primary
+			// rule may resolve conflict
+			for (AutomaticMergeResolvingRule rule : _primaryRules) {
+				if (rule.isApplicable(change)) {
+					// This rule apply, ok return result
+					// return rule.getMergedResult(change);
+					change.setAutomaticResolvedMerge(rule.getMergedResult(change));
+					change.setAutomaticMergeReason(localizedForKey(rule.getDescription()));
+					return true;
 				}
-				DetailedMerge detailedMerge = change.getDetailedMerge();
+			}
+			DetailedMerge detailedMerge = change.getDetailedMerge();
+			if (detailedMerge != null && detailedMerge.getChanges() != null) {
 				for (MergeChange c : detailedMerge.getChanges()) {
 					if (!resolve(c)) {
 						// At least one change was not resolvable, return null
@@ -108,11 +108,10 @@ public class AutomaticMergeResolvingModel implements AutomaticMergeResolvingMode
 				change.setAutomaticMergeReason(localizedForKey("all_changes_are_resolved_by_detailed_analysis"));
 				return true;
 			}
+			return false;
 		}
-		else {
-			return true;
-			// return change.getMergeChangeResult().merge;
-		}
+		return true;
+		// return change.getMergeChangeResult().merge;
 	}
 
 	protected String localizedForKey(String key) {

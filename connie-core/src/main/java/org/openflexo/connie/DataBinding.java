@@ -986,10 +986,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (getOwner() != null) {
 			try {
 				expression = ExpressionParser.parse(getUnparsedBinding());
-			} catch (ParseException e1) {
+			} catch (ParseException e) {
 				// parse error
 				expression = null;
-				// logger.warning(e1.getMessage());
+				// logger.warning(e.getMessage());
 				return null;
 			}
 			needsParsing = false;
@@ -1012,7 +1012,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	private Expression analyseExpressionAfterParsing() {
-		if (getOwner() != null) {
+		if (getOwner() != null && expression != null) {
 			// System.out.println("Analysing " + this + " unparsedBinding=" +
 			// unparsedBinding);
 			try {
