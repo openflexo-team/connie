@@ -72,13 +72,11 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 		if (keyValueProperty != null) {
 			setType(keyValueProperty.getType());
+			warnWhenInconsistentData(parent, propertyName);
 		}
 		else {
 			LOGGER.warning("cannot find property " + propertyName + " for " + parent + " which type is " + parent.getType());
 		}
-
-		warnWhenInconsistentData(parent, propertyName);
-
 	}
 
 	public JavaPropertyPathElement(IBindingPathElement parent, KeyValueProperty property) {

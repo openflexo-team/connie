@@ -48,9 +48,10 @@ public class OnlyOnWindowsRunner extends OrderedRunner {
 	}
 
 	@Override
-	public void run(RunNotifier notifier) {    
-		if (System.getProperty("os.name").startsWith("Windows")) {
-			super.run(notifier);
-		}
+	public void run(RunNotifier notifier) {
+		String os = System.getProperty("os.name");
+		if (os != null)
+			if (os.startsWith("Windows"))
+				super.run(notifier);
 	}
 }

@@ -48,6 +48,7 @@ import org.openflexo.diff.ComputeDiff.DiffChange;
 import org.openflexo.diff.ComputeDiff.DiffReport;
 import org.openflexo.diff.DelimitingMethod;
 import org.openflexo.diff.DiffSource;
+import org.openflexo.diff.DiffSource.MergeToken;
 import org.openflexo.diff.merge.MergeChange.ChangeCategory;
 import org.openflexo.diff.merge.MergeChange.MergeChangeAction;
 import org.openflexo.diff.merge.MergeChange.MergeChangeResult;
@@ -64,12 +65,11 @@ public class Merge extends Observable implements IMerge {
 	private DiffSource _left;
 	private DiffSource _right;
 
-	private final Vector<MergeChange> changes;
+	private final Vector<MergeChange> changes = new Vector<>();;
 
 	private final MergedDocumentType _docType;
 
 	public Merge(DiffSource original, DiffSource left, DiffSource right, MergedDocumentType docType) {
-		super();
 		_docType = docType;
 		DelimitingMethod delimitingMethod = original.getDelimitingMethod();
 		if (left.getDelimitingMethod() != delimitingMethod || right.getDelimitingMethod() != delimitingMethod) {
@@ -78,7 +78,6 @@ public class Merge extends Observable implements IMerge {
 		_original = original;
 		_left = left;
 		_right = right;
-		changes = new Vector<>();
 		computeChanges();
 	}
 
@@ -631,7 +630,9 @@ public class Merge extends Observable implements IMerge {
 
 	private void appendLines(StringBuffer sb, int begin, int end) {
 		for (int i = begin; i < end; i++) {
-			sb.append(getOriginalSource().tokenAt(i).getFullString());
+			MergeToken mt = getOriginalSource().tokenAt(i);
+			if (mt != null)
+				sb.append(mt.getFullString());
 		}
 	}
 

@@ -209,7 +209,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		if (baseLocation != null) {
 			if (baseLocation instanceof FileResourceImpl) {
 				File f = ((FileResourceImpl) baseLocation).getFile();
-				if (f.isDirectory()) {
+				if (f != null && f.isDirectory()) {
 					File[] foundFiles = f.listFiles(new FilenameFilter() {
 						@Override
 						public boolean accept(File dir, String name) {
@@ -444,8 +444,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				if (absoluteFile.getCanonicalFile().getName().equals(absoluteFile.getName()) || lenient) {
 					found.add(absoluteFile);
 				}
-			} catch (IOException e1) {
-			}
+			} catch (IOException e1) {}
 		}
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
@@ -457,8 +456,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					if (nextTry.getCanonicalFile().getName().equals(nextTry.getName()) || lenient) {
 						found.add(nextTry);
 					}
-				} catch (IOException e1) {
-				}
+				} catch (IOException e1) {}
 			}
 		}
 

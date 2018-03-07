@@ -94,27 +94,27 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 		Expression expression = null;
 		try {
 			expression = ExpressionParser.parse(bindingPath);
-
-			expression = expression.transform(new ExpressionTransformer() {
-				@Override
-				public Expression performTransformation(Expression e) throws TransformException {
-					if (e instanceof BindingValue) {
-						BindingValue bv = (BindingValue) e;
-						if (bv.getParsedBindingPath().size() > 0) {
-							AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
-							if (!(firstPathElement instanceof NormalBindingPathElement)
-									|| !((NormalBindingPathElement) firstPathElement).property.equals("object")) {
-								bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
-								bv.clearSerializationRepresentation();
+			if (expression != null) {
+				expression = expression.transform(new ExpressionTransformer() {
+					@Override
+					public Expression performTransformation(Expression e) throws TransformException {
+						if (e instanceof BindingValue) {
+							BindingValue bv = (BindingValue) e;
+							if (bv.getParsedBindingPath().size() > 0) {
+								AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
+								if (!(firstPathElement instanceof NormalBindingPathElement)
+										|| !((NormalBindingPathElement) firstPathElement).property.equals("object")) {
+									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
+									bv.clearSerializationRepresentation();
+								}
 							}
+							return bv;
 						}
-						return bv;
+						return e;
 					}
-					return e;
-				}
-			});
-
-			return expression.toString();
+				});
+				return expression.toString();
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (TransformException e) {

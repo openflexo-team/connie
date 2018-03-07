@@ -83,32 +83,35 @@ public class WinRegistryAccess {
 		if (attributeType == null) {
 			attributeType = REG_SZ_TOKEN;
 		}
+		if (!path.startsWith("\"")) {
+			path = "\"" + path + "\"";
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(REGQUERY_UTIL);
+		sb.append(path);
+		sb.append(' ');
+		if (attributeName != null) {
+			sb.append("/v ");
+			sb.append(attributeName);
+		}
+		else {
+			sb.append("/ve");
+		}
 		try {
-			if (!path.startsWith("\"")) {
-				path = "\"" + path + "\"";
-			}
-			StringBuilder sb = new StringBuilder();
-			sb.append(REGQUERY_UTIL);
-			sb.append(path);
-			sb.append(' ');
-			if (attributeName != null) {
-				sb.append("/v ");
-				sb.append(attributeName);
-			}
-			else {
-				sb.append("/ve");
-			}
 			Process process = Runtime.getRuntime().exec(sb.toString());
-			ConsoleReader reader = new ConsoleReader(process.getInputStream());
-			reader.start();
-			process.waitFor();
-			reader.join();
-			String result = reader.getResult();
-			int p = result.indexOf(attributeType);
-			if (p == -1) {
-				return null;
+			try (InputStream is = process.getInputStream()) {
+				ConsoleReader reader = new ConsoleReader(is);
+				reader.start();
+				process.waitFor();
+				reader.join();
+				String result = reader.getResult();
+				reader.close();
+				int p = result.indexOf(attributeType);
+				if (p == -1) {
+					return null;
+				}
+				return result.substring(p + attributeType.length()).trim();
 			}
-			return result.substring(p + attributeType.length()).trim();
 		} catch (Exception e) {
 			return null;
 		}
@@ -151,11 +154,10 @@ public class WinRegistryAccess {
 	private static class ConsoleReader extends Thread {
 		private InputStream is;
 
-		private StringWriter sw;
+		private StringWriter sw = new StringWriter();
 
 		ConsoleReader(InputStream is) {
 			this.is = is;
-			sw = new StringWriter();
 		}
 
 		@Override
@@ -165,13 +167,17 @@ public class WinRegistryAccess {
 				while ((c = is.read()) != -1) {
 					sw.write(c);
 				}
-			} catch (IOException e) {
-				;
-			}
+			} catch (IOException e) {}
 		}
 
 		String getResult() {
 			return sw.toString();
+		}
+
+		void close() {
+			try {
+				this.sw.close();
+			} catch (IOException e) {}
 		}
 	}
 

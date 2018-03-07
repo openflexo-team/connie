@@ -58,12 +58,16 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -159,7 +163,7 @@ public class FileUtils {
 	}
 
 	public static File copyResourceToDir(Resource src, File dest, CopyStrategy strategy) throws IOException {
-		if (src instanceof FileResourceImpl) {
+		if (src instanceof FileResourceImpl && ((FileResourceImpl) src).getFile() != null) {
 			return copyDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
 		}
 		else if (src instanceof InJarResourceImpl) {
@@ -231,13 +235,15 @@ public class FileUtils {
 	}
 
 	public static void copyContentDirToDir(File src, File dest, CopyStrategy strategy, FileFilter fileFilter) throws IOException {
-		if (!src.exists()) {
+		if (src == null || dest == null || !src.exists() || !src.isDirectory()) {
 			return;
 		}
 		if (!dest.exists()) {
 			dest.mkdirs();
 		}
 		File[] fileArray = src.listFiles();
+		if (fileArray == null)
+			return;
 		for (int i = 0; i < fileArray.length; i++) {
 			File curFile = fileArray[i];
 			if (curFile.isDirectory() && !curFile.getName().equals("CVS") && fileFilter.accept(curFile)) {
@@ -451,18 +457,14 @@ public class FileUtils {
 	 * @return
 	 */
 	public static boolean recursiveDeleteFile(File file) {
-		if (file.isDirectory()) {
-			File[] fileArray = file.listFiles();
-			boolean returned = true;
-			for (int i = 0; i < fileArray.length; i++) {
-				File curFile = fileArray[i];
-				if (recursiveDeleteFile(curFile) == false) {
-					returned = false;
-				}
-			}
-			return returned && file.delete();
+		try {
+			for (Path path : Files.walk(file.toPath()).sorted(Comparator.reverseOrder()).collect(Collectors.toList()))
+				Files.deleteIfExists(path);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
-		return file.delete();
 	}
 
 	/*
@@ -481,8 +483,7 @@ public class FileUtils {
 		}
 		File[] files = directory.listFiles();
 		int count = 0;
-		for (int i = 0; i < files.length; i++) {
-			File file = files[i];
+		for (File file : files) {
 			if (fileFilter != null && !fileFilter.accept(file)) {
 				continue;
 			}
@@ -946,18 +947,17 @@ public class FileUtils {
 	}
 
 	public static Vector<File> listFilesRecursively(File dir, final FilenameFilter filter) {
-		if (!dir.isDirectory()) {
-			return null;
-		}
 		Vector<File> files = new Vector<>();
-		for (File file : dir.listFiles()) {
-			if (file.isDirectory()) {
-				files.addAll(listFilesRecursively(file, filter));
+		File[] listFiles = dir.listFiles();
+		if (listFiles != null)
+			for (File file : listFiles) {
+				if (file.isDirectory()) {
+					files.addAll(listFilesRecursively(file, filter));
+				}
+				else if (filter.accept(dir, file.getName())) {
+					files.add(file);
+				}
 			}
-			else if (filter.accept(dir, file.getName())) {
-				files.add(file);
-			}
-		}
 		return files;
 	}
 
@@ -987,72 +987,44 @@ public class FileUtils {
 	 * @throws IOException
 	 */
 	public static boolean rename(File source, File destination) throws IOException {
-		BufferedInputStream bis = null;
-		BufferedOutputStream bos = null;
-		try {
-			// First (very important on Windows) delete the destination if it exists (rename will fail on Windows if destination
-			// exists)
-			if (destination.exists()) {
-				destination.delete();
-			}
-			// Do a normal API rename attempt
-			if (source.renameTo(destination)) {
-				return true;
-			}
+		// First (very important on Windows) delete the destination if it exists (rename will fail on Windows if destination
+		// exists)
+		if (destination.exists()) {
+			destination.delete();
+		}
+		// Do a normal API rename attempt
+		if (source.renameTo(destination)) {
+			return true;
+		}
 
-			if (destination.isDirectory()) {
-				System.err.println("Cannot rename from " + source + " to " + destination);
-				return false;
-			}
+		if (destination.isDirectory()) {
+			System.err.println("Cannot rename from " + source + " to " + destination);
+			return false;
+		}
 
-			FileUtils.createNewFile(destination);
-			// API rename attempt failed, forcibly copy
-			bis = new BufferedInputStream(new FileInputStream(source));
-			bos = new BufferedOutputStream(new FileOutputStream(destination));
-
+		FileUtils.createNewFile(destination);
+		// API rename attempt failed, forcibly copy
+		try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(source));
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(destination))) {
 			// Do the copy
 			pipeStreams(bos, bis);
-
 			// Close the files
 			bos.flush();
-
-			// Close the files
-			bis.close();
-			bos.close();
-
-			// Attempt to preserve file modification times
-			destination.setLastModified(source.lastModified());
-			if (!source.canWrite()) {
-				destination.setReadOnly();
-			}
-
-			// Delete the original
-			source.delete();
-
-			bis = null;
-			bos = null;
-			return true;
-		} finally {
-			try {
-				if (bis != null) {
-					bis.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
-				if (bos != null) {
-					bos.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
+
+		// Attempt to preserve file modification times
+		destination.setLastModified(source.lastModified());
+		if (!source.canWrite()) {
+			destination.setReadOnly();
+		}
+
+		// Delete the original
+		source.delete();
+
+		return true;
 	}
 
-	private static void pipeStreams(OutputStream to, InputStream from) throws IOException {
-		BufferedInputStream in = new BufferedInputStream(from);
-		BufferedOutputStream out = new BufferedOutputStream(to);
+	private static void pipeStreams(BufferedOutputStream out, BufferedInputStream in) throws IOException {
 		byte[] buffer = new byte[8192];
 		int read;
 		while ((read = in.read(buffer, 0, 8192)) != -1) {
@@ -1092,6 +1064,7 @@ public class FileUtils {
 						fileContent = FileUtils.fileContents(connection.getInputStream(), "UTF-8");
 						FileUtils.saveToFile(file, fileContent);
 					}
+					connection.disconnect();
 				}
 				else {
 					if (c.getDate() == 0 || c.getDate() > lastModified) {

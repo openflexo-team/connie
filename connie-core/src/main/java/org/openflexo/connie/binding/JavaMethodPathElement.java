@@ -62,7 +62,7 @@ import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
 
 /**
- * Modelize a java call which is a call to a method and with some arguments
+ * Model a java call which is a call to a method and with some arguments
  * 
  * @author sylvain
  * 
@@ -159,8 +159,9 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 		for (Function.FunctionArgument a : getFunction().getArguments()) {
 			try {
-				args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
-						getMethodDefinition().getMethod().getGenericParameterTypes()[i]);
+				if (getParameter(a) != null)
+					args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
+							getMethodDefinition().getMethod().getGenericParameterTypes()[i]);
 			} catch (InvocationTargetException e) {
 				throw new InvocationTargetTransformException(e);
 			}
@@ -239,23 +240,25 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 		for (FunctionArgument arg : getArguments()) {
 			DataBinding<?> argValue = getParameter(arg);
-			if (argValue.isValid()) {
+			if (argValue != null && argValue.isValid()) {
 				Expression currentExpression = argValue.getExpression();
-				Expression transformedExpression = currentExpression.transform(transformer);
-				if (!transformedExpression.equals(currentExpression)) {
-					hasBeenTransformed = true;
-					DataBinding<?> newTransformedBinding = new DataBinding<>(argValue.getOwner(), argValue.getDeclaredType(),
-							argValue.getBindingDefinitionType(), false);
-					newTransformedBinding.setExpression(transformedExpression);
-					// TODO: better to do i think
-					newTransformedBinding.isValid();
-					transformedArgs.add(newTransformedBinding);
-					// System.out.println(
-					// "On a transforme " + argValue + " en " + newTransformedBinding + " valid=" + newTransformedBinding.isValid());
-					hasBeenTransformed = true;
-				}
-				else {
-					transformedArgs.add(argValue);
+				if (currentExpression != null) {
+					Expression transformedExpression = currentExpression.transform(transformer);
+					if (!transformedExpression.equals(currentExpression)) {
+						hasBeenTransformed = true;
+						DataBinding<?> newTransformedBinding = new DataBinding<>(argValue.getOwner(), argValue.getDeclaredType(),
+								argValue.getBindingDefinitionType(), false);
+						newTransformedBinding.setExpression(transformedExpression);
+						// TODO: better to do i think
+						newTransformedBinding.isValid();
+						transformedArgs.add(newTransformedBinding);
+						// System.out.println(
+						// "On a transforme " + argValue + " en " + newTransformedBinding + " valid=" + newTransformedBinding.isValid());
+						hasBeenTransformed = true;
+					}
+					else {
+						transformedArgs.add(argValue);
+					}
 				}
 			}
 			else {
@@ -275,14 +278,16 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 		for (FunctionArgument arg : getArguments()) {
 			DataBinding<?> argValue = getParameter(arg);
-			if (argValue.isValid()) {
+			if (argValue != null && argValue.isValid()) {
 				Expression currentExpression = argValue.getExpression();
-				Expression transformedExpression = currentExpression.transform(transformer);
-				if (!transformedExpression.equals(currentExpression)) {
-					DataBinding<?> transformedBinding = transformedPathElement.getParameter(arg.getArgumentName());
-					transformedBinding.setExpression(transformedExpression);
-					// TODO: better to do i think
-					transformedBinding.isValid();
+				if (currentExpression != null) {
+					Expression transformedExpression = currentExpression.transform(transformer);
+					if (!transformedExpression.equals(currentExpression)) {
+						DataBinding<?> transformedBinding = transformedPathElement.getParameter(arg.getArgumentName());
+						transformedBinding.setExpression(transformedExpression);
+						// TODO: better to do i think
+						transformedBinding.isValid();
+					}
 				}
 			}
 		}

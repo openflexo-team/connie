@@ -41,6 +41,7 @@ package org.openflexo.diff.merge;
 
 import org.openflexo.diff.ComputeDiff.DiffChange;
 import org.openflexo.diff.DiffSource;
+import org.openflexo.diff.DiffSource.MergeToken;
 
 public abstract class AbstractAutomaticMergeResolvingRule implements AutomaticMergeResolvingRule {
 	@Override
@@ -50,57 +51,33 @@ public abstract class AbstractAutomaticMergeResolvingRule implements AutomaticMe
 	public abstract String getMergedResult(MergeChange change);
 
 	public static String relativeLeftTokenAt(MergeChange change, int relativeIndex) throws IndexOutOfBoundsException {
-		DiffSource leftSource = change.getMerge().getLeftSource();
-		if (change.getFirst0() + relativeIndex < 0) {
-			throw new IndexOutOfBoundsException();
-		}
-		if (change.getFirst0() + relativeIndex >= leftSource.tokensCount()) {
-			throw new IndexOutOfBoundsException();
-		}
-		return leftSource.tokenAt(change.getFirst0() + relativeIndex).getToken();
+		return getToken(change.getFirst0() + relativeIndex, change.getMerge().getLeftSource());
 	}
 
 	public static String relativeRightTokenAt(MergeChange change, int relativeIndex) throws IndexOutOfBoundsException {
-		DiffSource rightSource = change.getMerge().getRightSource();
-		if (change.getFirst2() + relativeIndex < 0) {
-			throw new IndexOutOfBoundsException();
-		}
-		if (change.getFirst2() + relativeIndex >= rightSource.tokensCount()) {
-			throw new IndexOutOfBoundsException();
-		}
-		return rightSource.tokenAt(change.getFirst2() + relativeIndex).getToken();
+		return getToken(change.getFirst2() + relativeIndex, change.getMerge().getRightSource());
 	}
 
 	public static String relativeOriginalTokenAt(MergeChange change, int relativeIndex) throws IndexOutOfBoundsException {
-		DiffSource originalSource = change.getMerge().getOriginalSource();
-		if (change.getFirst1() + relativeIndex < 0) {
-			throw new IndexOutOfBoundsException();
-		}
-		if (change.getFirst1() + relativeIndex >= originalSource.tokensCount()) {
-			throw new IndexOutOfBoundsException();
-		}
-		return originalSource.tokenAt(change.getFirst1() + relativeIndex).getToken();
+		return getToken(change.getFirst1() + relativeIndex, change.getMerge().getOriginalSource());
 	}
 
 	public static String relativeLeftTokenAt(DiffChange change, DiffSource leftSource, int relativeIndex) throws IndexOutOfBoundsException {
-		if (change.getFirst0() + relativeIndex < 0) {
-			throw new IndexOutOfBoundsException();
-		}
-		if (change.getFirst0() + relativeIndex >= leftSource.tokensCount()) {
-			throw new IndexOutOfBoundsException();
-		}
-		return leftSource.tokenAt(change.getFirst0() + relativeIndex).getToken();
+		return getToken(change.getFirst0() + relativeIndex, leftSource);
 	}
 
 	public static String relativeRightTokenAt(DiffChange change, DiffSource rightSource, int relativeIndex)
 			throws IndexOutOfBoundsException {
-		if (change.getFirst1() + relativeIndex < 0) {
-			throw new IndexOutOfBoundsException();
-		}
-		if (change.getFirst1() + relativeIndex >= rightSource.tokensCount()) {
-			throw new IndexOutOfBoundsException();
-		}
-		return rightSource.tokenAt(change.getFirst1() + relativeIndex).getToken();
+		return getToken(change.getFirst1() + relativeIndex, rightSource);
 	}
 
+	private static String getToken(int index, DiffSource source) throws IndexOutOfBoundsException {
+		if (index < 0 || index >= source.tokensCount()) {
+			throw new IndexOutOfBoundsException();
+		}
+		MergeToken mergeToken = source.tokenAt(index);
+		if (mergeToken == null)
+			return null; // Cannot happen
+		return mergeToken.getToken();
+	}
 }

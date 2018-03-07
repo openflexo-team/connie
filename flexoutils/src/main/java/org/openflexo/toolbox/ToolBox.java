@@ -73,14 +73,16 @@ import javax.swing.filechooser.FileView;
 public class ToolBox {
 
 	private enum PlatformKind {
-		Windows, Linux, Macos, Other
+		Windows, Linux, Macos, Other, Unknown
 	};
 
 	private static PlatformKind PLATFORM;
 
 	static {
 		String osName = System.getProperty("os.name");
-		if (osName.indexOf("Mac OS") > -1) {
+		if (osName == null)
+			PLATFORM = PlatformKind.Unknown;
+		else if (osName.indexOf("Mac OS") > -1) {
 			PLATFORM = PlatformKind.Macos;
 		}
 		else if (osName.indexOf("Windows") > -1) {
@@ -453,15 +455,16 @@ public class ToolBox {
 		}
 		return buf.toString();
 	}
-	*/
-
-	public static String getWodKeyPath(String s) {
+	
+	private static String getWodKeyPath(String s) {
 		if (s == null) {
 			return null;
 		}
 		s = ToolBox.replaceStringByStringInString("()", "", s);
 		return s;
 	}
+	
+	*/
 
 	public static String stackTraceAsAString(Throwable e) {
 		StringBuilder sb = new StringBuilder(
@@ -565,34 +568,6 @@ public class ToolBox {
 			return parser.build(xmlStream);
 		}
 	*/
-	private static Boolean fileChooserRequiresFix;
-
-	public static boolean fileChooserRequiresFix() {
-		if (fileChooserRequiresFix == null) {
-			if (isWindows()) {
-				String javaVersion = System.getProperty("java.version");
-				String version;
-				String release = null;
-				if (javaVersion.indexOf('_') > 0) {
-					version = javaVersion.substring(0, javaVersion.indexOf('_'));
-					release = javaVersion.substring(javaVersion.indexOf('_') + 1);
-				}
-				else {
-					version = javaVersion;
-				}
-				try {
-					fileChooserRequiresFix = version.startsWith("1.6.0") && (release == null || Integer.parseInt(release) < 10);
-				} catch (NumberFormatException e) {
-					e.printStackTrace();
-					fileChooserRequiresFix = true;
-				}
-			}
-			else {
-				fileChooserRequiresFix = false;
-			}
-		}
-		return fileChooserRequiresFix;
-	}
 
 	// A deadlock can occurs with windows when retrieving an icon. It seems that it occurs on remote folders only
 	// The following fixes that:
@@ -606,39 +581,11 @@ public class ToolBox {
 		return null;
 	}
 
-	public static boolean getIconFileChooserRequiresFix(File f, FileView view) {
+	private static boolean getIconFileChooserRequiresFix(File f, FileView view) {
 		if (ToolBox.isWindows() && FileSystemView.getFileSystemView().isDrive(f) && (view == null || view.getIcon(f) == null)) {
 			return true;
 		}
 		return false;
-	}
-
-	public static void fixFileChooser() {
-		String[] cmd = new String[] { "regsvr32", "/u", "/s", System.getenv("windir") + "\\system32\\zipfldr.dll" };
-		try {
-			Runtime.getRuntime().exec(cmd);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/*
-		public static void fixFileChooserDeadlock() {
-			String[] cmd = new String[] { "regsvr32", "/u", "/s", System.getenv("windir") + "\\system32\\zipfldr.dll" };
-			try {
-				Runtime.getRuntime().exec(cmd);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	*/
-	public static void undoFixFileChooser() {
-		String[] cmd = new String[] { "regsvr32", "/s", System.getenv("windir") + "\\system32\\zipfldr.dll" };
-		try {
-			Runtime.getRuntime().exec(cmd);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -806,7 +753,7 @@ public class ToolBox {
 		return hashString.toString();
 	}
 	*/
-	public static String[] getHostPortFromString(String hostPort, int defaultPort) {
+	static String[] getHostPortFromString(String hostPort, int defaultPort) {
 		int hostPortSepIndex = hostPort.indexOf(":");
 		if (hostPortSepIndex > -1) {
 			return new String[] { hostPort.substring(0, hostPortSepIndex), hostPort.substring(hostPortSepIndex + 1) };
@@ -814,7 +761,7 @@ public class ToolBox {
 		return new String[] { hostPort, String.valueOf(defaultPort) };
 	}
 
-	public static String getContentAtURL(URL url) throws UnsupportedEncodingException, IOException {
+	static String getContentAtURL(URL url) throws UnsupportedEncodingException, IOException {
 		if (url.getProtocol().toLowerCase().startsWith("http")) {
 			return getContentAtHTTPURL(url);
 		}
@@ -827,25 +774,31 @@ public class ToolBox {
 		}
 	}
 
-	public static String getContentAtHTTPURL(URL url) throws IOException {
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		int httpStatus = conn.getResponseCode();
-		if (httpStatus > 199 && httpStatus < 300) {
-			try (InputStream is = conn.getInputStream()) {
-				return getContentFromInputStream(is);
+	private static String getContentAtHTTPURL(URL url) throws IOException {
+		HttpURLConnection conn = null;
+		try {
+			conn = (HttpURLConnection) url.openConnection();
+			int httpStatus = conn.getResponseCode();
+			if (httpStatus > 199 && httpStatus < 300) {
+				try (InputStream is = conn.getInputStream()) {
+					return getContentFromInputStream(is);
+				}
 			}
+			else if (httpStatus > 299 && httpStatus < 400) {
+				return getContentAtHTTPURL(new URL(conn.getHeaderField("Location")));
+			}
+			return null;
+		} finally {
+			if (conn != null)
+				conn.disconnect();
 		}
-		else if (httpStatus > 299 && httpStatus < 400) {
-			return getContentAtHTTPURL(new URL(conn.getHeaderField("Location")));
-		}
-		return null;
 	}
 
-	public static String getContentAtFileURL(URL url) throws UnsupportedEncodingException, IOException {
+	private static String getContentAtFileURL(URL url) throws UnsupportedEncodingException, IOException {
 		return getContentFromInputStream(url.openStream());
 	}
 
-	public static String getContentFromInputStream(InputStream is) throws IOException, UnsupportedEncodingException {
+	private static String getContentFromInputStream(InputStream is) throws IOException, UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
 		byte[] b = new byte[1024];
 		while (is.available() > 0) {
@@ -939,6 +892,8 @@ public class ToolBox {
 	 */
 	public static int getJavaVersion() {
 		String version = System.getProperty("java.version");
+		if (version == null)
+			return 0;
 		if (version.startsWith("1.")) {
 			version = version.substring(2);
 		}

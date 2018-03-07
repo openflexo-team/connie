@@ -285,11 +285,11 @@ public class FlexoLoggingManager {
 		Resource newConfigurationFile = ResourceLocator.locateResource("Config/logging_" + fileName + ".properties");
 		if (newConfigurationFile != null) {
 			_configurationFile = newConfigurationFile;
+			if (_delegate != null) {
+				_delegate.setConfigurationFileLocation(newConfigurationFile);
+			}
+			reloadLoggingFile(newConfigurationFile);
 		}
-		if (_delegate != null) {
-			_delegate.setConfigurationFileLocation(newConfigurationFile);
-		}
-		reloadLoggingFile(newConfigurationFile);
 	}
 
 	public String getConfigurationFileName() {

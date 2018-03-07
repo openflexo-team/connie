@@ -101,7 +101,8 @@ public class ExpressionParser {
 	 * @return
 	 */
 	private static Expression postSemanticAnalysisReduction(Expression e) {
-		if (e instanceof UnaryOperatorExpression && ((UnaryOperatorExpression) e).getOperator() == ArithmeticUnaryOperator.UNARY_MINUS
+		if (e != null && e instanceof UnaryOperatorExpression
+				&& ((UnaryOperatorExpression) e).getOperator() == ArithmeticUnaryOperator.UNARY_MINUS
 				&& ((UnaryOperatorExpression) e).getArgument() instanceof ArithmeticConstant) {
 			// In this case, we will reduce this into a negative single arithmetic constant
 			ArithmeticConstant<?> c = (ArithmeticConstant<?>) ((UnaryOperatorExpression) e).getArgument();

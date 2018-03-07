@@ -131,28 +131,28 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		Expression expression = null;
 		try {
 			expression = ExpressionParser.parse(bindingPath);
-
-			expression = expression.transform(new ExpressionTransformer() {
-				@Override
-				public Expression performTransformation(Expression e) throws org.openflexo.connie.exception.TransformException {
-					if (e instanceof BindingValue) {
-						BindingValue bv = (BindingValue) e;
-						if (bv.getParsedBindingPath().size() > 0) {
-							AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
-							if (!(firstPathElement instanceof NormalBindingPathElement)
-									|| (!((NormalBindingPathElement) firstPathElement).property.equals("object"))
-											&& !parameters.contains(((NormalBindingPathElement) firstPathElement).property)) {
-								bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
-								bv.markedAsToBeReanalized();
+			if (expression != null) {
+				expression = expression.transform(new ExpressionTransformer() {
+					@Override
+					public Expression performTransformation(Expression e) throws org.openflexo.connie.exception.TransformException {
+						if (e instanceof BindingValue) {
+							BindingValue bv = (BindingValue) e;
+							if (bv.getParsedBindingPath().size() > 0) {
+								AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
+								if (!(firstPathElement instanceof NormalBindingPathElement)
+										|| (!((NormalBindingPathElement) firstPathElement).property.equals("object"))
+												&& !parameters.contains(((NormalBindingPathElement) firstPathElement).property)) {
+									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
+									bv.markedAsToBeReanalized();
+								}
 							}
+							return bv;
 						}
-						return bv;
+						return e;
 					}
-					return e;
-				}
-			});
-
-			return expression.toString();
+				});
+				return expression.toString();
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (org.openflexo.connie.exception.TransformException e) {

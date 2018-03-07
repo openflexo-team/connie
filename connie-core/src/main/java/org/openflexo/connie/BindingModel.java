@@ -158,7 +158,6 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	}
 
 	public List<BindingVariable> getAccessibleBindingVariables() {
-
 		if (accessibleBindingVariables == null) {
 			updateAccessibleBindingVariables();
 		}
@@ -174,7 +173,7 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 		for (BindingVariable bv : declaredBindingVariables) {
 			accessibleBindingVariables.add(bv);
 		}
-		if (baseBindingModel != null) {
+		if (baseBindingModel != null && baseBindingModel.getAccessibleBindingVariables() != null) {
 			for (BindingVariable bv : baseBindingModel.getAccessibleBindingVariables()) {
 				if (getDeclaredBindingVariableNamed(bv.getVariableName()) == null) {
 					// this property is not overriden, take it
@@ -185,6 +184,8 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	}
 
 	public int getBindingVariablesCount() {
+		if (getAccessibleBindingVariables() == null)
+			return 0;
 		return getAccessibleBindingVariables().size();
 	}
 
@@ -265,26 +266,24 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	 */
 	@Override
 	public boolean equals(Object obj) {
-
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
-
 		if (!(obj instanceof BindingModel)) {
 			return false;
 		}
-
 		BindingModel other = (BindingModel) obj;
-
 		if (getBindingVariablesCount() != other.getBindingVariablesCount()) {
 			return false;
 		}
 		for (int i = 0; i < getBindingVariablesCount(); i++) {
 			BindingVariable bv1 = getBindingVariableAt(i);
-			BindingVariable bv2 = other.bindingVariableNamed(bv1.getVariableName());
-			if (!bv1.equals(bv2)) {
-				return false;
+			if (bv1 != null) {
+				BindingVariable bv2 = other.bindingVariableNamed(bv1.getVariableName());
+				if (!bv1.equals(bv2)) {
+					return false;
+				}
 			}
 		}
 		return true;

@@ -75,14 +75,16 @@ public abstract class DirectoryWatcher extends TimerTask {
 			// System.out.println("Init NodeDirectoryWatcher on " + directory);
 			this.directory = directory;
 			this.watcher = watcher;
-			for (File f : directory.listFiles()) {
-				lastModified.put(f, f.lastModified());
-				recordChecksumForFile(f, false);
-				if (f.isDirectory()) {
-					subNodes.put(f, new NodeDirectoryWatcher(f, watcher, notifyAdding));
-				}
-				if (notifyAdding) {
-					watcher.fileAdded(f);
+			if (directory.listFiles() != null) {
+				for (File f : directory.listFiles()) {
+					lastModified.put(f, f.lastModified());
+					recordChecksumForFile(f, false);
+					if (f.isDirectory()) {
+						subNodes.put(f, new NodeDirectoryWatcher(f, watcher, notifyAdding));
+					}
+					if (notifyAdding) {
+						watcher.fileAdded(f);
+					}
 				}
 			}
 		}
@@ -93,7 +95,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 			}
 			Integer checksum = checksums.get(f);
 			if (checksum == null || force) {
-				if (f.isDirectory()) {
+				if (f.listFiles() != null) {
 					StringBuffer sb = new StringBuffer();
 					for (File child : f.listFiles()) {
 						sb.append(child.getName());
@@ -122,19 +124,20 @@ public abstract class DirectoryWatcher extends TimerTask {
 		}
 
 		private synchronized boolean watch() {
-
+			if (directory == null) {
+				return false;
+			}
+			File[] listFiles = directory.listFiles();
+			if (listFiles == null) {
+				return false;
+			}
 			Set<File> checkedFiles = new HashSet<>();
-
 			List<File> modifiedFiles = new ArrayList<>();
 			List<File> addedFiles = new ArrayList<>();
 			List<File> deletedFiles = new ArrayList<>();
 
-			if (directory == null || !directory.exists()) {
-				return false;
-			}
-
 			// scan the files and check for modification/addition
-			for (File f : directory.listFiles()) {
+			for (File f : listFiles) {
 				Long current = lastModified.get(f);
 				checkedFiles.add(f);
 				if (current == null) {

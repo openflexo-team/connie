@@ -38,9 +38,6 @@
 
 package org.openflexo.rm;
 
-import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
-import org.openflexo.toolbox.FileUtils;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
@@ -50,6 +47,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
+import org.openflexo.toolbox.FileUtils;
 
 /**
  * This {@link ResourceLocatorDelegate} allows to retrieve {@link Resource} from source code repositories
@@ -125,29 +125,33 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 	}
 
 	private static void appendAllResourcesDirectories(File root, final String searchedToken, List<File> returned) {
-		for (File f : root.listFiles(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.equals(searchedToken);
-			}
-		})) {
-			if (searchedToken.equals("src")) {
-				appendAllResourcesDirectories(f, "main", returned);
-				appendAllResourcesDirectories(f, "test", returned);
-				appendAllResourcesDirectories(f, "dev", returned);
-			}
-			else if (searchedToken.equals("main") || searchedToken.equals("test") || searchedToken.equals("dev")) {
-				appendAllResourcesDirectories(f, "resources", returned);
-			}
-			else if (searchedToken.equals("resources")) {
-				// System.out.println("==> Found " + f);
-				returned.add(f);
-			}
-		}
-		for (File d : root.listFiles()) {
-			if (d.isDirectory() && (new File(d, "pom.xml").exists() || new File(d, "build.gradle").exists())) {
-				appendAllResourcesDirectories(d, returned);
+		if (root != null) {
+			File[] listFiles = root.listFiles();
+			if (listFiles != null) {
+				for (File f : root.listFiles(new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						return name.equals(searchedToken);
+					}
+				})) {
+					if (searchedToken.equals("src")) {
+						appendAllResourcesDirectories(f, "main", returned);
+						appendAllResourcesDirectories(f, "test", returned);
+						appendAllResourcesDirectories(f, "dev", returned);
+					}
+					else if (searchedToken.equals("main") || searchedToken.equals("test") || searchedToken.equals("dev")) {
+						appendAllResourcesDirectories(f, "resources", returned);
+					}
+					else if (searchedToken.equals("resources")) {
+						// System.out.println("==> Found " + f);
+						returned.add(f);
+					}
+				}
+				for (File d : listFiles) {
+					if (d.isDirectory() && (new File(d, "pom.xml").exists() || new File(d, "build.gradle").exists())) {
+						appendAllResourcesDirectories(d, returned);
+					}
+				}
 			}
 		}
 	}
