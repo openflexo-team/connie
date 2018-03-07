@@ -108,7 +108,7 @@ public class KeyValueLibrary {
 		return returned;
 	}
 
-	public static Vector<KeyValueProperty> getDeclaredProperties(Type declaringType) {
+	private static Vector<KeyValueProperty> getDeclaredProperties(Type declaringType) {
 		Vector<KeyValueProperty> returned = DECLARED_KEY_VALUE_PROPERTIES.get(declaringType);
 		if (returned == null) {
 			if (LOGGER.isLoggable(Level.FINE)) {
@@ -123,7 +123,7 @@ public class KeyValueLibrary {
 		return returned;
 	}
 
-	public static Vector<MethodDefinition> getDeclaredMethods(Type declaringType) {
+	private static Vector<MethodDefinition> getDeclaredMethods(Type declaringType) {
 		Vector<MethodDefinition> returned = DECLARED_METHODS.get(declaringType);
 		if (returned == null) {
 			LOGGER.fine("build declaredMethods() for " + declaringType);
@@ -153,7 +153,7 @@ public class KeyValueLibrary {
 		return returned;
 	}
 
-	public static void appendAccessibleProperties(Type declaringType, Vector<KeyValueProperty> returned) {
+	private static void appendAccessibleProperties(Type declaringType, Vector<KeyValueProperty> returned) {
 		Type current = declaringType;
 		while (current != null) {
 			Vector<KeyValueProperty> declaredProperties = getDeclaredProperties(current);
@@ -446,9 +446,8 @@ public class KeyValueLibrary {
 		if (params == null) {
 			params = new Type[0];
 		}
-		StringBuffer sb = null;
+		StringBuffer sb = new StringBuffer();
 		if (LOGGER.isLoggable(Level.FINE)) {
-			sb = new StringBuffer();
 			for (Type t : params) {
 				sb.append(" " + t.toString());
 			}

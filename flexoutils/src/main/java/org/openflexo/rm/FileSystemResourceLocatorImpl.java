@@ -53,7 +53,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
-import org.openflexo.toolbox.FileUtils;
 
 /**
  * @author bmangez, sylvain, xtof
@@ -67,7 +66,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	private static String PATH_SEP = System.getProperty("file.separator");
 
 	private final Map<String, List<FileResourceImpl>> cache = new HashMap<>();
-	final Map<File, FileResourceImpl> filesCache = new HashMap<>();
+	protected final Map<File, FileResourceImpl> filesCache = new HashMap<>();
 
 	@Override
 	public FileResourceImpl locateResource(String relativePathName) {
@@ -365,19 +364,18 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	 * @param relativePathName
 	 * @return
 	 */
-
-	public File locateDirectory(String relativePathName) {
-		FileResourceImpl rl = locateResource(relativePathName);
-
-		File f = rl.getFile();
-		if (f.isDirectory()) {
-			return f;
-		}
-		else {
+	/* Unused
+		private File locateDirectory(String relativePathName) {
+			FileResourceImpl rl = locateResource(relativePathName);
+			if (rl != null) {
+				File f = rl.getFile();
+				if (f != null && f.isDirectory()) {
+					return f;
+				}
+			}
 			return null;
 		}
-	}
-
+	*/
 	/**
 	 * Locate and returns file identified by relativePathName<br>
 	 * If many files match supplied relativePathName, then return the one which is most narrow of current dir, relative to the distance
@@ -432,7 +430,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	 * @param relativePathName
 	 * @return
 	 */
-	public List<File> locateAllFiles(String relativePathName) {
+	private List<File> locateAllFiles(String relativePathName) {
 		return locateAllFiles(relativePathName, true);
 	}
 
@@ -499,24 +497,26 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	private static File userHomeDirectory = null;
 
-	public static File getPreferredResourcePath() {
+	/* Unused
+	private static File getPreferredResourcePath() {
 		return preferredResourcePath;
 	}
-
-	public void resetFlexoResourceLocation(File newLocation) {
+	
+	private void resetFlexoResourceLocation(File newLocation) {
 		preferredResourcePath = newLocation;
 		directoriesSearchOrder = null;
 	}
+	private void init() {
+		getDirectoriesSearchOrder();
+	}
+	
+	*/
 
 	public void printDirectoriesSearchOrder(PrintStream out) {
 		out.println("Directories search order is:");
 		for (File file : getDirectoriesSearchOrder()) {
 			out.println(file.getAbsolutePath());
 		}
-	}
-
-	public void init() {
-		getDirectoriesSearchOrder();
 	}
 
 	/*public static void addProjectDirectory(File projectDirectory) {
@@ -526,23 +526,24 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		}
 	}*/
 
-	protected List<File> getDirectoriesSearchOrder() {
+	private synchronized void updateDirectoriesSearchOrder() {
 		if (directoriesSearchOrder == null) {
-			synchronized (FileSystemResourceLocatorImpl.class) {
-				if (directoriesSearchOrder == null) {
-					if (LOGGER.isLoggable(Level.INFO)) {
-						LOGGER.info("Initializing directories search order");
-					}
-					directoriesSearchOrder = new ArrayList<>();
-					if (preferredResourcePath != null) {
-						/*if (logger.isLoggable(Level.INFO)) {
-							logger.info("Adding directory " + preferredResourcePath.getAbsolutePath());
-						}*/
-						directoriesSearchOrder.add(preferredResourcePath);
-					}
-				}
+			if (LOGGER.isLoggable(Level.INFO)) {
+				LOGGER.info("Initializing directories search order");
+			}
+			directoriesSearchOrder = new ArrayList<>();
+			if (preferredResourcePath != null) {
+				/*if (logger.isLoggable(Level.INFO)) {
+					logger.info("Adding directory " + preferredResourcePath.getAbsolutePath());
+				}*/
+				directoriesSearchOrder.add(preferredResourcePath);
 			}
 		}
+	}
+
+	protected List<File> getDirectoriesSearchOrder() {
+		if (directoriesSearchOrder == null)
+			updateDirectoriesSearchOrder();
 		return directoriesSearchOrder;
 	}
 
@@ -564,7 +565,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	 * 
 	 * @param path
 	 */
-	public void prependToDirectories(String path) {
+	public synchronized void prependToDirectories(String path) {
 		File d = new File(path);
 		if (directoriesSearchOrder == null) {
 			this.getDirectoriesSearchOrder();
@@ -580,7 +581,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	 * 
 	 * @param path
 	 */
-	public void appendToDirectories(String path) {
+	public synchronized void appendToDirectories(String path) {
 		File d = new File(path);
 		if (directoriesSearchOrder == null) {
 			getDirectoriesSearchOrder();
