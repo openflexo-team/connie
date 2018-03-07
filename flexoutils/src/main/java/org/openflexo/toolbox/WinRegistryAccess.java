@@ -111,6 +111,8 @@ public class WinRegistryAccess {
 					return null;
 				}
 				return result.substring(p + attributeType.length()).trim();
+			} finally {
+				process.destroy();
 			}
 		} catch (Exception e) {
 			return null;
