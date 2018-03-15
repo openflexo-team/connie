@@ -53,7 +53,6 @@ import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
 
 public class KeyValueProperty extends Observable {
-
 	static final Logger LOGGER = Logger.getLogger(KeyValueProperty.class.getPackage().getName());
 
 	/** Stores property's name */
@@ -525,7 +524,9 @@ public class KeyValueProperty extends Observable {
 						+ ": method " + getMethod.getName() + " Exception raised: " + e.toString());
 			}
 		}
-		throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor get method found !!!");
+		else {
+			throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor get method found !!!");
+		}
 	}
 
 	/**
@@ -576,7 +577,6 @@ public class KeyValueProperty extends Observable {
 							"InvalidKeyValuePropertyException: class " + declaringClass.getName() + ": method " + setMethod.getName()
 									+ "Argument mismatch: tried to pass a '" + (aValue != null ? aValue.getClass().getName() : "null")
 									+ " instead of a " + setMethod.getParameterTypes()[0] + " Exception raised: " + e.toString());
-
 				} catch (Exception e) {
 					// e.printStackTrace();
 					throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
@@ -589,6 +589,8 @@ public class KeyValueProperty extends Observable {
 						+ " instead of " + declaringClass.getName());
 			}
 		}
-		throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor set method found !!!");
+		else {
+			throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor set method found !!!");
+		}
 	}
 }
