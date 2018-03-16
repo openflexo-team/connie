@@ -1,1 +1,1 @@
-include 'testutils', 'flexoutils', 'connie-parser', 'connie-core'
+include 'testutils', 'connie-utils', 'connie-parser', 'connie-core'
