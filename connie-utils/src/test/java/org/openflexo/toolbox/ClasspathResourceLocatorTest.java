@@ -83,27 +83,25 @@ public class ClasspathResourceLocatorTest extends TestCase {
 		System.out.println("Found META-INF here: " + rloc.getURI());
 
 		// Sylvain, this does not work on Java 9, the corresponding module does not export FrameClose.wav
-		rloc = ResourceLocator.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
-
 		if (ToolBox.getJavaVersion() < 9) {
+			rloc = ResourceLocator.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
 			assertTrue(rloc != null);
+			if (rloc != null) {
+
+				Resource container = rloc.getContainer();
+
+				if (container != null) {
+					Pattern pat = Pattern.compile(".*[.]wav");
+					assertTrue(rloc.getContainer().getContents(pat, false).size() > 1);
+
+					for (Resource r : rloc.getContainer().getContents(pat, false)) {
+						System.out.println(r.getURI());
+					}
+				}
+
+			}
 		}
 		// System.out.println(rloc.getURI());
-
-		if (rloc != null) {
-
-			Resource container = rloc.getContainer();
-
-			if (container != null) {
-				Pattern pat = Pattern.compile(".*[.]wav");
-				assertTrue(rloc.getContainer().getContents(pat, false).size() > 1);
-
-				for (Resource r : rloc.getContainer().getContents(pat, false)) {
-					System.out.println(r.getURI());
-				}
-			}
-
-		}
 	}
 
 	@Test
