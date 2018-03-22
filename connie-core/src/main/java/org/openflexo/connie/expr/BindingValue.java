@@ -624,9 +624,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		bindingVariable = null;
 	}
 
+	/* Unused
 	private boolean needsAnalysing() {
 		return needsAnalysing;
 	}
+	*/
 
 	public boolean isValid(DataBinding<?> dataBinding) {
 
@@ -1121,13 +1123,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @return
 	 */
 	public List<TargetObject> getTargetObjects(BindingEvaluationContext context) {
-
 		boolean debug = false;
-
-		/*if (toString().equals("data.validationModel.getGenericRuleSet(ClassesTable.selected).rules")) {
-			debug = true;
-		}*/
-
 		if (debug) {
 			LOGGER.info("Computing getTargetObjects() for " + toString() + " with BindingEvaluationContext=" + context);
 		}
@@ -1166,19 +1162,15 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			} catch (TypeMismatchException e) {
 				current = null;
 				// We silently escape...
-				// e.printStackTrace();
 			} catch (NullReferenceException e) {
 				current = null;
 				// We silently escape...
-				// e.printStackTrace();
 			} catch (InvocationTargetTransformException e) {
 				current = null;
 				// We silently escape...
-				// e.printStackTrace();
 			} catch (InvalidKeyValuePropertyException e) {
 				current = null;
 				// We silently escape...
-				// e.printStackTrace();
 			}
 			if (element instanceof FunctionPathElement) {
 				FunctionPathElement functionPathElement = (FunctionPathElement) element;
@@ -1191,23 +1183,19 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				return returned;
 			}
 		}
-		/*} catch (InvalidObjectSpecificationException e) {
-			logger.info("While computing getTargetObjects() for " + this + " with evaluation context=" + context);
-			logger.warning(e.getMessage());
-			return returned;
-		}*/
-
 		return returned;
 	}
 
-	private void debug() {
-		System.out.println("DEBUG BindingValue");
-		System.out.println("parsedBindingPath=" + parsedBindingPath);
-		System.out.println("bvar=" + bindingVariable);
-		System.out.println("bpath=" + bindingPath);
-		System.out.println("needsAnalysing=" + needsAnalysing);
-		System.out.println("analysingSuccessfull=" + analysingSuccessfull);
-	}
+	/* Unused
+		private void debug() {
+			System.out.println("DEBUG BindingValue");
+			System.out.println("parsedBindingPath=" + parsedBindingPath);
+			System.out.println("bvar=" + bindingVariable);
+			System.out.println("bpath=" + bindingPath);
+			System.out.println("needsAnalysing=" + needsAnalysing);
+			System.out.println("analysingSuccessfull=" + analysingSuccessfull);
+		}
+		*/
 
 	public static abstract class AbstractBindingPathElement {
 		public abstract String getSerializationRepresentation();
