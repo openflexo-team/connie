@@ -111,7 +111,4 @@ public interface IBindingPathElement extends Typed {
 	 * @return
 	 */
 	public boolean isNotifyingBindingPathChanged();
-
-	// Do not use yet
-	public void delete();
 }

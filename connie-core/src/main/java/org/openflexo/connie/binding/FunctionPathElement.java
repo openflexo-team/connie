@@ -116,14 +116,6 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		return activated;
 	}
 
-	@Override
-	public final void delete() {
-		if (isActivated()) {
-			desactivate();
-		}
-		type = null;
-	}
-
 	public void instanciateParameters(Bindable bindable) {
 		for (Function.FunctionArgument arg : function.getArguments()) {
 			DataBinding<?> parameter = getParameter(arg);
