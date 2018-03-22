@@ -57,9 +57,7 @@ public abstract class Constant<V> extends Expression {
 			if ((Boolean) value) {
 				return Constant.BooleanConstant.TRUE;
 			}
-			else {
-				return Constant.BooleanConstant.FALSE;
-			}
+			return Constant.BooleanConstant.FALSE;
 		}
 		else if (value instanceof Character) {
 			return new Constant.StringConstant(((Character) value).toString());
@@ -142,9 +140,7 @@ public abstract class Constant<V> extends Expression {
 			if (value) {
 				return TRUE;
 			}
-			else {
-				return FALSE;
-			}
+			return FALSE;
 		}
 
 		@Override

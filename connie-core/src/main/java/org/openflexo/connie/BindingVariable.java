@@ -60,7 +60,7 @@ public class BindingVariable implements SettableBindingPathElement, HasPropertyC
 	protected Type type;
 	private boolean settable = false;
 	private PropertyChangeSupport pcSupport;
-	private boolean activated = false;
+	// Unused private boolean activated = false;
 
 	public static final String VARIABLE_NAME_PROPERTY = "variableName";
 	public static final String TYPE_PROPERTY = "type";
@@ -217,7 +217,6 @@ public class BindingVariable implements SettableBindingPathElement, HasPropertyC
 		return false;
 	}
 
-	@Override
 	public void delete() {
 		if (pcSupport != null) {
 			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
@@ -226,5 +225,4 @@ public class BindingVariable implements SettableBindingPathElement, HasPropertyC
 		variableName = null;
 		type = null;
 	}
-
 }

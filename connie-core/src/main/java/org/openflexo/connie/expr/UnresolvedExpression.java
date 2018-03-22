@@ -41,7 +41,6 @@ package org.openflexo.connie.expr;
 
 import java.lang.reflect.Type;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -53,12 +52,6 @@ import org.openflexo.connie.exception.TypeMismatchException;
  * 
  */
 public class UnresolvedExpression extends Expression {
-
-	private static final Logger LOGGER = Logger.getLogger(UnresolvedExpression.class.getPackage().getName());
-
-	public UnresolvedExpression() {
-	}
-
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
 	}

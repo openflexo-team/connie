@@ -103,42 +103,34 @@ public class AccessorMethod implements Comparable<Object> {
 				// regarding the specialization of their parameters
 				return 2;
 			}
+			for (int i = 0; i < getMethod().getParameterTypes().length; i++) {
 
-			else {
+				Class<?> localParameterType = getMethod().getParameterTypes()[i];
+				Class<?> comparedParameterType = comparedAccessorMethod.getMethod().getParameterTypes()[i];
 
-				for (int i = 0; i < getMethod().getParameterTypes().length; i++) {
+				if (!localParameterType.equals(comparedParameterType)) {
 
-					Class<?> localParameterType = getMethod().getParameterTypes()[i];
-					Class<?> comparedParameterType = comparedAccessorMethod.getMethod().getParameterTypes()[i];
+					boolean localParamIsParentOfComparedParam = localParameterType.isAssignableFrom(comparedParameterType);
 
-					if (!localParameterType.equals(comparedParameterType)) {
+					boolean localParamIsChildOfComparedParam = comparedParameterType.isAssignableFrom(localParameterType);
 
-						boolean localParamIsParentOfComparedParam = localParameterType.isAssignableFrom(comparedParameterType);
-
-						boolean localParamIsChildOfComparedParam = comparedParameterType.isAssignableFrom(localParameterType);
-
-						if (localParamIsParentOfComparedParam) {
-							return 1;
-						}
-						if (localParamIsChildOfComparedParam) {
-							return -1;
-						}
-						// Those objects could not be compared
-						return 2;
+					if (localParamIsParentOfComparedParam) {
+						return 1;
 					}
+					if (localParamIsChildOfComparedParam) {
+						return -1;
+					}
+					// Those objects could not be compared
+					return 2;
+				}
 
-				} // end of for
+			} // end of for
 
-				// Those objects are equals regarding the specialization of
-				// their parameters
-				return 0;
-			}
-
+			// Those objects are equals regarding the specialization of
+			// their parameters
+			return 0;
 		}
-
-		else {
-			throw new ClassCastException();
-		}
+		throw new ClassCastException();
 	}
 
 	@Override

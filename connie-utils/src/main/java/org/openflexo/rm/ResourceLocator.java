@@ -281,10 +281,7 @@ final public class ResourceLocator {
 		if (location != null) {
 			return location.getLocator().retrieveResourceAsFile(location);
 		}
-		else {
-			LOGGER.warning("Cannot retrieve a File for a null location");
-			return null;
-		}
+		LOGGER.warning("Cannot retrieve a File for a null location");
+		return null;
 	}
-
 }

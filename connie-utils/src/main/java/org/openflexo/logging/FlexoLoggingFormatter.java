@@ -84,9 +84,6 @@ public class FlexoLoggingFormatter extends Formatter {
 			}
 			return aString + new String(blank);
 		}
-		else {
-			return aString;
-		}
+		return aString;
 	}
-
 }

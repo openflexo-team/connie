@@ -39,11 +39,9 @@
 package org.openflexo.connie.binding;
 
 import java.beans.PropertyChangeEvent;
-import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.logging.FlexoLogger;
 
 /**
  * Lazy implementation of a {@link BindingValueChangeListener}. New value is not automatically recomputed after each notification
@@ -52,9 +50,6 @@ import org.openflexo.logging.FlexoLogger;
  * 
  */
 public abstract class LazyBindingValueChangeListener<T> extends BindingValueChangeListener<T> {
-
-	private static final Logger LOGGER = FlexoLogger.getLogger(LazyBindingValueChangeListener.class.getName());
-
 	public LazyBindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		super(dataBinding, context);
 	}
@@ -72,5 +67,4 @@ public abstract class LazyBindingValueChangeListener<T> extends BindingValueChan
 	}
 
 	public abstract void bindingValueChanged(Object source);
-
 }

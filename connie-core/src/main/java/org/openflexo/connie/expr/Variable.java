@@ -41,7 +41,6 @@ package org.openflexo.connie.expr;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Represents a basic access to a variable<br>
@@ -51,9 +50,6 @@ import java.util.logging.Logger;
  * 
  */
 public class Variable extends BindingValue {
-
-	private static final Logger LOGGER = Logger.getLogger(Variable.class.getPackage().getName());
-
 	public Variable(String variableName) {
 		super(makeSingleton(variableName));
 	}
@@ -72,5 +68,4 @@ public class Variable extends BindingValue {
 	public boolean isSimpleVariable() {
 		return true;
 	}
-
 }

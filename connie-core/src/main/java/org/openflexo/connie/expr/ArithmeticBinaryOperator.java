@@ -137,9 +137,7 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 					if (leftOperandType.isArithmeticInteger() && rightOperandType.isArithmeticInteger()) {
 						return EvaluationType.ARITHMETIC_INTEGER;
 					}
-					else {
-						return EvaluationType.ARITHMETIC_FLOAT;
-					}
+					return EvaluationType.ARITHMETIC_FLOAT;
 				}
 				else if (rightOperandType.isLiteral()) {
 					return EvaluationType.ARITHMETIC_FLOAT; // Undecided
@@ -224,9 +222,7 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 					if (leftOperandType.isArithmeticInteger() && rightOperandType.isArithmeticInteger()) {
 						return EvaluationType.ARITHMETIC_INTEGER;
 					}
-					else {
-						return EvaluationType.ARITHMETIC_FLOAT;
-					}
+					return EvaluationType.ARITHMETIC_FLOAT;
 				}
 				else if (rightOperandType.isLiteral()) {
 					return EvaluationType.LITERAL; // Undecided
@@ -285,9 +281,7 @@ public abstract class ArithmeticBinaryOperator extends BinaryOperator {
 					if (leftOperandType.isArithmeticInteger() && rightOperandType.isArithmeticInteger()) {
 						return EvaluationType.ARITHMETIC_INTEGER;
 					}
-					else {
-						return EvaluationType.ARITHMETIC_FLOAT;
-					}
+					return EvaluationType.ARITHMETIC_FLOAT;
 				}
 			}
 			throw new TypeMismatchException(this, leftOperandType, rightOperandType, EvaluationType.ARITHMETIC_FLOAT,

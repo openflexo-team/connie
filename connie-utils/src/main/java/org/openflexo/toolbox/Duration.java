@@ -314,7 +314,7 @@ public class Duration implements Cloneable, Comparable<Duration> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Duration && obj != null) {
+		if (obj instanceof Duration) {
 			return getSerializationRepresentation().equals(((Duration) obj).getSerializationRepresentation());
 		}
 		return false;
