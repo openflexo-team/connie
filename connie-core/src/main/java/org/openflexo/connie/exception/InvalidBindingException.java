@@ -41,15 +41,10 @@ package org.openflexo.connie.exception;
 
 import org.openflexo.connie.DataBinding;
 
-@SuppressWarnings("serial")
 public class InvalidBindingException extends Exception {
-
-	private DataBinding<?> db;
 	private String message;
 
 	public InvalidBindingException(DataBinding<?> db) {
-		super();
-		this.db = db;
 		this.message = "Invalid binding: " + db.invalidBindingReason();
 	}
 
@@ -57,5 +52,4 @@ public class InvalidBindingException extends Exception {
 	public String getMessage() {
 		return message;
 	}
-
 }
