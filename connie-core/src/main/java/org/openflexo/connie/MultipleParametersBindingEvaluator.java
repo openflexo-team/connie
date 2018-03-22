@@ -110,21 +110,15 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 	}
 
 	private static String extractParameters(String bindingPath, List<String> parameters) {
-
 		String returned = bindingPath;
-
 		while (returned.contains("{$")) {
 			int startIndex = returned.indexOf("{$");
 			int endIndex = returned.indexOf("}", startIndex);
-			// System.out.println("Hop: startIndex=" + startIndex + " endIndex=" + endIndex);
 			String parameterName = returned.substring(startIndex + 2, endIndex);
 			parameters.add(parameterName);
 			returned = returned.substring(0, startIndex) + parameterName + returned.substring(endIndex + 1);
-			// System.out.println("Found " + parameterName + " remains " + returned);
 		}
-
 		return returned;
-
 	}
 
 	private static String normalizeBindingPath(String bindingPath, List<String> parameters) {
@@ -191,17 +185,11 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 
 	private Object evaluate(String aBindingPath)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		// System.out.println("Evaluating " + bindingPath);
-
 		String normalizedBindingPath = aBindingPath;
-
-		// String normalizedBindingPath = normalizeBindingPath(bindingPath);
-		// System.out.println("Normalize " + bindingPath + " to " + normalizedBindingPath);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 		// FD redondant : binding.setDeclaredType(Object.class);
 		// FD redondant : binding.setBindingDefinitionType(BindingDefinitionType.GET);
 
-		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {
 			System.out.println("Invalid binding: " + binding);
 			System.out.println("not valid: " + binding.invalidBindingReason());
@@ -241,12 +229,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 
 		List<String> parameters = new ArrayList<>();
 		String extractedBindingPath = extractParameters(bindingPath, parameters);
-		// System.out.println("extractedBindingPath=" + extractedBindingPath);
-		// System.out.println("parameters=" + parameters);
 		String normalizedBindingPath = normalizeBindingPath(extractedBindingPath, parameters);
-		// System.out.println("normalizedBindingPath=" + normalizedBindingPath);
-		// System.out.println("args.length=" + args.length);
-		// System.out.println("parameters.size()=" + parameters.size());
 		if (args.length != parameters.size()) {
 			throw new InvalidKeyValuePropertyException("Wrong number of args");
 		}
@@ -259,24 +242,5 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		Object returned = evaluator.evaluate(normalizedBindingPath);
 		evaluator.delete();
 		return returned;
-	}
-
-	public static void main(String[] args) {
-		String variable1 = "Hello";
-		String variable2 = "World";
-		String variable3 = "Hello World";
-
-		try {
-			System.out.println(evaluateBinding("{$variable1}+' '+{$variable2}+' !'", new Object(), variable1, variable2));
-			System.out.println(evaluateBinding("substring({$startIndex},{$endIndex})", variable3, 2, 8));
-		} catch (InvalidKeyValuePropertyException e) {
-			e.printStackTrace();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-		} catch (NullReferenceException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
 	}
 }

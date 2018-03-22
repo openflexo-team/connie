@@ -555,9 +555,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
 							}
-							else {
-								// System.out.println("Valid binding " + e);
-							}
 							if (!((BindingValue) e).isCacheable()) {
 								isCacheable = false;
 							}

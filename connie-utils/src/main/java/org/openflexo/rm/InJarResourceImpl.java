@@ -68,20 +68,8 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	private InJarResourceImpl container;
 	private final List<InJarResourceImpl> contents = new ArrayList<>();
 
-	/*public InJarResourceImpl(ResourceLocatorDelegate delegate, String initialPath, URL url) throws LocatorNotFoundException {
-		super(delegate, initialPath, url);
-	}*/
-
 	protected InJarResourceImpl(String initialPath, URL url) throws LocatorNotFoundException {
 		super(ResourceLocator.getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class), initialPath, url);
-		// ((ClasspathResourceLocatorImpl) this.getLocator()).getJarResourcesList().put(initialPath, this);
-
-		// Add the InJarResource in the locator resource list if not contained
-		// ClasspathResourceLocatorImpl locator = (ClasspathResourceLocatorImpl) ResourceLocator
-		// .getInstanceForLocatorClass(ClasspathResourceLocatorImpl.class);
-		/*if (locator.getJarResourcesList().get(this) == null) {
-			locator.getJarResourcesList().put(initialPath, this);
-		}*/
 	}
 
 	@Override
@@ -99,40 +87,6 @@ public class InJarResourceImpl extends BasicResourceImpl {
 		}
 		return null;
 	}
-
-	/*@Override
-	public List<Resource> getContents() {
-		List<Resource> resources = new ArrayList<Resource>();
-	
-		if (entry != null && entry.isDirectory()) {
-			// Browser the resource of the container
-			for (Resource resource : getContainer().getContents()) {
-				String parentFolderPath = resource.getRelativePath();
-				// If it is a folder end with JAR_SEPARATOR then remove the "/" to find the parent path
-				if (parentFolderPath.endsWith("/")) {
-					int lastSeparator = parentFolderPath.lastIndexOf("/");
-					parentFolderPath = parentFolderPath.substring(0, lastSeparator);
-				}
-				// Find the last separation
-				if (parentFolderPath.contains("/")) {
-					int lastSeparator = parentFolderPath.lastIndexOf("/");
-					parentFolderPath = parentFolderPath.substring(0, lastSeparator + 1);
-				}
-				// Check it corresponds to this in jar resource
-				if (parentFolderPath.equals(getRelativePath())) {
-					resources.add(resource);
-					resource.setContainer(resource);
-				}
-			}	
-			// TODO some day ...
-			
-		}
-	
-		System.out.println("Les contents de " + this + " c'est " + resources);
-		
-		return resources;
-		
-	}*/
 
 	@Override
 	public boolean isContainer() {
@@ -160,9 +114,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 			recursivelyAppendContents(returned);
 			return returned;
 		}
-		else {
-			return contents;
-		}
+		return contents;
 	}
 
 	private void recursivelyAppendContents(List<InJarResourceImpl> list) {

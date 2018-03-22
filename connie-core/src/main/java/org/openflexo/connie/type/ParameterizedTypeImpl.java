@@ -119,25 +119,6 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 		if (obj instanceof Type) {
 			return TypeUtils.fullQualifiedRepresentation(this).equals(TypeUtils.fullQualifiedRepresentation((Type) obj));
 		}
-		else {
-			return super.equals(obj);
-		}
-		/*if (obj instanceof ParameterizedType) {
-			if (getRawType() == null) return false;
-			if (getActualTypeArguments() == null) return false;
-			if (! (((getOwnerType() == null && ((ParameterizedType)obj).getOwnerType() == null)
-					|| (getOwnerType() != null && getOwnerType().equals(((ParameterizedType)obj).getOwnerType())))
-					&& getRawType().equals(((ParameterizedType)obj).getRawType())))
-				return false;
-			// Now check all args
-			for (int i=0; i<getActualTypeArguments().length; i++) {
-				if (getActualTypeArguments()[i] == null) {
-					if (((ParameterizedType)obj).getActualTypeArguments()[i] != null) return false;
-				}
-				else if (!getActualTypeArguments()[i].equals(((ParameterizedType)obj).getActualTypeArguments()[i])) return false;
-			}
-			return true;
-		}
-		else return super.equals(obj);*/
+		return super.equals(obj);
 	}
 }
