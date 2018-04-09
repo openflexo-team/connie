@@ -233,7 +233,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					}
 				});
 			} catch (VisitorException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

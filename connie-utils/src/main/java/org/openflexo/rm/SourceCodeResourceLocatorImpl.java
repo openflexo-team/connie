@@ -241,10 +241,6 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 			LOGGER.warning("Could not locate resource " + relativePathName);
 		}
 		return null;
-		// TODO: this should not happen!
-		/* 
-		return new File(userDirectory, relativePathName);
-		 */
 	}
 
 }

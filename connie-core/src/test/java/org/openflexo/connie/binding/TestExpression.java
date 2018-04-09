@@ -159,7 +159,6 @@ public class TestExpression extends TestCase {
 				}
 			});
 		} catch (NullReferenceException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

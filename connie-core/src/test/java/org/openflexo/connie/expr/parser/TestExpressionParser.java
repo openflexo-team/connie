@@ -133,7 +133,6 @@ public class TestExpressionParser extends TestCase {
 			}
 			return null;
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			fail();
 			return null;
 		}

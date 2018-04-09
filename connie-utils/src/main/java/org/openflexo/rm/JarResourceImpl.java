@@ -297,13 +297,11 @@ public class JarResourceImpl extends BasicResourceImpl {
 
 	@Override
 	public String computeRelativePath(Resource resource) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Resource locateResource(String relativePathName) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
