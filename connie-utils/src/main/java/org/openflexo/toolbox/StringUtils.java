@@ -42,6 +42,8 @@ package org.openflexo.toolbox;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StringUtils {
 
@@ -357,6 +359,23 @@ public class StringUtils {
 			n++;
 		}
 		return null;
+	}
+
+	public static List<String> extractLines(String aString) {
+		List<String> returned = new ArrayList<>();
+		try (BufferedReader rdr = new BufferedReader(new StringReader(aString))) {
+			for (;;) {
+				String line = null;
+				line = rdr.readLine();
+				returned.add(line);
+				if (line == null) {
+					break;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return returned;
 	}
 
 	/*
