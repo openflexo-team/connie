@@ -170,29 +170,6 @@ public class FlexoLoggingManager {
 		return _flexoLoggingHandler;
 	}
 
-	/*public static XMLMapping getLoggingMapping() {
-		if (_loggingMapping == null) {
-			File loggingModelFile;
-			loggingModelFile = new FileResource("Models/LoggingModel.xml");
-			if (!loggingModelFile.exists()) {
-				System.err.println("File " + loggingModelFile.getAbsolutePath() + " doesn't exist. Maybe you have to check your paths ?");
-				return null;
-			} else {
-				try {
-					_loggingMapping = new XMLMapping(loggingModelFile);
-				} catch (IOException e) {
-					System.out.println(e.toString());
-				} catch (SAXException e) {
-					System.out.println(e.toString());
-					e.printStackTrace();
-				} catch (ParserConfigurationException e) {
-					System.out.println(e.toString());
-				}
-			}
-		}
-		return _loggingMapping;
-	}*/
-
 	public static LogRecords loadLogFile(File logFile) {
 
 		// TODO

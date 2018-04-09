@@ -266,7 +266,6 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				}
 			}
 			else {
-				// TODO , but it should not happen
 				logger.warning("Found a File that is not hold by a FileResourceLocation");
 			}	
 		}
@@ -420,7 +419,6 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		// Thread.dumpStack();
 		// }
 		return null;
-		// TODO: this should not happen!
 		// return new File(userDirectory, relativePathName);
 	}
 	*/
@@ -462,33 +460,6 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	}
 
-	/*
-	static String retrieveRelativePath(FileResource fileResource) {
-		for (File f : getDirectoriesSearchOrder()) {
-			if (fileResource.getAbsolutePath().startsWith(f.getAbsolutePath())) {
-				return fileResource.getAbsolutePath().substring(f.getAbsolutePath().length() + 1).replace('\\', '/');
-			}
-		}
-		if (fileResource.getAbsolutePath().startsWith(userDirectory.getAbsolutePath())) {
-			return fileResource.getAbsolutePath().substring(userDirectory.getAbsolutePath().length() + 1).replace('\\', '/');
-		}
-		if (logger.isLoggable(Level.SEVERE)) {
-			logger.severe("File resource cannot be found: " + fileResource.getAbsolutePath());
-		}
-		return null;
-	}
-	 */
-	// TODO Should not be used any more
-	/*
-	public String cleanPath(String relativePathName) {
-		try {
-			return retrieveResourceAsFile(locateResource(relativePathName)).getCanonicalPath();
-		} catch (IOException e) {
-			return retrieveResourceAsFile(locateResource(relativePathName)).getAbsolutePath();
-		}
-		// return cleanAbsolutePath(dirtyPath);
-	}
-	 */
 	protected List<File> directoriesSearchOrder = null;
 
 	private static File preferredResourcePath;
