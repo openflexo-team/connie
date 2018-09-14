@@ -299,7 +299,8 @@ public class KeyValueProperty extends Observable {
 		if (aType instanceof Class) {
 			for (Method m : aDeclaringClass.getMethods()) {
 				for (String t : tries) {
-					if (m.getName().equals(t) && m.getParameterTypes().length == 1 && m.getParameterTypes()[0].equals(aType)) {
+					if (m.getName().equals(t) && m.getParameterTypes().length == 1
+							&& TypeUtils.isTypeAssignableFrom(aType, m.getParameterTypes()[0])) {
 						return m;
 					}
 				}
@@ -309,7 +310,7 @@ public class KeyValueProperty extends Observable {
 			for (Method m : aDeclaringClass.getMethods()) {
 				for (String t : tries) {
 					if (m.getName().equals(t) && m.getGenericParameterTypes().length == 1
-							&& m.getGenericParameterTypes()[0].equals(aType)) {
+							&& TypeUtils.isTypeAssignableFrom(aType, m.getGenericParameterTypes()[0])) {
 						return m;
 					}
 				}
