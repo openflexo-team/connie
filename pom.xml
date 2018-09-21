@@ -26,8 +26,8 @@
 	<modules>
 		<module>testutils</module>
 		<module>flexoutils</module>
-		<!--  <module>connie-parser</module>-->
-		<!--  <module>connie-core</module>-->
+		<module>connie-parser</module>
+		<module>connie-core</module>
 	</modules>
 	<!-- 
 	Properties
