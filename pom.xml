@@ -25,6 +25,7 @@
     	</issueManagement>
 	<modules>
 		<module>flexoutils</module>
+		<module>connie-parser</module>
 		<module>connie-core</module>
 	</modules>
 	<!-- 
