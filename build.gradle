@@ -12,7 +12,7 @@ buildscript {
 
 apply plugin: 'org.openflexo.buildconfig'
 
-allprojects { version = "1.5-prout" + project.kind }
+allprojects { version = "1.5" + project.kind }
 
 subprojects {
     apply plugin: 'java'
@@ -34,6 +34,10 @@ subprojects {
             html.enabled true
         }
     }
+}
+
+task showVersion() {
+    print version
 }
 
 task analyze() {
