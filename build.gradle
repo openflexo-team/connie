@@ -12,7 +12,7 @@ buildscript {
 
 apply plugin: 'org.openflexo.buildconfig'
 
-allprojects { version = "1.5-SNAPSHOT" }
+allprojects { version = "1.5-prout" + project.kind }
 
 subprojects {
     apply plugin: 'java'
