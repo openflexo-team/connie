@@ -12,7 +12,10 @@ buildscript {
 
 // The version must be initialized before the buildconfig plugin
 // The plugin will add '-SNAPSHOT' at the end by default or the content of the kind property
-version = "1.5"
+allprojects {
+	version = "1.5"
+}
+
 apply plugin: 'org.openflexo.buildconfig'
 
 subprojects {
