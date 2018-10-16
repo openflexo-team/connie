@@ -4,23 +4,24 @@ buildscript {
         maven { url uri('https://maven.openflexo.org/artifactory/openflexo-deps/') }
     }
     dependencies {
-        classpath group: 'org.openflexo', name: 'buildplugin', version: '0.2-SNAPSHOT'
-        classpath group: 'org.openflexo', name: 'buildconfig', version: '2.0.0-SNAPSHOT'
+        classpath group: 'org.openflexo', name: 'buildplugin', version: '0.2'
+        classpath group: 'org.openflexo', name: 'buildconfig', version: '2.0.0'
         classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.0.5,)'
     }
 }
 
+// The version must be initialized before the buildconfig plugin
+// The plugin will add '-SNAPSHOT' at the end by default or the content of the kind property
+version = "1.5"
 apply plugin: 'org.openflexo.buildconfig'
-
-allprojects { version = "1.5" + project.kind }
 
 subprojects {
     apply plugin: 'java'
-    
+
     tasks.withType(Test) {
 		jvmArgs += ["-Djava.awt.headless=true"]
 	}
-    
+
     //  apply plugin: 'checkstyle'
     apply plugin: 'pmd'
     apply plugin: 'findbugs'
@@ -34,10 +35,6 @@ subprojects {
             html.enabled true
         }
     }
-}
-
-task showVersion() {
-    print version
 }
 
 task analyze() {
