@@ -52,6 +52,26 @@ import org.openflexo.connie.binding.AccessorMethod;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
 
+/**
+ * {@link KeyValueProperty} represent a property in Java language.
+ * 
+ * This is the low-level representation of a property associated to a Java type.<br>
+ * A property is defined by
+ * <ul>
+ * <li>either a public field (in this case, the name of the property is the name of the field itself)</li>
+ * <li>or a couple of get/set methods (set method is not mandatory for read-only property). In this case, the name is computed while
+ * extracting basic template getXXX()/setXXX(value) while XXX is the name of the property</li>
+ * </ul>
+ * 
+ * When the set method is not defined, settable property is false (read-only property)
+ * 
+ * This implementation should rely on a efficient hashCode()/equals() implementation, which is performed here using {@link #declaringType}
+ * and {@link #name} pair.
+ * 
+ * @author sylvain
+ * @see KeyValueLibrary
+ *
+ */
 public class KeyValueProperty extends Observable {
 	static final Logger LOGGER = Logger.getLogger(KeyValueProperty.class.getPackage().getName());
 
@@ -91,18 +111,36 @@ public class KeyValueProperty extends Observable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof KeyValueProperty) {
-			KeyValueProperty kvp = (KeyValueProperty) obj;
-			return (declaringClass.equals(kvp.declaringClass) || TypeUtils.isClassAncestorOf(declaringClass, kvp.declaringClass)
-					|| TypeUtils.isClassAncestorOf(kvp.declaringClass, declaringClass)) && name.equals(kvp.name);
-		}
-		return super.equals(obj);
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((declaringType == null) ? 0 : declaringType.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
 
 	@Override
-	public int hashCode() {
-		return name.hashCode() + (field != null ? field.getDeclaringClass().hashCode() : getMethod.getDeclaringClass().hashCode());
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		KeyValueProperty other = (KeyValueProperty) obj;
+		if (declaringType == null) {
+			if (other.declaringType != null)
+				return false;
+		}
+		else if (!declaringType.equals(other.declaringType))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		}
+		else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 
 	/**
@@ -561,4 +599,5 @@ public class KeyValueProperty extends Observable {
 			throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor set method found !!!");
 		}
 	}
+
 }
