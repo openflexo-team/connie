@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openflexo</groupId>
 		<artifactId>connie</artifactId>
-		<version>1.4.1-SNAPSHOT</version>
+		<version>1.4.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>testutils</artifactId>
 	<name>Utils test</name>
