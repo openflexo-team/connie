@@ -7,7 +7,7 @@
 	<bannerLeft>
 		<name>Connie</name>
 		<src>${connie.logo}</src>
-		<href>https://openflexo.org/tiki/Connie</href>
+		<href>https://connie.openflexo.org</href>
 	</bannerLeft>
 	<bannerRight>
 		<name>Openflexo</name>
