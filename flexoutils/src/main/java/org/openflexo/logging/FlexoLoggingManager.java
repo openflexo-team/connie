@@ -86,7 +86,7 @@ public class FlexoLoggingManager {
 	}
 
 	public static FlexoLoggingManager initialize(int numberOfLogsToKeep, boolean keepLogTraceInMemory, Resource configurationFile,
-			Level logLevel, LoggingManagerDelegate delegate) throws SecurityException, IOException {
+			Level logLevel, LoggingManagerDelegate delegate) throws SecurityException {
 		if (isInitialized()) {
 			return _instance;
 		}
@@ -158,7 +158,7 @@ public class FlexoLoggingManager {
 					"Unhandled exception occured: " + e.getClass().getName()), e);
 		}
 		else {
-			Logger.global.warning("Unexpected exception occured: " + e.getClass().getName());
+			LOGGER.warning("Unexpected exception occured: " + e.getClass().getName());
 		}
 	}
 
@@ -285,11 +285,11 @@ public class FlexoLoggingManager {
 		Resource newConfigurationFile = ResourceLocator.locateResource("Config/logging_" + fileName + ".properties");
 		if (newConfigurationFile != null) {
 			_configurationFile = newConfigurationFile;
+			if (_delegate != null) {
+				_delegate.setConfigurationFileLocation(newConfigurationFile);
+			}
+			reloadLoggingFile(newConfigurationFile);
 		}
-		if (_delegate != null) {
-			_delegate.setConfigurationFileLocation(newConfigurationFile);
-		}
-		reloadLoggingFile(newConfigurationFile);
 	}
 
 	public String getConfigurationFileName() {

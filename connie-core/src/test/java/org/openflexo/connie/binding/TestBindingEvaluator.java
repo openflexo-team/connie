@@ -41,12 +41,12 @@ package org.openflexo.connie.binding;
 
 import java.lang.reflect.InvocationTargetException;
 
-import junit.framework.TestCase;
-
 import org.openflexo.connie.BindingEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
+
+import junit.framework.TestCase;
 
 public class TestBindingEvaluator extends TestCase {
 
@@ -57,6 +57,7 @@ public class TestBindingEvaluator extends TestCase {
 		try {
 			evaluatedResult = BindingEvaluator.evaluateBinding(bindingPath, object);
 		} catch (InvalidKeyValuePropertyException e) {
+			e.printStackTrace();
 			fail();
 		} catch (TypeMismatchException e) {
 			fail();
@@ -70,10 +71,12 @@ public class TestBindingEvaluator extends TestCase {
 		if (expectedResult instanceof Number) {
 			if (evaluatedResult instanceof Number) {
 				assertEquals(((Number) expectedResult).doubleValue(), ((Number) evaluatedResult).doubleValue());
-			} else {
+			}
+			else {
 				fail("Evaluated value is not a number (expected: " + expectedResult + ") but " + evaluatedResult);
 			}
-		} else {
+		}
+		else {
 			assertEquals(expectedResult, evaluatedResult);
 		}
 	}

@@ -42,9 +42,11 @@ package org.openflexo.connie;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
@@ -58,13 +60,22 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  */
 public class BindingModel implements HasPropertyChangeSupport, PropertyChangeListener {
 
-	private final List<BindingVariable> _bindingVariables;
+	/**
+	 * The {@link BindingModel} (might be null) on which we are based
+	 */
 	private BindingModel baseBindingModel;
-	// private Bindable mainBindable;
+
+	/**
+	 * {@link BindingVariable} list that are explicitely declared in this {@link BindingModel}
+	 */
+	private final List<BindingVariable> declaredBindingVariables;
+
+	/**
+	 * {@link BindingVariable} list that are accessible from this {@link BindingModel}. Overriden variables are not put twice
+	 */
+	private List<BindingVariable> accessibleBindingVariables;
 
 	public static final String BINDING_VARIABLE_PROPERTY = "bindingVariable";
-	public static final String BINDING_VARIABLE_NAME_CHANGED = "bindingVariableNameChanged";
-	public static final String BINDING_VARIABLE_TYPE_CHANGED = "bindingVariableTypeChanged";
 	public static final String BINDING_PATH_ELEMENT_NAME_CHANGED = "bindingPathElementNameChanged";
 	public static final String BINDING_PATH_ELEMENT_TYPE_CHANGED = "bindingPathElementTypeChanged";
 	public static final String BASE_BINDING_MODEL_PROPERTY = "baseBindingModel";
@@ -77,7 +88,8 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	}
 
 	public BindingModel(BindingModel baseBindingModel) {
-		_bindingVariables = new Vector<>();
+		declaredBindingVariables = new Vector<>();
+		accessibleBindingVariables = null;
 		pcSupport = new PropertyChangeSupport(this);
 		setBaseBindingModel(baseBindingModel);
 	}
@@ -89,7 +101,11 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	public void setBaseBindingModel(BindingModel baseBindingModel) {
 		if (this.baseBindingModel != baseBindingModel) {
 			BindingModel oldBaseBindingModel = this.baseBindingModel;
+			if (oldBaseBindingModel != null && oldBaseBindingModel.getPropertyChangeSupport() != null) {
+				oldBaseBindingModel.getPropertyChangeSupport().removePropertyChangeListener(this);
+			}
 			this.baseBindingModel = baseBindingModel;
+			clearAccessibleBindingVariables();
 			pcSupport.firePropertyChange(BASE_BINDING_MODEL_PROPERTY, oldBaseBindingModel, baseBindingModel);
 			if (baseBindingModel != null && baseBindingModel.getPropertyChangeSupport() != null) {
 				baseBindingModel.getPropertyChangeSupport().addPropertyChangeListener(this);
@@ -101,6 +117,7 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getSource() == baseBindingModel) {
 			// Re-forward this notification from this BindingModel
+			clearAccessibleBindingVariables();
 			getPropertyChangeSupport().firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
 		}
 	}
@@ -115,7 +132,7 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 
 		baseBindingModel = null;
 
-		for (BindingVariable bv : _bindingVariables) {
+		for (BindingVariable bv : declaredBindingVariables) {
 			bv.delete();
 		}
 
@@ -136,30 +153,51 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	}
 
 	public void clear() {
-		_bindingVariables.clear();
+		declaredBindingVariables.clear();
+		clearAccessibleBindingVariables();
+	}
+
+	public List<BindingVariable> getAccessibleBindingVariables() {
+		if (accessibleBindingVariables == null) {
+			updateAccessibleBindingVariables();
+		}
+		return accessibleBindingVariables;
+	}
+
+	private void clearAccessibleBindingVariables() {
+		accessibleBindingVariables = null;
+	}
+
+	private void updateAccessibleBindingVariables() {
+		accessibleBindingVariables = new ArrayList<>();
+		for (BindingVariable bv : declaredBindingVariables) {
+			accessibleBindingVariables.add(bv);
+		}
+		if (baseBindingModel != null && baseBindingModel.getAccessibleBindingVariables() != null) {
+			for (BindingVariable bv : baseBindingModel.getAccessibleBindingVariables()) {
+				if (getDeclaredBindingVariableNamed(bv.getVariableName()) == null) {
+					// this property is not overriden, take it
+					accessibleBindingVariables.add(bv);
+				}
+			}
+		}
 	}
 
 	public int getBindingVariablesCount() {
-		return _bindingVariables.size() + (baseBindingModel != null ? baseBindingModel.getBindingVariablesCount() : 0);
+		if (getAccessibleBindingVariables() == null)
+			return 0;
+		return getAccessibleBindingVariables().size();
 	}
 
 	public BindingVariable getBindingVariableAt(int index) {
-		if (baseBindingModel == null || index < _bindingVariables.size()) {
-			return _bindingVariables.get(index);
+		if (index >= 0 && index < getBindingVariablesCount()) {
+			return getAccessibleBindingVariables().get(index);
 		}
-		else {
-			return baseBindingModel.getBindingVariableAt(index - _bindingVariables.size());
-		}
+		return null;
 	}
 
-	public void addToBindingVariables(BindingVariable variable) {
-		_bindingVariables.add(variable);
-		pcSupport.firePropertyChange(BINDING_VARIABLE_PROPERTY, null, variable);
-	}
-
-	public void removeFromBindingVariables(BindingVariable variable) {
-		_bindingVariables.remove(variable);
-		pcSupport.firePropertyChange(BINDING_VARIABLE_PROPERTY, variable, null);
+	public BindingVariable getBindingVariableNamed(String variableName) {
+		return bindingVariableNamed(variableName);
 	}
 
 	public BindingVariable bindingVariableNamed(String variableName) {
@@ -175,11 +213,50 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 		return null;
 	}
 
+	private BindingVariable getDeclaredBindingVariableNamed(String variableName) {
+		for (BindingVariable bv : declaredBindingVariables) {
+			if (bv.getVariableName() != null && bv.getVariableName().equals(variableName)) {
+				return bv;
+			}
+		}
+		return null;
+	}
+
+	public void addToBindingVariables(BindingVariable variable) {
+		declaredBindingVariables.add(variable);
+		clearAccessibleBindingVariables();
+		pcSupport.firePropertyChange(BINDING_VARIABLE_PROPERTY, null, variable);
+	}
+
+	public void removeFromBindingVariables(BindingVariable variable) {
+		declaredBindingVariables.remove(variable);
+		clearAccessibleBindingVariables();
+		pcSupport.firePropertyChange(BINDING_VARIABLE_PROPERTY, variable, null);
+	}
+
 	@Override
 	public String toString() {
-		return "[ " + getClass().getSimpleName() + ": " + _bindingVariables
-				+ (baseBindingModel != null ? " Combined with: " + (baseBindingModel != this ? baseBindingModel.toString() : "") : "")
+		return "[" + getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + ": " + getAccessibleBindingVariables()
+				+ " structured as " + getDebugStructure() + "]";
+	}
+
+	public String getDebugStructure() {
+		return "[" + getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + ": " + getDeclaredBindingVariableListAsString()
+				+ (baseBindingModel != null ? " Combined with: " + (baseBindingModel != this ? baseBindingModel.getDebugStructure() : "")
+						: "")
 				+ "]";
+	}
+
+	private String getDeclaredBindingVariableListAsString() {
+		StringBuffer sb = new StringBuffer();
+		boolean isFirst = true;
+		sb.append("[");
+		for (BindingVariable bv : new ArrayList<>(declaredBindingVariables)) {
+			sb.append((isFirst ? "" : ",") + bv.getVariableName() + "/" + TypeUtils.simpleRepresentation(bv.getType()));
+			isFirst = false;
+		}
+		sb.append("]");
+		return sb.toString();
 	}
 
 	/**
@@ -189,26 +266,24 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	 */
 	@Override
 	public boolean equals(Object obj) {
-
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
-
 		if (!(obj instanceof BindingModel)) {
 			return false;
 		}
-
 		BindingModel other = (BindingModel) obj;
-
 		if (getBindingVariablesCount() != other.getBindingVariablesCount()) {
 			return false;
 		}
 		for (int i = 0; i < getBindingVariablesCount(); i++) {
 			BindingVariable bv1 = getBindingVariableAt(i);
-			BindingVariable bv2 = other.bindingVariableNamed(bv1.getVariableName());
-			if (!bv1.equals(bv2)) {
-				return false;
+			if (bv1 != null) {
+				BindingVariable bv2 = other.bindingVariableNamed(bv1.getVariableName());
+				if (!bv1.equals(bv2)) {
+					return false;
+				}
 			}
 		}
 		return true;

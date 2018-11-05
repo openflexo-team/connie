@@ -39,37 +39,79 @@
 
 package org.openflexo.connie.binding;
 
+import java.lang.reflect.Type;
+import java.util.Comparator;
+
 import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.type.Typed;
 
 /**
- * Represents a BindingPathElement which has the ability to be set
+ * General API for an element of a formal binding path, whichever type it is.
  * 
  * @author sylvain
  * 
  */
-public interface SettableBindingPathElement extends IBindingPathElement {
+public interface IBindingPathElement extends Typed {
+
+	public final String BINDING_PATH_CHANGED = "BindingPathChanged";
+
+	Comparator<IBindingPathElement> COMPARATOR = new Comparator<IBindingPathElement>() {
+		@Override
+		public int compare(IBindingPathElement o1, IBindingPathElement o2) {
+			if (o1.getLabel() == null) {
+				if (o2.getLabel() == null) {
+					return 0;
+				}
+				return -1;
+			}
+			else if (o2.getLabel() == null) {
+				return 1;
+			}
+			return o1.getLabel().compareTo(o2.getLabel());
+		}
+	};
+
+	@Override
+	Type getType();
+
+	String getSerializationRepresentation();
+
+	String getLabel();
+
+	String getTooltipText(Type resultingType);
+
 	/**
 	 * Return a flag indicating if this path element is settable or not (settable indicates that a new value can be set)
+	 */
+	boolean isSettable();
+
+	/**
+	 * Evaluate and return value for related path element, given a binding evaluation context
+	 * 
+	 * @param target
+	 *            : address object as target of parent path: the object on which setting will be performed
+	 * @param context
+	 *            : binding evaluation context
+	 * @return accessed value
+	 * @throws NullReferenceException
+	 * @throws TypeMismatchException
+	 */
+	Object getBindingValue(Object target, BindingEvaluationContext context)
+			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException;
+
+	/**
+	 * When set to true, means that this path element is beeing changing, and that available accessible path elements following this path
+	 * element are to be recomputed<br>
+	 * This method is generally called from {@link BindingFactory}
 	 * 
 	 * @return
 	 */
-	@Override
-	public boolean isSettable();
+	public boolean isNotifyingBindingPathChanged();
 
-	/**
-	 * Sets a new value for related path element, given a binding evaluation context If binding declared as NOT settable, this method will
-	 * do nothing.
-	 * 
-	 * @param value
-	 *            : the new value
-	 * @param target
-	 *            : adress object as target of parent path: the object on which setting will be performed
-	 * @param context
-	 *            : binding evaluation context
-	 */
-	public void setBindingValue(Object value, Object target, BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException;;
-
+	// Do not use yet
+	public void delete();
 }

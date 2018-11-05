@@ -69,21 +69,20 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	@Override
 	public Resource getContainer() {
-
 		if (_parent == null) {
 			File file = getFile();
-			try {
-				_parent = new FileResourceImpl(this.getLocator(), file.getParentFile());
-			} catch (MalformedURLException e) {
-				LOGGER.severe("Unable to find parent directory for " + getURI());
-				e.printStackTrace();
-			} catch (LocatorNotFoundException e) {
-				LOGGER.severe("Unable to find Locator for " + getURI());
-				e.printStackTrace();
-			}
+			if (file != null)
+				try {
+					_parent = new FileResourceImpl(this.getLocator(), file.getParentFile());
+				} catch (MalformedURLException e) {
+					LOGGER.severe("Unable to find parent directory for " + getURI());
+					e.printStackTrace();
+				} catch (LocatorNotFoundException e) {
+					LOGGER.severe("Unable to find Locator for " + getURI());
+					e.printStackTrace();
+				}
 		}
 		return _parent;
-
 	}
 
 	@Override
@@ -152,6 +151,8 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	@Override
 	public boolean isReadOnly() {
+		if (getFile() == null)
+			return true;
 		return getFile().canWrite();
 	}
 
@@ -165,6 +166,8 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	@Override
 	public boolean isContainer() {
+		if (getFile() == null)
+			return false;
 		return getFile().isDirectory();
 	}
 
@@ -179,9 +182,8 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	@Override
 	public List<Resource> getContents(Pattern pattern, boolean deep) {
-
 		File file = getFile();
-		if (file == null) {
+		if (file == null && getURL() != null) {
 			try {
 				file = new File(getURL().toURI());
 				if (file != null)
@@ -205,30 +207,30 @@ public class FileResourceImpl extends BasicResourceImpl {
 
 	// Additional methods not in Resource API
 
-	public static void addDirectoryContent(ResourceLocatorDelegate dl, File file, List<Resource> list, boolean recursive) {
+	private static void addDirectoryContent(ResourceLocatorDelegate dl, File file, List<Resource> list, boolean recursive) {
+		if (file != null) {
+			File[] fileList = file.listFiles();
+			if (fileList != null)
+				for (final File f : fileList) {
+					if (!f.isDirectory()) {
+						try {
+							final String fileName = f.getCanonicalPath();
+							list.add(new FileResourceImpl(dl, fileName, f.toURI().toURL()));
 
-		File[] fileList = file.listFiles();
-		for (final File f : fileList) {
-			if (!f.isDirectory()) {
-				try {
-					final String fileName = f.getCanonicalPath();
-					list.add(new FileResourceImpl(dl, fileName, f.toURI().toURL()));
-
-				} catch (final Exception e) {
-					try {
-						LOGGER.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						} catch (final Exception e) {
+							try {
+								LOGGER.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						}
+					}
+					// Recursive search
+					else if (recursive) {
+						addDirectoryContent(dl, f, list, recursive);
 					}
 				}
-			}
-			// Recursive search
-			else if (recursive) {
-				addDirectoryContent(dl, f, list, recursive);
-			}
 		}
-
 	}
 
 	@Override
@@ -259,32 +261,31 @@ public class FileResourceImpl extends BasicResourceImpl {
 	/***********************************************************************************************************************************************/
 	/** Those methods do not belong to the ResourceLocatorDelegate interface */
 
-	public static void addDirectoryContent(ResourceLocatorDelegate dl, File file, Pattern pattern, List<Resource> list) {
-
+	private static void addDirectoryContent(ResourceLocatorDelegate dl, File file, Pattern pattern, List<Resource> list) {
 		File[] fileList = file.listFiles();
-		for (final File f : fileList) {
-			if (!f.isDirectory()) {
-				try {
-					final String fileName = f.getCanonicalPath();
-					final boolean accept = pattern.matcher(fileName).matches();
-					if (accept) {
-						list.add(new FileResourceImpl(dl, fileName, f.toURI().toURL()));
-					}
-				} catch (final Exception e) {
+		if (fileList != null) {
+			for (final File f : fileList) {
+				if (!f.isDirectory()) {
 					try {
-						LOGGER.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						final String fileName = f.getCanonicalPath();
+						final boolean accept = pattern.matcher(fileName).matches();
+						if (accept) {
+							list.add(new FileResourceImpl(dl, fileName, f.toURI().toURL()));
+						}
+					} catch (final Exception e) {
+						try {
+							LOGGER.severe("Unable to look for resources inside ResourceLocation: " + file.getCanonicalPath());
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
 					}
 				}
-			}
-			// Recursive search
-			else {
-				addDirectoryContent(dl, f, pattern, list);
+				// Recursive search
+				else {
+					addDirectoryContent(dl, f, pattern, list);
+				}
 			}
 		}
-
 	}
 
 	/**
@@ -365,16 +366,12 @@ public class FileResourceImpl extends BasicResourceImpl {
 		if (getLocator() instanceof FileSystemResourceLocatorImpl) {
 			return ((FileSystemResourceLocatorImpl) getLocator()).retrieveResource(locatedFile);
 		}
-		else {
-			try {
-				return new FileResourceImpl(getLocator(), locatedFile);
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (LocatorNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			return new FileResourceImpl(getLocator(), locatedFile);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (LocatorNotFoundException e) {
+			e.printStackTrace();
 		}
 		LOGGER.warning("Could not locate a resource relatively to a resource (resource=" + this + " locator=" + getLocator() + ")");
 		return null;

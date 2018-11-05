@@ -6,8 +6,8 @@
 		<artifactId>connie</artifactId>
 		<version>1.4.1</version>
 	</parent>
-	<artifactId>flexoutils</artifactId>
-	<name>Utils</name>
+	<artifactId>testutils</artifactId>
+	<name>Utils test</name>
 	<properties>
 		<changes.componentfilter>AND component=connie-core</changes.componentfilter>
 	</properties>
@@ -52,12 +52,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openflexo</groupId>
-			<artifactId>testutils</artifactId>
-			<scope>test</scope>
-			<version>1.4.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

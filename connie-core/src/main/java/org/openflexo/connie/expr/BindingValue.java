@@ -41,8 +41,8 @@ package org.openflexo.connie.expr;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,17 +50,15 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.binding.FunctionPathElement;
-import org.openflexo.connie.binding.JavaMethodPathElement;
-import org.openflexo.connie.binding.JavaPropertyPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
@@ -75,7 +73,6 @@ import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
-import org.openflexo.kvc.KeyValueProperty;
 
 /**
  * Represents a binding path, as formed by an access to a binding variable and a path of BindingPathElement<br>
@@ -88,81 +85,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private static final Logger LOGGER = Logger.getLogger(BindingValue.class.getPackage().getName());
 
-	public static abstract class AbstractBindingPathElement {
-	}
-
-	public static class NormalBindingPathElement extends AbstractBindingPathElement {
-		public String property;
-
-		public NormalBindingPathElement(String aProperty) {
-			property = aProperty;
-		}
-
-		@Override
-		public String toString() {
-			return "Normal[" + property + "]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + (property == null ? 0 : property.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof NormalBindingPathElement) {
-				NormalBindingPathElement e = (NormalBindingPathElement) obj;
-				return property.equals(e.property);
-			}
-			return super.equals(obj);
-		}
-	}
-
-	public static class MethodCallBindingPathElement extends AbstractBindingPathElement {
-		public String method;
-		public List<Expression> args;
-
-		public MethodCallBindingPathElement(String aMethod, List<Expression> someArgs) {
-			method = aMethod;
-			args = someArgs;
-		}
-
-		@Override
-		public String toString() {
-			return "Call[" + method + "(" + args + ")" + "]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 37;
-			int result = 1;
-			result = prime * result + (method == null ? 0 : method.hashCode());
-			result = prime * result + (args == null ? 0 : args.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof MethodCallBindingPathElement) {
-				MethodCallBindingPathElement e = (MethodCallBindingPathElement) obj;
-				return method.equals(e.method) && args.equals(e.args);
-			}
-			return super.equals(obj);
-		}
-
-	}
-
 	private final List<AbstractBindingPathElement> parsedBindingPath;
 
 	private BindingVariable bindingVariable;
-	private final ArrayList<BindingPathElement> bindingPath;
+	private final List<BindingPathElement> bindingPath;
 
 	private boolean needsAnalysing = true;
 	private boolean analysingSuccessfull = true;
-	private BindingModel analyzedWithBindingModel = null;
 
 	private DataBinding<?> dataBinding;
 
@@ -186,6 +115,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		this(parse(stringToParse));
 	}
 
+	public void delete() {
+		clearBindingPathAndBindingVariable();
+	}
+
 	@Override
 	public BindingValue clone() {
 		try {
@@ -201,16 +134,14 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		if (e instanceof BindingValue) {
 			return ((BindingValue) e).getParsedBindingPath();
 		}
-		else {
-			throw new ParseException("Not parseable as a BindingValue: " + stringToParse);
-		}
+		throw new ParseException("Not parseable as a BindingValue: " + stringToParse);
 	}
 
 	public DataBinding<?> getDataBinding() {
 		return dataBinding;
 	}
 
-	public void setDataBinding(DataBinding<?> dataBinding) {
+	public synchronized void setDataBinding(DataBinding<?> dataBinding) {
 		this.dataBinding = dataBinding;
 	}
 
@@ -229,6 +160,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	public Type addBindingPathElement(BindingPathElement element) {
 		int index = bindingPath.size();
 		setBindingPathElementAtIndex(element, index);
+		if (!element.isActivated()) {
+			element.activate();
+		}
 		analysingSuccessfull = _checkBindingPathValid();
 		return element.getType();
 	}
@@ -238,9 +172,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @param i
 	 */
 	public void setBindingPathElementAtIndex(BindingPathElement element, int i) {
-
-		// logger.info("setBindingPathElementAtIndex " + element + " index=" +
-		// i);
 
 		if (i < bindingPath.size() && bindingPath.get(i) == element) {
 			return;
@@ -252,11 +183,17 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			bindingPath.set(i, element);
 			int size = bindingPath.size();
 			for (int j = i + 1; j < size; j++) {
-				bindingPath.remove(i + 1);
+				BindingPathElement removed = bindingPath.remove(i + 1);
+				if (removed.isActivated()) {
+					removed.desactivate();
+				}
 			}
 		}
 		else if (i == bindingPath.size()) {
 			bindingPath.add(element);
+			if (!element.isActivated()) {
+				element.activate();
+			}
 		}
 		else {
 			if (LOGGER.isLoggable(Level.WARNING)) {
@@ -273,6 +210,19 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	public void updateParsedBindingPathFromBindingPath() {
+
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- updateParsedBindingPathFromBindingPath() for " + this);
+			/*System.out.println("Avec BVar=" + getBindingVariable());
+			System.out.println("BindingPath=" + bindingPath.size() + " " + bindingPath);
+			if (bindingPath.size() == 0) {
+				dataBinding.debug();
+				debug();
+				Thread.dumpStack();
+			}*/
+
+		}
+
 		parsedBindingPath.clear();
 		if (getBindingVariable() != null) {
 			parsedBindingPath.add(new NormalBindingPathElement(getVariableName()));
@@ -293,6 +243,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				parsedBindingPath.add(new MethodCallBindingPathElement(fpe.getFunction().getName(), argList));
 			}
 		}
+		clearSerializationRepresentation();
+		needsAnalysing = false;
 	}
 
 	public BindingPathElement getBindingPathElementAtIndex(int i) {
@@ -313,14 +265,20 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		}
 		else if (bindingPath != null && bindingPath.get(bindingPath.size() - 1) != null) {
 			parsedBindingPath.clear();
-			bindingPath.remove(bindingPath.size() - 1);
+			BindingPathElement removed = bindingPath.remove(bindingPath.size() - 1);
 			removeBindingPathElementAfter(requestedLast);
+			if (removed.isActivated()) {
+				removed.desactivate();
+			}
 		}
 		analysingSuccessfull = _checkBindingPathValid();
 	}
 
 	public void removeBindingPathAt(int index) {
-		bindingPath.remove(index);
+		BindingPathElement removed = bindingPath.remove(index);
+		if (removed.isActivated()) {
+			removed.desactivate();
+		}
 		analysingSuccessfull = _checkBindingPathValid();
 	}
 
@@ -328,7 +286,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * Return the last binding path element, which is the binding variable itself if the binding path is empty, or the last binding path
 	 * element registered in the binding path
 	 */
-	public BindingPathElement getLastBindingPathElement() {
+	public IBindingPathElement getLastBindingPathElement() {
 		if (getBindingPath() != null && getBindingPath().size() > 0) {
 			return getBindingPath().get(getBindingPath().size() - 1);
 		}
@@ -341,7 +299,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @param element
 	 * @return
 	 */
-	public boolean isLastBindingPathElement(BindingPathElement element) {
+	public boolean isLastBindingPathElement(IBindingPathElement element) {
 
 		if (bindingPath.size() == 0) {
 			return element.equals(getBindingVariable());
@@ -350,30 +308,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return bindingPath.get(bindingPath.size() - 1).equals(element);
 	}
 
-	/*public boolean isLastBindingPathElement(BindingPathElement element, int index) {
-	
-		System.out.println("est ce que " + element + " est bien le dernier et a l'index " + index);
-	
-		if (index == 0) {
-			return (element.equals(getBindingVariable()));
-		}
-	
-		if (bindingPath.size() < 1) {
-			return false;
-		}
-	
-		System.out.println("Reponse: " + (bindingPath.get(bindingPath.size() - 1).equals(element) && index == bindingPath.size()));
-	
-		return bindingPath.get(bindingPath.size() - 1).equals(element) && index == bindingPath.size();
-	}*/
-
 	public BindingVariable getBindingVariable() {
 		return bindingVariable;
 	}
 
 	public void setBindingVariable(BindingVariable bindingVariable) {
+		clearBindingPathAndBindingVariable();
 		internallySetBindingVariable(bindingVariable);
-		bindingPath.clear();
 		// Fixed CORE-145
 		updateParsedBindingPathFromBindingPath();
 		analysingSuccessfull = _checkBindingPathValid();
@@ -381,6 +322,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private void internallySetBindingVariable(BindingVariable aBindingVariable) {
 		if (bindingVariable != aBindingVariable) {
+			clearSerializationRepresentation();
 			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
 				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
 				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
@@ -397,6 +339,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 
+			clearSerializationRepresentation();
+
 			// System.out.println(">>> In binding value " + this);
 			// System.out.println(">>> Detecting that variable " + getBindingVariable().getVariableName() + " change to "
 			// + evt.getNewValue());
@@ -411,13 +355,16 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				}
 			}
 			else {
-				// Does't matter, but mark data binding as beeing reanalyzed
+				// Does't matter, but mark data binding as being reanalyzed
 				if (dataBinding != null) {
 					dataBinding.markedAsToBeReanalized();
 				}
 			}
 		}
 		else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
+
+			clearSerializationRepresentation();
+
 			// In this case, we detect that our current BindingVariable type has changed
 			// We need to mark the DataBinding as being reanalyzed
 			if (dataBinding != null) {
@@ -428,8 +375,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	@Override
 	public Type getAccessedType() {
-		if (isValid() && getLastBindingPathElement() != null) {
+		/*if (isValid() && getLastBindingPathElement() != null) {
 			return getLastBindingPathElement().getType();
+		}*/
+		if (isValid()) {
+			return analyzedType;
 		}
 		return null;
 	}
@@ -459,20 +409,41 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * A {@link BindingValue} is cacheable if
 	 * <ul>
 	 * <li>related {@link BindingVariable} is cacheable</li>
-	 * <li>this {@link BindingValue} should be notification-safe</li>
+	 * <li>this {@link BindingValue} is notification-safe (all path elements are notification-safe)</li>
 	 * </ul>
 	 * 
 	 * @return
 	 */
 	public boolean isCacheable() {
-		return getBindingVariable() != null && getBindingVariable().isCacheable() && isNotificationSafe();
+		return fullyRelyOnCacheableBindingVariables() && isNotificationSafe();
 	}
 
 	/**
-	 * Return boolean indicating if this {@link BindingValue} is notification-safe<br>
+	 * Indicates if this {@link BindingValue} only rely on {@link BindingVariable} identified as cacheable
 	 * 
-	 * A {@link BindingValue} is unsafe when any involved method is annotated with {@link NotificationUnsafe} annotation<br>
-	 * Otherwise return true
+	 * @return
+	 */
+	private boolean fullyRelyOnCacheableBindingVariables() {
+		if (getBindingVariable() == null || !getBindingVariable().isCacheable()) {
+			return false;
+		}
+		for (BindingPathElement pathElement : new ArrayList<>(getBindingPath())) {
+			if (pathElement instanceof FunctionPathElement) {
+				FunctionPathElement functionPathElement = (FunctionPathElement) pathElement;
+				for (FunctionArgument functionArgument : functionPathElement.getArguments()) {
+					if (functionPathElement.getParameter(functionArgument) != null
+							&& !functionPathElement.getParameter(functionArgument).isCacheable()) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingValue} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
 	 * 
 	 * @return
 	 */
@@ -481,20 +452,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return false;
 		}
 		for (BindingPathElement pathElement : new ArrayList<>(getBindingPath())) {
-			if (pathElement instanceof JavaPropertyPathElement) {
-				JavaPropertyPathElement propertyPathElement = (JavaPropertyPathElement) pathElement;
-				KeyValueProperty kvProperty = propertyPathElement.getKeyValueProperty();
-				Method m = kvProperty.getGetMethod();
-				if (m != null && m.getAnnotation(NotificationUnsafe.class) != null) {
-					return false;
-				}
-			}
-			else if (pathElement instanceof JavaMethodPathElement) {
-				JavaMethodPathElement methodPathElement = (JavaMethodPathElement) pathElement;
-				Method m = methodPathElement.getMethodDefinition().getMethod();
-				if (m != null && m.getAnnotation(NotificationUnsafe.class) != null) {
-					return false;
-				}
+			if (!pathElement.isNotificationSafe()) {
+				return false;
 			}
 		}
 		return true;
@@ -520,30 +479,27 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return false;
 	}
 
-	/*@Override
-	public Expression evaluate(EvaluationContext context) throws TypeMismatchException {
-		if (containsAMethodCall()) {
-			ArrayList<AbstractBindingPathElement> newBindingPath = new ArrayList<AbstractBindingPathElement>();
-			for (AbstractBindingPathElement e : getBindingPath()) {
-				if (e instanceof NormalBindingPathElement) {
-					newBindingPath.add(new NormalBindingPathElement(((NormalBindingPathElement) e).property));
-				} else if (e instanceof MethodCallBindingPathElement) {
-					ArrayList<Expression> newArgs = new ArrayList<Expression>();
-					for (Expression arg : ((MethodCallBindingPathElement) e).args) {
-						newArgs.add(arg.evaluate(context));
-					}
-					newBindingPath.add(new MethodCallBindingPathElement(((MethodCallBindingPathElement) e).method, newArgs));
-				}
+	private BindingValue makeTransformationForValidBindingValue(ExpressionTransformer transformer) throws TransformException {
+		BindingValue bv = new BindingValue();
+		bv.setDataBinding(getDataBinding());
+		bv.setBindingVariable(getBindingVariable());
+		for (BindingPathElement bpe : getBindingPath()) {
+			if (bpe instanceof SimplePathElement) {
+				// TODO: instantiate a new SimplePathElement
+				bv.bindingPath.add(bpe);
 			}
-			return new BindingValueAsExpression(newBindingPath);
+			else if (bpe instanceof FunctionPathElement) {
+				// TODO: instantiate a new FunctionPathElement
+				bv.bindingPath.add(((FunctionPathElement) bpe).transform(transformer));
+			}
 		}
-		return this;
-	}*/
+		bv.needsAnalysing = false;
+		bv.analysingSuccessfull = analysingSuccessfull;
+		updateParsedBindingPathFromBindingPath();
+		return bv;
+	}
 
-	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-
-		boolean hasBeenTransformed = false;
+	private BindingValue makeTransformationForInvalidBindingValue(ExpressionTransformer transformer) throws TransformException {
 		ArrayList<AbstractBindingPathElement> newBindingPath = new ArrayList<>();
 		for (AbstractBindingPathElement e : getParsedBindingPath()) {
 			if (e instanceof NormalBindingPathElement) {
@@ -554,30 +510,69 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				for (Expression arg : ((MethodCallBindingPathElement) e).args) {
 					Expression transformedExpression = arg.transform(transformer);
 					newArgs.add(transformedExpression);
-					if (!transformedExpression.equals(arg)) {
-						hasBeenTransformed = true;
-					}
 				}
 				newBindingPath.add(new MethodCallBindingPathElement(((MethodCallBindingPathElement) e).method, newArgs));
 			}
 		}
-		BindingValue bv = null;
-		if (hasBeenTransformed) {
-			bv = new BindingValue(newBindingPath);
-			bv.setDataBinding(getDataBinding());
+
+		BindingValue bv = new BindingValue(newBindingPath);
+		bv.needsAnalysing = true;
+		bv.setDataBinding(getDataBinding());
+
+		return bv;
+	}
+
+	public boolean containsMethodCallWithParameters() {
+		for (AbstractBindingPathElement e : new ArrayList<>(getParsedBindingPath())) {
+			if (e instanceof MethodCallBindingPathElement && ((MethodCallBindingPathElement) e).args.size() > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Expression transform(ExpressionTransformer transformer) throws TransformException {
+
+		if (transformer instanceof ExpressionEvaluator) {
+			Expression returned = transformer.performTransformation(this);
+			if (returned instanceof Constant) {
+				return returned;
+			}
+		}
+
+		BindingValue bv;
+		if (containsMethodCallWithParameters()) {
+			if (isValid()) {
+				bv = makeTransformationForValidBindingValue(transformer);
+			}
+			else {
+				bv = makeTransformationForInvalidBindingValue(transformer);
+			}
+
 		}
 		else {
-			// bv = clone();
-			// Sylvain
-			// This might be a little bit tricky
-			// If some problems happen, rollback to bv = clone() implementation
 			bv = this;
 		}
+
 		return transformer.performTransformation(bv);
+
 	}
 
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
+		if (containsMethodCallWithParameters()) {
+			for (BindingPathElement bpe : getBindingPath()) {
+				if (bpe instanceof FunctionPathElement) {
+					for (FunctionArgument arg : ((FunctionPathElement) bpe).getArguments()) {
+						DataBinding<?> parameter = ((FunctionPathElement) bpe).getParameter(arg);
+						if (parameter.getExpression() != null) {
+							visitor.visit(parameter.getExpression());
+						}
+					}
+				}
+			}
+		}
 		visitor.visit(this);
 	}
 
@@ -604,9 +599,33 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	public void markedAsToBeReanalized() {
-		// needsToBeReanalized = true;
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- markedAsToBeReanalized() for " + this);
+		}
 		needsAnalysing = true;
-		// dataBinding.markedAsToBeReanalized();
+		clearSerializationRepresentation();
+		clearBindingPathAndBindingVariable();
+	}
+
+	private void clearBindingPathAndBindingVariable() {
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- clearBindingPathAndBindingVariable() for " + this);
+		}
+		if (bindingPath != null) {
+			for (BindingPathElement e : bindingPath) {
+				if (e.isActivated()) {
+					e.desactivate();
+				}
+			}
+			synchronized (this) {
+				bindingPath.clear();
+			}
+		}
+		bindingVariable = null;
+	}
+
+	private boolean needsAnalysing() {
+		return needsAnalysing;
 	}
 
 	public boolean isValid(DataBinding<?> dataBinding) {
@@ -632,21 +651,14 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return false;
 		}
 
-		if (dataBinding.getOwner().getBindingModel() != analyzedWithBindingModel) {
-			needsAnalysing = true;
-		}
-
 		if (needsAnalysing) {
 			buildBindingPathFromParsedBindingPath(dataBinding);
+			needsAnalysing = false;
 		}
 
-		if (!analysingSuccessfull && !needsAnalysing) {
-			// if (!analysingSuccessfull && !needsToBeReanalized) {
+		if (!analysingSuccessfull) {
 			return false;
 		}
-
-		needsAnalysing = false;
-		// needsToBeReanalized = false;
 
 		if (LOGGER.isLoggable(Level.FINEST)) {
 			LOGGER.finest("Is BindingValue valid ?");
@@ -672,20 +684,67 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return false;
 		}*/
 
+		analysingSuccessfull = true;
+
 		return true;
+	}
+
+	private String serializationRepresentation = null;
+
+	public void clearSerializationRepresentation() {
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- clearSerializationRepresentation() for " + this);
+		}
+		serializationRepresentation = null;
+	}
+
+	private String makeSerializationRepresentation() {
+		StringBuffer sb = new StringBuffer();
+		if (getBindingVariable() != null && analysingSuccessfull) {
+			sb.append(getBindingVariable().getVariableName());
+			for (BindingPathElement e : getBindingPath()) {
+				sb.append("." + e.getSerializationRepresentation());
+			}
+		}
+		else {
+			boolean isFirst = true;
+			for (AbstractBindingPathElement apbe : parsedBindingPath) {
+				sb.append((isFirst ? "" : ".") + apbe.getSerializationRepresentation());
+				isFirst = false;
+			}
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+		if (serializationRepresentation == null) {
+			serializationRepresentation = makeSerializationRepresentation();
+		}
+		return serializationRepresentation;
 	}
 
 	public String invalidBindingReason() {
 		return invalidBindingReason;
 	}
 
+	private Type analyzedType;
+
 	private boolean _checkBindingPathValid() {
+
+		analyzedType = Object.class;
+
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- _checkBindingPathValid() for " + this);
+		}
+
 		if (getBindingVariable() == null) {
 			invalidBindingReason = "binding variable is null";
 			return false;
 		}
 		Type currentType = getBindingVariable().getType();
-		BindingPathElement currentElement = getBindingVariable();
+
+		IBindingPathElement currentElement = getBindingVariable();
 		if (currentType == null) {
 			invalidBindingReason = "currentType is null";
 			return false;
@@ -700,37 +759,41 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					invalidBindingReason = "invalid function";
 					return false;
 				}
-				else {
-					// System.out.println("Checking for functionPathElement= " +
-					// functionPathElement);
-					for (FunctionArgument arg : functionPathElement.getFunction().getArguments()) {
-						DataBinding<?> argValue = functionPathElement.getParameter(arg);
-						// System.out.println("Checking " + argValue + " valid="
-						// + argValue.isValid());
-						if (argValue == null) {
-							invalidBindingReason = "Parameter value for function: " + functionPathElement.getFunction() + " : "
-									+ "invalid null argument " + arg.getArgumentName();
-							return false;
-						}
-						if (!argValue.isValid()) {
-							invalidBindingReason = "Parameter value for function: " + functionPathElement.getFunction() + " : "
-									+ "invalid argument " + arg.getArgumentName() + " reason=" + argValue.invalidBindingReason();
-							return false;
-						}
+				// System.out.println("Checking for functionPathElement= " +
+				// functionPathElement);
+				for (FunctionArgument arg : functionPathElement.getFunction().getArguments()) {
+					DataBinding<?> argValue = functionPathElement.getParameter(arg);
+					// System.out.println("Checking " + argValue + " valid="
+					// + argValue.isValid());
+					if (argValue == null) {
+						invalidBindingReason = "Parameter value for function: " + functionPathElement.getFunction() + " : "
+								+ "invalid null argument " + arg.getArgumentName();
+						return false;
+					}
+					if (!argValue.isValid()) {
+						invalidBindingReason = "Parameter value for function: " + functionPathElement.getFunction() + " : "
+								+ "invalid argument " + arg.getArgumentName() + " reason=" + argValue.invalidBindingReason();
+						return false;
 					}
 				}
+			}
+			if (element.getParent() == null) {
+				invalidBindingReason = "No parent for: " + currentElement;
+				return false;
 			}
 			if (!TypeUtils.isTypeAssignableFrom(currentElement.getType(), element.getParent().getType(), true)) {
 				invalidBindingReason = "Mismatched: " + currentElement.getType() + " and " + element.getParent().getType();
 				return false;
 			}
 			currentElement = element;
-			currentType = currentElement.getType();
+
+			currentType = TypeUtils.makeInstantiatedType(currentElement.getType(), currentType);
+
 		}
 
-		/*if (!TypeUtils.isResolved(currentType)) {
-			return false;
-		}*/
+		analyzedType = currentType;
+
+		clearSerializationRepresentation();
 
 		return true;
 	}
@@ -760,6 +823,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	// Many threads may access to this at same time, causing BindingPath to be mixed
 	public synchronized boolean buildBindingPathFromParsedBindingPath(DataBinding<?> dataBinding) {
 
+		if (dataBinding != null && dataBinding.debug) {
+			System.out.println("DEBUG -- Connie -- buildBindingPathFromParsedBindingPath() for " + this);
+		}
+
 		// logger.info("buildBindingPathFromParsedBindingPath() for " +
 		// getParsedBindingPath());
 
@@ -782,31 +849,37 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		}
 
 		needsAnalysing = false;
-		analyzedWithBindingModel = dataBinding.getOwner().getBindingModel();
+		// analyzedWithBindingModel = dataBinding.getOwner().getBindingModel();
 		setDataBinding(dataBinding);
-		bindingVariable = null;
-		bindingPath.clear();
+
+		clearBindingPathAndBindingVariable();
 
 		if (getDataBinding() != null && getParsedBindingPath().size() > 0
 				&& getParsedBindingPath().get(0) instanceof NormalBindingPathElement) {
 			// Seems to be valid
 			internallySetBindingVariable(dataBinding.getOwner().getBindingModel()
 					.bindingVariableNamed(((NormalBindingPathElement) getParsedBindingPath().get(0)).property));
-			BindingPathElement current = bindingVariable;
+			IBindingPathElement current = bindingVariable;
 			// System.out.println("Found binding variable " + bindingVariable);
 			if (bindingVariable == null) {
 				invalidBindingReason = "cannot find binding variable " + ((NormalBindingPathElement) getParsedBindingPath().get(0)).property
-						+ " BindingModel=" + dataBinding.getOwner().getBindingModel();
+						+ " BindingModel=";// + dataBinding.getOwner().getBindingModel();
 				analysingSuccessfull = false;
 				return false;
 			}
 			int i = 0;
-			for (AbstractBindingPathElement pathElement : getParsedBindingPath()) {
+
+			// System.out.println("Analysing BindingValue " + Integer.toHexString(hashCode()) + " with " + getParsedBindingPath());
+
+			for (AbstractBindingPathElement pathElement : new ArrayList<>(getParsedBindingPath())) {
 				if (i > 0) {
 					if (pathElement instanceof NormalBindingPathElement) {
 						SimplePathElement newPathElement = dataBinding.getOwner().getBindingFactory().makeSimplePathElement(current,
 								((NormalBindingPathElement) pathElement).property);
 						if (newPathElement != null) {
+							if (!newPathElement.isActivated()) {
+								newPathElement.activate();
+							}
 							bindingPath.add(newPathElement);
 							current = newPathElement;
 							// System.out.println("> SIMPLE " + pathElement);
@@ -828,7 +901,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 									DataBinding.BindingDefinitionType.GET);
 							argDataBinding.setBindingName("arg" + argIndex);
 							if (arg != null) {
-								argDataBinding.setExpression(arg);
+								// Avoid to notify yet, otherwise it may loop
+								argDataBinding.setExpression(arg, false);
 							}
 							else {
 								argDataBinding.setExpression(ObjectSymbolicConstant.NULL);
@@ -852,6 +926,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 							FunctionPathElement newPathElement = dataBinding.getOwner().getBindingFactory().makeFunctionPathElement(current,
 									function, args);
 							if (newPathElement != null) {
+								if (!newPathElement.isActivated()) {
+									newPathElement.activate();
+								}
 								bindingPath.add(newPathElement);
 								current = newPathElement;
 								// System.out.println("> FUNCTION " +
@@ -880,33 +957,38 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				}
 				i++;
 			}
+			invalidBindingReason = "Valid";
 			analysingSuccessfull = true;
 		}
 		else {
-			// LOGGER.warning("Invalid binding value " + this);
-			// Thread.dumpStack();
+			invalidBindingReason = "Empty binding";
 			analysingSuccessfull = false;
 		}
 
 		return analysingSuccessfull;
 	}
 
-	public Object getBindingValue(BindingEvaluationContext context)
+	Object getBindingValue(BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
 
 		// System.out.println(" > evaluate BindingValue " + this +
 		// " in context " + context);
 		if (isValid() && context != null) {
+			if (getBindingVariable() == null) {
+				return null;
+			}
 			Object current = context.getValue(getBindingVariable());
 			if (current == null) {
 				// If the binding variable is null, just return null
 				return null;
 			}
-			BindingPathElement previous = getBindingVariable();
+			IBindingPathElement previous = getBindingVariable();
 			for (BindingPathElement e : getBindingPath()) {
 				if (current == null) {
-					throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + getParsedBindingPath()
-							+ ": null occured when evaluating " + previous);
+					if (!e.supportsNullValues()) {
+						throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + getParsedBindingPath()
+								+ ": null occured when evaluating " + previous);
+					}
 				}
 				try {
 					current = e.getBindingValue(current, context);
@@ -943,31 +1025,30 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				((SettableBindingEvaluationContext) context).setValue(value, getBindingVariable());
 				return;
 			}
-			else {
-				throw new NotSettableContextException(getBindingVariable(), context);
-			}
+			throw new NotSettableContextException(getBindingVariable(), context);
 		}
 
 		// System.out.println("Sets value: "+value);
 		// System.out.println("Binding: "+getStringRepresentation());
 
-		BindingPathElement lastEvaluatedPathElement = getBindingVariable();
+		IBindingPathElement lastEvaluatedPathElement = getBindingVariable();
 		Object lastEvaluated = null;
 		Object returned = context.getValue(getBindingVariable());
 
 		if (returned == null) {
-			throw new NullReferenceException("null occured when evaluating " + lastEvaluatedPathElement + " from " + lastEvaluated);
+			throw new NullReferenceException("while evaluating " + getParsedBindingPath() + ": null occured when evaluating "
+					+ lastEvaluatedPathElement + " from " + context);
 		}
 		// System.out.println("For variable "+_bindingVariable+" object is "+returned);
 
-		// try {
 		for (BindingPathElement element : getBindingPath()) {
 			if (element != getLastBindingPathElement()) {
 				// System.out.println("Apply "+element);
 				lastEvaluatedPathElement = element;
 				returned = element.getBindingValue(returned, context);
 				if (returned == null) {
-					throw new NullReferenceException("null occured when evaluating " + lastEvaluatedPathElement + " from " + lastEvaluated);
+					throw new NullReferenceException("while evaluating " + getParsedBindingPath() + ": null occured when evaluating "
+							+ lastEvaluatedPathElement + " from " + lastEvaluated);
 				}
 				lastEvaluated = returned;
 				// System.out.println("Obtain "+returned);
@@ -986,13 +1067,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		else {
 			LOGGER.warning("Binding " + this + " is not settable");
 		}
-		/*} catch (InvalidObjectSpecificationException e) {
-			logger.warning("InvalidObjectSpecificationException raised while evaluating SET " + this + " : " + e.getMessage());
-			// System.out.println("returned="+returned);
-			// System.out.println("value="+value);
-			// System.out.println("((KeyValueProperty)getBindingPath().lastElement()).getName()="+((KeyValueProperty)getBindingPath().lastElement()).getName());
-		}*/
-
 	}
 
 	/**
@@ -1028,9 +1102,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				if (current == null) {
 					return returned;
 				}
-				else {
-					returned.add(current);
-				}
+				returned.add(current);
 			}
 		}
 		if (current == null) {
@@ -1084,7 +1156,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			returned.add(new TargetObject(current, element.getLabel()));
 			try {
-				current = element.getBindingValue(current, context);
+				if (element == getLastBindingPathElement()) {
+					// No need to analyze deeply, this is the last one
+					current = null;
+				}
+				else {
+					current = element.getBindingValue(current, context);
+				}
 			} catch (TypeMismatchException e) {
 				current = null;
 				// We silently escape...
@@ -1099,7 +1177,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				// e.printStackTrace();
 			} catch (InvalidKeyValuePropertyException e) {
 				current = null;
-				e.printStackTrace();
+				// We silently escape...
+				// e.printStackTrace();
 			}
 			if (element instanceof FunctionPathElement) {
 				FunctionPathElement functionPathElement = (FunctionPathElement) element;
@@ -1121,11 +1200,99 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return returned;
 	}
 
-	public void debug() {
+	private void debug() {
+		System.out.println("DEBUG BindingValue");
 		System.out.println("parsedBindingPath=" + parsedBindingPath);
 		System.out.println("bvar=" + bindingVariable);
 		System.out.println("bpath=" + bindingPath);
 		System.out.println("needsAnalysing=" + needsAnalysing);
 		System.out.println("analysingSuccessfull=" + analysingSuccessfull);
 	}
+
+	public static abstract class AbstractBindingPathElement {
+		public abstract String getSerializationRepresentation();
+	}
+
+	public static class NormalBindingPathElement extends AbstractBindingPathElement {
+		public String property;
+
+		public NormalBindingPathElement(String aProperty) {
+			property = aProperty;
+		}
+
+		@Override
+		public String toString() {
+			return "Normal[" + property + "]";
+		}
+
+		@Override
+		public String getSerializationRepresentation() {
+			return property;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (property == null ? 0 : property.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof NormalBindingPathElement) {
+				NormalBindingPathElement e = (NormalBindingPathElement) obj;
+				return property.equals(e.property);
+			}
+			return super.equals(obj);
+		}
+	}
+
+	public static class MethodCallBindingPathElement extends AbstractBindingPathElement {
+		public String method;
+		public List<Expression> args;
+
+		public MethodCallBindingPathElement(String aMethod, List<Expression> someArgs) {
+			method = aMethod;
+			args = someArgs;
+		}
+
+		@Override
+		public String toString() {
+			return "Call[" + method + "(" + args + ")" + "]";
+		}
+
+		@Override
+		public String getSerializationRepresentation() {
+			StringBuffer sb = new StringBuffer();
+			sb.append(method + "(");
+			boolean isFirst = true;
+			for (Expression arg : args) {
+				sb.append((isFirst ? "" : ",") + arg);
+				isFirst = false;
+			}
+			sb.append(")");
+			return sb.toString();
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 37;
+			int result = 1;
+			result = prime * result + (method == null ? 0 : method.hashCode());
+			result = prime * result + (args == null ? 0 : args.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof MethodCallBindingPathElement) {
+				MethodCallBindingPathElement e = (MethodCallBindingPathElement) obj;
+				return method.equals(e.method) && args.equals(e.args);
+			}
+			return super.equals(obj);
+		}
+
+	}
+
 }

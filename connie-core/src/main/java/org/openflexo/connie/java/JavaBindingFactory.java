@@ -46,15 +46,17 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.JavaMethodPathElement;
 import org.openflexo.connie.binding.JavaPropertyPathElement;
 import org.openflexo.connie.binding.MethodDefinition;
@@ -63,8 +65,21 @@ import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.KeyValueLibrary;
 import org.openflexo.kvc.KeyValueProperty;
 
+/**
+ * This is base implementation for Java {@link BindingFactory}<br>
+ * 
+ * Accessible simple and function path elements are computed using Java fields/methods reflection A.P.I
+ * 
+ * 
+ * @author sylvain
+ *
+ */
 public class JavaBindingFactory implements BindingFactory {
 	static final Logger LOGGER = Logger.getLogger(JavaBindingFactory.class.getPackage().getName());
+
+	private Map<Type, List<? extends SimplePathElement>> accessibleSimplePathElements = new HashMap<>();
+	private Map<Type, List<? extends FunctionPathElement>> accessibleFunctionPathElements = new HashMap<>();
+	private Map<Type, Map<String, Function>> storedFunctions = new HashMap<>();
 
 	@Override
 	public Type getTypeForObject(Object object) {
@@ -75,8 +90,15 @@ public class JavaBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public List<? extends SimplePathElement> getAccessibleSimplePathElements(BindingPathElement parent) {
+	public List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent) {
+
 		if (parent.getType() != null) {
+
+			List<? extends SimplePathElement> returned = accessibleSimplePathElements.get(parent.getType());
+			if (returned != null) {
+				return returned;
+			}
+
 			if (TypeUtils.getBaseClass(parent.getType()) == null) {
 				return null;
 			}
@@ -90,18 +112,27 @@ public class JavaBindingFactory implements BindingFactory {
 					currentType = upperBounds[0];
 				}
 			}
-			List<JavaPropertyPathElement> returned = new ArrayList<>();
+			List<JavaPropertyPathElement> newComputedList = new ArrayList<>();
 			for (KeyValueProperty p : KeyValueLibrary.getAccessibleProperties(currentType)) {
-				returned.add(new JavaPropertyPathElement(parent, p));
+				// System.out.println("on construit JavaPropertyPathElement pour " + p + " type=" + parent.getType());
+				newComputedList.add(new JavaPropertyPathElement(parent, p));
 			}
-			return returned;
+			accessibleSimplePathElements.put(parent.getType(), newComputedList);
+
+			return newComputedList;
 		}
 		return null;
 	}
 
 	@Override
-	public List<? extends FunctionPathElement> getAccessibleFunctionPathElements(BindingPathElement parent) {
+	public List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent) {
 		if (parent.getType() != null) {
+
+			List<? extends FunctionPathElement> returned = accessibleFunctionPathElements.get(parent.getType());
+			if (returned != null) {
+				return returned;
+			}
+
 			if (TypeUtils.getBaseClass(parent.getType()) == null) {
 				return null;
 			}
@@ -109,17 +140,20 @@ public class JavaBindingFactory implements BindingFactory {
 			if (currentType instanceof Class && ((Class<?>) currentType).isPrimitive()) {
 				currentType = TypeUtils.fromPrimitive((Class<?>) currentType);
 			}
-			List<JavaMethodPathElement> returned = new ArrayList<>();
+			List<JavaMethodPathElement> newComputedList = new ArrayList<>();
 			for (MethodDefinition m : KeyValueLibrary.getAccessibleMethods(currentType)) {
-				returned.add(new JavaMethodPathElement(parent, m, null));
+				// System.out.println("on construit JavaMethodPathElement pour " + m);
+				newComputedList.add(new JavaMethodPathElement(parent, m, null));
 			}
-			return returned;
+			accessibleFunctionPathElements.put(parent.getType(), newComputedList);
+
+			return newComputedList;
 		}
 		return null;
 	}
 
 	@Override
-	public SimplePathElement makeSimplePathElement(BindingPathElement father, String propertyName) {
+	public SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName) {
 		Type fatherType = father.getType();
 		if (fatherType instanceof Class && ((Class<?>) fatherType).isPrimitive()) {
 			fatherType = TypeUtils.fromPrimitive((Class<?>) fatherType);
@@ -132,21 +166,48 @@ public class JavaBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public FunctionPathElement makeFunctionPathElement(BindingPathElement father, Function function, List<DataBinding<?>> args) {
+	public FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args) {
 		if (function instanceof MethodDefinition) {
 			return new JavaMethodPathElement(father, (MethodDefinition) function, args);
 		}
 		return null;
 	}
 
+	private static String getSignature(String functionName, List<DataBinding<?>> args) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(functionName);
+		sb.append("(");
+		boolean isFirst = true;
+		for (DataBinding<?> arg : args) {
+			sb.append((isFirst ? "" : ",") + TypeUtils.simpleRepresentation(arg.getDeclaredType()));
+			isFirst = false;
+		}
+		sb.append(")");
+		return sb.toString();
+	}
+
 	@Override
 	public Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args) {
+
+		Map<String, Function> mapForType = storedFunctions.get(parentType);
+		if (mapForType == null) {
+			mapForType = new HashMap<>();
+			storedFunctions.put(parentType, mapForType);
+		}
+
+		String signature = getSignature(functionName, args);
+		Function returned = mapForType.get(signature);
+		if (returned != null) {
+			return returned;
+		}
+
 		Vector<Method> possiblyMatchingMethods = new Vector<>();
 		Class<?> typeClass = TypeUtils.getBaseClass(parentType);
 		if (typeClass == null) {
 			System.out.println("Cannot find typeClass for " + parentType);
 			return null;
 		}
+		// System.out.println("On cherche la methode " + functionName + " pour " + args);
 		Method[] allMethods = typeClass.getMethods();
 		// First attempt: we perform type checking on parameters
 		for (Method method : allMethods) {
@@ -179,16 +240,26 @@ public class JavaBindingFactory implements BindingFactory {
 			}*/
 			// Return the first one
 			// TODO: try to find the best one
-			return MethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			returned = MethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			mapForType.put(signature, returned);
+			return returned;
 		}
 		else if (possiblyMatchingMethods.size() == 1) {
-			return MethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			returned = MethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			mapForType.put(signature, returned);
+			return returned;
 		}
 		else {
 			// We dont log it inconditionnaly, because this may happen (while for example inspectors are merged)
-			// logger.warning("Cannot find method named " + functionName + " with args=" + args + "(" + args.size() + ") for type "
-			// + parentType);
+			// LOGGER.warning(
+			// "Cannot find method named " + functionName + " with args=" + args + "(" + args.size() + ") for type " + parentType);
 			return null;
 		}
+	}
+
+	public void clear() {
+		accessibleSimplePathElements.clear();
+		accessibleFunctionPathElements.clear();
+		storedFunctions.clear();
 	}
 }

@@ -40,13 +40,13 @@
 package org.openflexo.toolbox;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Vector;
 
 /**
  * This class provide an implementation of a list containing some other list or elements The goal of this implementation is to rely on
- * embedded lists instead of copying data structures into an other one (performance readons): you can manage a List without having to
+ * embedded lists instead of copying data structures into an other one (performance reasons): you can manage a List without having to
  * duplicate concatened lists
  * 
  * @author sylvain
@@ -55,8 +55,9 @@ import java.util.Vector;
  */
 public class ConcatenedList<E> extends AbstractList<E> {
 
-	private Vector<Object> embedded = new Vector<>();
+	private ArrayList<Object> embedded = new ArrayList<>();
 
+	@SuppressWarnings("unchecked")
 	public ConcatenedList(Object... elements) {
 		for (Object element : elements) {
 			if (element instanceof List) {
@@ -106,6 +107,7 @@ public class ConcatenedList<E> extends AbstractList<E> {
 		embedded.add(elementList);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public E get(int index) {
 		int current = 0;

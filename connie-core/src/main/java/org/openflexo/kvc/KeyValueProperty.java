@@ -52,8 +52,27 @@ import org.openflexo.connie.binding.AccessorMethod;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
 
+/**
+ * {@link KeyValueProperty} represent a property in Java language.
+ * 
+ * This is the low-level representation of a property associated to a Java type.<br>
+ * A property is defined by
+ * <ul>
+ * <li>either a public field (in this case, the name of the property is the name of the field itself)</li>
+ * <li>or a couple of get/set methods (set method is not mandatory for read-only property). In this case, the name is computed while
+ * extracting basic template getXXX()/setXXX(value) while XXX is the name of the property</li>
+ * </ul>
+ * 
+ * When the set method is not defined, settable property is false (read-only property)
+ * 
+ * This implementation should rely on a efficient hashCode()/equals() implementation, which is performed here using {@link #declaringType}
+ * and {@link #name} pair.
+ * 
+ * @author sylvain
+ * @see KeyValueLibrary
+ *
+ */
 public class KeyValueProperty extends Observable {
-
 	static final Logger LOGGER = Logger.getLogger(KeyValueProperty.class.getPackage().getName());
 
 	/** Stores property's name */
@@ -86,26 +105,42 @@ public class KeyValueProperty extends Observable {
 	private boolean settable = false;
 
 	KeyValueProperty(Type aDeclaringType, String propertyName, boolean setMethodIsMandatory) throws InvalidKeyValuePropertyException {
-
-		super();
 		declaringClass = TypeUtils.getBaseClass(aDeclaringType);
 		declaringType = aDeclaringType;
 		init(propertyName, setMethodIsMandatory);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof KeyValueProperty) {
-			KeyValueProperty kvp = (KeyValueProperty) obj;
-			return (declaringClass.equals(kvp.declaringClass) || TypeUtils.isClassAncestorOf(declaringClass, kvp.declaringClass)
-					|| TypeUtils.isClassAncestorOf(kvp.declaringClass, declaringClass)) && name.equals(kvp.name);
-		}
-		return super.equals(obj);
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((declaringType == null) ? 0 : declaringType.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
 
 	@Override
-	public int hashCode() {
-		return name.hashCode() + (field != null ? field.getDeclaringClass().hashCode() : getMethod.getDeclaringClass().hashCode());
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		KeyValueProperty other = (KeyValueProperty) obj;
+		if (declaringType == null) {
+			if (other.declaringType != null)
+				return false;
+		}
+		else if (!declaringType.equals(other.declaringType))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		}
+		else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 
 	/**
@@ -140,9 +175,7 @@ public class KeyValueProperty extends Observable {
 						+ "_" + name + "() nor " + "get" + propertyNameWithFirstCharToUpperCase + "() nor " + "_get"
 						+ propertyNameWithFirstCharToUpperCase + "() found in class:" + declaringClass.getName());
 			}
-			else {
-				type = getMethod.getGenericReturnType();
-			}
+			type = getMethod.getGenericReturnType();
 		}
 		else { // field != null
 			type = field.getGenericType();
@@ -164,19 +197,17 @@ public class KeyValueProperty extends Observable {
 							+ propertyNameWithFirstCharToUpperCase + "(" + type + ") or " + "_set" + propertyNameWithFirstCharToUpperCase
 							+ "(" + type + ") found " + "in class " + declaringClass);
 				}
-				else {
-					if (getMethod != null) {
-						// Debugging.debug ("Public field "+propertyName+"
-						// found, with type "
-						// + type.getName()+ " found "
-						// + " and method "+getMethod.getName()+" found "
-						// + " but no method matching "
-						// +"set"+propertyNameWithFirstCharToUpperCase+"("+type.getName()+")
-						// or "
-						// +"_set"+propertyNameWithFirstCharToUpperCase+"("+type.getName()+")
-						// found."
-						// +" Will use directly the field to set values.");
-					}
+				if (getMethod != null) {
+					// Debugging.debug ("Public field "+propertyName+"
+					// found, with type "
+					// + type.getName()+ " found "
+					// + " and method "+getMethod.getName()+" found "
+					// + " but no method matching "
+					// +"set"+propertyNameWithFirstCharToUpperCase+"("+type.getName()+")
+					// or "
+					// +"_set"+propertyNameWithFirstCharToUpperCase+"("+type.getName()+")
+					// found."
+					// +" Will use directly the field to set values.");
 				}
 			}
 		}
@@ -306,7 +337,8 @@ public class KeyValueProperty extends Observable {
 		if (aType instanceof Class) {
 			for (Method m : aDeclaringClass.getMethods()) {
 				for (String t : tries) {
-					if (m.getName().equals(t) && m.getParameterTypes().length == 1 && m.getParameterTypes()[0].equals(aType)) {
+					if (m.getName().equals(t) && m.getParameterTypes().length == 1
+							&& TypeUtils.isTypeAssignableFrom(aType, m.getParameterTypes()[0])) {
 						return m;
 					}
 				}
@@ -316,7 +348,7 @@ public class KeyValueProperty extends Observable {
 			for (Method m : aDeclaringClass.getMethods()) {
 				for (String t : tries) {
 					if (m.getName().equals(t) && m.getGenericParameterTypes().length == 1
-							&& m.getGenericParameterTypes()[0].equals(aType)) {
+							&& TypeUtils.isTypeAssignableFrom(aType, m.getGenericParameterTypes()[0])) {
 						return m;
 					}
 				}
@@ -499,50 +531,40 @@ public class KeyValueProperty extends Observable {
 		if (object == null) {
 			throw new InvalidKeyValuePropertyException("No object is specified");
 		}
+		Object currentObject = object;
+		if (field != null) {
+			try {
+				return field.get(currentObject);
+			} catch (Exception e) {
+				throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
+						+ ": field " + field.getName() + " Exception raised: " + e.toString());
+			}
+		}
+		else if (getMethod != null) {
+			if (!getMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass())) {
+				throw new InvalidKeyValuePropertyException("Object is not an instance of declaring class: expected "
+						+ getMethod.getDeclaringClass().getName() + ", but was " + currentObject.getClass());
+			}
+			try {
+				return getMethod.invoke(currentObject, (Object[]) null);
+			} catch (InvocationTargetException e) {
+				e.getTargetException().printStackTrace();
+				throw new AccessorInvocationException("AccessorInvocationException: class " + declaringClass.getName() + ": method "
+						+ getMethod.getName() + " Exception raised: " + e.getTargetException().toString(), e);
+			} catch (Exception e) {
+				System.out.println("current object = " + currentObject);
+				System.out.println("declaring class = " + declaringClass);
+				System.out.println("Assignable=" + declaringClass.isAssignableFrom(currentObject.getClass()));
+				System.out.println("getMethod=" + getMethod);
+				System.out.println("declaring class = " + getMethod.getDeclaringClass());
+				System.out.println("Assignable=" + getMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass()));
+				e.printStackTrace();
+				throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
+						+ ": method " + getMethod.getName() + " Exception raised: " + e.toString());
+			}
+		}
 		else {
-			Object currentObject = object;
-
-			if (field != null) {
-				try {
-					return field.get(currentObject);
-				} catch (Exception e) {
-					throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
-							+ ": field " + field.getName() + " Exception raised: " + e.toString());
-				}
-			}
-
-			else if (getMethod != null) {
-
-				if (!getMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass())) {
-					throw new InvalidKeyValuePropertyException("Object is not an instance of declaring class: expected "
-							+ getMethod.getDeclaringClass().getName() + ", but was " + currentObject.getClass());
-				}
-
-				try {
-					return getMethod.invoke(currentObject, (Object[]) null);
-				} catch (InvocationTargetException e) {
-					e.getTargetException().printStackTrace();
-					throw new AccessorInvocationException("AccessorInvocationException: class " + declaringClass.getName() + ": method "
-							+ getMethod.getName() + " Exception raised: " + e.getTargetException().toString(), e);
-				} catch (Exception e) {
-
-					System.out.println("current object = " + currentObject);
-					System.out.println("declaring class = " + declaringClass);
-					System.out.println("Assignable=" + declaringClass.isAssignableFrom(currentObject.getClass()));
-					System.out.println("getMethod=" + getMethod);
-					System.out.println("declaring class = " + getMethod.getDeclaringClass());
-					System.out.println("Assignable=" + getMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass()));
-					e.printStackTrace();
-					throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
-							+ ": method " + getMethod.getName() + " Exception raised: " + e.toString());
-				}
-
-			}
-
-			else {
-				throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor get method found !!!");
-			}
-
+			throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor get method found !!!");
 		}
 	}
 
@@ -569,57 +591,45 @@ public class KeyValueProperty extends Observable {
 		if (object == null) {
 			throw new InvalidKeyValuePropertyException("No object is specified");
 		}
-		else {
-
-			Object currentObject = object;
-
-			if (field != null) {
+		Object currentObject = object;
+		if (field != null) {
+			try {
+				field.set(currentObject, aValue);
+			} catch (Exception e) {
+				throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
+						+ ": field " + field.getName() + " Exception raised: " + e.toString());
+			}
+		}
+		else if (setMethod != null) {
+			Object params[] = new Object[1];
+			params[0] = aValue;
+			if (setMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass())) {
 				try {
-					field.set(currentObject, aValue);
-				} catch (Exception e) {
-					throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
-							+ ": field " + field.getName() + " Exception raised: " + e.toString());
-				}
-			}
-
-			else if (setMethod != null) {
-
-				Object params[] = new Object[1];
-				params[0] = aValue;
-
-				if (setMethod.getDeclaringClass().isAssignableFrom(currentObject.getClass())) {
-					try {
-						setMethod.invoke(currentObject, params);
-					} catch (InvocationTargetException e) {
-						e.getTargetException().printStackTrace();
-						throw new AccessorInvocationException("AccessorInvocationException: class " + declaringClass.getName() + ": method "
-								+ setMethod.getName() + " Exception raised: " + e.getTargetException().toString(), e);
-					} catch (IllegalArgumentException e) {
-						// e.printStackTrace();
-						throw new InvalidKeyValuePropertyException(
-								"InvalidKeyValuePropertyException: class " + declaringClass.getName() + ": method " + setMethod.getName()
-										+ "Argument mismatch: tried to pass a '" + (aValue != null ? aValue.getClass().getName() : "null")
-										+ " instead of a " + setMethod.getParameterTypes()[0] + " Exception raised: " + e.toString());
-
-					} catch (Exception e) {
-						// e.printStackTrace();
-						throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
-								+ ": field " + setMethod.getName() + " Exception raised: " + e.toString());
-					}
-				}
-				else {
+					setMethod.invoke(currentObject, params);
+				} catch (InvocationTargetException e) {
+					e.getTargetException().printStackTrace();
+					throw new AccessorInvocationException("AccessorInvocationException: class " + declaringClass.getName() + ": method "
+							+ setMethod.getName() + " Exception raised: " + e.getTargetException().toString(), e);
+				} catch (IllegalArgumentException e) {
+					// e.printStackTrace();
 					throw new InvalidKeyValuePropertyException(
-							"InvalidKeyValuePropertyException: " + ": method " + setMethod.getName() + " called for object " + currentObject
-									+ (currentObject != null ? " of " + currentObject.getClass().getName() : "") + " instead of "
-									+ declaringClass.getName());
+							"InvalidKeyValuePropertyException: class " + declaringClass.getName() + ": method " + setMethod.getName()
+									+ "Argument mismatch: tried to pass a '" + (aValue != null ? aValue.getClass().getName() : "null")
+									+ " instead of a " + setMethod.getParameterTypes()[0] + " Exception raised: " + e.toString());
+				} catch (Exception e) {
+					// e.printStackTrace();
+					throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: class " + declaringClass.getName()
+							+ ": field " + setMethod.getName() + " Exception raised: " + e.toString());
 				}
-
 			}
-
 			else {
-				throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor set method found !!!");
+				throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: " + ": method " + setMethod.getName()
+						+ " called for object " + currentObject + (currentObject != null ? " of " + currentObject.getClass().getName() : "")
+						+ " instead of " + declaringClass.getName());
 			}
-
+		}
+		else {
+			throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: no field nor set method found !!!");
 		}
 	}
 

@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.toolbox.Duration;
 
 public abstract class Constant<V> extends Expression {
@@ -86,9 +87,10 @@ public abstract class Constant<V> extends Expression {
 		}
 		else if (value instanceof Byte) {
 			return new Constant.IntegerConstant(((Byte) value).longValue());
-		} /*else if (value instanceof DateValue) {
-			return new Constant.DateConstant(((DateValue) value).getDateValue());
-			} else if (value instanceof DurationValue) {
+		}
+		else if (value instanceof Date) {
+			return new Constant.DateConstant((Date) value);
+		} /*else if (value instanceof DurationValue) {
 			return new Constant.DurationConstant(((DurationValue) value).getDurationValue());
 			}*/
 		return new Constant.ObjectConstant(value);
@@ -235,12 +237,6 @@ public abstract class Constant<V> extends Expression {
 		public EnumConstant(Enum<E> value) {
 			super();
 			this.value = value;
-		}
-
-		@Deprecated
-		public EnumConstant(String enumName) {
-			super();
-			this.enumName = enumName;
 		}
 
 		public String getName() {
@@ -473,7 +469,12 @@ public abstract class Constant<V> extends Expression {
 			this.symbol = symbol;
 		}
 
-		public static final ObjectSymbolicConstant NULL = new ObjectSymbolicConstant("null");
+		public static final ObjectSymbolicConstant NULL = new ObjectSymbolicConstant("null") {
+			@Override
+			public Type getType() {
+				return ExplicitNullType.INSTANCE;
+			}
+		};
 		public static final ObjectSymbolicConstant THIS = new ObjectSymbolicConstant("this");
 
 		@Override

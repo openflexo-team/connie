@@ -39,8 +39,10 @@
 package org.openflexo.connie.binding;
 
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
@@ -56,14 +58,21 @@ import org.openflexo.logging.FlexoLogger;
  * @author sylvain
  * 
  */
-public abstract class BindingValueListChangeListener<T2, T extends List<T2>> extends BindingValueChangeListener<T> {
+public abstract class BindingValueListChangeListener<T2, T extends Collection<T2>> extends BindingValueChangeListener<T> {
 
 	private static final Logger LOGGER = FlexoLogger.getLogger(BindingValueListChangeListener.class.getName());
 
-	private List<T2> lastKnownValues = null;
+	private Collection<T2> lastKnownValues = null;
+
+	// Boolean used to indicate that lastKnownValues has never been notified
+	private boolean neverNotified = true;
 
 	public BindingValueListChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		super(dataBinding, context);
+	}
+
+	public BindingValueListChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context, boolean initAsChange) {
+		super(dataBinding, context, initAsChange);
 	}
 
 	@Override
@@ -81,27 +90,55 @@ public abstract class BindingValueListChangeListener<T2, T extends List<T2>> ext
 			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext()
 					+ " because NullReferenceException has raised");
 			newValue = null;
+		} catch (InvocationTargetException e) {
+			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext() + " because Exception has raised: "
+					+ e.getTargetException());
+			newValue = null;
+		} catch (ClassCastException e) {
+			LOGGER.warning("ClassCastException while evaluating " + getDataBinding() + " with context " + getContext());
+			newValue = null;
 		}
 
-		if (getDataBinding().toString().equals("data.selectedDocumentElements")) {
+		/*if (getDataBinding().toString().equals("data.selectedDocumentElements")) {
 			System.out.println(">>>>>>>>>> fireChange for " + getDataBinding().toString());
 			System.out.println("newValue=" + newValue);
 			System.out.println("lastNotifiedValue=" + lastNotifiedValue);
 			System.out.println("lastKnownValues=" + lastKnownValues);
-		}
+		}*/
 
-		if (newValue != lastNotifiedValue) {
+		// Fixed CONNIE-17
+		// OK, i get the problem
+		// When the first notification raised for a new value set to null, both values are not different
+		// and refreshObserving() is not called, thus some objects are not observed
+		// A solution is to force refreshObserving() to be called the first time, even values are both null
+
+		if (newValue != lastNotifiedValue || neverNotified) {
 			lastNotifiedValue = newValue;
+			/*if (getDataBinding() != null) {
+				System.out.println("1-For " + getDataBinding().toString() + " notifying from " + lastNotifiedValue + " to " + newValue);
+			}*/
 			bindingValueChanged(evt.getSource(), newValue);
 			refreshObserving(false);
 		}
 		else {
 			// Lists are sames, but values inside lists, may have changed
-			if ((lastKnownValues == null) || (!lastKnownValues.equals(newValue))) {
+			try {
+				if ((lastKnownValues == null && newValue != null) || (lastKnownValues != null && !lastKnownValues.equals(newValue))) {
+					/*if (getDataBinding() != null) {
+						System.out.println("2-For " + getDataBinding().toString() + " notifying from " + lastKnownValues + " to " + newValue);
+					}*/
+					lastKnownValues = (newValue != null ? new ArrayList<>(newValue) : null);
+					bindingValueChanged(evt.getSource(), newValue);
+					refreshObserving(false);
+				}
+			} catch (ConcurrentModificationException e) {
+				// List changed while equals() beeing computed: this is a good reason to fire change
 				lastKnownValues = (newValue != null ? new ArrayList<>(newValue) : null);
 				bindingValueChanged(evt.getSource(), newValue);
 				refreshObserving(false);
 			}
 		}
+
+		neverNotified = false;
 	}
 }

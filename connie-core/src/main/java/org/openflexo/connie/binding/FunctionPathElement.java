@@ -48,6 +48,8 @@ import java.util.logging.Logger;
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function.FunctionArgument;
+import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.expr.ExpressionTransformer;
 
 /**
  * Modelize a compound path element in a binding path, which is the symbolic representation of a call to a function and with a given amount
@@ -60,12 +62,13 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 
 	private static final Logger LOGGER = Logger.getLogger(FunctionPathElement.class.getPackage().getName());
 
-	private final BindingPathElement parent;
+	private final IBindingPathElement parent;
 	private final Function function;
 	private Type type;
 	private final HashMap<Function.FunctionArgument, DataBinding<?>> parameters;
+	private boolean activated = false;
 
-	public FunctionPathElement(BindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
+	public FunctionPathElement(IBindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
 		this.parent = parent;
 		this.function = function;
 		parameters = new HashMap<>();
@@ -87,6 +90,40 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		}
 	}
 
+	/**
+	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
+	 */
+	@Override
+	public void activate() {
+		this.activated = true;
+	}
+
+	/**
+	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
+	 */
+	@Override
+	public void desactivate() {
+		this.activated = false;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is activated
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isActivated() {
+		return activated;
+	}
+
+	@Override
+	public final void delete() {
+		if (isActivated()) {
+			desactivate();
+		}
+		type = null;
+	}
+
 	public void instanciateParameters(Bindable bindable) {
 		for (Function.FunctionArgument arg : function.getArguments()) {
 			DataBinding<?> parameter = getParameter(arg);
@@ -105,7 +142,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 	}
 
 	@Override
-	public BindingPathElement getParent() {
+	public IBindingPathElement getParent() {
 		return parent;
 	}
 
@@ -122,7 +159,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		this.type = type;
 	}
 
-	private String serializationRepresentation = null;
+	protected String serializationRepresentation = null;
 
 	@Override
 	public String getSerializationRepresentation() {
@@ -155,6 +192,15 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		return function.getArguments();
 	}
 
+	public DataBinding<?> getParameter(String argumentName) {
+		for (FunctionArgument arg : getArguments()) {
+			if (arg.getArgumentName().equals(argumentName)) {
+				return parameters.get(arg);
+			}
+		}
+		return null;
+	}
+
 	public DataBinding<?> getParameter(Function.FunctionArgument argument) {
 		return parameters.get(argument);
 	}
@@ -174,4 +220,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 	public boolean isNotifyingBindingPathChanged() {
 		return false;
 	}
+
+	public abstract FunctionPathElement transform(ExpressionTransformer transformer) throws TransformException;
+
 }

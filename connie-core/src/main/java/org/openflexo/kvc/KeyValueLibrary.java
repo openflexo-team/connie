@@ -54,28 +54,29 @@ import java.util.logging.Logger;
 import org.openflexo.connie.binding.MethodDefinition;
 import org.openflexo.connie.type.TypeUtils;
 
+/**
+ * This class is responsible of {@link KeyValueProperty} providing.
+ * 
+ * It follows the singleton pattern using only static methods and provide an efficient cache for {@link KeyValueProperty} instances
+ * management.
+ * 
+ * Take care that performance impacts are huge while modifying this implementation. See equals()/hashCode implementation in
+ * {@link KeyValueProperty}
+ * 
+ * @author sylvain
+ * @see KeyValueProperty
+ *
+ */
 public class KeyValueLibrary {
 
-	private static final Logger LOGGER = Logger.getLogger(KeyValueLibrary.class.getPackage().getName());
-
-	private static final Map<Type, Hashtable<String, KeyValueProperty>> PROPERTIES = new Hashtable<>();
-
-	private static final Map<Type, Vector<KeyValueProperty>> DECLARED_KEY_VALUE_PROPERTIES = new Hashtable<>();
-
-	private static final Map<Type, Vector<MethodDefinition>> DECLARED_METHODS = new Hashtable<>();
-
-	private static final Map<Type, Vector<KeyValueProperty>> ACCESSIBLE_KEY_VALUE_PROPERTIES = new Hashtable<>();
-
-	private static final Map<Type, Vector<MethodDefinition>> ACCESSIBLE_METHODS = new Hashtable<>();
-
-	public static void clearCache() {
-		PROPERTIES.clear();
-		DECLARED_KEY_VALUE_PROPERTIES.clear();
-		DECLARED_METHODS.clear();
-		ACCESSIBLE_KEY_VALUE_PROPERTIES.clear();
-		ACCESSIBLE_METHODS.clear();
-	}
-
+	/**
+	 * Retrieve in the cache (compute when not existent) the property with supplied name related to supplied Type. Note that the
+	 * declaringType might be a complex type (especially a parametered type) and not only a raw Java class
+	 * 
+	 * @param declaringType
+	 * @param propertyName
+	 * @return
+	 */
 	public static KeyValueProperty getKeyValueProperty(Type declaringType, String propertyName) {
 		if (declaringType == null) {
 			return null;
@@ -97,45 +98,16 @@ public class KeyValueLibrary {
 				return null;
 			}
 		}
-		/*if (propertyName != null && propertyName.equals("flexoConcept")) {
-			System.out.println(
-					">>>>>> for " + declaringType + " return property " + returned + " hash=" + Integer.toHexString(returned.hashCode())
-							+ " declaringType=" + returned.getDeclaringType() + " type=" + returned.getType());
-			if (!returned.getDeclaringType().equals(declaringType)) {
-				System.out.println("C'est-y-pas bizarre la ???");
-			}
-		}*/
 		return returned;
 	}
 
-	public static Vector<KeyValueProperty> getDeclaredProperties(Type declaringType) {
-		Vector<KeyValueProperty> returned = DECLARED_KEY_VALUE_PROPERTIES.get(declaringType);
-		if (returned == null) {
-			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.fine("build declaredProperties() for " + declaringType);
-			}
-			Vector<String> excludedSignatures = new Vector<>();
-			returned = searchForProperties(declaringType, true, excludedSignatures);
-			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, returned);
-			Vector<MethodDefinition> methods = searchForMethods(declaringType, excludedSignatures);
-			DECLARED_METHODS.put(declaringType, methods);
-		}
-		return returned;
-	}
-
-	public static Vector<MethodDefinition> getDeclaredMethods(Type declaringType) {
-		Vector<MethodDefinition> returned = DECLARED_METHODS.get(declaringType);
-		if (returned == null) {
-			LOGGER.fine("build declaredMethods() for " + declaringType);
-			Vector<String> excludedSignatures = new Vector<>();
-			Vector<KeyValueProperty> properties = searchForProperties(declaringType, true, excludedSignatures);
-			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, properties);
-			returned = searchForMethods(declaringType, excludedSignatures);
-			DECLARED_METHODS.put(declaringType, returned);
-		}
-		return returned;
-	}
-
+	/**
+	 * Retrieve in the cache (compute when not existent) a Vector containing all properties accessible from supplied declaringType. Note
+	 * that it return all inherited properties according to Java inheritance semantics
+	 * 
+	 * @param declaringType
+	 * @return
+	 */
 	public static Vector<KeyValueProperty> getAccessibleProperties(Type declaringType) {
 		Vector<KeyValueProperty> returned = ACCESSIBLE_KEY_VALUE_PROPERTIES.get(declaringType);
 		if (returned == null) {
@@ -153,7 +125,87 @@ public class KeyValueLibrary {
 		return returned;
 	}
 
-	public static void appendAccessibleProperties(Type declaringType, Vector<KeyValueProperty> returned) {
+	/**
+	 * Retrieve in the cache (compute when not existent) a Vector containing all methods (see {@link MethodDefinition}) accessible from
+	 * supplied declaringType. Note that it return all inherited methods according to Java inheritance semantics
+	 * 
+	 * @param declaringType
+	 * @return
+	 */
+	public static Vector<MethodDefinition> getAccessibleMethods(Type declaringType) {
+		Vector<MethodDefinition> returned = ACCESSIBLE_METHODS.get(declaringType);
+		if (returned == null) {
+			returned = new Vector<>();
+			Type current = declaringType;
+			while (current != null) {
+				returned.addAll(getDeclaredMethods(current));
+				current = TypeUtils.getSuperType(current);
+				// current = current.getSuperclass();
+			}
+			Collections.sort(returned, new Comparator<MethodDefinition>() {
+
+				@Override
+				public int compare(MethodDefinition o1, MethodDefinition o2) {
+					return o1.getSignature().compareTo(o2.getSignature());
+				}
+			});
+			ACCESSIBLE_METHODS.put(declaringType, returned);
+		}
+		return returned;
+	}
+
+	/**
+	 * Clear the whole cache
+	 */
+	public static void clearCache() {
+		PROPERTIES.clear();
+		DECLARED_KEY_VALUE_PROPERTIES.clear();
+		DECLARED_METHODS.clear();
+		ACCESSIBLE_KEY_VALUE_PROPERTIES.clear();
+		ACCESSIBLE_METHODS.clear();
+	}
+
+	private static final Logger LOGGER = Logger.getLogger(KeyValueLibrary.class.getPackage().getName());
+
+	private static final Map<Type, Hashtable<String, KeyValueProperty>> PROPERTIES = new Hashtable<>();
+
+	private static final Map<Type, Vector<KeyValueProperty>> DECLARED_KEY_VALUE_PROPERTIES = new Hashtable<>();
+
+	private static final Map<Type, Vector<MethodDefinition>> DECLARED_METHODS = new Hashtable<>();
+
+	private static final Map<Type, Vector<KeyValueProperty>> ACCESSIBLE_KEY_VALUE_PROPERTIES = new Hashtable<>();
+
+	private static final Map<Type, Vector<MethodDefinition>> ACCESSIBLE_METHODS = new Hashtable<>();
+
+	private static Vector<KeyValueProperty> getDeclaredProperties(Type declaringType) {
+		Vector<KeyValueProperty> returned = DECLARED_KEY_VALUE_PROPERTIES.get(declaringType);
+		if (returned == null) {
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.fine("build declaredProperties() for " + declaringType);
+			}
+			Vector<String> excludedSignatures = new Vector<>();
+			returned = searchForProperties(declaringType, true, excludedSignatures);
+			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, returned);
+			Vector<MethodDefinition> methods = searchForMethods(declaringType, excludedSignatures);
+			DECLARED_METHODS.put(declaringType, methods);
+		}
+		return returned;
+	}
+
+	private static Vector<MethodDefinition> getDeclaredMethods(Type declaringType) {
+		Vector<MethodDefinition> returned = DECLARED_METHODS.get(declaringType);
+		if (returned == null) {
+			LOGGER.fine("build declaredMethods() for " + declaringType);
+			Vector<String> excludedSignatures = new Vector<>();
+			Vector<KeyValueProperty> properties = searchForProperties(declaringType, true, excludedSignatures);
+			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, properties);
+			returned = searchForMethods(declaringType, excludedSignatures);
+			DECLARED_METHODS.put(declaringType, returned);
+		}
+		return returned;
+	}
+
+	private static void appendAccessibleProperties(Type declaringType, Vector<KeyValueProperty> returned) {
 		Type current = declaringType;
 		while (current != null) {
 			Vector<KeyValueProperty> declaredProperties = getDeclaredProperties(current);
@@ -184,28 +236,6 @@ public class KeyValueLibrary {
 			}
 
 		}
-	}
-
-	public static Vector<MethodDefinition> getAccessibleMethods(Type declaringType) {
-		Vector<MethodDefinition> returned = ACCESSIBLE_METHODS.get(declaringType);
-		if (returned == null) {
-			returned = new Vector<>();
-			Type current = declaringType;
-			while (current != null) {
-				returned.addAll(getDeclaredMethods(current));
-				current = TypeUtils.getSuperType(current);
-				// current = current.getSuperclass();
-			}
-			Collections.sort(returned, new Comparator<MethodDefinition>() {
-
-				@Override
-				public int compare(MethodDefinition o1, MethodDefinition o2) {
-					return o1.getSignature().compareTo(o2.getSignature());
-				}
-			});
-			ACCESSIBLE_METHODS.put(declaringType, returned);
-		}
-		return returned;
 	}
 
 	private static Vector<MethodDefinition> searchForMethods(Type declaringType, Vector<String> excludedSignatures) {
@@ -446,9 +476,8 @@ public class KeyValueLibrary {
 		if (params == null) {
 			params = new Type[0];
 		}
-		StringBuffer sb = null;
+		StringBuffer sb = new StringBuffer();
 		if (LOGGER.isLoggable(Level.FINE)) {
-			sb = new StringBuffer();
 			for (Type t : params) {
 				sb.append(" " + t.toString());
 			}

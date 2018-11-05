@@ -101,6 +101,11 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			// logger.warning("Could not evaluate " + dataBinding + " with context " + context +
 			// " because NullReferenceException has raised");
 			initValue = null;
+		} catch (InvocationTargetException e) {
+			// Don't warn since this may happen
+			// logger.warning("Could not evaluate " + dataBinding + " with context " + context +
+			// " because NullReferenceException has raised");
+			initValue = null;
 		}
 		refreshObserving(false);
 		if (initAsChange) {
@@ -152,6 +157,10 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	protected synchronized void refreshObserving(boolean debug) {
 
 		if (dataBinding == null) {
+			return;
+		}
+
+		if (deleted) {
 			return;
 		}
 
@@ -211,7 +220,13 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		}
 
 		List<TargetObject> newDependingObjects = new ArrayList<>();
-		List<TargetObject> oldDependingObjects = new ArrayList<>(dependingObjects);
+		List<TargetObject> oldDependingObjects;
+		if (dependingObjects != null) {
+			oldDependingObjects = new ArrayList<>(dependingObjects);
+		}
+		else {
+			oldDependingObjects = new ArrayList<>();
+		}
 		for (TargetObject o : updatedDependingObjects) {
 			if (oldDependingObjects.contains(o)) {
 				oldDependingObjects.remove(o);
@@ -322,15 +337,16 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		return sb.toString();
 	}
 
-	final public T evaluateValue() throws NullReferenceException {
+	final public T evaluateValue() throws NullReferenceException, InvocationTargetException {
+		if (dataBinding == null) {
+			// TODO: we should handle this, we should never arrive here
+			return null;
+		}
 		try {
 			return dataBinding.getBindingValue(context);
 		} catch (TypeMismatchException e) {
 			LOGGER.warning("Unexpected exception raised. See logs for details.");
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			LOGGER.warning("Unexpected exception raised. See logs for details.");
-			// e.printStackTrace();
 		}
 		return null;
 	}
@@ -344,6 +360,11 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
+
+		if (evt.getSource() instanceof HasPropertyChangeSupport
+				&& evt.getPropertyName().equals(((HasPropertyChangeSupport) evt.getSource()).getDeletedProperty())) {
+			// What if it is deletion notification ???
+		}
 
 		// Kept for future debug use
 		/*if (getDataBinding().toString().equals("data.currentStep.issueMessageIcon.image")) {
@@ -389,8 +410,16 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			if (getDefaultValue() == null) {
 				// When computing the new value, a NullReferenceException has raised:
 				// This might be normal, but we warn it to make the developer think of what should be returned here as default value
-				LOGGER.warning(
-						"Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
+				// LOGGER.warning(
+				// "Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
+			}
+			newValue = getDefaultValue();
+		} catch (InvocationTargetException e) {
+			if (getDefaultValue() == null) {
+				// When computing the new value, a NullReferenceException has raised:
+				// This might be normal, but we warn it to make the developer think of what should be returned here as default value
+				// LOGGER.warning(
+				// "Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
 			}
 			newValue = getDefaultValue();
 		}

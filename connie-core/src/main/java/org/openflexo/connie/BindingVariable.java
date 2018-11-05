@@ -43,7 +43,6 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.exception.NullReferenceException;
@@ -52,14 +51,16 @@ import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.ToolBox;
 
-public class BindingVariable implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
+public class BindingVariable implements SettableBindingPathElement, HasPropertyChangeSupport {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(BindingVariable.class.getPackage().getName());
 
 	private String variableName;
 	protected Type type;
 	private boolean settable = false;
 	private PropertyChangeSupport pcSupport;
+	private boolean activated = false;
 
 	public static final String VARIABLE_NAME_PROPERTY = "variableName";
 	public static final String TYPE_PROPERTY = "type";
@@ -75,16 +76,6 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	public BindingVariable(String variableName, Type type, boolean settable) {
 		this(variableName, type);
 		setSettable(settable);
-	}
-
-	/**
-	 * Delete this {@link BindingModel}
-	 */
-	public void delete() {
-		if (pcSupport != null) {
-			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
-			pcSupport = null;
-		}
 	}
 
 	@Override
@@ -119,7 +110,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 
 	@Override
 	public String getSerializationRepresentation() {
-		return variableName;
+		return getVariableName();
 	}
 
 	@Override
@@ -155,7 +146,7 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		this.settable = settable;
 	}
 
-	@Override
+	/*@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BindingVariable) {
 			String vname = getVariableName();
@@ -168,14 +159,14 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		}
 		return super.equals(obj);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		if (toString() != null) {
 			return (toString()).hashCode();
 		}
 		return super.hashCode();
-	}
+	}*/
 
 	@Override
 	public Object getBindingValue(Object owner, BindingEvaluationContext context) {
@@ -188,11 +179,6 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 		if (isSettable() && context instanceof SettableBindingEvaluationContext) {
 			((SettableBindingEvaluationContext) context).setValue(value, this);
 		}
-	}
-
-	@Override
-	public BindingPathElement getParent() {
-		return null;
 	}
 
 	@Override
@@ -229,6 +215,16 @@ public class BindingVariable implements BindingPathElement, SettableBindingPathE
 	@Override
 	public boolean isNotifyingBindingPathChanged() {
 		return false;
+	}
+
+	@Override
+	public void delete() {
+		if (pcSupport != null) {
+			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+			pcSupport = null;
+		}
+		variableName = null;
+		type = null;
 	}
 
 }

@@ -3,7 +3,7 @@
  * Copyright (c) 2013-2014, Openflexo
  * Copyright (c) 2011-2012, AgileBirds
  * 
- * This file is part of Flexoutils, a component of the software infrastructure 
+ * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
  * 
  * 
@@ -37,27 +37,25 @@
  * 
  */
 
-package org.openflexo.utils;
+package org.openflexo.connie.exception;
 
-import junit.framework.TestCase;
+import org.openflexo.connie.DataBinding;
 
-import org.openflexo.toolbox.HTMLUtils;
+@SuppressWarnings("serial")
+public class InvalidBindingException extends Exception {
 
-public class HTMLUtilsTest extends TestCase {
+	private DataBinding<?> db;
+	private String message;
 
-	public void testEmptyParagraph() {
-		assertTrue(HTMLUtils.isEmtpyParagraph(" <p>\r\n" + "\r\n" + "</p>\r\n" + "\r\n" + ""));
-		assertFalse(HTMLUtils.isEmtpyParagraph(" <p>a\r\n" + "\r\n" + "</p>\r\n" + "\r\n" + ""));
+	public InvalidBindingException(DataBinding<?> db) {
+		super();
+		this.db = db;
+		this.message = "Invalid binding: " + db.invalidBindingReason();
 	}
 
-	public void testExtractSourceFromEmbedded() {
-		String src = "http://www.youtube.com/v/NmmELsWBscM&hl=en&fs=1";
-		String html = "<object width=\"425\" height=\"344\"><param name=\"movie\" value=\""
-				+ src
-				+ "\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"allowscriptaccess\" value=\"always\"></param><embed src=\""
-				+ src
-				+ "\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" allowfullscreen=\"true\" width=\"425\" height=\"344\"></embed></object>";
-		assertEquals(src, HTMLUtils.extractSourceFromEmbeddedTag(html));
+	@Override
+	public String getMessage() {
+		return message;
 	}
 
 }

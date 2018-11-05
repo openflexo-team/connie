@@ -99,7 +99,7 @@ public class DefaultGrammar implements ExpressionGrammar {
 		throw new OperatorNotSupportedException();
 	}
 
-	public String getAlternativeSymbol(UnaryOperator operator) throws OperatorNotSupportedException {
+	public String getAlternativeSymbol(UnaryOperator operator) {
 		return null;
 	}
 
@@ -146,7 +146,7 @@ public class DefaultGrammar implements ExpressionGrammar {
 		throw new OperatorNotSupportedException();
 	}
 
-	public String getAlternativeSymbol(BinaryOperator operator) throws OperatorNotSupportedException {
+	public String getAlternativeSymbol(BinaryOperator operator) {
 		if (operator == BooleanBinaryOperator.AND) {
 			return "&&";
 		}

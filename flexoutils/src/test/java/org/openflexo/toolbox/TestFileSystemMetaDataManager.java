@@ -88,11 +88,11 @@ public class TestFileSystemMetaDataManager extends TestCase {
 	@TestOrder(2)
 	public void testSetProperties() throws IOException {
 
-		fsMetaDataManager.setProperty("key1", "value1", testDirectory);
-		fsMetaDataManager.setProperty("key2", "value2", dir1);
-		fsMetaDataManager.setProperty("key3", "value3", file1);
-		fsMetaDataManager.setProperty("key4", "value4", file2);
-		fsMetaDataManager.setProperty("key5", "value5", file3);
+		fsMetaDataManager.setProperty("key1", "value1", testDirectory, true);
+		fsMetaDataManager.setProperty("key2", "value2", dir1, true);
+		fsMetaDataManager.setProperty("key3", "value3", file1, true);
+		fsMetaDataManager.setProperty("key4", "value4", file2, true);
+		fsMetaDataManager.setProperty("key5", "value5", file3, true);
 
 		File expectedMetaDataFile1 = new File(testDirectory, ".metadata");
 		assertTrue(expectedMetaDataFile1.exists());
@@ -109,7 +109,7 @@ public class TestFileSystemMetaDataManager extends TestCase {
 
 	@Test
 	@TestOrder(3)
-	public void testGetProperties() throws IOException {
+	public void testGetProperties() {
 
 		assertEquals("value1", fsMetaDataManager.getProperty("key1", testDirectory));
 		assertEquals("value2", fsMetaDataManager.getProperty("key2", dir1));

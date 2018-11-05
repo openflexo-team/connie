@@ -40,9 +40,8 @@
 package org.openflexo.connie;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 
-import org.openflexo.connie.DataBinding.BindingDefinitionType;
-import org.openflexo.connie.binding.BindingDefinition;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -76,20 +75,17 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 	private static final BindingFactory BINDING_FACTORY = new JavaBindingFactory();
 
 	private Object object;
-	private BindingDefinition bindingDefinition;
 	private BindingModel bindingModel;
 
-	private BindingEvaluator(Object object) {
+	private BindingEvaluator(Object object, Type objectType) {
 		this.object = object;
 
-		bindingDefinition = new BindingDefinition("object", object.getClass(), DataBinding.BindingDefinitionType.GET, true);
 		bindingModel = new BindingModel();
-		bindingModel.addToBindingVariables(new BindingVariable("object", object.getClass()));
+		bindingModel.addToBindingVariables(new BindingVariable("object", objectType));
 	}
 
 	public void delete() {
 		object = null;
-		bindingDefinition = null;
 		bindingModel.delete();
 		bindingModel = null;
 	}
@@ -98,32 +94,33 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 		Expression expression = null;
 		try {
 			expression = ExpressionParser.parse(bindingPath);
-
-			expression = expression.transform(new ExpressionTransformer() {
-				@Override
-				public Expression performTransformation(Expression e) throws TransformException {
-					if (e instanceof BindingValue) {
-						BindingValue bv = (BindingValue) e;
-						if (bv.getParsedBindingPath().size() > 0) {
-							AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
-							if (!(firstPathElement instanceof NormalBindingPathElement)
-									|| !((NormalBindingPathElement) firstPathElement).property.equals("object")) {
-								bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
+			if (expression != null) {
+				expression = expression.transform(new ExpressionTransformer() {
+					@Override
+					public Expression performTransformation(Expression e) throws TransformException {
+						if (e instanceof BindingValue) {
+							BindingValue bv = (BindingValue) e;
+							if (bv.getParsedBindingPath().size() > 0) {
+								AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
+								if (!(firstPathElement instanceof NormalBindingPathElement)
+										|| !((NormalBindingPathElement) firstPathElement).property.equals("object")) {
+									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
+									bv.clearSerializationRepresentation();
+								}
 							}
+							return bv;
 						}
-						return bv;
+						return e;
 					}
-					return e;
-				}
-			});
-
-			return expression.toString();
+				});
+				return expression.toString();
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (TransformException e) {
 			e.printStackTrace();
 		}
-		return expression.toString();
+		return null;
 	}
 
 	@Override
@@ -156,29 +153,31 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 
 	private Object evaluate(String bindingPath)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		// System.out.println("Evaluating " + bindingPath);
 		String normalizedBindingPath = normalizeBindingPath(bindingPath);
-		// System.out.println("Normalize " + bindingPath + " to " + normalizedBindingPath);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
-		binding.setDeclaredType(Object.class);
-		binding.setBindingDefinitionType(BindingDefinitionType.GET);
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {
-			// System.out.println("not valid: " + binding.invalidBindingReason());
+			System.out.println("not valid: " + binding.invalidBindingReason());
 			throw new InvalidKeyValuePropertyException(
 					"Cannot interpret " + normalizedBindingPath + " for object of type " + object.getClass());
 		}
 		return binding.getBindingValue(this);
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object)
+	public static Object evaluateBinding(String bindingPath, Object object, Type objectType)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 
-		BindingEvaluator evaluator = new BindingEvaluator(object);
+		BindingEvaluator evaluator = new BindingEvaluator(object, objectType);
 		Object returned = evaluator.evaluate(bindingPath);
 		evaluator.delete();
 		return returned;
+	}
+
+	public static Object evaluateBinding(String bindingPath, Object object)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+
+		return evaluateBinding(bindingPath, object, object.getClass());
 	}
 
 	public static void main(String[] args) {

@@ -262,13 +262,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	@Override
 	public String computeRelativePath(Resource resource) {
 		if (resource instanceof InJarResourceImpl) {
-			try {
-				return makePathRelativeTo(((InJarResourceImpl) resource), this);
-			} catch (IOException e) {
-				e.printStackTrace();
-				LOGGER.warning("Could not compute relative path from " + this + " for " + resource);
-				return ((FileResourceImpl) resource).getFile().getAbsolutePath();
-			}
+			return makePathRelativeTo(((InJarResourceImpl) resource), this);
 		}
 		LOGGER.warning("Could not compute relative path from a InJarResource for a non-jar resource: " + resource);
 		return resource.getURI();
@@ -283,7 +277,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	 *            directory that the path should be relative to
 	 * @return a relative path. This always uses / as the separator character.
 	 */
-	private static String makePathRelativeTo(InJarResourceImpl inJarResource, InJarResourceImpl relativeToDir) throws IOException {
+	private static String makePathRelativeTo(InJarResourceImpl inJarResource, InJarResourceImpl relativeToDir) {
 		String canonicalFile = inJarResource.getEntry().getName();
 		String canonicalRelTo = relativeToDir.getEntry().getName();
 		String[] filePathComponents = FileUtils.getPathComponents(canonicalFile);

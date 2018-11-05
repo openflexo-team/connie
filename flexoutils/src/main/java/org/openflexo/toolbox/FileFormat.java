@@ -50,7 +50,7 @@ public abstract class FileFormat {
 
 	protected static final Logger LOGGER = FlexoLogger.getLogger(FileFormat.class.getPackage().getName());
 
-	public static final FileFormat UNKNOWN = new FileFormat(null, null) {
+	private static final FileFormat UNKNOWN = new FileFormat(null, null) {
 		@Override
 		public boolean isBinary() {
 			return false;
@@ -62,10 +62,10 @@ public abstract class FileFormat {
 		}
 	};
 
-	public static final DirectoryFormat UNKNOWN_DIRECTORY = new DirectoryFormat(null, null);
-	public static final BinaryFileFormat UNKNOWN_BINARY_FILE = new BinaryFileFormat(null, null);
-	public static final TextFileFormat UNKNOWN_ASCII_FILE = new TextFileFormat(null, null, TextSyntax.Plain);
-	public static final ImageFileFormat UNKNOWN_IMAGE_FILE = new ImageFileFormat(null, null);
+	// Unused private static final DirectoryFormat UNKNOWN_DIRECTORY = new DirectoryFormat(null, null);
+	// Unused private static final BinaryFileFormat UNKNOWN_BINARY_FILE = new BinaryFileFormat(null, null);
+	// Unused private static final TextFileFormat UNKNOWN_ASCII_FILE = new TextFileFormat(null, null, TextSyntax.Plain);
+	// Unused private static final ImageFileFormat UNKNOWN_IMAGE_FILE = new ImageFileFormat(null, null);
 
 	public static final TextFileFormat TEXT, SYSTEM, XML, OWL, API, WSDL, BPEL, XSD, WOD, DOCXML, ANT, HTML, JS, JAVA, LATEX, PLIST, SQL,
 			CSS;
@@ -112,21 +112,20 @@ public abstract class FileFormat {
 	public static enum TextSyntax {
 		Plain, Java, JavaScript, XML, HTML, CSS, Latex, PList, SQL
 	}
+	/*
+		private static TextFileFormat registerTextFileFormat(String formatId, String mimeType, String... extensions) {
+			return registerTextFileFormat(formatId, mimeType, null, extensions);
+		}
+	*/
 
-	public static TextFileFormat registerTextFileFormat(String formatId, String mimeType, String... extensions) {
-		return registerTextFileFormat(formatId, mimeType, null, extensions);
-	}
-
-	public static TextFileFormat registerTextFileFormat(String formatId, String mimeType, TextSyntax syntax, String... extensions) {
+	private static TextFileFormat registerTextFileFormat(String formatId, String mimeType, TextSyntax syntax, String... extensions) {
 		if (_fileFormats.get(formatId) != null) {
 			if (_fileFormats.get(formatId) instanceof TextFileFormat) {
 				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (TextFileFormat) _fileFormats.get(formatId);
 			}
-			else {
-				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
-				return null;
-			}
+			LOGGER.severe("Already declared FileFormat of different type for " + formatId);
+			return null;
 		}
 		TextFileFormat returned = new TextFileFormat(formatId, mimeType, syntax);
 		_fileFormats.put(formatId, returned);
@@ -136,16 +135,14 @@ public abstract class FileFormat {
 		return returned;
 	}
 
-	public static DirectoryFormat registerDirectoryFormat(String formatId, String mimeType, String... extensions) {
+	private static DirectoryFormat registerDirectoryFormat(String formatId, String mimeType, String... extensions) {
 		if (_fileFormats.get(formatId) != null) {
 			if (_fileFormats.get(formatId) instanceof DirectoryFormat) {
 				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (DirectoryFormat) _fileFormats.get(formatId);
 			}
-			else {
-				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
-				return null;
-			}
+			LOGGER.severe("Already declared FileFormat of different type for " + formatId);
+			return null;
 		}
 		DirectoryFormat returned = new DirectoryFormat(formatId, mimeType);
 		_fileFormats.put(formatId, returned);
@@ -155,16 +152,14 @@ public abstract class FileFormat {
 		return returned;
 	}
 
-	public static BinaryFileFormat registerBinaryFileFormat(String formatId, String mimeType, String... extensions) {
+	private static BinaryFileFormat registerBinaryFileFormat(String formatId, String mimeType, String... extensions) {
 		if (_fileFormats.get(formatId) != null) {
 			if (_fileFormats.get(formatId) instanceof BinaryFileFormat) {
 				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (BinaryFileFormat) _fileFormats.get(formatId);
 			}
-			else {
-				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
-				return null;
-			}
+			LOGGER.severe("Already declared FileFormat of different type for " + formatId);
+			return null;
 		}
 		BinaryFileFormat returned = new BinaryFileFormat(formatId, mimeType);
 		_fileFormats.put(formatId, returned);
@@ -174,16 +169,14 @@ public abstract class FileFormat {
 		return returned;
 	}
 
-	public static ImageFileFormat registerImageFileFormat(String formatId, String mimeType, String... extensions) {
+	private static ImageFileFormat registerImageFileFormat(String formatId, String mimeType, String... extensions) {
 		if (_fileFormats.get(formatId) != null) {
 			if (_fileFormats.get(formatId) instanceof ImageFileFormat) {
 				LOGGER.warning("Already declared FileFormat " + formatId);
 				return (ImageFileFormat) _fileFormats.get(formatId);
 			}
-			else {
-				LOGGER.severe("Already declared FileFormat of different type for " + formatId);
-				return null;
-			}
+			LOGGER.severe("Already declared FileFormat of different type for " + formatId);
+			return null;
 		}
 		ImageFileFormat returned = new ImageFileFormat(formatId, mimeType);
 		_fileFormats.put(formatId, returned);
@@ -212,7 +205,7 @@ public abstract class FileFormat {
 		return UNKNOWN;
 	}
 
-	public static List<FileFormat> getFileFormatByExtension(String extension) {
+	private static List<FileFormat> getFileFormatByExtension(String extension) {
 		List<FileFormat> returned = _fileFormatsByExtensions.get(extension);
 		if (returned != null) {
 			return returned;
@@ -228,15 +221,17 @@ public abstract class FileFormat {
 		return newVector;
 	}
 
-	public static FileFormat getDefaultFileFormatByExtension(String extension) {
+	/*
+	private static FileFormat getDefaultFileFormatByExtension(String extension) {
 		List<FileFormat> list = getFileFormatByExtension(extension);
 		if (list.size() > 0) {
 			return list.get(0);
 		}
 		return UNKNOWN;
 	}
+	*/
 
-	public static void registerExtension(String extension, FileFormat fileFormat) {
+	private static void registerExtension(String extension, FileFormat fileFormat) {
 		List<FileFormat> returned = _fileFormatsByExtensions.get(extension);
 		if (returned == null) {
 			returned = new Vector<>();
@@ -261,7 +256,6 @@ public abstract class FileFormat {
 	private final List<String> extensions;
 
 	private FileFormat(String identifier, String mimeType) {
-		super();
 		this.identifier = identifier;
 		this.mimeType = mimeType;
 		extensions = new Vector<>();

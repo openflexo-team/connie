@@ -70,12 +70,10 @@ public class FileSystemResourceLocatorTest extends TestCase {
 		assertTrue(rloc != null);
 
 		if (rloc != null) {
+			Pattern pat = Pattern.compile(".*[.]properties");
+			assertTrue(rloc.getContents(pat, false).size() == 7);
 
-			List<Resource> list = (List<Resource>) rloc.getContents(Pattern.compile(".*[.]properties"), false);
-
-			assertTrue(list.size() == 7);
-
-			for (Resource r : list) {
+			for (Resource r : rloc.getContents(pat, false)) {
 				System.out.println(r.getURI());
 			}
 

@@ -59,10 +59,22 @@ public enum PrimitiveType {
 			return String.class;
 		}
 	},
+	Date {
+		@Override
+		public Type getType() {
+			return java.util.Date.class;
+		}
+	},
 	Integer {
 		@Override
 		public Type getType() {
 			return Integer.class;
+		}
+	},
+	Long {
+		@Override
+		public Type getType() {
+			return Long.class;
 		}
 	},
 	Float {

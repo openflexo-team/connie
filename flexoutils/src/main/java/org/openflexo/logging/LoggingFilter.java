@@ -210,7 +210,7 @@ public class LoggingFilter {
 				}
 				break;
 			case Class:
-				if (record.classAsString().contains(filteredSourceContent)) {
+				if (record.classAsString() != null && record.classAsString().contains(filteredSourceContent)) {
 					return true;
 				}
 				break;

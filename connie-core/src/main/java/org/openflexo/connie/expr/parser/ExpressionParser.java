@@ -66,12 +66,12 @@ public class ExpressionParser {
 
 	/**
 	 * This is the method to invoke to perform a parsing. Syntactic and (some) semantics analyzer are performed and returned value is an
-	 * Expression conform to AnTAR expression abstract syntactic tree
+	 * Expression conform to expression abstract syntactic tree
 	 * 
 	 * @param anExpression
 	 * @return
 	 * @throws ParseException
-	 *             if expression was not parseable
+	 *             if parsing expression lead to an error
 	 */
 	public static Expression parse(String anExpression) throws ParseException {
 		try {
@@ -101,7 +101,8 @@ public class ExpressionParser {
 	 * @return
 	 */
 	private static Expression postSemanticAnalysisReduction(Expression e) {
-		if (e instanceof UnaryOperatorExpression && ((UnaryOperatorExpression) e).getOperator() == ArithmeticUnaryOperator.UNARY_MINUS
+		if (e != null && e instanceof UnaryOperatorExpression
+				&& ((UnaryOperatorExpression) e).getOperator() == ArithmeticUnaryOperator.UNARY_MINUS
 				&& ((UnaryOperatorExpression) e).getArgument() instanceof ArithmeticConstant) {
 			// In this case, we will reduce this into a negative single arithmetic constant
 			ArithmeticConstant<?> c = (ArithmeticConstant<?>) ((UnaryOperatorExpression) e).getArgument();

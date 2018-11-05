@@ -39,10 +39,6 @@
 
 package org.openflexo.connie.expr;
 
-import org.openflexo.connie.binding.BindingPathElement;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
-import org.openflexo.connie.expr.BindingValue.MethodCallBindingPathElement;
-import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Constant.BooleanConstant;
 import org.openflexo.connie.expr.Constant.DateConstant;
 import org.openflexo.connie.expr.Constant.DurationConstant;
@@ -148,48 +144,7 @@ public class DefaultExpressionPrettyPrinter extends ExpressionPrettyPrinter {
 
 	@Override
 	protected String makeStringRepresentation(BindingValue bv) {
-		if (bv.isValid()) {
-			StringBuffer sb = new StringBuffer();
-			if (bv.getBindingVariable() != null) {
-				sb.append(bv.getBindingVariable().getVariableName());
-				for (BindingPathElement e : bv.getBindingPath()) {
-					sb.append("." + e.getSerializationRepresentation());
-				}
-			}
-			return sb.toString();
-
-		}
-		else {
-			StringBuffer sb = new StringBuffer();
-			boolean isFirst = true;
-			if (bv != null) {
-				for (AbstractBindingPathElement e : bv.getParsedBindingPath()) {
-					sb.append((isFirst ? "" : ".") + makeStringRepresentation(e));
-					isFirst = false;
-				}
-			}
-			return sb.toString();
-		}
-	}
-
-	@Override
-	protected String makeStringRepresentation(AbstractBindingPathElement e) {
-		if (e instanceof NormalBindingPathElement) {
-			return ((NormalBindingPathElement) e).property;
-		}
-		else if (e instanceof MethodCallBindingPathElement) {
-			StringBuffer sb = new StringBuffer();
-			sb.append(((MethodCallBindingPathElement) e).method);
-			sb.append("(");
-			boolean isFirst = true;
-			for (Expression arg : ((MethodCallBindingPathElement) e).args) {
-				sb.append((isFirst ? "" : ",") + getStringRepresentation(arg));
-				isFirst = false;
-			}
-			sb.append(")");
-			return sb.toString();
-		}
-		return e.toString();
+		return bv.toString();
 	}
 
 	@Override

@@ -133,9 +133,7 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 						JarResourceImpl jarResource = jarResources.get(jarPath);
 						if (jarResource == null) {
 							jarResource = new JarResourceImpl(this, jarPath);
-							if (jarResource != null) {
-								jarResources.put(jarPath, jarResource);
-							}
+							jarResources.put(jarPath, jarResource);
 						}
 						// Retrieve right InJarResourceImpl from the JarResourceImpl
 						resourceLocation = jarResource.getInJarResource(relativePathName);
@@ -184,10 +182,8 @@ public class ClasspathResourceLocatorImpl implements ResourceLocatorDelegate {
 				}
 				else {
 					LOGGER.info("Resource found is not convertible to a File " + url.toString());
-					locateFile = null;
 				}
 			} catch (URISyntaxException e) {
-				locateFile = null;
 			} catch (Exception e) {
 				locateFile = null;
 				LOGGER.warning("Did Not find Resource in classpath : " + url);

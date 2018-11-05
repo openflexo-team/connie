@@ -79,28 +79,26 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		rloc = ResourceLocator.locateResource("META-INF");
 
-		System.out.println("Found META-INF here: " + (rloc).getURI());
-
 		assertTrue(rloc != null);
+		System.out.println("Found META-INF here: " + rloc.getURI());
 
+		// Sylvain, this does not work on Java 9, the corresponding module does not export FrameClose.wav
 		rloc = ResourceLocator.locateResource("javax/swing/plaf/metal/sounds/FrameClose.wav");
 
-		assertTrue(rloc != null);
-		assertTrue(rloc instanceof Resource);
+		if (ToolBox.getJavaVersion() < 9) {
+			assertTrue(rloc != null);
+		}
 		// System.out.println(rloc.getURI());
-
-		assertTrue(rloc != null);
 
 		if (rloc != null) {
 
 			Resource container = rloc.getContainer();
 
 			if (container != null) {
-				List<Resource> list = (List<Resource>) rloc.getContainer().getContents(Pattern.compile(".*[.]wav"), false);
+				Pattern pat = Pattern.compile(".*[.]wav");
+				assertTrue(rloc.getContainer().getContents(pat, false).size() > 1);
 
-				assertTrue(list.size() > 1);
-
-				for (Resource r : list) {
+				for (Resource r : rloc.getContainer().getContents(pat, false)) {
 					System.out.println(r.getURI());
 				}
 			}
@@ -121,19 +119,16 @@ public class ClasspathResourceLocatorTest extends TestCase {
 
 		System.out.println(rloc.getURI());
 
-		if (rloc != null) {
+		// This test tend to fail in eclipse because of the way eclipse manage resources
+		// Here we have resources that are java files! My solution is to tweak the run
+		// configuration for tests adding explicitly the folder containing the java files
+		// first in the classpath
+		List<? extends Resource> list = rloc.getContents(false);
 
-			// This test tend to fail in eclipse because of the way eclipse manage resources
-			// Here we have resources that are java files! My solution is to tweak the run
-			// configuration for tests adding explicitly the folder containing the java files
-			// first in the classpath
-			List<? extends Resource> list = rloc.getContents(false);
-
-			for (Resource r : list) {
-				System.out.println(r.getURI());
-			}
-
-			assertTrue(list.size() == 8);
+		for (Resource r : list) {
+			System.out.println(r.getURI());
 		}
+
+		assertTrue(list.size() == 8);
 	}
 }

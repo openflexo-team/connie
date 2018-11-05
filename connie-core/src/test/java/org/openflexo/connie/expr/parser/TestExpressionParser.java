@@ -39,7 +39,8 @@
 
 package org.openflexo.connie.expr.parser;
 
-import junit.framework.TestCase;
+import java.lang.reflect.InvocationTargetException;
+
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
@@ -57,6 +58,8 @@ import org.openflexo.connie.expr.DefaultExpressionPrettyPrinter;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.UnaryOperatorExpression;
 
+import junit.framework.TestCase;
+
 public class TestExpressionParser extends TestCase {
 
 	private DefaultExpressionPrettyPrinter prettyPrinter;
@@ -73,8 +76,9 @@ public class TestExpressionParser extends TestCase {
 		try {
 			System.out.println("Parsing... " + anExpression);
 			Expression parsed = ExpressionParser.parse(anExpression);
-			Expression evaluated = parsed.evaluate();
-			System.out.println("Parsed " + anExpression);
+			Expression evaluated = parsed.evaluate(null);
+			System.out.println("parsed=" + parsed);
+			System.out.println("evaluated=" + evaluated);
 			System.out.println("Successfully parsed as : " + parsed.getClass().getSimpleName());
 			System.out.println("Normalized: " + prettyPrinter.getStringRepresentation(parsed));
 			System.out.println("Evaluated: " + prettyPrinter.getStringRepresentation(evaluated));
@@ -91,10 +95,12 @@ public class TestExpressionParser extends TestCase {
 					Object value = ((Constant<?>) evaluated).getValue();
 					if (value instanceof Number) {
 						assertEquals(((Number) expectedEvaluation).doubleValue(), ((Number) value).doubleValue());
-					} else {
+					}
+					else {
 						fail("Evaluated value is not a number (expected: " + expectedEvaluation + ") but " + expectedEvaluation);
 					}
-				} else {
+				}
+				else {
 					assertEquals(expectedEvaluation, ((Constant<?>) evaluated).getValue());
 				}
 			}
@@ -103,7 +109,8 @@ public class TestExpressionParser extends TestCase {
 			if (!shouldFail) {
 				e.printStackTrace();
 				fail();
-			} else {
+			}
+			else {
 				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
 			}
 			return null;
@@ -111,7 +118,8 @@ public class TestExpressionParser extends TestCase {
 			if (!shouldFail) {
 				e.printStackTrace();
 				fail();
-			} else {
+			}
+			else {
 				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
 			}
 			return null;
@@ -119,9 +127,14 @@ public class TestExpressionParser extends TestCase {
 			if (!shouldFail) {
 				e.printStackTrace();
 				fail();
-			} else {
+			}
+			else {
 				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
 			}
+			return null;
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			fail();
 			return null;
 		}
 
@@ -361,7 +374,7 @@ public class TestExpressionParser extends TestCase {
 	public void testParsingError5() {
 		tryToParse("test24 [ fdfd + 1", "", null, null, true);
 	}
-	
+
 	public void testParsingError6() {
 		tryToParse("obj..f()", "", null, null, true);
 	}
@@ -404,7 +417,7 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("(([dd/MM/yy HH:mm,17/12/07 12:54] + [3h] ) + [1min])",
 				"[" + localeDateFormat.toPattern() + "," + localeDateFormat.format(date) + "]", false);
 	}
-
+	
 	public void test26() throws java.text.ParseException {
 		Date date = new SimpleDateFormat("dd/MM/yy HH:mm").parse("17/12/07 15:55");
 		SimpleDateFormat localeDateFormat = new SimpleDateFormat();
@@ -432,11 +445,7 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testAccentCharacter() {
-		tryToParse(
-			"flexoConcept.unité",
-			"flexoConcept.unité",
-			BindingValue.class, null, false
-		);
+		tryToParse("flexoConcept.unité", "flexoConcept.unité", BindingValue.class, null, false);
 	}
 
 }

@@ -1,7 +1,6 @@
 /**
  * 
- * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2017, Openflexo
  * 
  * This file is part of Flexoutils, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,20 +36,22 @@
  * 
  */
 
-package org.openflexo.toolbox;
+package org.openflexo.test;
 
-import junit.framework.TestCase;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.model.InitializationError;
 
-public class TestStringUtils extends TestCase {
+public class OnlyOnWindowsRunner extends OrderedRunner {
 
-	public void testHasExtension() {
+	public OnlyOnWindowsRunner(Class<?> klass) throws InitializationError {
+		super(klass);
+	}
 
-		assertTrue(StringUtils.hasExtension("test.file", ".file"));
-		assertTrue(StringUtils.hasExtension("test.file", ".file"));
-		assertTrue(StringUtils.hasExtension(".ext2", ".ext2"));
-
-		assertFalse(StringUtils.hasExtension(".ext2", ".file"));
-		assertFalse(StringUtils.hasExtension("test.ext1.ext2", ".file"));
-		assertFalse(StringUtils.hasExtension("test.file", ".file1", ".file2", ".file3"));
+	@Override
+	public void run(RunNotifier notifier) {
+		String os = System.getProperty("os.name");
+		if (os != null)
+			if (os.startsWith("Windows"))
+				super.run(notifier);
 	}
 }

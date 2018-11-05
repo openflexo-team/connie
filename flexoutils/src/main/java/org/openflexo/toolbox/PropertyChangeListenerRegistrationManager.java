@@ -47,19 +47,12 @@ import java.util.Vector;
 
 public class PropertyChangeListenerRegistrationManager {
 
-	private List<PropertyChangeListenerRegistration> registrations;
-
-	public PropertyChangeListenerRegistrationManager() {
-		registrations = new Vector<>();
-	}
+	private List<PropertyChangeListenerRegistration> registrations = new Vector<>();
 
 	public boolean hasListener(String propertyName, PropertyChangeListener listener, HasPropertyChangeSupport hasPropertyChangeSupport) {
 		for (PropertyChangeListenerRegistration registration : registrations) {
-			if (registration.hasPropertyChangeSupport == hasPropertyChangeSupport && registration.listener == listener
-					&& registration.propertyName == null && propertyName == null
-					|| registration.propertyName != null && registration.propertyName.equals(propertyName)) {
+			if (registration.hasListener(propertyName, listener, hasPropertyChangeSupport))
 				return true;
-			}
 		}
 		return false;
 	}
@@ -95,6 +88,12 @@ public class PropertyChangeListenerRegistrationManager {
 			registrations.add(this);
 		}
 
+		public boolean hasListener(String propertyName, PropertyChangeListener listener,
+				HasPropertyChangeSupport hasPropertyChangeSupport) {
+			return (this.hasPropertyChangeSupport == hasPropertyChangeSupport && this.listener == listener && this.propertyName == null
+					&& propertyName == null || this.propertyName != null && this.propertyName.equals(propertyName));
+		}
+
 		public void removeListener() {
 			if (propertyName != null) {
 				hasPropertyChangeSupport.getPropertyChangeSupport().removePropertyChangeListener(propertyName, listener);
@@ -122,12 +121,8 @@ public class PropertyChangeListenerRegistrationManager {
 		Iterator<PropertyChangeListenerRegistration> i = registrations.iterator();
 		while (i.hasNext()) {
 			PropertyChangeListenerRegistration r = i.next();
-			if (r.hasPropertyChangeSupport == hasPropertyChangeSupport
-					&& (r.propertyName == null && propertyName == null || propertyName != null && propertyName.equals(r.propertyName))
-					&& r.listener == listener) {
+			if (r.hasListener(propertyName, listener, hasPropertyChangeSupport))
 				i.remove();
-			}
 		}
 	}
-
 }

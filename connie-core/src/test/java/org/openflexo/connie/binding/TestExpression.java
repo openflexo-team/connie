@@ -39,12 +39,9 @@
 
 package org.openflexo.connie.binding;
 
-import java.util.Hashtable;
 import java.util.List;
 
-import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.Variable;
 import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
@@ -60,7 +57,7 @@ public class TestExpression extends TestCase {
 
 	public void testVariable1() {
 		try {
-			List<BindingValue> vars = Expression.extractBindingValues("this+is+a+test");
+			List<BindingValue> vars = ExpressionParser.parse("this+is+a+test").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
 			assertTrue(vars.contains(new Variable("this")));
@@ -70,15 +67,12 @@ public class TestExpression extends TestCase {
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-			fail();
 		}
 	}
 
 	public void testVariable2() {
 		try {
-			List<BindingValue> vars = Expression.extractBindingValues("i+(am-a/test)+2");
+			List<BindingValue> vars = ExpressionParser.parse("i+(am-a/test)+2").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
 			assertTrue(vars.contains(new Variable("i")));
@@ -88,15 +82,12 @@ public class TestExpression extends TestCase {
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-			fail();
 		}
 	}
 
 	public void testVariable3() {
 		try {
-			List<BindingValue> vars = Expression.extractBindingValues("this.is.a.little.test+and+this+is.not()");
+			List<BindingValue> vars = ExpressionParser.parse("this.is.a.little.test+and+this+is.not()").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
 			assertTrue(vars.contains(new BindingValue("this.is.a.little.test")));
@@ -106,15 +97,12 @@ public class TestExpression extends TestCase {
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-			fail();
 		}
 	}
 
 	public void testPrimitive1() {
 		try {
-			List<BindingValue> vars = Expression.extractBindingValues("i+am+a+test");
+			List<BindingValue> vars = ExpressionParser.parse("i+am+a+test").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
 			assertTrue(vars.contains(new Variable("i")));
@@ -122,9 +110,6 @@ public class TestExpression extends TestCase {
 			assertTrue(vars.contains(new Variable("a")));
 			assertTrue(vars.contains(new Variable("test")));
 		} catch (ParseException e) {
-			e.printStackTrace();
-			fail();
-		} catch (TypeMismatchException e) {
 			e.printStackTrace();
 			fail();
 		}
@@ -132,7 +117,7 @@ public class TestExpression extends TestCase {
 
 	public void testPrimitive2() {
 		try {
-			List<BindingValue> vars = Expression.extractBindingValues("i+(am-a/test)+2");
+			List<BindingValue> vars = ExpressionParser.parse("i+(am-a/test)+2").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
 			assertTrue(vars.contains(new Variable("i")));
@@ -142,15 +127,12 @@ public class TestExpression extends TestCase {
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-			fail();
 		}
 	}
 
 	public void testPrimitive3() {
 		try {
-			List<BindingValue> vars = Expression.extractBindingValues("i.am.a.little.test+and+following+is.not()");
+			List<BindingValue> vars = ExpressionParser.parse("i.am.a.little.test+and+following+is.not()").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
 			assertTrue(vars.contains(new BindingValue("i.am.a.little.test")));
@@ -160,12 +142,29 @@ public class TestExpression extends TestCase {
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-			fail();
 		}
 	}
 
+	/*public static Expression evaluate(Expression expr, final Hashtable<String, ?> variables) throws TypeMismatchException {
+	
+		try {
+			System.out.println("On evalue " + expr);
+			System.out.println("variables=" + variables);
+			return expr.evaluate(new BindingEvaluationContext() {
+				@Override
+				public Object getValue(BindingVariable variable) {
+					System.out.println("hop avec " + variable);
+					System.out.println("On me demande " + variable.getVariableName() + " = " + variables.get(variable.toString()));
+					return variables.get(variable.toString());
+				}
+			});
+		} catch (NullReferenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public void testEvaluate1() {
 		try {
 			Expression e = ExpressionParser.parse("a+(b-c)/2");
@@ -173,7 +172,7 @@ public class TestExpression extends TestCase {
 			variables.put("a", 1);
 			variables.put("b", 10);
 			variables.put("c", 3);
-			Expression evaluated = e.evaluate(variables);
+			Expression evaluated = evaluate(e, variables);
 			System.out.println("evaluated=" + evaluated);
 			assertEquals(ExpressionParser.parse("4.5"), evaluated);
 		} catch (ParseException e) {
@@ -184,14 +183,14 @@ public class TestExpression extends TestCase {
 			fail();
 		}
 	}
-
+	
 	public void testEvaluate2() {
 		try {
 			Expression e = ExpressionParser.parse("a+(b-2-c)/2");
 			Hashtable<String, Object> variables = new Hashtable<>();
 			variables.put("a", 1);
 			variables.put("b", 10);
-			Expression evaluated = e.evaluate(variables);
+			Expression evaluated = evaluate(e, variables);
 			System.out.println("evaluated=" + evaluated);
 			assertEquals(ExpressionParser.parse("1+(8-c)/2"), evaluated);
 		} catch (ParseException e) {
@@ -201,5 +200,5 @@ public class TestExpression extends TestCase {
 			e.printStackTrace();
 			fail();
 		}
-	}
+	}*/
 }

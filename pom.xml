@@ -3,12 +3,12 @@
 	<parent>
 		<groupId>org.openflexo</groupId>
 		<artifactId>openflexo-component</artifactId>
-		<version>0.4</version>
+		<version>0.5-SNAPSHOT</version>
 	</parent>
      <!-- ************
    Component identity and specific information
    -->
-	<version>1.2-SNAPSHOT</version>
+	<version>1.4.1</version>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>connie</artifactId>
 	<name>Connie</name>
@@ -17,14 +17,16 @@
 	<scm>
 		<connection>scm:git:ssh://git@github.com/openflexo-team/connie.git</connection>
 		<url>https://github.com/openflexo-team/connie</url>
-		<tag>1.2</tag>
+		<tag>1.4.1</tag>
 	</scm>
     	<issueManagement>
         	<system>JIRA</system>
        	 	<url>https://bugs.openflexo.org/browse/connie/</url>
     	</issueManagement>
 	<modules>
+		<module>testutils</module>
 		<module>flexoutils</module>
+		<module>connie-parser</module>
 		<module>connie-core</module>
 	</modules>
 	<!-- 
@@ -180,7 +182,7 @@
             <distributionManagement>
                 <site>
                     <id>connie.website</id>
-                    <url>scp://server-one.openflexo.org${sitedeploy.dir}/SNAPSHOT/</url>
+                    <url>scp://openflexo.org${sitedeploy.dir}/SNAPSHOT/</url>
                 </site>
             </distributionManagement>
         </profile>
@@ -197,7 +199,7 @@
             <distributionManagement>
                 <site>
                     <id>connie.website</id>
-                    <url>scp://server-one.openflexo.org${sitedeploy.dir}/SNAPSHOT/</url>
+                    <url>scp://openflexo.org${sitedeploy.dir}/SNAPSHOT/</url>
                 </site>
             </distributionManagement>
         </profile>
@@ -214,7 +216,7 @@
             <distributionManagement>
                 <site>
                     <id>connie.website</id>
-                    <url>scp://server-one.openflexo.org${sitedeploy.dir}/${project.version}/</url>
+                    <url>scp://openflexo.org${sitedeploy.dir}/${project.version}/</url>
                 </site>
             </distributionManagement>
         </profile>

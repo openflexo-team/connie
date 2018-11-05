@@ -49,6 +49,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,9 @@ public class TypeUtils {
 	public static Class<?> getBaseClass(Type aType) {
 		if (aType == null) {
 			return null;
+		}
+		if (aType == ExplicitNullType.INSTANCE) {
+			return Object.class;
 		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).getBaseClass();
@@ -242,6 +246,13 @@ public class TypeUtils {
 		return klass != null && Primitives.isWrapperType(klass);
 	}
 
+	public static boolean isNumber(Type type) {
+		if (type == null) {
+			return false;
+		}
+		return isDouble(type) || isFloat(type) || isLong(type) || isInteger(type) || isShort(type) || isByte(type);
+	}
+
 	public static boolean isDouble(Type type) {
 		if (type == null) {
 			return false;
@@ -296,6 +307,13 @@ public class TypeUtils {
 			return false;
 		}
 		return type.equals(String.class);
+	}
+
+	public static boolean isDate(Type type) {
+		if (type == null) {
+			return false;
+		}
+		return type.equals(Date.class);
 	}
 
 	public static boolean isVoid(Type type) {
@@ -554,8 +572,15 @@ public class TypeUtils {
 			LOGGER.warning("WildcardType not implemented yet !");
 		}
 
-		return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
-
+		try {
+			return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
+		} catch (NullPointerException e) {
+			// Might happen is some circonstance
+			// eg:
+			// anOtherType=R
+			// aType=org.openflexo.model.validation.ValidationRule<R, V>
+			return false;
+		}
 		/*if (getBaseEntity() == type.getBaseEntity()) {
 			// Base entities are the same, let's analyse parameters
 		
@@ -796,6 +821,10 @@ public class TypeUtils {
 			return null;
 		}
 
+		if (context instanceof JavaCustomType) {
+			return makeInstantiatedType(type, ((JavaCustomType) context).getJavaType());
+		}
+
 		if (!isGeneric(type)) {
 			return type;
 		}
@@ -850,7 +879,7 @@ public class TypeUtils {
 		}
 
 		if (type instanceof TypeVariable) {
-			TypeVariable<GenericDeclaration> tv = (TypeVariable<GenericDeclaration>) type;
+			TypeVariable<?> tv = (TypeVariable<?>) type;
 			GenericDeclaration gd = tv.getGenericDeclaration();
 			// System.out.println(">>>>>> Trying to infer type of type variable " + tv + " name=" + tv.getName() + " GD="
 			// + tv.getGenericDeclaration() + " context=" + simpleRepresentation(context));
@@ -1004,6 +1033,10 @@ public class TypeUtils {
 		// System.out.println("desiredType: "+desiredType);
 		if (object.getClass().equals(desiredType)) {
 			return object;
+		}
+
+		if (desiredType.equals(String.class)) {
+			return object.toString();
 		}
 
 		if (object instanceof Number) {

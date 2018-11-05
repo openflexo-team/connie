@@ -246,7 +246,7 @@ public class ComputeDiff {
 		return computeDiff(source0, source1);
 	}
 
-	public static DiffReport diff(String aString, String anOtherString, int ignoredCols) throws IOException {
+	public static DiffReport diff(String aString, String anOtherString, int ignoredCols) {
 		DiffSource source0 = new DiffSource(aString, ignoredCols);
 		DiffSource source1 = new DiffSource(anOtherString, ignoredCols);
 		return computeDiff(source0, source1);
@@ -286,7 +286,7 @@ public class ComputeDiff {
 		return computeDiff(source0, source1);
 	}
 
-	public static DiffReport diff(String aString, String anOtherString, DelimitingMethod method, int ignoredCols) throws IOException {
+	public static DiffReport diff(String aString, String anOtherString, DelimitingMethod method, int ignoredCols) {
 		DiffSource source0 = new DiffSource(aString, method, ignoredCols);
 		DiffSource source1 = new DiffSource(anOtherString, method, ignoredCols);
 		return computeDiff(source0, source1);

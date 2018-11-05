@@ -152,7 +152,7 @@ public class XMLReaderSAXHandler extends DefaultHandler2 {
 
 					if (typeName.equals(XMLCst.CDATA_TYPE_NAME)) {
 						// Unused Type aType = String.class;
-						if (attrName.equals(""))
+						if ((attrName == null || attrName.equals("")) && attrQName != null)
 							if (NSPrefix.equals(""))
 								attrName = attrQName;
 							else

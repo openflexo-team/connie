@@ -39,21 +39,30 @@
 
 package org.openflexo.connie.binding;
 
+import java.beans.PropertyChangeSupport;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
 
 /**
- * Modelize a java call which is a call to a method and with some arguments
+ * Model a java call which is a call to a method and with some arguments
  * 
  * @author sylvain
  * 
@@ -62,7 +71,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 	static final Logger LOGGER = Logger.getLogger(JavaMethodPathElement.class.getPackage().getName());
 
-	public JavaMethodPathElement(BindingPathElement parent, MethodDefinition method, List<DataBinding<?>> args) {
+	public JavaMethodPathElement(IBindingPathElement parent, MethodDefinition method, List<DataBinding<?>> args) {
 		super(parent, method, args);
 		if (getMethodDefinition() != null) {
 			for (FunctionArgument arg : getMethodDefinition().getArguments()) {
@@ -109,6 +118,26 @@ public class JavaMethodPathElement extends FunctionPathElement {
 		customType = type;
 	}
 
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
+	 * 
+	 * A {@link JavaPropertyPathElement} is notification-safe when related method is not tagged with {@link NotificationUnsafe} annotation
+	 * 
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isNotificationSafe() {
+
+		Method m = getMethodDefinition().getMethod();
+		if (m == null || m.getAnnotation(NotificationUnsafe.class) != null) {
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	public String getLabel() {
 		return getMethodDefinition().getLabel();
@@ -130,8 +159,9 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 		for (Function.FunctionArgument a : getFunction().getArguments()) {
 			try {
-				args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
-						getMethodDefinition().getMethod().getGenericParameterTypes()[i]);
+				if (getParameter(a) != null)
+					args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
+							getMethodDefinition().getMethod().getGenericParameterTypes()[i]);
 			} catch (InvocationTargetException e) {
 				throw new InvocationTargetTransformException(e);
 			}
@@ -163,10 +193,114 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			/*e.printStackTrace();
 			logger.info("Caused by:");
 			e.getTargetException().printStackTrace();*/
+			e.getTargetException().printStackTrace();
 			throw new InvocationTargetTransformException(e);
 		}
 		return null;
 
 	}
+
+	private final Map<ExpressionTransformer, JavaMethodPathElement> transformedPathElements = new HashMap<>();
+
+	@Override
+	public JavaMethodPathElement transform(ExpressionTransformer transformer) throws TransformException {
+		JavaMethodPathElement returned = transformedPathElements.get(transformer);
+		if (returned == null) {
+			System.out.println("On recalcule un JavaMethodPathElement pour " + this + " transformer=" + transformer);
+			returned = makeTransformedPathElement(transformer);
+			transformedPathElements.put(transformer, returned);
+			System.out.println("CREATE On transforme " + toString() + " en " + returned.toString());
+		}
+		else {
+			System.out.println("Pas la peine de refaire un JavaMethodPathElement pour " + this + " transformer=" + transformer);
+			System.out.println("On met a jour quand meme");
+			updateTransformedPathElement(returned, transformer);
+			System.out.println("UPDATE On transforme " + toString() + " en " + returned.toString());
+		}
+		return returned;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getMethodName() + "(");
+		boolean isFirst = true;
+		for (FunctionArgument arg : getArguments()) {
+			sb.append((isFirst ? "" : ",") + getParameter(arg));
+			isFirst = false;
+		}
+		sb.append(")");
+		return sb.toString();
+	}
+
+	private JavaMethodPathElement makeTransformedPathElement(ExpressionTransformer transformer) throws TransformException {
+
+		boolean hasBeenTransformed = false;
+		List<DataBinding<?>> transformedArgs = new ArrayList<>();
+
+		for (FunctionArgument arg : getArguments()) {
+			DataBinding<?> argValue = getParameter(arg);
+			if (argValue != null && argValue.isValid()) {
+				Expression currentExpression = argValue.getExpression();
+				if (currentExpression != null) {
+					Expression transformedExpression = currentExpression.transform(transformer);
+					if (!transformedExpression.equals(currentExpression)) {
+						hasBeenTransformed = true;
+						DataBinding<?> newTransformedBinding = new DataBinding<>(argValue.getOwner(), argValue.getDeclaredType(),
+								argValue.getBindingDefinitionType(), false);
+						newTransformedBinding.setExpression(transformedExpression);
+						// TODO: better to do i think
+						newTransformedBinding.isValid();
+						transformedArgs.add(newTransformedBinding);
+						// System.out.println(
+						// "On a transforme " + argValue + " en " + newTransformedBinding + " valid=" + newTransformedBinding.isValid());
+						hasBeenTransformed = true;
+					}
+					else {
+						transformedArgs.add(argValue);
+					}
+				}
+			}
+			else {
+				transformedArgs.add(argValue);
+			}
+		}
+
+		if (!hasBeenTransformed) {
+			return this;
+		}
+
+		return new JavaMethodPathElement(getParent(), getMethodDefinition(), transformedArgs);
+	}
+
+	private JavaMethodPathElement updateTransformedPathElement(JavaMethodPathElement transformedPathElement,
+			ExpressionTransformer transformer) throws TransformException {
+
+		for (FunctionArgument arg : getArguments()) {
+			DataBinding<?> argValue = getParameter(arg);
+			if (argValue != null && argValue.isValid()) {
+				Expression currentExpression = argValue.getExpression();
+				if (currentExpression != null) {
+					Expression transformedExpression = currentExpression.transform(transformer);
+					if (!transformedExpression.equals(currentExpression)) {
+						DataBinding<?> transformedBinding = transformedPathElement.getParameter(arg.getArgumentName());
+						transformedBinding.setExpression(transformedExpression);
+						// TODO: better to do i think
+						transformedBinding.isValid();
+					}
+				}
+			}
+		}
+		return transformedPathElement;
+	}
+
+	// Stores temporary DataBinding created
+	// private final List<DataBinding<?>> transformedDataBindings = new ArrayList<>();
+
+	/*public void clearTransformedDataBinding() {
+		for (DataBinding<?> db : transformedDataBindings) {
+			db.delete();
+		}
+	}*/
 
 }

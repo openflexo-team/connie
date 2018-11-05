@@ -43,6 +43,7 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
 import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.DataBinding;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
@@ -53,32 +54,65 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  */
 public abstract class SimplePathElement implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
 
-	private BindingPathElement parent;
+	private IBindingPathElement parent;
 	private String propertyName;
 	private Type type;
 	private PropertyChangeSupport pcSupport;
+	private boolean activated = false;
 
 	public static final String NAME_PROPERTY = "propertyName";
 	public static final String TYPE_PROPERTY = "type";
 	public static final String DELETED_PROPERTY = "deleted";
 
-	public SimplePathElement(BindingPathElement parent, String propertyName, Type type) {
+	public SimplePathElement(IBindingPathElement parent, String propertyName, Type type) {
 		this.parent = parent;
 		this.propertyName = propertyName;
 		this.type = type;
 		pcSupport = new PropertyChangeSupport(this);
 	}
 
-	public void delete() {
-		getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
-		pcSupport = null;
+	/**
+	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
+	 */
+	@Override
+	public void activate() {
+		this.activated = true;
+	}
+
+	/**
+	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
+	 */
+	@Override
+	public void desactivate() {
+		this.activated = false;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is activated
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isActivated() {
+		return activated;
+	}
+
+	@Override
+	public final void delete() {
+		if (isActivated()) {
+			desactivate();
+		}
+		if (pcSupport != null) {
+			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
+			pcSupport = null;
+		}
 		parent = null;
 		propertyName = null;
 		type = null;
 	}
 
 	@Override
-	public BindingPathElement getParent() {
+	public IBindingPathElement getParent() {
 		return parent;
 	}
 
@@ -174,6 +208,7 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		return getPropertyName().hashCode();
 	}*/
 
+	@Override
 	public boolean isNotifyingBindingPathChanged() {
 		return false;
 	}
@@ -186,5 +221,20 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 			return ((BindingVariable) getParent()).getVariableName() + "." + getLabel();
 		}
 		return getLabel();
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
+	 * 
+	 * When tagged as unsafe, disable caching while evaluating related {@link DataBinding}.
+	 * 
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isNotificationSafe() {
+		return true;
 	}
 }

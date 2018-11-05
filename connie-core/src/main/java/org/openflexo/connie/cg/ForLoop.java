@@ -44,7 +44,10 @@ import org.openflexo.connie.expr.Variable;
 
 public abstract class ForLoop extends Loop { // NOPMD by beugnard on 29/10/14 23:12
 
+	@SuppressWarnings("unused")
 	private Variable iterator;
+	@SuppressWarnings("unused")
 	private Expression initValue;
+	@SuppressWarnings("unused")
 	private Expression condition;
 }

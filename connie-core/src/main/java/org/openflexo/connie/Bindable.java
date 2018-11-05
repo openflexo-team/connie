@@ -52,6 +52,7 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
 public interface Bindable extends HasPropertyChangeSupport {
 
 	String BINDING_MODEL_PROPERTY = "bindingModel";
+	String BINDING_FACTORY_PROPERTY = "bindingFactory";
 
 	/**
 	 * Return the Binding model for the current object.

@@ -39,11 +39,14 @@
 
 package org.openflexo.connie.binding;
 
+import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.type.CustomType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.KeyValueLibrary;
@@ -63,29 +66,27 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	private final KeyValueProperty keyValueProperty;
 
-	public JavaPropertyPathElement(BindingPathElement parent, String propertyName) {
+	public JavaPropertyPathElement(IBindingPathElement parent, String propertyName) {
 		super(parent, propertyName, Object.class);
 		keyValueProperty = KeyValueLibrary.getKeyValueProperty(parent.getType(), propertyName);
 
 		if (keyValueProperty != null) {
 			setType(keyValueProperty.getType());
+			warnWhenInconsistentData(parent, propertyName);
 		}
 		else {
 			LOGGER.warning("cannot find property " + propertyName + " for " + parent + " which type is " + parent.getType());
 		}
-
-		warnWhenInconsistentData(parent, propertyName);
-
 	}
 
-	public JavaPropertyPathElement(BindingPathElement parent, KeyValueProperty property) {
+	public JavaPropertyPathElement(IBindingPathElement parent, KeyValueProperty property) {
 		super(parent, property.getName(), property.getType());
 		keyValueProperty = property;
 
 		warnWhenInconsistentData(parent, property.getName());
 	}
 
-	private void warnWhenInconsistentData(BindingPathElement parent, String propertyName) {
+	private void warnWhenInconsistentData(IBindingPathElement parent, String propertyName) {
 
 		if (keyValueProperty.getGetMethod() != null) {
 			Type declaringType = keyValueProperty.getGetMethod().getDeclaringClass();
@@ -127,6 +128,28 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	public KeyValueProperty getKeyValueProperty() {
 		return keyValueProperty;
+	}
+
+	/**
+	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
+	 * {@link PropertyChangeSupport} scheme)<br>
+	 * 
+	 * A {@link JavaPropertyPathElement} is notification-safe when related get method is not tagged with {@link NotificationUnsafe}
+	 * annotation
+	 * 
+	 * Otherwise return true
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isNotificationSafe() {
+
+		KeyValueProperty kvProperty = getKeyValueProperty();
+		Method m = kvProperty.getGetMethod();
+		if (m == null || m.getAnnotation(NotificationUnsafe.class) != null) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

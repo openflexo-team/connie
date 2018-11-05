@@ -90,7 +90,7 @@ public class AccessorInvocationException extends RuntimeException {
 	}
 
 	@Override
-	public Throwable getCause() {
+	public synchronized Throwable getCause() {
 		return getTargetException();
 	}
 

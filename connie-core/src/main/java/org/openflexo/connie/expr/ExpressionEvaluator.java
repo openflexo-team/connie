@@ -39,6 +39,7 @@
 
 package org.openflexo.connie.expr;
 
+import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.expr.Constant.BooleanConstant;
 import org.openflexo.connie.expr.Constant.FloatConstant;
@@ -52,13 +53,25 @@ import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
  */
 public class ExpressionEvaluator implements ExpressionTransformer {
 
+	private BindingEvaluationContext context;
+
+	public ExpressionEvaluator(BindingEvaluationContext context) {
+		this.context = context;
+	}
+
 	/**
 	 * Performs the transformation of a resulting expression e, asserting that all contained expressions have already been transformed (this
 	 * method is not recursive, to do so, use Expression.transform(ExpressionTransformer) API)
 	 */
 	@Override
 	public Expression performTransformation(Expression e) throws TransformException {
-		// e._checkSemanticallyAcceptable();
+		if (e instanceof BindingValue) {
+			if (((BindingValue) e).isValid()) {
+				Object o = ((BindingValue) e).getBindingValue(context);
+				return Constant.makeConstant(o);
+			}
+			return e;
+		}
 		if (e instanceof BinaryOperatorExpression) {
 			return transformBinaryOperatorExpression((BinaryOperatorExpression) e);
 		}
@@ -75,6 +88,7 @@ public class ExpressionEvaluator implements ExpressionTransformer {
 	}
 
 	private static Expression transformBinaryOperatorExpression(BinaryOperatorExpression e) throws TransformException {
+
 		// If both arguments are constants, we try to evaluate them
 		if (e.getLeftArgument() instanceof Constant && e.getRightArgument() instanceof Constant
 		/*&& e.getLeftArgument().getEvaluationType() == e.getRightArgument().getEvaluationType()*/
@@ -97,7 +111,7 @@ public class ExpressionEvaluator implements ExpressionTransformer {
 		return e;
 	}
 
-	private static Expression transformConditionalExpression(ConditionalExpression e) throws TransformException {
+	private static Expression transformConditionalExpression(ConditionalExpression e) {
 		if (e.getCondition() == BooleanConstant.TRUE) {
 			return e.getThenExpression();
 		}

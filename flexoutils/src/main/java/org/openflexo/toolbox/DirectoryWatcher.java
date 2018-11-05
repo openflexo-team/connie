@@ -41,14 +41,12 @@ package org.openflexo.toolbox;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,14 +75,16 @@ public abstract class DirectoryWatcher extends TimerTask {
 			// System.out.println("Init NodeDirectoryWatcher on " + directory);
 			this.directory = directory;
 			this.watcher = watcher;
-			for (File f : directory.listFiles()) {
-				lastModified.put(f, f.lastModified());
-				recordChecksumForFile(f, false);
-				if (f.isDirectory()) {
-					subNodes.put(f, new NodeDirectoryWatcher(f, watcher, notifyAdding));
-				}
-				if (notifyAdding) {
-					watcher.fileAdded(f);
+			if (directory.listFiles() != null) {
+				for (File f : directory.listFiles()) {
+					lastModified.put(f, f.lastModified());
+					recordChecksumForFile(f, false);
+					if (f.isDirectory()) {
+						subNodes.put(f, new NodeDirectoryWatcher(f, watcher, notifyAdding));
+					}
+					if (notifyAdding) {
+						watcher.fileAdded(f);
+					}
 				}
 			}
 		}
@@ -95,7 +95,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 			}
 			Integer checksum = checksums.get(f);
 			if (checksum == null || force) {
-				if (f.isDirectory()) {
+				if (f.listFiles() != null) {
 					StringBuffer sb = new StringBuffer();
 					for (File child : f.listFiles()) {
 						sb.append(child.getName());
@@ -124,19 +124,20 @@ public abstract class DirectoryWatcher extends TimerTask {
 		}
 
 		private synchronized boolean watch() {
-
+			if (directory == null) {
+				return false;
+			}
+			File[] listFiles = directory.listFiles();
+			if (listFiles == null) {
+				return false;
+			}
 			Set<File> checkedFiles = new HashSet<>();
-
 			List<File> modifiedFiles = new ArrayList<>();
 			List<File> addedFiles = new ArrayList<>();
 			List<File> deletedFiles = new ArrayList<>();
 
-			if (directory == null || !directory.exists()) {
-				return false;
-			}
-
 			// scan the files and check for modification/addition
-			for (File f : directory.listFiles()) {
+			for (File f : listFiles) {
 				Long current = lastModified.get(f);
 				checkedFiles.add(f);
 				if (current == null) {
@@ -407,41 +408,43 @@ public abstract class DirectoryWatcher extends TimerTask {
 
 	protected abstract void fileRenamed(File oldFile, File renamedFile);
 
+	/*
 	public static void main(String[] args) {
 		TimerTask task = new DirectoryWatcher(new File("/Users/sylvain/Temp")) {
 			@Override
 			protected void fileModified(File file) {
 				System.out.println("File MODIFIED " + file.getName() + " in " + file.getParentFile().getAbsolutePath());
 			}
-
+	
 			@Override
 			protected void fileAdded(File file) {
 				System.out.println("File ADDED " + file.getName() + " in " + file.getParentFile().getAbsolutePath());
 			}
-
+	
 			@Override
 			protected void fileDeleted(File file) {
 				System.out.println("File DELETED " + file.getName() + " in " + file.getParentFile().getAbsolutePath());
 			}
-
+	
 			@Override
 			protected void fileRenamed(File oldFile, File renamedFile) {
 				System.out.println("File RENAMED from " + oldFile.getName() + " to " + renamedFile.getName() + " in "
 						+ renamedFile.getParentFile().getAbsolutePath());
 			}
 		};
-
+	
 		Timer timer = new Timer();
 		timer.schedule(task, new Date(), 1000);
-
+	
 	}
+	*/
 
-	boolean waitNextWatchingRequested = false;
-	boolean waitNextWatchingDone = false;
+	private boolean waitNextWatchingRequested = false;
+	private boolean waitNextWatchingDone = false;
 
-	public Status status = null;
+	private Status status = null;
 
-	public enum Status {
+	private enum Status {
 		INIT, FIRST_RUN, RUNNING, IDLE
 	}
 
@@ -467,7 +470,7 @@ public abstract class DirectoryWatcher extends TimerTask {
 	private boolean isWaitingCurrentExecution = false;
 
 	/**
-	 * Wait for the currnt execution to be performed
+	 * Wait for the current execution to be performed
 	 */
 	public void waitCurrentExecution() {
 		isWaitingCurrentExecution = true;

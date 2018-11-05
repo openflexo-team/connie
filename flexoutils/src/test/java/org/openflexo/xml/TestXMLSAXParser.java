@@ -36,179 +36,173 @@
  * 
  */
 
-
 package org.openflexo.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.openflexo.IObjectGraphFactory;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 
+import junit.framework.TestCase;
+
 public class TestXMLSAXParser extends TestCase {
 
-    private void printXMLNode(XMLIndiv node, String indent) {
-        System.out.println(indent + "[N]" + node.getName());
+	private void printXMLNode(XMLIndiv node, String indent) {
+		System.out.println(indent + "[N]" + node.getName());
 
-        for (XMLAttr a : node.getAttributes()) {
+		for (XMLAttr a : node.getAttributes()) {
 
-            System.out.println(indent + "-- " + a.getName() + " = " + node.getAttributeStringValue(a));
-        }
+			System.out.println(indent + "-- " + a.getName() + " = " + node.getAttributeStringValue(a));
+		}
 
-        for (XMLIndiv n : node.getChildren()) {
-            printXMLNode(n, indent + "    ");
-        }
+		for (XMLIndiv n : node.getChildren()) {
+			printXMLNode(n, indent + "    ");
+		}
 
-    }
+	}
 
-    private void printXMLTree(XMLModel model) {
+	private void printXMLTree(XMLModel model) {
 
-        XMLIndiv root = (XMLIndiv) model.getRoot();
+		XMLIndiv root = model.getRoot();
 
-        printXMLNode(root, "");
-    }
+		printXMLNode(root, "");
+	}
 
-    @Test
-    public void testLibrary0Parser() {
+	@Test
+	public void testLibrary0Parser() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/example_library_0.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/example_library_0.xml");
+		assertNotNull(rsc);
 
-        IObjectGraphFactory modelFactory = new ModelFactory();
-        assertNotNull(modelFactory);
+		IObjectGraphFactory modelFactory = new ModelFactory();
+		assertNotNull(modelFactory);
 
-        XMLModel model = new XMLModel();
-        assertNotNull(model);
+		XMLModel model = new XMLModel();
+		assertNotNull(model);
 
-        modelFactory.setContext(model);
+		modelFactory.setContext(model);
 
-        try {
-            InputStream in = rsc.openInputStream();
-            modelFactory.deserialize(in);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try (InputStream in = rsc.openInputStream()) {
+			modelFactory.deserialize(in);
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    }
+	}
 
-    @Test
-    public void testLibrary1Parser() {
+	@Test
+	public void testLibrary1Parser() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/example_library_1.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/example_library_1.xml");
+		assertNotNull(rsc);
 
-        IObjectGraphFactory modelFactory = new ModelFactory();
-        assertNotNull(modelFactory);
+		IObjectGraphFactory modelFactory = new ModelFactory();
+		assertNotNull(modelFactory);
 
-        XMLModel model = new XMLModel();
-        assertNotNull(model);
+		XMLModel model = new XMLModel();
+		assertNotNull(model);
 
-        modelFactory.setContext(model);
+		modelFactory.setContext(model);
 
-        try {
-            InputStream in = rsc.openInputStream();
-            modelFactory.deserialize(in);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+		try (InputStream in = rsc.openInputStream()) {
+			modelFactory.deserialize(in);
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    @Test
-    public void testLibrary2Parser() {
+	@Test
+	public void testLibrary2Parser() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/example_library_2.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/example_library_2.xml");
+		assertNotNull(rsc);
 
-        IObjectGraphFactory modelFactory = new ModelFactory();
-        assertNotNull(modelFactory);
+		IObjectGraphFactory modelFactory = new ModelFactory();
+		assertNotNull(modelFactory);
 
-        XMLModel model = new XMLModel();
-        assertNotNull(model);
+		XMLModel model = new XMLModel();
+		assertNotNull(model);
 
-        modelFactory.setContext(model);
+		modelFactory.setContext(model);
 
-        try {
-            InputStream in = rsc.openInputStream();
-            modelFactory.deserialize(in);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try (InputStream in = rsc.openInputStream()) {
+			modelFactory.deserialize(in);
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    }
+	}
 
-    @Test
-    public void testLibrary3Parser() {
+	@Test
+	public void testLibrary3Parser() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/example_library_3.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/example_library_3.xml");
+		assertNotNull(rsc);
 
-        IObjectGraphFactory modelFactory = new ModelFactory();
-        assertNotNull(modelFactory);
+		IObjectGraphFactory modelFactory = new ModelFactory();
+		assertNotNull(modelFactory);
 
-        XMLModel model = new XMLModel();
-        assertNotNull(model);
+		XMLModel model = new XMLModel();
+		assertNotNull(model);
 
-        modelFactory.setContext(model);
+		modelFactory.setContext(model);
 
-        try {
-            InputStream in = rsc.openInputStream();
-            modelFactory.deserialize(in);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try (InputStream in = rsc.openInputStream()) {
+			modelFactory.deserialize(in);
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        printXMLTree(model);
-    }
+		printXMLTree(model);
+	}
 
-    @Test
-    public void testMapParsing() {
+	@Test
+	public void testMapParsing() {
 
-        Resource rsc = ResourceLocator.locateResource("testXML/MapTest.xml");
-        assertNotNull(rsc);
+		Resource rsc = ResourceLocator.locateResource("testXML/MapTest.xml");
+		assertNotNull(rsc);
 
-        IObjectGraphFactory mapFactory = new MapFactory();
-        assertNotNull(mapFactory);
+		IObjectGraphFactory mapFactory = new MapFactory();
+		assertNotNull(mapFactory);
 
-        MapModel model = new MapModel();
-        assertNotNull(model);
+		MapModel model = new MapModel();
+		assertNotNull(model);
 
-        mapFactory.setContext(model);
+		mapFactory.setContext(model);
 
-        try {
-            InputStream in = rsc.openInputStream();
-            mapFactory.deserialize(in);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try (InputStream in = rsc.openInputStream()) {
+			mapFactory.deserialize(in);
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        assertEquals(model.getValues().size(), 4);
-        assertEquals(model.getName(), "lapin");
+		assertEquals(model.getValues().size(), 4);
+		assertEquals(model.getName(), "lapin");
 
-        // System.out.println(Runtime.getRuntime().totalMemory() -
-        // Runtime.getRuntime().freeMemory());
+		// System.out.println(Runtime.getRuntime().totalMemory() -
+		// Runtime.getRuntime().freeMemory());
 
-        System.out.println("MAP: " + model.getValues());
+		System.out.println("MAP: " + model.getValues());
 
-        mapFactory.resetContext();
+		mapFactory.resetContext();
 
-    }
+	}
 }
