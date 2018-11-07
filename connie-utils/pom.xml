@@ -6,7 +6,7 @@
 		<artifactId>connie</artifactId>
 		<version>1.5-SNAPSHOT</version>
 	</parent>
-	<artifactId>flexoutils</artifactId>
+	<artifactId>connie-utils</artifactId>
 	<name>Utils</name>
 	<properties>
 		<changes.componentfilter>AND component=connie-core</changes.componentfilter>

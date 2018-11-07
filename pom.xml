@@ -24,10 +24,9 @@
        	 	<url>https://bugs.openflexo.org/browse/connie/</url>
     	</issueManagement>
 	<modules>
-		<module>testutils</module>
-		<module>flexoutils</module>
 		<module>connie-parser</module>
 		<module>connie-core</module>
+		<module>connie-utils</module>
 	</modules>
 	<!-- 
 	Properties
