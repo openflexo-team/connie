@@ -566,7 +566,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				if (bpe instanceof FunctionPathElement) {
 					for (FunctionArgument arg : ((FunctionPathElement) bpe).getArguments()) {
 						DataBinding<?> parameter = ((FunctionPathElement) bpe).getParameter(arg);
-						if (parameter.getExpression() != null) {
+						if (parameter != null && parameter.getExpression() != null) {
 							visitor.visit(parameter.getExpression());
 						}
 					}
