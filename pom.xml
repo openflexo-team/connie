@@ -155,11 +155,6 @@
 
 			<dependency>
 				<groupId>org.openflexo</groupId>
-				<artifactId>flexoutils</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openflexo</groupId>
 				<artifactId>connie-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
