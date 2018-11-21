@@ -59,7 +59,7 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 /**
  * Utility class allowing to compute binding value over an expression and a given set of objects.<br>
- * Expression must be expressed with or without supplied object (when mentioned, use "object." prefix).<br>
+ * Expression must be expressed with or without supplied object (when mentioned, use "this." prefix).<br>
  * 
  * Syntax is this:
  * 
@@ -109,14 +109,20 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		objects = null;
 	}
 
-	private static String extractParameters(String bindingPath, List<String> parameters) {
+	private static String extractParameters(String bindingPath, List<String> parameters, Object... args) {
+		int index = 0;
 		String returned = bindingPath;
 		while (returned.contains("{$")) {
 			int startIndex = returned.indexOf("{$");
 			int endIndex = returned.indexOf("}", startIndex);
 			String parameterName = returned.substring(startIndex + 2, endIndex);
+			// System.out.println("Found at index " + index + " " + parameterName + "=" + args[index]);
+			if (index < args.length && args[index] == null) {
+				parameterName = "null";
+			}
 			parameters.add(parameterName);
 			returned = returned.substring(0, startIndex) + parameterName + returned.substring(endIndex + 1);
+			index++;
 		}
 		return returned;
 	}
@@ -134,9 +140,9 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 							if (bv.getParsedBindingPath().size() > 0) {
 								AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
 								if (!(firstPathElement instanceof NormalBindingPathElement)
-										|| (!((NormalBindingPathElement) firstPathElement).property.equals("object"))
+										|| (!((NormalBindingPathElement) firstPathElement).property.equals("this"))
 												&& !parameters.contains(((NormalBindingPathElement) firstPathElement).property)) {
-									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
+									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("this"));
 									bv.markedAsToBeReanalized();
 								}
 							}
@@ -228,13 +234,16 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		Map<String, Object> objects = new HashMap<>();
 
 		List<String> parameters = new ArrayList<>();
-		String extractedBindingPath = extractParameters(bindingPath, parameters);
+		String extractedBindingPath = extractParameters(bindingPath, parameters, args);
+		// System.out.println("extractedBindingPath=" + extractedBindingPath);
 		String normalizedBindingPath = normalizeBindingPath(extractedBindingPath, parameters);
+		// System.out.println("normalizedBindingPath=" + normalizedBindingPath);
 		if (args.length != parameters.size()) {
 			throw new InvalidKeyValuePropertyException("Wrong number of args");
 		}
-		objects.put("object", receiver);
+		objects.put("this", receiver);
 		for (int i = 0; i < args.length; i++) {
+			// System.out.println("i=" + i + " " + parameters.get(i) + "=" + args[i]);
 			objects.put(parameters.get(i), args[i]);
 		}
 

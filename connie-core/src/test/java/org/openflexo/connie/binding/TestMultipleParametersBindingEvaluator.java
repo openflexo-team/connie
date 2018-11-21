@@ -66,4 +66,18 @@ public class TestMultipleParametersBindingEvaluator extends TestCase {
 
 	}
 
+	public void test3() throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+		String variable4 = "Hello World";
+
+		try {
+			MultipleParametersBindingEvaluator.evaluateBinding("regionMatches({$toffset},{$other},{$ooffset},{$len})", variable4, 0, null,
+					1, 2);
+			fail();
+		} catch (InvocationTargetException e) {
+			Throwable targetException = e.getTargetException();
+			assertTrue(targetException.getStackTrace()[0].toString().contains("java.lang.String.regionMatches"));
+		}
+
+	}
+
 }
