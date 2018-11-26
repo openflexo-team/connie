@@ -87,8 +87,8 @@ public abstract class BindingValueListChangeListener<T2, T extends Collection<T2
 		try {
 			newValue = evaluateValue();
 		} catch (NullReferenceException e) {
-			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext()
-					+ " because NullReferenceException has raised");
+			// LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext()
+			// + " because NullReferenceException has raised");
 			newValue = null;
 		} catch (InvocationTargetException e) {
 			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext() + " because Exception has raised: "
