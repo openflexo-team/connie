@@ -505,6 +505,40 @@ public class StringUtils {
 	}
 
 	/**
+	 * Generate and return a String encoding a localized key, under the form my_returned_tokens, where token are extracted from initial
+	 * String while detecting case changes (from CamelCase to underscored_tokens)
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public static String toLocalizedKey(String string) {
+		int i = 0;
+		String token = "";
+		String returned = "";
+		while (i < string.length()) {
+			char c = string.charAt(i);
+			if (c >= 'A' && c <= 'Z') {
+				if (token.length() > 0) {
+					if (returned.length() > 0) {
+						returned = returned + "_";
+					}
+					returned = returned + token.toLowerCase();
+					token = "";
+				}
+			}
+			token = token + c;
+			i++;
+		}
+		if (token.length() > 0) {
+			if (returned.length() > 0) {
+				returned = returned + "_";
+			}
+			returned = returned + token.toLowerCase();
+		}
+		return returned;
+	}
+
+	/**
 	 * Sets the first char into upper case.
 	 * 
 	 * @param value
