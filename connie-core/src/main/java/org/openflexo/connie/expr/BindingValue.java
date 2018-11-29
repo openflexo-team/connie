@@ -46,6 +46,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -628,7 +629,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	private boolean needsAnalysing() {
 		return needsAnalysing;
 	}
-	*/
+	 */
 
 	public boolean isValid(DataBinding<?> dataBinding) {
 
@@ -985,19 +986,24 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				return null;
 			}
 			IBindingPathElement previous = getBindingVariable();
-			for (BindingPathElement e : getBindingPath()) {
-				if (current == null) {
-					if (!e.supportsNullValues()) {
-						throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + getParsedBindingPath()
-								+ ": null occured when evaluating " + previous);
+			try {
+				for (BindingPathElement e : getBindingPath()) {
+					if (current == null) {
+						if (!e.supportsNullValues()) {
+							throw new NullReferenceException("NullReferenceException while evaluating BindingValue "
+									+ getParsedBindingPath() + ": null occured when evaluating " + previous);
+						}
 					}
+					try {
+						current = e.getBindingValue(current, context);
+					} catch (InvalidKeyValuePropertyException e2) {
+						throw new InvocationTargetTransformException(new InvocationTargetException(e2));
+					}
+					previous = e;
 				}
-				try {
-					current = e.getBindingValue(current, context);
-				} catch (InvalidKeyValuePropertyException e2) {
-					throw new InvocationTargetTransformException(new InvocationTargetException(e2));
-				}
-				previous = e;
+			} catch (ConcurrentModificationException e) {
+				System.err.println("ConcurrentModificationException while executing BindingValue "+this);
+				return null;
 			}
 			// System.out.println(" > return "+current);
 			return current;
@@ -1195,7 +1201,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			System.out.println("needsAnalysing=" + needsAnalysing);
 			System.out.println("analysingSuccessfull=" + analysingSuccessfull);
 		}
-		*/
+	 */
 
 	public static abstract class AbstractBindingPathElement {
 		public abstract String getSerializationRepresentation();
