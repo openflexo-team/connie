@@ -1073,7 +1073,7 @@ public class FileUtils {
 					}
 				}
 			} catch (UnknownHostException e) {
-				LOGGER.warning("Could access to url " + url + ". Please check your internet connexion");
+				LOGGER.warning("Could access to url " + url + ". Please check your internet connection");
 			} catch (IOException e) {
 				LOGGER.warning("Could not read url " + url);
 				e.printStackTrace();
