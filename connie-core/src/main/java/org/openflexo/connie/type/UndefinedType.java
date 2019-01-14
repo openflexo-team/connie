@@ -42,16 +42,17 @@ package org.openflexo.connie.type;
 import java.lang.reflect.Type;
 
 /**
- * Represent a type infered from a null expression
+ * Represent a type infered from a expression which cannot determine its type<br>
+ * Might happen while computing infered type in the context of recursion
  * 
  * @author sylvain
  * 
  */
-public class ExplicitNullType implements Type {
+public class UndefinedType implements Type {
 
-	public static final ExplicitNullType INSTANCE = new ExplicitNullType();
+	public static final UndefinedType INSTANCE = new UndefinedType();
 
-	private ExplicitNullType() {
+	private UndefinedType() {
 		// Cannot instanciate from outside
 	}
 }

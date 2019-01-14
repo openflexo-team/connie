@@ -74,6 +74,7 @@ import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.UndefinedType;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.StringUtils;
 
@@ -529,7 +530,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		invalidBindingReason = "unknown";
 
 		isCacheable = true;
-		analyzedType = Object.class;
+		// analyzedType = Object.class;
+		// Fixing CONNIE-23
+		analyzedType = UndefinedType.INSTANCE;
 
 		if (isPerformingValidity) {
 			System.err.println("Stackoverflow prevented while performing validity for " + this);

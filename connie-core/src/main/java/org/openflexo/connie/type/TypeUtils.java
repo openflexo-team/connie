@@ -89,6 +89,9 @@ public class TypeUtils {
 		if (aType == ExplicitNullType.INSTANCE) {
 			return Object.class;
 		}
+		if (aType == UndefinedType.INSTANCE) {
+			return Object.class;
+		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).getBaseClass();
 		}
@@ -420,6 +423,9 @@ public class TypeUtils {
 		}
 
 		if (anOtherType == ExplicitNullType.INSTANCE) {
+			return true;
+		}
+		if (anOtherType == UndefinedType.INSTANCE) {
 			return true;
 		}
 
