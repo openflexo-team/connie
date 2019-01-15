@@ -575,6 +575,10 @@ public class TypeUtils {
 			LOGGER.warning("WildcardType not implemented yet !");
 		}
 
+		if (aType instanceof UndefinedType) {
+			return true;
+		}
+
 		try {
 			return org.apache.commons.lang3.reflect.TypeUtils.isAssignable(anOtherType, aType);
 		} catch (NullPointerException e) {
