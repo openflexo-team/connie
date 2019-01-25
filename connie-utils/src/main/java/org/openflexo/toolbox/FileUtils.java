@@ -162,6 +162,15 @@ public class FileUtils {
 		return newDir;
 	}
 
+	/**
+	 * Recursive copy of a resource in a destination file
+	 * 
+	 * @param src
+	 * @param dest
+	 * @param strategy
+	 * @return
+	 * @throws IOException
+	 */
 	public static File copyResourceToDir(Resource src, File dest, CopyStrategy strategy) throws IOException {
 		if (src instanceof FileResourceImpl && ((FileResourceImpl) src).getFile() != null) {
 			return copyDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
@@ -170,6 +179,10 @@ public class FileUtils {
 			for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"), false)) {
 				if (!rsc.isContainer()) {
 					copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
+				}
+				else {
+					File destinationDir = new File(dest, ((InJarResourceImpl) src).getName());
+					copyResourceToDir(rsc, new File(destinationDir, ((InJarResourceImpl) rsc).getName()), strategy);
 				}
 			}
 		}
@@ -185,47 +198,36 @@ public class FileUtils {
 		copyResourceToDir(locateResource, file, CopyStrategy.REPLACE);
 	}
 
+	/**
+	 * Copy contents of the supplied resource (asserting this resource is not a directory) to a new File located in supplied dest directory
+	 * and with the same name as supplied resource to copy
+	 * 
+	 * @param rsc
+	 * @param dest
+	 * @throws IOException
+	 */
 	private static void copyInJarResourceToDir(InJarResourceImpl rsc, File dest) throws IOException {
-		String rpath = rsc.getRelativePath();
-		File f = new File(dest, rpath.replace("/", PATH_SEP));
-		if (rpath.endsWith("/")) {
-			f.mkdir();
-		}
-		else {
-			f.getParentFile().mkdirs();
-			try {
-				f.createNewFile();
-				if (f.exists()) {
-					try (InputStream in = rsc.openInputStream(); OutputStream out = new FileOutputStream(f)) {
-						IOUtils.copy(in, out);
-					}
+		File f = new File(dest, rsc.getName());
+		f.getParentFile().mkdirs();
+		try {
+			f.createNewFile();
+			if (f.exists()) {
+				try (InputStream in = rsc.openInputStream(); OutputStream out = new FileOutputStream(f)) {
+					IOUtils.copy(in, out);
 				}
-				else {
-					LOGGER.severe("Unable to copy InJarResource: " + rsc);
-				}
-			} catch (IOException e) {
-				LOGGER.warning("Cannot create file " + f.getAbsolutePath());
-				throw e;
-			} catch (Exception e) {
-				LOGGER.warning("Cannot copy file " + f.getAbsolutePath());
-				throw e;
 			}
-
+			else {
+				LOGGER.severe("Unable to copy InJarResource: " + rsc);
+			}
+		} catch (IOException e) {
+			LOGGER.warning("Cannot create file " + f.getAbsolutePath());
+			throw e;
+		} catch (Exception e) {
+			LOGGER.warning("Cannot copy file " + f.getAbsolutePath());
+			throw e;
 		}
 	}
 
-	/*
-	private static void copyDirFromDirToDirIncludingCVSFiles(String srcName, File srcParentDir, File destDir) throws IOException {
-		copyDirToDirIncludingCVSFiles(new File(srcParentDir, srcName), destDir);
-	}
-	
-	private static File copyDirToDirIncludingCVSFiles(File src, File dest) throws IOException {
-		File newDir = new File(dest, src.getName());
-		newDir.mkdirs();
-		copyContentDirToDirIncludingCVSFiles(src, newDir);
-		return newDir;
-	}
-	*/
 	public static void copyContentDirToDir(File src, File dest) throws IOException {
 		copyContentDirToDir(src, dest, CopyStrategy.REPLACE);
 	}
