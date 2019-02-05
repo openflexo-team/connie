@@ -92,6 +92,9 @@ public class TypeUtils {
 		if (aType == UndefinedType.INSTANCE) {
 			return Object.class;
 		}
+		if (aType instanceof UnresolvedType) {
+			return Object.class;
+		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).getBaseClass();
 		}
@@ -426,6 +429,9 @@ public class TypeUtils {
 			return true;
 		}
 		if (anOtherType == UndefinedType.INSTANCE) {
+			return true;
+		}
+		if (anOtherType instanceof UnresolvedType) {
 			return true;
 		}
 

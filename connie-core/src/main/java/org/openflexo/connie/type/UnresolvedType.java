@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -36,60 +36,31 @@
  * or visit www.openflexo.org if you need additional information.
  * 
  */
+
 package org.openflexo.connie.type;
 
 import java.lang.reflect.Type;
 
 /**
- * All primitives managed by CONNIE-CORE
+ * Represent an unresolved Java type
  * 
  * @author sylvain
- *
+ * 
  */
-public enum PrimitiveType {
-	Boolean {
-		@Override
-		public Type getType() {
-			return java.lang.Boolean.TYPE;
-		}
-	},
-	String {
-		@Override
-		public Type getType() {
-			return String.class;
-		}
-	},
-	Date {
-		@Override
-		public Type getType() {
-			return java.util.Date.class;
-		}
-	},
-	Integer {
-		@Override
-		public Type getType() {
-			return java.lang.Integer.TYPE;
-		}
-	},
-	Long {
-		@Override
-		public Type getType() {
-			return java.lang.Long.TYPE;
-		}
-	},
-	Float {
-		@Override
-		public Type getType() {
-			return java.lang.Float.TYPE;
-		}
-	},
-	Double {
-		@Override
-		public Type getType() {
-			return java.lang.Double.TYPE;
-		}
-	};
+public class UnresolvedType implements Type {
 
-	public abstract Type getType();
+	private final String unresolvedTypeName;
 
+	public UnresolvedType(String unresolvedTypeName) {
+		this.unresolvedTypeName = unresolvedTypeName;
+	}
+
+	public String getUnresolvedTypeName() {
+		return unresolvedTypeName;
+	}
+
+	@Override
+	public String toString() {
+		return "UnresolvedType:" + unresolvedTypeName;
+	}
 }
