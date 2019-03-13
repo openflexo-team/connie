@@ -40,6 +40,7 @@ package org.openflexo.rm;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -163,4 +164,41 @@ public interface Resource {
 	public Resource locateResource(String relativePathName);
 
 	public boolean exists();
+
+	/**
+	 * Internal function to collect all the sub resources of a resource whose name end by a string
+	 * 
+	 * @param list
+	 *            the resulting list
+	 * @param directory
+	 *            the resource from where we search
+	 * @param extension
+	 *            the end of the name of the matched resources
+	 */
+	private static void addToList(final List<Object[]> list, final Resource directory, final String extension) {
+		for (Resource f : directory.getContents()) {
+			if (f.getURI().endsWith(extension)) {
+				final Object[] construcArgs = { f, f.getURI().substring(f.getURI().lastIndexOf("/") + 1) };
+				list.add(construcArgs);
+			}
+			else if (f.isContainer()) {
+				addToList(list, f, extension);
+			}
+		}
+	}
+
+	/**
+	 * Utility function to collect all the sub resources of a resource whose name end by a string
+	 * 
+	 * @param directory
+	 *            the resource from where we search
+	 * @param extension
+	 *            the end of the name of the matched resources
+	 * @return the resulting list
+	 */
+	public static List<Object[]> getMatchingResource(final Resource directory, final String extension) {
+		final List<Object[]> list = new ArrayList<>();
+		addToList(list, directory, extension);
+		return list;
+	}
 }
