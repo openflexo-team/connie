@@ -229,7 +229,7 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	 *            directory that the path should be relative to
 	 * @return a relative path. This always uses / as the separator character.
 	 */
-	private static String makePathRelativeTo(InJarResourceImpl inJarResource, InJarResourceImpl relativeToDir) {
+	public static String makePathRelativeTo(InJarResourceImpl inJarResource, InJarResourceImpl relativeToDir) {
 		String canonicalFile = inJarResource.getEntry().getName();
 		String canonicalRelTo = relativeToDir.getEntry().getName();
 		String[] filePathComponents = FileUtils.getPathComponents(canonicalFile);
