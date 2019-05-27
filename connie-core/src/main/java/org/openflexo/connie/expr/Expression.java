@@ -73,6 +73,13 @@ public abstract class Expression {
 		try {
 			return transform(new ExpressionEvaluator(context));
 		} catch (TypeMismatchException e) {
+			String expressionAsString;
+			try {
+				expressionAsString = toString();
+			} catch (Exception e2) {
+				expressionAsString = "<???>";
+			}
+			LOGGER.warning("Unexpected TypeMismatchException occured during evaluation of " + expressionAsString);
 			throw e;
 		} catch (NullReferenceException e) {
 			throw e;
@@ -83,7 +90,13 @@ public abstract class Expression {
 			}
 			throw new InvocationTargetException(e.getException());
 		} catch (TransformException e) {
-			LOGGER.warning("Unexpected exception occured during evaluation " + e);
+			String expressionAsString;
+			try {
+				expressionAsString = toString();
+			} catch (Exception e2) {
+				expressionAsString = "<???>";
+			}
+			LOGGER.warning("Unexpected exception occured during evaluation of " + expressionAsString);
 			e.printStackTrace();
 			return null;
 		}
