@@ -47,10 +47,26 @@ import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.ToolBox;
 
+/**
+ * A {@link BindingVariable} is the declaration of a value accessible through a {@link BindingModel} (and is defined in a
+ * {@link BindingModel}).<br>
+ * 
+ * This is the entry point of a {@link BindingValue} (a comma-separated path)
+ * 
+ * A {@link BindingVariable} has:
+ * <ul>
+ * <li>a name (see {@link #getVariableName()/#setVariableName(String)}) uniquely identifying the variable</li>
+ * <li>a type (see {@link #getType()/#setType(Type)}</li>
+ * </ul>
+ * 
+ * @author sylvain
+ *
+ */
 public class BindingVariable implements SettableBindingPathElement, HasPropertyChangeSupport {
 
 	@SuppressWarnings("unused")
