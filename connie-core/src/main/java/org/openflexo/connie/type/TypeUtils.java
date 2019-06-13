@@ -361,6 +361,10 @@ public class TypeUtils {
 		return false;
 	}
 
+	public static boolean isEnum(Type type) {
+		return (type instanceof Class && ((Class) type).isEnum());
+	}
+
 	public static EvaluationType kindOfType(Type type) {
 		if (isBoolean(type)) {
 			return EvaluationType.BOOLEAN;
