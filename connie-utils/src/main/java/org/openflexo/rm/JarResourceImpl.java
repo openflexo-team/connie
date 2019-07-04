@@ -53,6 +53,8 @@ import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.openflexo.toolbox.JarUtils;
+
 /**
  * 
  * Implementation of a {@link Resource} representing contents stored in a Jar file<br>
@@ -303,6 +305,21 @@ public class JarResourceImpl extends BasicResourceImpl {
 	@Override
 	public Resource locateResource(String relativePathName) {
 		return null;
+	}
+
+	/**
+	 * Compute the distance between this resource and supplied resource
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public int distance(Resource resource) {
+		if (resource instanceof InJarResourceImpl) {
+			return JarUtils.distance(getRootEntry(), ((InJarResourceImpl) resource));
+		}
+		LOGGER.warning("Could not compute distance for that resource: " + resource);
+		return 1000;
 	}
 
 	@Override

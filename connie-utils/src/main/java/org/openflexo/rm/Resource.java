@@ -155,6 +155,14 @@ public interface Resource {
 	public String computeRelativePath(Resource resource);
 
 	/**
+	 * Compute the distance between this resource and supplied resource
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public int distance(Resource resource);
+
+	/**
 	 * Retrieve resource using supplied relative path name, asserting this relative path name represent a relative path from this resource
 	 * 
 	 * @param relativePathName

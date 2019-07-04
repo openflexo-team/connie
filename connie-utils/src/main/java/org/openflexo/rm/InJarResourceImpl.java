@@ -48,7 +48,7 @@ import java.util.jar.JarEntry;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import org.openflexo.toolbox.FileUtils;
+import org.openflexo.toolbox.JarUtils;
 
 /**
  * a Resource located in a Jar, from the Classpath, that is not editable
@@ -214,39 +214,25 @@ public class InJarResourceImpl extends BasicResourceImpl {
 	@Override
 	public String computeRelativePath(Resource resource) {
 		if (resource instanceof InJarResourceImpl) {
-			return makePathRelativeTo(((InJarResourceImpl) resource), this);
+			return JarUtils.makePathRelativeTo(((InJarResourceImpl) resource), this);
 		}
 		LOGGER.warning("Could not compute relative path from a InJarResource for a non-jar resource: " + resource);
 		return resource.getURI();
 	}
 
 	/**
-	 * Finds a relative path to a given InJarResourceImpl, relative to a specified directory represented as a InJarResourceImpl
+	 * Compute the distance between this resource and supplied resource
 	 * 
-	 * @param inJarResource
-	 *            file that the relative path should resolve to
-	 * @param relativeToDir
-	 *            directory that the path should be relative to
-	 * @return a relative path. This always uses / as the separator character.
+	 * @param resource
+	 * @return
 	 */
-	public static String makePathRelativeTo(InJarResourceImpl inJarResource, InJarResourceImpl relativeToDir) {
-		String canonicalFile = inJarResource.getEntry().getName();
-		String canonicalRelTo = relativeToDir.getEntry().getName();
-		String[] filePathComponents = FileUtils.getPathComponents(canonicalFile);
-		String[] relToPathComponents = FileUtils.getPathComponents(canonicalRelTo);
-		int i = 0;
-		while (i < filePathComponents.length && i < relToPathComponents.length && filePathComponents[i].equals(relToPathComponents[i])) {
-			i++;
+	@Override
+	public int distance(Resource resource) {
+		if (resource instanceof InJarResourceImpl) {
+			return JarUtils.distance(this, ((InJarResourceImpl) resource));
 		}
-		StringBuffer buf = new StringBuffer();
-		for (int j = i; j < relToPathComponents.length; j++) {
-			buf.append("../");
-		}
-		for (int j = i; j < filePathComponents.length - 1; j++) {
-			buf.append(filePathComponents[j]).append('/');
-		}
-		buf.append(filePathComponents[filePathComponents.length - 1]);
-		return buf.toString();
+		LOGGER.warning("Could not compute distance for that resource: " + resource);
+		return 1000;
 	}
 
 	@Override

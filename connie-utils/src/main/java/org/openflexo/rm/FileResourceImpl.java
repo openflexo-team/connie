@@ -352,6 +352,21 @@ public class FileResourceImpl extends BasicResourceImpl {
 	}
 
 	/**
+	 * Compute the distance between this resource and supplied resource
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	@Override
+	public int distance(Resource resource) {
+		if (resource instanceof FileResourceImpl) {
+			return FileUtils.distance(getFile(), ((FileResourceImpl) resource).getFile());
+		}
+		LOGGER.warning("Could not compute distance from a File for a non-file resource: " + resource);
+		return 1000;
+	}
+
+	/**
 	 * Retrieve resource using supplied relative path name, asserting this relative path name represent a relative path from this resource
 	 * 
 	 * @param relativePathName
