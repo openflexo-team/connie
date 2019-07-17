@@ -68,7 +68,11 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 
 /**
- * @author bmangez
+ * 
+ * Some parts of this code comes from JOSM software, released with GPL licence.<br>
+ * see git://github.com/openstreetmap/josm.git
+ * 
+ * @author bmangez, sylvain
  */
 public class ToolBox {
 
