@@ -23,23 +23,23 @@ subprojects {
 	}
 
     //  apply plugin: 'checkstyle'
-    apply plugin: 'pmd'
-    apply plugin: 'findbugs'
+//    apply plugin: 'pmd'
+//    apply plugin: 'findbugs'
 
-    pmd { ignoreFailures = true }
-    findbugs { ignoreFailures = true }
+//    pmd { ignoreFailures = true }
+//    findbugs { ignoreFailures = true }
 
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled false
-            html.enabled true
-        }
-    }
+//     tasks.withType(FindBugs) {
+//         reports {
+//             xml.enabled false
+//             html.enabled true
+//         }
+//     }
 }
 
 task analyze() {
-    dependsOn subprojects.pmdMain
-    dependsOn subprojects.findbugsMain
+//    dependsOn subprojects.pmdMain
+//    dependsOn subprojects.findbugsMain
 }
 
 task gitPull(type: Exec) {
