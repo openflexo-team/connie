@@ -1,7 +1,9 @@
+ext.moduleName = 'org.openflexo.connie_parser'
+
 apply plugin: 'sablecc'
 
 dependencies {
-  compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+//  compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 }
 
 sablecc {
@@ -21,6 +23,17 @@ sourceSets {
    }
  }
 }
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+            '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
+}
+
 
 //println "Writing to $project.sourceSets.main.output.resourcesDir"
 //sourceSets.main.resources.
