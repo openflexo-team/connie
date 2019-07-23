@@ -44,7 +44,7 @@ import java.util.List;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.Variable;
 import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
+import org.openflexo.connie.parser.ParseException;
 
 import junit.framework.TestCase;
 

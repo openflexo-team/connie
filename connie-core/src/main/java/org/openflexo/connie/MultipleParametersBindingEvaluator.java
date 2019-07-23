@@ -53,7 +53,7 @@ import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
+import org.openflexo.connie.parser.ParseException;
 import org.openflexo.connie.java.JavaBindingFactory;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 

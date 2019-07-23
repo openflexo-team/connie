@@ -57,6 +57,7 @@ import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.DefaultExpressionPrettyPrinter;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.UnaryOperatorExpression;
+import org.openflexo.connie.parser.ParseException;
 
 import junit.framework.TestCase;
 

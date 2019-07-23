@@ -71,7 +71,7 @@ import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionVisitor;
 import org.openflexo.connie.expr.VisitorException;
 import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
+import org.openflexo.connie.parser.ParseException;
 import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.UndefinedType;
