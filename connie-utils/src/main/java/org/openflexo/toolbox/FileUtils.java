@@ -1,40 +1,40 @@
 /**
- * 
+ *
  * Copyright (c) 2013-2014, Openflexo
  * Copyright (c) 2011-2012, AgileBirds
- * 
- * This file is part of Flexoutils, a component of the software infrastructure 
+ *
+ * This file is part of Flexoutils, a component of the software infrastructure
  * developed at Openflexo.
- * 
- * 
- * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
- * version 1.1 of the License, or any later version ), which is available at 
+ *
+ *
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
  * later version), which is available at http://www.gnu.org/licenses/gpl.html .
- * 
+ *
  * You can redistribute it and/or modify under the terms of either of these licenses
- * 
+ *
  * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
  * must include the following additional permission.
  *
  *          Additional permission under GNU GPL version 3 section 7
  *
- *          If you modify this Program, or any covered work, by linking or 
- *          combining it with software containing parts covered by the terms 
+ *          If you modify this Program, or any covered work, by linking or
+ *          combining it with software containing parts covered by the terms
  *          of EPL 1.0, the licensors of this Program grant you additional permission
- *          to convey the resulting work. * 
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. 
+ *          to convey the resulting work. *
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * See http://www.openflexo.org/license.html for details.
- * 
- * 
+ *
+ *
  * Please contact Openflexo (openflexo-contacts@openflexo.org)
  * or visit www.openflexo.org if you need additional information.
- * 
+ *
  */
 
 package org.openflexo.toolbox;
@@ -69,8 +69,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.InJarResourceImpl;
@@ -78,7 +76,7 @@ import org.openflexo.rm.Resource;
 
 /**
  * Some File utilities
- * 
+ *
  * @author sylvain
  */
 public class FileUtils {
@@ -149,7 +147,7 @@ public class FileUtils {
 	public static void copyDirFromDirToDir(String srcName, File srcParentDir, File destDir, CopyStrategy stragtegy) throws IOException {
 		copyDirToDir(new File(srcParentDir, srcName), destDir);
 	}
-	
+
 	private static File copyDirToDir(File src, File dest) throws IOException {
 		return copyDirToDir(src, dest, CopyStrategy.REPLACE);
 	}
@@ -164,7 +162,7 @@ public class FileUtils {
 
 	/**
 	 * Recursive copy of a resource in a destination file
-	 * 
+	 *
 	 * @param src
 	 * @param dest
 	 * @param strategy
@@ -201,7 +199,7 @@ public class FileUtils {
 	/**
 	 * Copy contents of the supplied resource (asserting this resource is not a directory) to a new File located in supplied dest directory
 	 * and with the same name as supplied resource to copy
-	 * 
+	 *
 	 * @param rsc
 	 * @param dest
 	 * @throws IOException
@@ -213,7 +211,7 @@ public class FileUtils {
 			f.createNewFile();
 			if (f.exists()) {
 				try (InputStream in = rsc.openInputStream(); OutputStream out = new FileOutputStream(f)) {
-					IOUtils.copy(in, out);
+					copy(in, out);
 				}
 			}
 			else {
@@ -228,12 +226,33 @@ public class FileUtils {
 		}
 	}
 
+        /* Code taken from org/apache/commons/io/IOUtils.java to suppress a dependency */
+        /* begin */
+        private static final int EOF = -1;
+        private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+        private static long copy(final InputStream input, final OutputStream output) throws IOException {
+                long count = 0;
+                int n;
+                final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+                while (EOF != (n = input.read(buffer))) {
+                        output.write(buffer, 0, n);
+                        count += n;
+                }
+                return count;
+        }
+        /* end */
+
 	public static void copyContentDirToDir(File src, File dest) throws IOException {
 		copyContentDirToDir(src, dest, CopyStrategy.REPLACE);
 	}
 
 	public static void copyContentDirToDir(File src, File dest, CopyStrategy strategy) throws IOException {
-		copyContentDirToDir(src, dest, strategy, FileFilterUtils.trueFileFilter());
+		copyContentDirToDir(src, dest, strategy, new FileFilter() {
+                        @Override
+                        public boolean accept(final File file) {
+                            return true;
+                        }
+                    } );
 	}
 
 	public static void copyContentDirToDir(File src, File dest, CopyStrategy strategy, FileFilter fileFilter) throws IOException {
@@ -374,7 +393,7 @@ public class FileUtils {
 			return !"CVS".equals(name);
 		}
 	};
-	
+
 	private static final FilenameFilter JARFileNameFilter = new FilenameFilter() {
 		@Override
 		public boolean accept(File dir, String name) {
@@ -413,12 +432,12 @@ public class FileUtils {
 		File dest = new File(dir.getAbsolutePath() + "/" + fileName + "." + fileExtention);
 		saveToFile(dest, fileContent);
 	}
-	
+
 	private static void saveToFile(String fileName, String fileContent, File dir) throws IOException {
 		File dest = new File(dir.getAbsolutePath() + "/" + fileName);
 		saveToFile(dest, fileContent);
 	}
-	
+
 	private static void saveToFile(File file, InputStream is) throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
 		try {
@@ -503,7 +522,7 @@ public class FileUtils {
 
 	/**
 	 * Recursive computing of last modified date (deep check for contained files)
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 */
@@ -543,7 +562,7 @@ public class FileUtils {
 	private static boolean isStringValidForFileName(String s) {
 		return s != null && !UNACCEPTABLE_CHARS_PATTERN.matcher(s).find() && s.matches(VALID_FILE_NAME_REGEXP) && s.length() < 256;
 	}
-	
+
 	public static String removeNonASCIIAndPonctuationAndBadFileNameChars(String s) {
 		if (s.lastIndexOf(".") > 0) {
 			String s1 = s.substring(s.lastIndexOf(".") + 1);
@@ -552,10 +571,10 @@ public class FileUtils {
 			s1 = performCleanup(s1);
 			return s0 + "." + s1;
 		}
-	
+
 		return performCleanup(s);
 	}
-	
+
 	private static String performCleanup(String s) {
 		String result = StringUtils.convertAccents(s);
 		result = result.replaceAll(BAD_CHARACTERS_FOR_FILE_NAME_REG_EXP, "-");
@@ -622,7 +641,7 @@ public class FileUtils {
 
 	/**
 	 * Deletes a file and log a configurable warning if the deletion fails.
-	 * 
+	 *
 	 * @param file
 	 *            file to delete
 	 * @param warnMsg
@@ -665,14 +684,14 @@ public class FileUtils {
 
 	/**
 	 * Recursively deletes all the files of the specified directory. Directories themselves are not removed.
-	 * 
+	 *
 	 * @param dir
 	 */
 	/*
 	private static void deleteFilesInDir(File dir) {
 		deleteFilesInDir(dir, false);
 	}
-	
+
 	private static void deleteFilesInDir(File dir, boolean keepCVSTags) {
 		if (!dir.isDirectory()) {
 			System.err.println("Tried to delete a directory but file is not a directory: " + dir.getAbsolutePath());
@@ -682,7 +701,7 @@ public class FileUtils {
 			System.err.println("Tried to delete CVS directory but keepCVSTags flag is true!");
 			return;
 		}
-	
+
 		File[] f = dir.listFiles();
 		if (f == null) {
 			return;
@@ -754,7 +773,7 @@ public class FileUtils {
 				}
 			}
 		}
-		
+
 		private static void unmakeFileHidden(File f) {
 			if (ToolBox.isWindows()) {
 				try {
@@ -766,7 +785,7 @@ public class FileUtils {
 				}
 			}
 		}
-	
+
 	private static void makeFileSystem(File f) {
 		if (ToolBox.isWindows()) {
 			try {
@@ -778,7 +797,7 @@ public class FileUtils {
 			}
 		}
 	}
-	
+
 	private static void unmakeFileSystem(File f) {
 		if (ToolBox.isWindows()) {
 			try {
@@ -805,7 +824,7 @@ public class FileUtils {
 
 	/**
 	 * Finds a relative path to a given file, relative to a specified directory.
-	 * 
+	 *
 	 * @param file
 	 *            file that the relative path should resolve to
 	 * @param relativeToDir
@@ -834,7 +853,7 @@ public class FileUtils {
 
 	/**
 	 * Splits a path into components using the OS file separator character. This can be used on the results of File.getCanonicalPath().
-	 * 
+	 *
 	 * @param canonicalPath
 	 *            a file path that uses the OS file separator character
 	 * @return an array of strings, one for each component of the path
@@ -929,7 +948,7 @@ public class FileUtils {
 
 	/**
 	 * Creates an empty directory in the default temporary-file directory, using the given prefix and suffix to generate its name.
-	 * 
+	 *
 	 * @param prefix
 	 *            The prefix string to be used in generating the directory's name; must be at least three characters long
 	 * @param suffix
@@ -980,7 +999,7 @@ public class FileUtils {
 	 * attempt to forcibly copy the old file to the new file name, and then delete the old file. (This in appearance makes it look like a
 	 * file rename has occurred.) The method will also attempt to preserve the new file's modification times and permissions to equal that
 	 * of the original file's.
-	 * 
+	 *
 	 * @param source
 	 *            File
 	 * @param destination

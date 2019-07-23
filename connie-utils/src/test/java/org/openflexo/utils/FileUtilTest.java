@@ -1,40 +1,40 @@
 /**
- * 
- * Copyright (c) 2013-2014, Openflexo
+ *
+ * Copyright (c) 2013-2019, Openflexo
  * Copyright (c) 2011-2012, AgileBirds
- * 
- * This file is part of Flexoutils, a component of the software infrastructure 
+ *
+ * This file is part of Flexoutils, a component of the software infrastructure
  * developed at Openflexo.
- * 
- * 
- * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
- * version 1.1 of the License, or any later version ), which is available at 
+ *
+ *
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
  * later version), which is available at http://www.gnu.org/licenses/gpl.html .
- * 
+ *
  * You can redistribute it and/or modify under the terms of either of these licenses
- * 
+ *
  * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
  * must include the following additional permission.
  *
  *          Additional permission under GNU GPL version 3 section 7
  *
- *          If you modify this Program, or any covered work, by linking or 
- *          combining it with software containing parts covered by the terms 
+ *          If you modify this Program, or any covered work, by linking or
+ *          combining it with software containing parts covered by the terms
  *          of EPL 1.0, the licensors of this Program grant you additional permission
- *          to convey the resulting work. * 
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. 
+ *          to convey the resulting work. *
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * See http://www.openflexo.org/license.html for details.
- * 
- * 
+ *
+ *
  * Please contact Openflexo (openflexo-contacts@openflexo.org)
  * or visit www.openflexo.org if you need additional information.
- * 
+ *
  */
 
 package org.openflexo.utils;
@@ -42,44 +42,16 @@ package org.openflexo.utils;
 import java.io.File;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.openflexo.toolbox.FileUtils;
 import org.openflexo.toolbox.FileUtils.CopyStrategy;
 
-import junit.framework.TestCase;
+public class FileUtilTest {
 
-public class FileUtilTest extends TestCase {
-	/*
-		@Test
-		public void testInvalidFileName() throws Exception {
-			// First we check that invalid file names are indeed refused
-			String[] invalidNames = new String[] { "Coucou /Blabla", "Je suis: le meilleur", "<GnaGna>", "<", ">", "|", "?", "*", "ééé" };
-			for (int i = 0; i < invalidNames.length; i++) {
-				String string = invalidNames[i];
-				assertFalse("File name '" + string + "' should be invalid", FileUtils.isStringValidForFileName(string));
-			}
-			// Then we test that getting a valid file name returns indeed an acceptable name
-			for (int i = 0; i < invalidNames.length; i++) {
-				String string = FileUtils.getValidFileName(invalidNames[i]);
-				assertTrue("File name '" + string + "' should be invalid", FileUtils.isStringValidForFileName(string));
-			}
-			// Then we do some basic test on file names that should be valid. Beware that '/' MUST be accepted!!!!!
-			// See also org.openflexo.foundation.rm.FlexoFileResource.setResourceFile(FlexoProjectFile) and
-			// org.openflexo.foundation.utils.FlexoProjectFile.nameIsValid() (maybe others rely on this)
-			String[] validNames = new String[] { "Je suis-le meilleur", "Coucou/Blabla", "Some{Test}I made" };
-			for (int i = 0; i < validNames.length; i++) {
-				String string = validNames[i];
-				assertTrue("File name '" + string + "' should be valid", FileUtils.isStringValidForFileName(string));
-			}
-			assertTrue(FileUtils
-					.isStringValidForFileName("Documentation/ABSTRACTACTIVITY-NewProcess87-Call-the-customer-and-check-if-they-can-wait-until-engineer-is-in-office-Yes-log-comments---No--log-and-do-a-guard-recall--Drop-a-mail-to-2L-INF-team--with-ticket-details33893.png"));
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < 256; i++) {
-				sb.append("a");
-			}
-			assertFalse(FileUtils.isStringValidForFileName(sb.toString()));
-		}
-	*/
 	@Test
 	public void testFileNameFixing() {
 		String s256 = "012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
@@ -89,15 +61,6 @@ public class FileUtilTest extends TestCase {
 		assertEquals(valid, FileUtils.getValidFileName(invalid));
 	}
 
-	/*
-	@Test
-	public void testFileNameCleanUp() throws Exception {
-		String test1 = "ùneImageéèàç?;,ù%$ô.jpg";
-		String test2 = "éèàç?.;,ù%$ô";
-		assertTrue(FileUtils.removeNonASCIIAndPonctuationAndBadFileNameChars(test1).matches("[\\-\\w.]*"));
-		assertTrue(FileUtils.removeNonASCIIAndPonctuationAndBadFileNameChars(test2).matches("[\\-\\w.]*"));
-	}
-	*/
 	@Test
 	public void testCopyStrategy() throws Exception {
 		File tempDirectory = FileUtils.createTempDirectory("TestFileUtils", null);
@@ -110,41 +73,26 @@ public class FileUtilTest extends TestCase {
 		Date destFileModified = FileUtils.getDiskLastModifiedDate(destFile);
 		Thread.sleep(1001);// Let's wait 1s so that FS without ms don't screw up this test.
 		FileUtils.copyContentDirToDir(tempDirectory, destTempDirectory, CopyStrategy.IGNORE_EXISTING);
-		assertEquals("Last modified should not change when ignoring existing files", destFileModified,
-				FileUtils.getDiskLastModifiedDate(destFile));
+		assertEquals(destFileModified,
+				FileUtils.getDiskLastModifiedDate(destFile), "Last modified should not change when ignoring existing files");
 		Thread.sleep(1001);// Let's wait 1s so that FS without ms don't screw up this test.
 		FileUtils.copyContentDirToDir(tempDirectory, destTempDirectory, CopyStrategy.REPLACE_OLD_ONLY);
-		assertEquals("Last modified should not change when replacing old files only", destFileModified,
-				FileUtils.getDiskLastModifiedDate(destFile));
+		assertEquals(destFileModified,
+				FileUtils.getDiskLastModifiedDate(destFile), "Last modified should not change when replacing old files only");
 		Thread.sleep(1001);// Let's wait 1s so that FS without ms don't screw up this test.
 		FileUtils.copyContentDirToDir(tempDirectory, destTempDirectory, CopyStrategy.REPLACE);
-		assertFalse("Last modified should have changed when replacing files ",
-				destFileModified.equals(FileUtils.getDiskLastModifiedDate(destFile)));
+		assertFalse(destFileModified.equals(FileUtils.getDiskLastModifiedDate(destFile)), "Last modified should have changed when replacing files");
 		// Since we have replaced the file, we need to update its last modified
 		destFileModified = FileUtils.getDiskLastModifiedDate(destFile);
 		Thread.sleep(1001);// Let's wait 1s so that FS without ms don't screw up this test.
 		FileUtils.saveToFile(testFile, CONTENT);
-		assertFalse("Last modified should have changed after changing its content",
-				testFileLastModified.equals(FileUtils.getDiskLastModifiedDate(testFile)));
+		assertFalse(testFileLastModified.equals(FileUtils.getDiskLastModifiedDate(testFile)), "Last modified should have changed after changing its content");
 		testFileLastModified = FileUtils.getDiskLastModifiedDate(testFile);
 		FileUtils.copyContentDirToDir(tempDirectory, destTempDirectory, CopyStrategy.REPLACE_OLD_ONLY);
-		assertFalse("Last modified should have changed when replacing old files only with a newer file",
-				destFileModified.equals(FileUtils.getDiskLastModifiedDate(destFile)));
+		assertFalse(destFileModified.equals(FileUtils.getDiskLastModifiedDate(destFile)), "Last modified should have changed when replacing old files only with a newer file");
 		FileUtils.deleteDir(tempDirectory);
 		FileUtils.deleteDir(destTempDirectory);
 	}
-
-	/*
-	@Test
-	public void testLowerCaseExtension() {
-		assertEquals("coucou", FileUtils.lowerCaseExtension("coucou"));
-		assertEquals(null, FileUtils.lowerCaseExtension(null));
-		assertEquals("coucou.", FileUtils.lowerCaseExtension("coucou."));
-		assertEquals("coucou.jpg", FileUtils.lowerCaseExtension("coucou.JPG"));
-		assertEquals("cOucOu.jpg", FileUtils.lowerCaseExtension("cOucOu.jPg"));
-		assertEquals("COUcou.j", FileUtils.lowerCaseExtension("COUcou.J"));
-	}
-	*/
 
 	private static final String CONTENT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed accumsan tellus sit amet enim. In hac habitasse platea dictumst. Aliquam nec lacus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aenean pellentesque. Nam dui lorem, tempor quis, aliquet sed, porta ac, lacus. Aliquam erat volutpat. Maecenas lobortis scelerisque sapien. Nunc lorem augue, pulvinar sed, venenatis ac, venenatis at, quam. Curabitur rutrum. Sed vitae quam. Nulla nisi. Ut turpis. Vivamus rhoncus. Sed enim. Sed suscipit laoreet lacus. In hac habitasse platea dictumst.\r\n"
 			+ "\r\n"

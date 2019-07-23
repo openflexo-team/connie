@@ -1,4 +1,37 @@
+ext.moduleName = 'org.openflexo.connie_utils'
+
 dependencies {
-  testCompile project(':testutils')
-  compile group: 'commons-io', name: 'commons-io', version: '2.6'
+  //testCompile project(':testutils')
+    testCompile('org.junit.jupiter:junit-jupiter:5.4.0')
+
+}
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+            '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
+}
+
+compileTestJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+            '--module-path', classpath.asPath,
+            '--add-modules', 'org.junit.jupiter.api',
+            '--add-reads', "$moduleName=org.junit.jupiter.api",
+            '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+        ]
+        classpath = files()
+    }
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
 }
