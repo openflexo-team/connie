@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2014, Openflexo
+ * Copyright (c) 2019, Openflexo
  * 
  * This file is part of Flexoutils, a component of the software infrastructure 
  * developed at Openflexo.
@@ -38,40 +38,21 @@
 
 package org.openflexo.test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-public class OrderedRunner extends BlockJUnit4ClassRunner {
-
-	public OrderedRunner(Class<?> klass) throws InitializationError {
-		super(klass);
-	}
-
-	@Override
-	protected List<FrameworkMethod> computeTestMethods() {
-		List<FrameworkMethod> list = super.computeTestMethods();
-		List<FrameworkMethod> copy = new ArrayList<>(list);
-		Collections.sort(copy, new Comparator<FrameworkMethod>() {
-			@Override
-			public int compare(FrameworkMethod o1, FrameworkMethod o2) {
-				return getTestOrder(o1) - getTestOrder(o2);
-			}
-		});
-		return copy;
-	}
-
-	protected int getTestOrder(FrameworkMethod fm) {
-		TestOrder to = fm.getMethod().getAnnotation(TestOrder.class);
-		if (to != null) {
-			return to.value();
-		}
-		return -1;
-	}
-
+/**
+ * Use this annotation to define a test that only runs on Windows
+ *
+ * @author fdagnat
+ *
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@ExtendWith(OnlyOnWindowsCondition.class)
+public @interface OnlyOnWindows {
 }
