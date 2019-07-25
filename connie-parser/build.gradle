@@ -24,16 +24,5 @@ sourceSets {
  }
 }
 
-compileJava {
-    inputs.property("moduleName", moduleName)
-    doFirst {
-        options.compilerArgs = [
-            '--module-path', classpath.asPath,
-        ]
-        classpath = files()
-    }
-}
-
-
 //println "Writing to $project.sourceSets.main.output.resourcesDir"
 //sourceSets.main.resources.

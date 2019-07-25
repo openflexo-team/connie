@@ -1,15 +1,5 @@
 ext.moduleName = 'org.openflexo.testutils'
 
 dependencies {
-    compile('org.junit.jupiter:junit-jupiter:5.4.0')
-}
-
-compileJava {
-    inputs.property("moduleName", moduleName)
-    doFirst {
-        options.compilerArgs = [
-            '--module-path', classpath.asPath,
-        ]
-        classpath = files()
-    }
+    compile('org.junit.jupiter:junit-jupiter:5.5.1')
 }

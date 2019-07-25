@@ -6,17 +6,100 @@ buildscript {
     dependencies {
         classpath group: 'org.openflexo', name: 'buildplugin', version: '0.2'
         classpath group: 'org.openflexo', name: 'buildconfig', version: '2.0.0'
-        classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.0.5,)'
+        classpath 'org.anarres.gradle:gradle-sablecc-plugin:[1.1.0-SNAPSHOT,)'
     }
 }
 
 // The version must be initialized before the buildconfig plugin
 // The plugin will add '-SNAPSHOT' at the end by default or the content of the kind property
-version = "1.5"
+version = "1.6"
 apply plugin: 'org.openflexo.buildconfig'
 
 subprojects {
     apply plugin: 'java'
+    //apply plugin: 'java-library'
+
+    ext.moduleName = "${->project.moduleName}"
+    compileJava {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = [
+                '--module-path', classpath.asPath,
+            ]
+            classpath = files()
+        }
+    }
+
+    compileTestJava {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'org.junit.jupiter.api',
+                '--add-reads', "$moduleName=org.junit.jupiter.api",
+                '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+            ]
+            classpath = files()
+        }
+    }
+
+    test {
+	useJUnitPlatform()
+	testLogging {
+	    events "passed", "skipped", "failed"
+	}
+    }
+
+    jar {
+        inputs.property("moduleName", moduleName)
+        manifest {
+            attributes('Automatic-Module-Name': moduleName)
+        }
+    }
+
+    // To generate correct .classpath file for eclipse
+    apply plugin: 'eclipse'
+    eclipse {
+        classpath {
+            file {
+                whenMerged {
+                    entries.findAll { it.properties.kind.equals('src')  }.each {
+                        it.entryAttributes['module'] = 'true'
+                    }
+                    entries.findAll { it.properties.kind.equals('lib')  }.each { //&& !it.properties.path.contains("junit")
+                        it.entryAttributes['module'] = 'true'
+                    }
+                    entries.findAll { it.properties.path.startsWith('org.eclipse.jdt.launching.JRE_CONTAINER') }.each {
+                        it.entryAttributes['module'] = 'true'
+                    }
+                    def testSrc = entries.find { it.path == 'src/test/java' }
+                    if (testSrc != null) {
+                        testSrc.output = 'bin/test'
+                        testSrc.entryAttributes['test'] = 'true'
+                        testSrc.entryAttributes['optional'] = 'true'
+                        testSrc.entryAttributes['ignore_optional_problems'] = 'true'
+                    }
+
+                    def testRess = entries.find { it.path == 'src/test/resources' }
+                    if (testRess != null) {
+                        testRess.output = 'bin/test'
+                        testRess.entryAttributes['test'] = 'true'
+                        testRess.entryAttributes['optional'] = 'true'
+                        testRess.entryAttributes['ignore_optional_problems'] = 'true'
+                    }
+
+                    if (testSrc != null) {
+                        entries.forEach { entry ->
+			    def entryIn = { it.find { file(entry.path).equals(it) } }
+			    if (entry.kind == 'lib') {
+			        entry.entryAttributes['test'] = entryIn(configurations.testRuntimeClasspath) && !entryIn(configurations.runtimeClasspath)
+			    }
+	                }
+                    }
+                }
+            }
+        }
+}
 
     tasks.withType(Test) {
 		jvmArgs += ["-Djava.awt.headless=true"]

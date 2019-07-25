@@ -5,36 +5,11 @@ dependencies {
   compile project(':connie-parser')
   compile group: 'com.google.guava', name: 'guava', version: '28.0-jre'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
-    testCompile('org.junit.jupiter:junit-jupiter:5.4.0')
+  testCompile('org.junit.jupiter:junit-jupiter:5.4.0')
 }
 
-compileJava {
-    inputs.property("moduleName", moduleName)
-    doFirst {
-        options.compilerArgs = [
-            '--module-path', classpath.asPath,
-//            '--add-reads', "$moduleName=org.openflexo.connie_parser",
-        ]
-        classpath = files()
+eclipse {
+    classpath {
+        containers 'org.eclipse.jdt.junit.JUNIT_CONTAINER/5'
     }
-}
-
-compileTestJava {
-    inputs.property("moduleName", moduleName)
-    doFirst {
-        options.compilerArgs = [
-            '--module-path', classpath.asPath,
-            '--add-modules', 'org.junit.jupiter.api',
-            '--add-reads', "$moduleName=org.junit.jupiter.api",
-            '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-        ]
-        classpath = files()
-    }
-}
-
-test {
-	useJUnitPlatform()
-	testLogging {
-		events "passed", "skipped", "failed"
-	}
 }
