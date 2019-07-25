@@ -37,17 +37,16 @@
  *
  */
 
-package org.openflexo.utils;
+package org.openflexo.toolbox;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.openflexo.toolbox.FileUtils;
 import org.openflexo.toolbox.FileUtils.CopyStrategy;
 
 public class FileUtilTest {
@@ -73,23 +72,26 @@ public class FileUtilTest {
 		Date destFileModified = FileUtils.getDiskLastModifiedDate(destFile);
 		Thread.sleep(1001);// Let's wait 1s so that FS without ms don't screw up this test.
 		FileUtils.copyContentDirToDir(tempDirectory, destTempDirectory, CopyStrategy.IGNORE_EXISTING);
-		assertEquals(destFileModified,
-				FileUtils.getDiskLastModifiedDate(destFile), "Last modified should not change when ignoring existing files");
+		assertEquals(destFileModified, FileUtils.getDiskLastModifiedDate(destFile),
+				"Last modified should not change when ignoring existing files");
 		Thread.sleep(1001);// Let's wait 1s so that FS without ms don't screw up this test.
 		FileUtils.copyContentDirToDir(tempDirectory, destTempDirectory, CopyStrategy.REPLACE_OLD_ONLY);
-		assertEquals(destFileModified,
-				FileUtils.getDiskLastModifiedDate(destFile), "Last modified should not change when replacing old files only");
+		assertEquals(destFileModified, FileUtils.getDiskLastModifiedDate(destFile),
+				"Last modified should not change when replacing old files only");
 		Thread.sleep(1001);// Let's wait 1s so that FS without ms don't screw up this test.
 		FileUtils.copyContentDirToDir(tempDirectory, destTempDirectory, CopyStrategy.REPLACE);
-		assertFalse(destFileModified.equals(FileUtils.getDiskLastModifiedDate(destFile)), "Last modified should have changed when replacing files");
+		assertFalse(destFileModified.equals(FileUtils.getDiskLastModifiedDate(destFile)),
+				"Last modified should have changed when replacing files");
 		// Since we have replaced the file, we need to update its last modified
 		destFileModified = FileUtils.getDiskLastModifiedDate(destFile);
 		Thread.sleep(1001);// Let's wait 1s so that FS without ms don't screw up this test.
 		FileUtils.saveToFile(testFile, CONTENT);
-		assertFalse(testFileLastModified.equals(FileUtils.getDiskLastModifiedDate(testFile)), "Last modified should have changed after changing its content");
+		assertFalse(testFileLastModified.equals(FileUtils.getDiskLastModifiedDate(testFile)),
+				"Last modified should have changed after changing its content");
 		testFileLastModified = FileUtils.getDiskLastModifiedDate(testFile);
 		FileUtils.copyContentDirToDir(tempDirectory, destTempDirectory, CopyStrategy.REPLACE_OLD_ONLY);
-		assertFalse(destFileModified.equals(FileUtils.getDiskLastModifiedDate(destFile)), "Last modified should have changed when replacing old files only with a newer file");
+		assertFalse(destFileModified.equals(FileUtils.getDiskLastModifiedDate(destFile)),
+				"Last modified should have changed when replacing old files only with a newer file");
 		FileUtils.deleteDir(tempDirectory);
 		FileUtils.deleteDir(destTempDirectory);
 	}
