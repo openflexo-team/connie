@@ -147,7 +147,7 @@ public class FileUtils {
 	public static void copyDirFromDirToDir(String srcName, File srcParentDir, File destDir, CopyStrategy stragtegy) throws IOException {
 		copyDirToDir(new File(srcParentDir, srcName), destDir);
 	}
-
+	
 	private static File copyDirToDir(File src, File dest) throws IOException {
 		return copyDirToDir(src, dest, CopyStrategy.REPLACE);
 	}
@@ -226,21 +226,22 @@ public class FileUtils {
 		}
 	}
 
-        /* Code taken from org/apache/commons/io/IOUtils.java to suppress a dependency */
-        /* begin */
-        private static final int EOF = -1;
-        private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
-        private static long copy(final InputStream input, final OutputStream output) throws IOException {
-                long count = 0;
-                int n;
-                final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-                while (EOF != (n = input.read(buffer))) {
-                        output.write(buffer, 0, n);
-                        count += n;
-                }
-                return count;
-        }
-        /* end */
+	/* Code taken from org/apache/commons/io/IOUtils.java to suppress a dependency */
+	/* begin */
+	private static final int EOF = -1;
+	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
+	private static long copy(final InputStream input, final OutputStream output) throws IOException {
+		long count = 0;
+		int n;
+		final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+		while (EOF != (n = input.read(buffer))) {
+			output.write(buffer, 0, n);
+			count += n;
+		}
+		return count;
+	}
+	/* end */
 
 	public static void copyContentDirToDir(File src, File dest) throws IOException {
 		copyContentDirToDir(src, dest, CopyStrategy.REPLACE);
@@ -248,11 +249,11 @@ public class FileUtils {
 
 	public static void copyContentDirToDir(File src, File dest, CopyStrategy strategy) throws IOException {
 		copyContentDirToDir(src, dest, strategy, new FileFilter() {
-                        @Override
-                        public boolean accept(final File file) {
-                            return true;
-                        }
-                    } );
+			@Override
+			public boolean accept(final File file) {
+				return true;
+			}
+		});
 	}
 
 	public static void copyContentDirToDir(File src, File dest, CopyStrategy strategy, FileFilter fileFilter) throws IOException {
@@ -393,7 +394,7 @@ public class FileUtils {
 			return !"CVS".equals(name);
 		}
 	};
-
+	
 	private static final FilenameFilter JARFileNameFilter = new FilenameFilter() {
 		@Override
 		public boolean accept(File dir, String name) {
@@ -432,12 +433,12 @@ public class FileUtils {
 		File dest = new File(dir.getAbsolutePath() + "/" + fileName + "." + fileExtention);
 		saveToFile(dest, fileContent);
 	}
-
+	
 	private static void saveToFile(String fileName, String fileContent, File dir) throws IOException {
 		File dest = new File(dir.getAbsolutePath() + "/" + fileName);
 		saveToFile(dest, fileContent);
 	}
-
+	
 	private static void saveToFile(File file, InputStream is) throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
 		try {
@@ -562,7 +563,7 @@ public class FileUtils {
 	private static boolean isStringValidForFileName(String s) {
 		return s != null && !UNACCEPTABLE_CHARS_PATTERN.matcher(s).find() && s.matches(VALID_FILE_NAME_REGEXP) && s.length() < 256;
 	}
-
+	
 	public static String removeNonASCIIAndPonctuationAndBadFileNameChars(String s) {
 		if (s.lastIndexOf(".") > 0) {
 			String s1 = s.substring(s.lastIndexOf(".") + 1);
@@ -571,10 +572,10 @@ public class FileUtils {
 			s1 = performCleanup(s1);
 			return s0 + "." + s1;
 		}
-
+	
 		return performCleanup(s);
 	}
-
+	
 	private static String performCleanup(String s) {
 		String result = StringUtils.convertAccents(s);
 		result = result.replaceAll(BAD_CHARACTERS_FOR_FILE_NAME_REG_EXP, "-");
@@ -691,7 +692,7 @@ public class FileUtils {
 	private static void deleteFilesInDir(File dir) {
 		deleteFilesInDir(dir, false);
 	}
-
+	
 	private static void deleteFilesInDir(File dir, boolean keepCVSTags) {
 		if (!dir.isDirectory()) {
 			System.err.println("Tried to delete a directory but file is not a directory: " + dir.getAbsolutePath());
@@ -701,7 +702,7 @@ public class FileUtils {
 			System.err.println("Tried to delete CVS directory but keepCVSTags flag is true!");
 			return;
 		}
-
+	
 		File[] f = dir.listFiles();
 		if (f == null) {
 			return;
@@ -773,7 +774,7 @@ public class FileUtils {
 				}
 			}
 		}
-
+	
 		private static void unmakeFileHidden(File f) {
 			if (ToolBox.isWindows()) {
 				try {
@@ -785,7 +786,7 @@ public class FileUtils {
 				}
 			}
 		}
-
+	
 	private static void makeFileSystem(File f) {
 		if (ToolBox.isWindows()) {
 			try {
@@ -797,7 +798,7 @@ public class FileUtils {
 			}
 		}
 	}
-
+	
 	private static void unmakeFileSystem(File f) {
 		if (ToolBox.isWindows()) {
 			try {

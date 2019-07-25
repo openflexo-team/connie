@@ -1,40 +1,40 @@
 /**
- * 
+ *
  * Copyright (c) 2013-2014, Openflexo
  * Copyright (c) 2011-2012, AgileBirds
- * 
- * This file is part of Flexoutils, a component of the software infrastructure 
+ *
+ * This file is part of Flexoutils, a component of the software infrastructure
  * developed at Openflexo.
- * 
- * 
- * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
- * version 1.1 of the License, or any later version ), which is available at 
+ *
+ *
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
  * later version), which is available at http://www.gnu.org/licenses/gpl.html .
- * 
+ *
  * You can redistribute it and/or modify under the terms of either of these licenses
- * 
+ *
  * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
  * must include the following additional permission.
  *
  *          Additional permission under GNU GPL version 3 section 7
  *
- *          If you modify this Program, or any covered work, by linking or 
- *          combining it with software containing parts covered by the terms 
+ *          If you modify this Program, or any covered work, by linking or
+ *          combining it with software containing parts covered by the terms
  *          of EPL 1.0, the licensors of this Program grant you additional permission
- *          to convey the resulting work. * 
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. 
+ *          to convey the resulting work. *
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * See http://www.openflexo.org/license.html for details.
- * 
- * 
+ *
+ *
  * Please contact Openflexo (openflexo-contacts@openflexo.org)
  * or visit www.openflexo.org if you need additional information.
- * 
+ *
  */
 
 package org.openflexo.toolbox;
@@ -60,7 +60,7 @@ public class StringUtils {
 			}
 			return sw.toString();
 		}
-	
+
 	public static String reverse(String s) {
 		if (s == null) {
 			return s;
@@ -71,7 +71,7 @@ public class StringUtils {
 		}
 		return sb.toString();
 	}
-	
+
 	public static String circularOffset(String s, int offset) {
 		if (offset == 0) {
 			return s;
@@ -191,7 +191,7 @@ public class StringUtils {
 	public static String replaceNonMatchingPatterns(String string, String regexp, String replacement) {
 		return replaceNonMatchingPatterns(string, regexp, replacement, false);
 	}
-	
+
 	public static String replaceNonMatchingPatterns(String string, String regexp, String replacement, boolean replaceEachCharacter) {
 		if (string == null || string.length() == 0) {
 			return string;
@@ -221,7 +221,7 @@ public class StringUtils {
 		}
 		return sb.toString();
 	}
-	
+
 	public static Hashtable<String, String> getQueryFromURL(URL url) {
 		if (url == null || url.getQuery() == null) {
 			return new Hashtable<>();
@@ -316,7 +316,7 @@ public class StringUtils {
 			}
 			return sb.toString();
 		}
-	
+
 	public static String extractStringFromLineOld(String aString, int lineNb) {
 		StringBuffer returned = new StringBuffer();
 		int n = 0;
@@ -405,11 +405,11 @@ public class StringUtils {
 	/*
 		public static int indexOfEscapingJava(char searchedChar, String someJavaCode) {
 			int parentLevel = 0; // ()
-	int bracketLevel = 0; // [] 
-	int curlyLevel = 0; // {} 
-	
+	int bracketLevel = 0; // []
+	int curlyLevel = 0; // {}
+
 	int index = 0;
-	
+
 	while(index<someJavaCode.length())
 	{
 		char current = someJavaCode.charAt(index);
@@ -436,10 +436,10 @@ public class StringUtils {
 		}
 		index++;
 	}
-	
+
 	return-1;
 	}
-	
+
 	public static String replaceBreakLinesBy(String value, String replacement) {
 		return value.replaceAll("(\r\n|\r|\n|\n\r)", replacement);
 	}
@@ -447,9 +447,9 @@ public class StringUtils {
 	/**
 	 * Returns the specified string into "camel case" : each word are appended without white-spaces, but with a capital letter.<br>
 	 * Note that, except for the first word, if the whole word is uppercase, it will be converted into lowercase.
-	 * 
+	 *
 	 * Example : "Todo list" =&gt; "TodoList"; "DAO controller" =&gt; "daoController".
-	 * 
+	 *
 	 * @param firstUpper
 	 *            {@code true} if the first letter has to be uppercase.
 	 * @param string
@@ -507,7 +507,7 @@ public class StringUtils {
 	/**
 	 * Generate and return a String encoding a localized key, under the form my_returned_tokens, where token are extracted from initial
 	 * String while detecting case changes (from CamelCase to underscored_tokens)
-	 * 
+	 *
 	 * @param string
 	 * @return
 	 */
@@ -540,7 +540,7 @@ public class StringUtils {
 
 	/**
 	 * Sets the first char into upper case.
-	 * 
+	 *
 	 * @param value
 	 *            the string to transform.
 	 * @return the same string with the first char upper case.
@@ -558,7 +558,7 @@ public class StringUtils {
 	/**
 	 * Sets the first char into lower case.<br>
 	 * If the word has more than its first letter in upper case, the consecutive next upper case letters are also converted into lower case.
-	 * 
+	 *
 	 * @param value
 	 *            the string to convert.
 	 * @return the same string, with its first upper case letters converted into lower case.
@@ -590,7 +590,7 @@ public class StringUtils {
 
 	/**
 	 * Try to lookup the best enum value for a given string
-	 * 
+	 *
 	 * @param valueAsString
 	 * @param enumType
 	 * @param minimumMatchingChars
@@ -618,7 +618,7 @@ public class StringUtils {
 	/**
 	 * A quick and dirty method used to lookup a string in an other one<br>
 	 * Return number of matchings chars, asserting that first char lookup wil be the optimum (this is generally not the case)
-	 * 
+	 *
 	 * @param s1
 	 * @param s2
 	 * @return
@@ -649,7 +649,7 @@ public class StringUtils {
 	*/
 	/**
 	 * Returns true if the name have one of the given extensions. It supports multiple extensions ('.foo.bar').
-	 * 
+	 *
 	 * @param name
 	 *            the name to test
 	 * @param possibleExtensions
@@ -660,10 +660,10 @@ public class StringUtils {
 	/*
 	public static boolean hasExtension(String name, String... possibleExtensions) {
 		name = name.toLowerCase();
-	
+
 		int dotIndex = name.indexOf('.');
 		while (dotIndex >= 0) {
-	
+
 			String extension = name.substring(dotIndex);
 			for (String possibleExtension : possibleExtensions) {
 				if (possibleExtension.equals(extension))
@@ -724,7 +724,7 @@ public class StringUtils {
 
 	/**
 	 * An alternative to {@link String#trim()} to effectively remove all leading and trailing white characters, including Unicode ones.
-	 * 
+	 *
 	 * @param str
 	 *            The string to strip
 	 * @return <code>str</code>, without leading and trailing characters, according to {@link Character#isWhitespace(char)} and
@@ -743,7 +743,7 @@ public class StringUtils {
 
 	/**
 	 * An alternative to {@link String#trim()} to effectively remove all leading and trailing white characters, including Unicode ones.
-	 * 
+	 *
 	 * @param str
 	 *            The string to strip
 	 * @param skipChars
@@ -791,11 +791,11 @@ public class StringUtils {
 			if (skipChars == null || skipChars.isEmpty()) {
 				return DEFAULT_STRIP;
 			}
-	
+
 			char[] chars = new char[DEFAULT_STRIP.length + skipChars.length()];
 			System.arraycopy(DEFAULT_STRIP, 0, chars, 0, DEFAULT_STRIP.length);
 			skipChars.getChars(0, skipChars.length(), chars, DEFAULT_STRIP.length);
-	
+
 			return chars;
 		}
 	*/

@@ -1,40 +1,40 @@
 /**
- * 
+ *
  * Copyright (c) 2013-2014, Openflexo
  * Copyright (c) 2011-2012, AgileBirds
- * 
- * This file is part of Flexoutils, a component of the software infrastructure 
+ *
+ * This file is part of Flexoutils, a component of the software infrastructure
  * developed at Openflexo.
- * 
- * 
- * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
- * version 1.1 of the License, or any later version ), which is available at 
+ *
+ *
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
  * later version), which is available at http://www.gnu.org/licenses/gpl.html .
- * 
+ *
  * You can redistribute it and/or modify under the terms of either of these licenses
- * 
+ *
  * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
  * must include the following additional permission.
  *
  *          Additional permission under GNU GPL version 3 section 7
  *
- *          If you modify this Program, or any covered work, by linking or 
- *          combining it with software containing parts covered by the terms 
+ *          If you modify this Program, or any covered work, by linking or
+ *          combining it with software containing parts covered by the terms
  *          of EPL 1.0, the licensors of this Program grant you additional permission
- *          to convey the resulting work. * 
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. 
+ *          to convey the resulting work. *
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * See http://www.openflexo.org/license.html for details.
- * 
- * 
+ *
+ *
  * Please contact Openflexo (openflexo-contacts@openflexo.org)
  * or visit www.openflexo.org if you need additional information.
- * 
+ *
  */
 
 package org.openflexo.toolbox;
@@ -68,10 +68,10 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 
 /**
- * 
+ *
  * Some parts of this code comes from JOSM software, released with GPL licence.<br>
  * see git://github.com/openstreetmap/josm.git
- * 
+ *
  * @author bmangez, sylvain
  */
 public class ToolBox {
@@ -169,7 +169,7 @@ public class ToolBox {
 			if (aNewString == null || aNewString.equals("")) {
 				aNewString = "";
 			}
-	
+
 			String newString = "";
 			int replacedStringLength = replacedString.length();
 			int indexOfTag = message.indexOf(replacedString);
@@ -179,9 +179,9 @@ public class ToolBox {
 				indexOfTag = message.indexOf(replacedString);
 			}
 			return newString + message;
-	
+
 		}
-	
+
 	private static String capitalize(String s, boolean removeStartingUnderscore) {
 		if (s == null) {
 			return null;
@@ -199,13 +199,13 @@ public class ToolBox {
 			return s.toUpperCase();
 		}
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
-	
+
 	}
-	
+
 	private static String capitalize(String s) {
 		return capitalize(s, false);
 	}
-	
+
 		public static String uncapitalize(String s) {
 			if (s == null) {
 				return null;
@@ -215,10 +215,10 @@ public class ToolBox {
 			}
 			return s;
 		}
-	
+
 	public static String cleanStringForProcessDictionaryKey(String s) {
 		String cleanedString = getJavaName(s, false, true);
-	
+
 		if ("_".equals(cleanedString)) {
 			return null;
 		}
@@ -228,7 +228,7 @@ public class ToolBox {
 
 	/**
 	 * Replace ",',\n,\r by blank
-	 * 
+	 *
 	 * @param comment
 	 * @return a String to use in a javascript
 	 */
@@ -243,7 +243,7 @@ public class ToolBox {
 	*/
 
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @return a java name ( starts with a minuscule, and no blanks, dot,..., convert accentuated characters)
 	 */
@@ -271,7 +271,7 @@ public class ToolBox {
 		}
 		return name;
 	}
-	
+
 	public static String convertStringToJavascriptString(String stringToConvert) {
 		StringBuffer sb = new StringBuffer();
 		Matcher m = JAVASCRIPT_CHAR_TO_ESCAPE_IN_STRINGS_PATTERN.matcher(stringToConvert);
@@ -281,7 +281,7 @@ public class ToolBox {
 		m.appendTail(sb);
 		return sb.toString().replaceAll("[\n\r]", "\\\\n");
 	}
-	
+
 	public static String convertJavaStringToDBName(String javaString) {
 		int index = 0;
 		boolean lastCharIsUpperCase = true;
@@ -333,7 +333,7 @@ public class ToolBox {
 
 	/**
 	 * Getter method for the attribute pLATFORM
-	 * 
+	 *
 	 * @return Returns the pLATFORM.
 	 */
 
@@ -346,7 +346,7 @@ public class ToolBox {
 		public int status;
 		public String response;
 	}
-	
+
 	public static RequestResponse getRequest(Hashtable<String, String> param, String url) throws IOException {
 		StringBuffer paramsAsString = new StringBuffer("");
 		if (param != null && param.size() > 0) {
@@ -364,9 +364,9 @@ public class ToolBox {
 					paramsAsString.append("&");
 				}
 			}
-	
+
 		}
-	
+
 		// Create a URL for the desired page
 		URL local_url = new URL(url);
 		URLConnection conn = local_url.openConnection();
@@ -391,9 +391,9 @@ public class ToolBox {
 		response.response = reply.toString();
 		response.status = httpStatus;
 		return response;
-	
+
 	}
-	
+
 	public static RequestResponse postRequest(Hashtable<String, String> parameters, String url) {
 		try {
 			// Construct data
@@ -408,9 +408,9 @@ public class ToolBox {
 						data.append("&");
 					}
 				}
-	
+
 			}
-	
+
 			// Send data
 			URL local_url = new URL(url);
 			URLConnection conn = local_url.openConnection();
@@ -418,7 +418,7 @@ public class ToolBox {
 			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 			wr.write(data.toString());
 			wr.flush();
-	
+
 			// Get the response
 			int httpStatus = 200;
 			if (conn instanceof HttpURLConnection) {
@@ -443,9 +443,9 @@ public class ToolBox {
 			response.status = -1;
 			return response;
 		}
-	
+
 	}
-	
+
 	public static String serializeHashtable(Hashtable<String, String> params) {
 		StringBuffer buf = new StringBuffer();
 		String key = null;
@@ -459,7 +459,7 @@ public class ToolBox {
 		}
 		return buf.toString();
 	}
-	
+
 	private static String getWodKeyPath(String s) {
 		if (s == null) {
 			return null;
@@ -467,7 +467,7 @@ public class ToolBox {
 		s = ToolBox.replaceStringByStringInString("()", "", s);
 		return s;
 	}
-	
+
 	*/
 
 	public static String stackTraceAsAString(Throwable e) {
@@ -603,36 +603,36 @@ public class ToolBox {
 		}
 		return s.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'").replaceAll("\n", "\\\\n").replaceAll("\r", "");
 	}
-	
+
 	public static String escapeStringForProperties(String s) {
 		if (s == null) {
 			return null;
 		}
 		return s.replaceAll("#", "\\\\#").replaceAll("!", "\\\\!").replaceAll("=", "\\\\=").replaceAll(":", "\\\\:");
 	}
-	
+
 	public static String escapeStringForCsv(String s) {
 		if (s == null) {
 			return null;
 		}
 		return s.replaceAll("\"", "\"\"");
 	}
-	
+
 	public static String getCsvLine(List<String> list) {
 		List<List<String>> tmp = new ArrayList<>();
 		tmp.add(list);
 		return getCsv(tmp);
 	}
-	
+
 	public static String getCsv(List<List<String>> list) {
 		StringBuilder sb = new StringBuilder();
-	
+
 		boolean isFirstLine = true;
 		for (List<String> line : list) {
 			if (!isFirstLine) {
 				sb.append("\n");
 			}
-	
+
 			boolean isFirstValue = true;
 			for (String value : line) {
 				if (!isFirstValue) {
@@ -643,31 +643,31 @@ public class ToolBox {
 				}
 				isFirstValue = false;
 			}
-	
+
 			isFirstLine = false;
 		}
-	
+
 		return sb.toString();
 	}
-	
+
 	public static List<String> parseCsvLine(String csvLine) {
 		List<List<String>> result = parseCsv(csvLine);
-	
+
 		if (result.size() > 0) {
 			return result.get(0);
 		}
-	
+
 		return new ArrayList<>();
 	}
-	
+
 	public static List<List<String>> parseCsv(String csvString) {
 		csvString = csvString != null ? csvString.trim() : null;
 		List<List<String>> result = new ArrayList<>();
-	
+
 		if (StringUtils.isEmpty(csvString)) {
 			return result;
 		}
-	
+
 		char separator;
 		if (csvString.indexOf(';') == -1 && csvString.indexOf(',') > -1) {
 			separator = ',';
@@ -675,7 +675,7 @@ public class ToolBox {
 		else {
 			separator = ';';
 		}
-	
+
 		List<String> line = new ArrayList<>();
 		StringBuilder currentValue = new StringBuilder();
 		boolean isInsideQuote = false;
@@ -706,24 +706,24 @@ public class ToolBox {
 				}
 				continue;
 			}
-	
+
 			if (!wasInsideQuote) {
 				currentValue.append(csvString.charAt(i));
 			}
 		}
-	
+
 		if (result.size() > 0 || currentValue.length() > 0 || line.size() > 0) {
 			line.add(currentValue.toString());
 			result.add(line);
 		}
-	
+
 		return result;
 	}
 	*/
 
 	/**
 	 * Returns the owner frame if not null, or the hidden frame otherwise.
-	 * 
+	 *
 	 * @param owner
 	 * @return
 	 */
@@ -731,7 +731,7 @@ public class ToolBox {
 	public static Frame getFrame(Frame owner) {
 		return owner == null ? Frame.getFrames().length > 0 ? Frame.getFrames()[0] : JOptionPane.getRootFrame() : owner;
 	}
-	
+
 	public static String getMd5Hash(String toHash) throws NoSuchAlgorithmException {
 		if (toHash == null) {
 			return null;
@@ -740,12 +740,12 @@ public class ToolBox {
 		byte dataBytes[] = toHash.getBytes();
 		md5.update(dataBytes);
 		byte digest[] = md5.digest();
-	
+
 		StringBuffer hashString = new StringBuffer();
-	
+
 		for (int i = 0; i < digest.length; ++i) {
 			String hex = Integer.toHexString(digest[i]);
-	
+
 			if (hex.length() == 1) {
 				hashString.append('0');
 				hashString.append(hex.charAt(hex.length() - 1));
@@ -890,7 +890,7 @@ public class ToolBox {
 
 	/**
 	 * Returns the Java version as an int value.
-	 * 
+	 *
 	 * @return the Java version as an int value (8, 9, etc.)
 	 * @since 12130
 	 */
@@ -913,7 +913,7 @@ public class ToolBox {
 
 	/**
 	 * Returns the Java update as an int value.
-	 * 
+	 *
 	 * @return the Java update as an int value (121, 131, etc.)
 	 * @since 12217
 	 */
@@ -943,7 +943,7 @@ public class ToolBox {
 	*/
 	/**
 	 * Returns the Java build number as an int value.
-	 * 
+	 *
 	 * @return the Java build number as an int value (0, 1, etc.)
 	 * @since 12217
 	 */
@@ -963,7 +963,7 @@ public class ToolBox {
 	*/
 	/**
 	 * Returns the JRE expiration date.
-	 * 
+	 *
 	 * @return the JRE expiration date, or null
 	 * @since 12219
 	 */
@@ -991,7 +991,7 @@ public class ToolBox {
 	*/
 	/**
 	 * Returns the latest version of Java, from Oracle website.
-	 * 
+	 *
 	 * @return the latest version of Java, from Oracle website
 	 * @since 12219
 	 */
@@ -1005,12 +1005,12 @@ public class ToolBox {
 			Logging.error(e);
 		}
 	return null;
-	
+
 	}*/
 
 	/**
 	 * Updates a given system property.
-	 * 
+	 *
 	 * @param key
 	 *            The property key
 	 * @param value
@@ -1057,7 +1057,7 @@ public class ToolBox {
 
 	/**
 	 * Sets {@code AccessibleObject}(s) accessible.
-	 * 
+	 *
 	 * @param objects
 	 *            objects
 	 * @see AccessibleObject#setAccessible

@@ -1,39 +1,39 @@
 /**
- * 
+ *
  * Copyright (c) 2014, Openflexo
- * 
- * This file is part of Flexoutils, a component of the software infrastructure 
+ *
+ * This file is part of Flexoutils, a component of the software infrastructure
  * developed at Openflexo.
- * 
- * 
- * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
- * version 1.1 of the License, or any later version ), which is available at 
+ *
+ *
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
  * later version), which is available at http://www.gnu.org/licenses/gpl.html .
- * 
+ *
  * You can redistribute it and/or modify under the terms of either of these licenses
- * 
+ *
  * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
  * must include the following additional permission.
  *
  *          Additional permission under GNU GPL version 3 section 7
  *
- *          If you modify this Program, or any covered work, by linking or 
- *          combining it with software containing parts covered by the terms 
+ *          If you modify this Program, or any covered work, by linking or
+ *          combining it with software containing parts covered by the terms
  *          of EPL 1.0, the licensors of this Program grant you additional permission
- *          to convey the resulting work. * 
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. 
+ *          to convey the resulting work. *
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * See http://www.openflexo.org/license.html for details.
- * 
- * 
+ *
+ *
  * Please contact Openflexo (openflexo-contacts@openflexo.org)
  * or visit www.openflexo.org if you need additional information.
- * 
+ *
  */
 
 package org.openflexo.rm;
@@ -49,7 +49,7 @@ import java.util.logging.Logger;
 
 /**
  * @author xtof
- * 
+ *
  *         A Flexible Resource Locator that enables to get resources from multiple locations using delegates A single deletage per
  *         ResourceDelegateLocator implementing class is authorized
  */
@@ -75,7 +75,7 @@ final public class ResourceLocator {
 	/**
 	 * Locate a Resource<br>
 	 * Return first found resource according to the order in which all {@link ResourceLocatorDelegate} are registered.
-	 * 
+	 *
 	 * @param relativePath
 	 * @return
 	 */
@@ -106,7 +106,7 @@ final public class ResourceLocator {
 	 * Locate some {@link Resource}<br>
 	 * Return list of Resource of the first {@link ResourceLocatorDelegate} which contains at least one {@link Resource} matching supplied
 	 * relative path. Computation is performed according to the order in which all {@link ResourceLocatorDelegate} are registered.
-	 * 
+	 *
 	 * @param relativePath
 	 * @return
 	 */
@@ -143,7 +143,7 @@ final public class ResourceLocator {
 
 	/**
 	 * Explicitly locate a Resource in the source code (when source code is available)<br>
-	 * 
+	 *
 	 * @param resource
 	 * @param regexFilter
 	 *            an additional regexFilter for disambiguation when several resources are found.
@@ -156,7 +156,7 @@ final public class ResourceLocator {
 
 	/**
 	 * Explicitly locate a Resource in the source code (when source code is available)<br>
-	 * 
+	 *
 	 * @param resource
 	 * @return
 	 */
@@ -170,7 +170,7 @@ final public class ResourceLocator {
 
 	/**
 	 * Explicitely locate a Resource in the source code (when source code is available)<br>
-	 * 
+	 *
 	 * @param relativePath
 	 * @return
 	 */
@@ -180,7 +180,7 @@ final public class ResourceLocator {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param delegate
 	 */
 
@@ -191,11 +191,11 @@ final public class ResourceLocator {
 	}
 
 	/**
-	 * 
+	 *
 	 * Adds a new delegate at the end of the list, if a delegate of the given class is already present in delegates list. If a delegate of
 	 * that class already exists, moves it to the end of the list if its the same reference as the one already in the delegates list else,
 	 * does nothing
-	 * 
+	 *
 	 * @param newdelegate
 	 */
 	static public void appendDelegate(ResourceLocatorDelegate newdelegate) {
@@ -219,11 +219,11 @@ final public class ResourceLocator {
 	}
 
 	/**
-	 * 
+	 *
 	 * Adds a new delegate at the beginning of the list, if a delegate of the given class is already present in delegates list. If a
 	 * delegate of that classe already exists, moves it to the beginning of the list if its the same reference as the one already in the
 	 * delegates list else, does nothing
-	 * 
+	 *
 	 * @param newdelegate
 	 */
 	static public void prependDelegate(ResourceLocatorDelegate newdelegate) {
@@ -248,7 +248,7 @@ final public class ResourceLocator {
 
 	/**
 	 * get the singleton instance
-	 * 
+	 *
 	 * @return FlexibleResourceLocator
 	 */
 

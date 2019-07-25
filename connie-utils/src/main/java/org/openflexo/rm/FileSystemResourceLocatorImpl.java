@@ -1,39 +1,39 @@
 /**
- * 
+ *
  * Copyright (c) 2014, Openflexo
- * 
- * This file is part of Flexoutils, a component of the software infrastructure 
+ *
+ * This file is part of Flexoutils, a component of the software infrastructure
  * developed at Openflexo.
- * 
- * 
- * Openflexo is dual-licensed under the European Union Public License (EUPL, either 
- * version 1.1 of the License, or any later version ), which is available at 
+ *
+ *
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * and the GNU General Public License (GPL, either version 3 of the License, or any 
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
  * later version), which is available at http://www.gnu.org/licenses/gpl.html .
- * 
+ *
  * You can redistribute it and/or modify under the terms of either of these licenses
- * 
+ *
  * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
  * must include the following additional permission.
  *
  *          Additional permission under GNU GPL version 3 section 7
  *
- *          If you modify this Program, or any covered work, by linking or 
- *          combining it with software containing parts covered by the terms 
+ *          If you modify this Program, or any covered work, by linking or
+ *          combining it with software containing parts covered by the terms
  *          of EPL 1.0, the licensors of this Program grant you additional permission
- *          to convey the resulting work. * 
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
- * PARTICULAR PURPOSE. 
+ *          to convey the resulting work. *
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
  *
  * See http://www.openflexo.org/license.html for details.
- * 
- * 
+ *
+ *
  * Please contact Openflexo (openflexo-contacts@openflexo.org)
  * or visit www.openflexo.org if you need additional information.
- * 
+ *
  */
 
 package org.openflexo.rm;
@@ -56,7 +56,7 @@ import org.openflexo.rm.BasicResourceImpl.LocatorNotFoundException;
 
 /**
  * @author bmangez, sylvain, xtof
- * 
+ *
  *         <B>Locates resources on the FileSystem, given a collection of directories to search in</B>
  */
 
@@ -86,11 +86,11 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	/*@Override
 	public FileResourceImpl locateResource(String relativePathName) {
-	
+
 		if (relativePathName == null) {
 			return null;
 		}
-	
+
 		try {
 			File file = locateFile(relativePathName);
 			if (file != null && file.exists()) {
@@ -109,13 +109,13 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 			e.printStackTrace();
 		}
 		return null;
-	
+
 	}*/
 
 	/**
-	 * 
+	 *
 	 * Retrieve resource representing supplied file
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 */
@@ -180,24 +180,24 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	/* Unused
 	private File locateFile(String relativePathName) {
-	
+
 		File file = new File(relativePathName);
-	
+
 		if (file.exists()) {
 			// A absolute file path
 			return file;
 		}
 		else {
-	
+
 			file = locateFile(relativePathName, false);
-	
+
 			if (file == null) {
 				file = locateFile(relativePathName, true);
 			}
 			if (file != null) {
 				return file;
 			}
-	
+
 		}
 		return null;
 	}
@@ -238,13 +238,13 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	/*
 	@Override
-	public List<Resource> listResources(Resource dir,Pattern pattern) {	
+	public List<Resource> listResources(Resource dir,Pattern pattern) {
 		URL url = null;
 		if (dir != null & dir instanceof BasicResourceImpl){
 			url = ((BasicResourceImpl) dir).getURL();
 		}
 		if (url != null ){
-	
+
 			if (dir instanceof FileResourceImpl){
 				File file = ((FileResourceImpl) dir).getFile();
 				if (file == null){
@@ -257,49 +257,49 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					}
 				}
 				if (file != null && file.isDirectory()){
-	
+
 					List<Resource> retval = new ArrayList<Resource>();
-	
+
 					FileSystemResourceLocatorImpl.addDirectoryContent(this,file,pattern,retval);
-	
+
 					return retval;
 				}
 			}
 			else {
 				logger.warning("Found a File that is not hold by a FileResourceLocation");
-			}	
+			}
 		}
 		return java.util.Collections.emptyList();
-	
-	
+
+
 	}
 	 */
 	/*
 	@Override
 	public List<Resource> listAllResources(Resource dir) {
-	
+
 		if (dir instanceof FileResourceImpl && dir.isContainer()){
 			File file = ((FileResourceImpl) dir).getFile();
-	
+
 			if (file != null){
-	
+
 				return (List<Resource>) dir.getContents();
 			}
 		}
 		else {
 			logger.warning("Found a File that is not hold by a FileResourceLocation");
-		}	
+		}
 		return java.util.Collections.emptyList();
-	
+
 	}
 	 */
 	/*
-	
+
 	@Override
 	public InputStream retrieveResourceAsInputStream(Resource rl) {
-	
+
 		if (rl != null){
-	
+
 			URL url = rl.getURL();
 			try {
 				if (rl instanceof FileResourceImpl){
@@ -320,7 +320,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		}
 		return null;
 	}
-	
+
 	 */
 
 	@Override
@@ -359,7 +359,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	 * If many files match supplied relativePathName, then return the one which is most narrow of current dir, relative to the distance
 	 * between files as defined in {@link FileUtils}.<br>
 	 * Please use locateAllFiles(String) to get the list of all files matching supplied relativePathName
-	 * 
+	 *
 	 * @param relativePathName
 	 * @return
 	 */
@@ -380,7 +380,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	 * If many files match supplied relativePathName, then return the one which is most narrow of current dir, relative to the distance
 	 * between files as defined in {@link FileUtils}.<br>
 	 * Please use locateAllFiles(String) to get the list of all files matching supplied relativePathName
-	 * 
+	 *
 	 * @param relativePathName
 	 * @return
 	 */
@@ -390,12 +390,12 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	private File locateFile(String relativePathName, boolean lenient) {
 		final File workingDirectory = new File(System.getProperty("user.dir"));
 		List<File> found = locateAllFiles(relativePathName, lenient);
-	
+
 		if (found.size() == 1) {
 			// System.out.println("Returning " + found.get(0));
 			return found.get(0);
 		}
-	
+
 		// In this case, the response is ambiguous
 		if (found.size() > 1) {
 			// We try to privilegiate files that are closer to working dir
@@ -404,16 +404,16 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				public int compare(File o1, File o2) {
 					return FileUtils.distance(workingDirectory, o1) - FileUtils.distance(workingDirectory, o2);
 				}
-	
+
 			});
 			// System.out.println("Ambiguous files: ");
 			// for (File f : found) {
 			// System.out.println("> Found: distance=" + FileUtils.distance(workingDirectory, f) + " " + f);
 			// }
 			return found.get(0);
-	
+
 		}
-	
+
 		// if (LOGGER.isLoggable(Level.WARNING)) {
 		// LOGGER.warning("Could not locate resource " + relativePathName);
 		// Thread.dumpStack();
@@ -424,7 +424,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	*/
 	/**
 	 * Locate and returns the list of all files matching supplied relativePathName
-	 * 
+	 *
 	 * @param relativePathName
 	 * @return
 	 */
@@ -440,7 +440,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				if (absoluteFile.getCanonicalFile().getName().equals(absoluteFile.getName()) || lenient) {
 					found.add(absoluteFile);
 				}
-			} catch (IOException e1) {}
+			} catch (IOException e1) {
+			}
 		}
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
@@ -452,7 +453,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					if (nextTry.getCanonicalFile().getName().equals(nextTry.getName()) || lenient) {
 						found.add(nextTry);
 					}
-				} catch (IOException e1) {}
+				} catch (IOException e1) {
+				}
 			}
 		}
 
@@ -472,7 +474,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	private static File getPreferredResourcePath() {
 		return preferredResourcePath;
 	}
-	
+
 	private void resetFlexoResourceLocation(File newLocation) {
 		preferredResourcePath = newLocation;
 		directoriesSearchOrder = null;
@@ -480,7 +482,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 	private void init() {
 		getDirectoriesSearchOrder();
 	}
-	
+
 	*/
 
 	public void printDirectoriesSearchOrder(PrintStream out) {
@@ -533,7 +535,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	/**
 	 * Prepends a directory to the list of path to be searched
-	 * 
+	 *
 	 * @param path
 	 */
 	public synchronized void prependToDirectories(String path) {
@@ -549,7 +551,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	/**
 	 * Appends a directory to the list of path to be searched
-	 * 
+	 *
 	 * @param path
 	 */
 	public synchronized void appendToDirectories(String path) {
@@ -565,7 +567,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 
 	/**
 	 * Append a directory to the file system resource locator, create the locator if it doesn't exist
-	 * 
+	 *
 	 * @param path
 	 */
 	public static void appendDirectoryToFileSystemResourceLocator(String path) {
