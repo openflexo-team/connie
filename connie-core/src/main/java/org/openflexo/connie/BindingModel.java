@@ -42,12 +42,19 @@ package org.openflexo.connie;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.openflexo.connie.DataBinding.BindingDefinitionType;
+import org.openflexo.connie.binding.FunctionPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
+import org.openflexo.toolbox.StringUtils;
 
 /**
  * A {@link BindingModel} represents a set of {@link BindingVariable}, which are variables accessible in the context of which this binding
@@ -287,6 +294,75 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Compute and return a list of String which are possible starting string values for a BindingValue accessing to supplied type
+	 * 
+	 * @param string
+	 * @param ob
+	 * @return
+	 */
+	public List<String> getBindingValueAvailableCompletion(String startingString, Type desiredType, Bindable bindable) {
+
+		// System.out.println("On cherche les binding qui commencent par " + startingString + " de type " + desiredType);
+
+		List<String> returned = new ArrayList<>();
+
+		if (StringUtils.isEmpty(startingString.trim())) {
+			for (BindingVariable bindingVariable : getAccessibleBindingVariables()) {
+				returned.add(bindingVariable.getVariableName());
+			}
+			return returned;
+		}
+
+		if (startingString.contains(".")) {
+			String startBindingValue = startingString.substring(0, startingString.lastIndexOf("."));
+			String toBeCompleted = startingString.substring(startingString.lastIndexOf(".") + 1);
+
+			DataBinding<?> db = new DataBinding<Object>(startBindingValue, bindable, Object.class, BindingDefinitionType.GET);
+			if (db.isValid() && db.isBindingValue()) {
+				BindingFactory factory = bindable.getBindingFactory();
+				BindingValue bv = (BindingValue) db.getExpression();
+				IBindingPathElement lastElement = bv.getLastBindingPathElement();
+				if (StringUtils.isEmpty(toBeCompleted.trim())) {
+					for (SimplePathElement simplePathElement : factory.getAccessibleSimplePathElements(lastElement)) {
+						returned.add(startBindingValue + "." + simplePathElement.getPropertyName());
+					}
+					for (FunctionPathElement functionPathElement : factory.getAccessibleFunctionPathElements(lastElement)) {
+						returned.add(startBindingValue + "." + functionPathElement.getLabel());
+					}
+				}
+				else {
+					for (SimplePathElement simplePathElement : factory.getAccessibleSimplePathElements(lastElement)) {
+						if (simplePathElement.getPropertyName().startsWith(toBeCompleted)) {
+							returned.add(startBindingValue + "." + simplePathElement.getPropertyName());
+						}
+					}
+					for (FunctionPathElement functionPathElement : factory.getAccessibleFunctionPathElements(lastElement)) {
+						if (functionPathElement.getLabel().startsWith(toBeCompleted)) {
+							returned.add(startBindingValue + "." + functionPathElement.getLabel());
+						}
+					}
+				}
+				return returned;
+			}
+			else {
+				// System.out.println("Not valid: " + db + " : " + db.invalidBindingReason());
+				return returned;
+			}
+
+		}
+
+		else {
+			for (BindingVariable bindingVariable : getAccessibleBindingVariables()) {
+				if (bindingVariable.getVariableName().startsWith(startingString)) {
+					returned.add(bindingVariable.getVariableName());
+				}
+			}
+			return returned;
+		}
+
 	}
 
 }
