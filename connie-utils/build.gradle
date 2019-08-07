@@ -1,12 +1,1 @@
 ext.moduleName = 'org.openflexo.connie_utils'
-
-dependencies {
-  // comment below before eclipse import or update
-    testCompile('org.junit.jupiter:junit-jupiter:5.4.0')
-}
-
-eclipse {
-    classpath {
-        containers 'org.eclipse.jdt.junit.JUNIT_CONTAINER/5'
-    }
-}

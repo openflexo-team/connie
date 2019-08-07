@@ -5,12 +5,4 @@ dependencies {
   compile project(':connie-parser')
   compile group: 'com.google.guava', name: 'guava', version: '28.0-jre'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
-  // comment below before eclipse import or update
-  testCompile('org.junit.jupiter:junit-jupiter:5.4.0')
-}
-
-eclipse {
-    classpath {
-        containers 'org.eclipse.jdt.junit.JUNIT_CONTAINER/5'
-    }
 }
