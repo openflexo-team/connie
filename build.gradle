@@ -48,6 +48,16 @@ subprojects {
 	testLogging {
 	    events "passed", "skipped", "failed"
 	}
+
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                println "\nTest result: ${result.resultType}"
+                println "Test summary: ${result.testCount} tests, " +
+                    "${result.successfulTestCount} succeeded, " +
+                    "${result.failedTestCount} failed, " +
+                    "${result.skippedTestCount} skipped"
+            }
+        }
     }
 
     jar {
@@ -123,9 +133,4 @@ subprojects {
 task analyze() {
 //    dependsOn subprojects.pmdMain
 //    dependsOn subprojects.findbugsMain
-}
-
-task gitPull(type: Exec) {
-    description 'Pulls git.'
-    commandLine "git", "pull"
 }
