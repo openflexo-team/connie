@@ -110,9 +110,8 @@ public interface CustomType extends Type {
 
 	/**
 	 * Called when a {@link CustomType} is not fully resolved<br>
-	 * The factory must be supplied and should reference required context
 	 * 
 	 * @param factory
 	 */
-	public void resolve(CustomTypeFactory<?> factory);
+	public void resolve(/*CustomTypeFactory<?> factory*/);
 }

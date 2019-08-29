@@ -61,6 +61,6 @@ public class UnresolvedType implements Type {
 
 	@Override
 	public String toString() {
-		return "UnresolvedType:" + unresolvedTypeName;
+		return unresolvedTypeName;
 	}
 }
