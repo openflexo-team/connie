@@ -24,20 +24,20 @@ subprojects {
 
     //  apply plugin: 'checkstyle'
     apply plugin: 'pmd'
-    apply plugin: 'findbugs'
+//    apply plugin: 'findbugs'
 
     pmd { ignoreFailures = true }
-    findbugs { ignoreFailures = true }
+//    findbugs { ignoreFailures = true }
 
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled false
-            html.enabled true
-        }
-    }
+//     tasks.withType(FindBugs) {
+//         reports {
+//             xml.enabled false
+//             html.enabled true
+//         }
+//     }
 }
 
 task analyze() {
     dependsOn subprojects.pmdMain
-    dependsOn subprojects.findbugsMain
+//    dependsOn subprojects.findbugsMain
 }
