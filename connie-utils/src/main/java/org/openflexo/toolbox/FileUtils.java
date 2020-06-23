@@ -60,8 +60,11 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -474,6 +477,31 @@ public class FileUtils {
 		return fileName.replaceAll("\\\\", "/");
 	}
 	*/
+
+	public static List<File> listContainedFiles(File directory, boolean recursive) {
+		return listContainedFiles(directory, recursive, null);
+	}
+
+	public static List<File> listContainedFiles(File directory, boolean recursive, FileFilter fileFilter) {
+		if (!directory.isDirectory() || !directory.exists()) {
+			return Collections.emptyList();
+		}
+		List<File> returned = new ArrayList<>();
+		returned.add(directory);
+		File[] files = directory.listFiles();
+		for (File file : files) {
+			if (fileFilter != null && !fileFilter.accept(file)) {
+				continue;
+			}
+			returned.add(file);
+			if (file.isDirectory()) {
+				if (recursive) {
+					returned.addAll(listContainedFiles(file, recursive, fileFilter));
+				}
+			}
+		}
+		return returned;
+	}
 
 	public static int countFilesInDirectory(File directory, boolean recursive) {
 		return countFilesInDirectory(directory, recursive, null);

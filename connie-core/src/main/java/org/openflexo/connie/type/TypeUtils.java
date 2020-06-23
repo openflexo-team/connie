@@ -660,6 +660,30 @@ public class TypeUtils {
 		if (aType == null) {
 			return "null";
 		}
+		if (aType.equals(Boolean.TYPE)) {
+			return "boolean";
+		}
+		if (aType.equals(Character.TYPE)) {
+			return "char";
+		}
+		if (aType.equals(Byte.TYPE)) {
+			return "byte";
+		}
+		if (aType.equals(Short.TYPE)) {
+			return "short";
+		}
+		if (aType.equals(Integer.TYPE)) {
+			return "int";
+		}
+		if (aType.equals(Long.TYPE)) {
+			return "long";
+		}
+		if (aType.equals(Float.TYPE)) {
+			return "float";
+		}
+		if (aType.equals(Double.TYPE)) {
+			return "double";
+		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).simpleRepresentation();
 		}

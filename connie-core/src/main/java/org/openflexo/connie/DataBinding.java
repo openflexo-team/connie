@@ -909,12 +909,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				if (!isParsingExpression) {
+					notifiedBindingModelStructurallyModified();
+				}
 			}
 			else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				if (!isParsingExpression) {
+					notifiedBindingModelStructurallyModified();
+				}
 			}
 			/*else if (evt.getPropertyName().equals(BindingVariable.DELETED_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
@@ -970,6 +974,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// System.out.println(">>>> STOP notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
 	}
 
+	private boolean isParsingExpression = false;
+
 	/**
 	 * This method is called whenever we need to parse the binding using string encoded in unparsedBinding field.<br>
 	 * Syntaxic checking of the binding is performed here. This phase is followed by the semantics analysis as performed by
@@ -984,6 +990,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		if (getOwner() != null) {
 			try {
+				isParsingExpression = true;
 				expression = ExpressionParser.parse(getUnparsedBinding());
 			} catch (ParseException e) {
 				// parse error
@@ -995,6 +1002,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			analyseExpressionAfterParsing();
 		}
 		checkBindingModelListening();
+		isParsingExpression = false;
 		needsParsing = false;
 
 		/*if (!isValid()) {
