@@ -72,7 +72,7 @@ public class JavaGrammar implements ExpressionGrammar {
 		return ALL_SUPPORTED_UNARY_OPERATORS;
 	}
 
-	public String getSymbol(UnaryOperator operator) throws OperatorNotSupportedException {
+	private static String getSymbol(UnaryOperator operator) throws OperatorNotSupportedException {
 		if (operator == BooleanUnaryOperator.NOT) {
 			return "!";
 		}
@@ -109,11 +109,11 @@ public class JavaGrammar implements ExpressionGrammar {
 		throw new OperatorNotSupportedException();
 	}
 
-	public String getAlternativeSymbol(UnaryOperator operator) throws OperatorNotSupportedException {
+	private static String getAlternativeSymbol(UnaryOperator operator) {
 		return null;
 	}
 
-	public String getSymbol(BinaryOperator operator) throws OperatorNotSupportedException {
+	private static String getSymbol(BinaryOperator operator) throws OperatorNotSupportedException {
 		if (operator == BooleanBinaryOperator.AND) {
 			return "&&";
 		}
@@ -156,7 +156,7 @@ public class JavaGrammar implements ExpressionGrammar {
 		throw new OperatorNotSupportedException();
 	}
 
-	public String getAlternativeSymbol(BinaryOperator operator) throws OperatorNotSupportedException {
+	private static String getAlternativeSymbol(BinaryOperator operator) {
 		if (operator == BooleanBinaryOperator.AND) {
 			return "&";
 		}

@@ -133,7 +133,6 @@ public class TestExpressionParser extends TestCase {
 			}
 			return null;
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			fail();
 			return null;
 		}
@@ -428,6 +427,11 @@ public class TestExpressionParser extends TestCase {
 
 	public void testCast() {
 		tryToParse("($java.lang.Integer)2", "($java.lang.Integer)2", CastExpression.class, null, false);
+	}
+
+	public void testCast2() {
+		tryToParse("($java.lang.Integer)2+(($java.lang.Integer)2+($java.lang.Double)2)",
+				"(($java.lang.Integer)2 + (($java.lang.Integer)2 + ($java.lang.Double)2))", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testInvalidCast() {

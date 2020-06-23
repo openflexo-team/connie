@@ -496,29 +496,6 @@ public class KeyValueProperty extends Observable {
 		return returned;
 	}
 
-	/*
-	 * public Object getBindingValue(Object target, BindingEvaluationContext
-	 * context) { return KeyValueDecoder.objectForKey(target, getName()); }
-	 * 
-	 * public void setBindingValue(Object value, Object target,
-	 * BindingEvaluationContext context) { KeyValueCoder.setObjectForKey(target,
-	 * value, getName()); }
-	 */
-
-	/*
-	 * public static void main(String[] args) { KeyValueProperty kv1 = new
-	 * KeyValueProperty(Object.class, "class", false); System.out.println("kv1="
-	 * + kv1); KeyValueProperty kv2 = new
-	 * KeyValueProperty(KeyValueProperty.class, "class", false);
-	 * System.out.println("kv2=" + kv2); KeyValueProperty kv3 = new
-	 * KeyValueProperty(TestInterface.class, "class", false);
-	 * System.out.println("kv3=" + kv3); }
-	 * 
-	 * public static interface TestInterface {
-	 * 
-	 * }
-	 */
-
 	/**
 	 * Returns Object value, asserting that this property represents an Object property (if not, throw an InvalidKeyValuePropertyException
 	 * exception)
@@ -577,16 +554,6 @@ public class KeyValueProperty extends Observable {
 	 * @exception InvalidKeyValuePropertyException
 	 *                if an error occurs
 	 */
-
-	/**
-	 * Sets Object value, asserting that this property represents an Object property (if not, throw an InvalidKeyValuePropertyException
-	 * exception)
-	 * 
-	 * @param aValue
-	 *            an {@code Object} value
-	 * @exception InvalidKeyValuePropertyException
-	 *                if an error occurs
-	 */
 	public void setObjectValue(Object aValue, Object object) {
 		if (object == null) {
 			throw new InvalidKeyValuePropertyException("No object is specified");
@@ -623,9 +590,9 @@ public class KeyValueProperty extends Observable {
 				}
 			}
 			else {
-				throw new InvalidKeyValuePropertyException("InvalidKeyValuePropertyException: " + ": method " + setMethod.getName()
-						+ " called for object " + currentObject + (currentObject != null ? " of " + currentObject.getClass().getName() : "")
-						+ " instead of " + declaringClass.getName());
+				throw new InvalidKeyValuePropertyException(
+						"InvalidKeyValuePropertyException: " + ": method " + setMethod.getName() + " called for object " + currentObject
+								+ currentObject.getClass().getName() + " instead of " + declaringClass.getName());
 			}
 		}
 		else {

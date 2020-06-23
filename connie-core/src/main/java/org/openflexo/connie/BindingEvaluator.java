@@ -179,23 +179,4 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 
 		return evaluateBinding(bindingPath, object, object.getClass());
 	}
-
-	public static void main(String[] args) {
-		String thisIsATest = "Hello world, this is a test";
-		try {
-			System.out.println(evaluateBinding("toString", thisIsATest));
-			System.out.println(evaluateBinding("toString()", thisIsATest));
-			System.out.println(evaluateBinding("toString()+' hash='+object.hashCode()", thisIsATest));
-			System.out.println(evaluateBinding("substring(6,11)", thisIsATest));
-			System.out.println(evaluateBinding("substring(3,length()-2)+' hash='+hashCode()", thisIsATest));
-		} catch (InvalidKeyValuePropertyException e) {
-			e.printStackTrace();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-		} catch (NullReferenceException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
 }

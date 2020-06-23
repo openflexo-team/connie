@@ -42,7 +42,7 @@ package org.openflexo.connie.type;
 import java.lang.reflect.Type;
 
 /**
- * This interface is implemented by all classes representing a type.
+ * Represent a type infered from a null expression
  * 
  * @author sylvain
  * 

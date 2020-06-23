@@ -73,19 +73,30 @@ public abstract class Expression {
 		try {
 			return transform(new ExpressionEvaluator(context));
 		} catch (TypeMismatchException e) {
+			String expressionAsString;
+			try {
+				expressionAsString = toString();
+			} catch (Exception e2) {
+				expressionAsString = "<???>";
+			}
+			LOGGER.warning("Unexpected TypeMismatchException occured during evaluation of " + expressionAsString);
 			throw e;
 		} catch (NullReferenceException e) {
 			throw e;
 		} catch (InvocationTargetTransformException e) {
-			// LOGGER.warning("Unexpected exception occured during evaluation " + e.getException());
-			// e.getException().printStackTrace();
-			if (e.getException() instanceof InvocationTargetException) {
-				// e.getException().getTargetException().printStackTrace();
+			// LOGGER.warning("Unexpected exception occurred during evaluation " + e.getException());
+			if (e.getException() != null) {
 				throw e.getException();
 			}
 			throw new InvocationTargetException(e.getException());
 		} catch (TransformException e) {
-			LOGGER.warning("Unexpected exception occured during evaluation " + e);
+			String expressionAsString;
+			try {
+				expressionAsString = toString();
+			} catch (Exception e2) {
+				expressionAsString = "<???>";
+			}
+			LOGGER.warning("Unexpected exception occured during evaluation of " + expressionAsString);
 			e.printStackTrace();
 			return null;
 		}
@@ -132,9 +143,7 @@ public abstract class Expression {
 	 * @return
 	 */
 	public List<BindingValue> getAllBindingValues() {
-
 		final List<BindingValue> returned = new ArrayList<>();
-
 		try {
 			visit(new ExpressionVisitor() {
 				@Override
@@ -147,7 +156,6 @@ public abstract class Expression {
 		} catch (VisitorException e) {
 			LOGGER.warning("Unexpected " + e);
 		}
-
 		return returned;
 	}
 
@@ -157,9 +165,7 @@ public abstract class Expression {
 	 * @return
 	 */
 	public List<BindingVariable> getAllBindingVariables() {
-
 		final List<BindingVariable> returned = new ArrayList<>();
-
 		try {
 			visit(new ExpressionVisitor() {
 				@Override
@@ -172,7 +178,6 @@ public abstract class Expression {
 		} catch (VisitorException e) {
 			LOGGER.warning("Unexpected " + e);
 		}
-
 		return returned;
 	}
 
@@ -213,35 +218,6 @@ public abstract class Expression {
 	 */
 	protected abstract Vector<Expression> getChilds();
 
-	/**
-	 * Evaluate expression considering some declared variables
-	 * 
-	 * @param variables
-	 * @return
-	 * @throws TypeMismatchException
-	 */
-	/*@Deprecated
-	public Expression evaluate(final Hashtable<String, ?> variables) throws TypeMismatchException {
-		try {
-			Expression resolvedExpression = transform(new ExpressionTransformer() {
-				@Override
-				public Expression performTransformation(Expression e) throws TransformException {
-					if (e instanceof BindingValue) {
-						BindingValue bv = (BindingValue) e;
-						if (bv.isSimpleVariable() && variables.get(bv.toString()) != null) {
-							return Constant.makeConstant(variables.get(bv.toString()));
-						}
-					}
-					return e;
-				}
-			});
-			return resolvedExpression.evaluate(null);
-		} catch (TransformException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}*/
-
 	@Override
 	public int hashCode() {
 		return (getClass().getName() + "@[" + toString() + "]").hashCode();
@@ -250,5 +226,4 @@ public abstract class Expression {
 	public abstract boolean isSettable();
 
 	public abstract Type getAccessedType();
-
 }

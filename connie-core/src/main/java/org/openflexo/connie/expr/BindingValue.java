@@ -46,6 +46,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -566,7 +567,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				if (bpe instanceof FunctionPathElement) {
 					for (FunctionArgument arg : ((FunctionPathElement) bpe).getArguments()) {
 						DataBinding<?> parameter = ((FunctionPathElement) bpe).getParameter(arg);
-						if (parameter.getExpression() != null) {
+						if (parameter != null && parameter.getExpression() != null) {
 							visitor.visit(parameter.getExpression());
 						}
 					}
@@ -624,9 +625,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		bindingVariable = null;
 	}
 
+	/* Unused
 	private boolean needsAnalysing() {
 		return needsAnalysing;
 	}
+	 */
 
 	public boolean isValid(DataBinding<?> dataBinding) {
 
@@ -983,19 +986,24 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				return null;
 			}
 			IBindingPathElement previous = getBindingVariable();
-			for (BindingPathElement e : getBindingPath()) {
-				if (current == null) {
-					if (!e.supportsNullValues()) {
-						throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + getParsedBindingPath()
-								+ ": null occured when evaluating " + previous);
+			try {
+				for (BindingPathElement e : getBindingPath()) {
+					if (current == null) {
+						if (!e.supportsNullValues()) {
+							throw new NullReferenceException("NullReferenceException while evaluating BindingValue "
+									+ getParsedBindingPath() + ": null occured when evaluating " + previous);
+						}
 					}
+					try {
+						current = e.getBindingValue(current, context);
+					} catch (InvalidKeyValuePropertyException e2) {
+						throw new InvocationTargetTransformException(new InvocationTargetException(e2));
+					}
+					previous = e;
 				}
-				try {
-					current = e.getBindingValue(current, context);
-				} catch (InvalidKeyValuePropertyException e2) {
-					throw new InvocationTargetTransformException(new InvocationTargetException(e2));
-				}
-				previous = e;
+			} catch (ConcurrentModificationException e) {
+				System.err.println("ConcurrentModificationException while executing BindingValue "+this);
+				return null;
 			}
 			// System.out.println(" > return "+current);
 			return current;
@@ -1121,13 +1129,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	 * @return
 	 */
 	public List<TargetObject> getTargetObjects(BindingEvaluationContext context) {
-
 		boolean debug = false;
-
-		/*if (toString().equals("data.validationModel.getGenericRuleSet(ClassesTable.selected).rules")) {
-			debug = true;
-		}*/
-
 		if (debug) {
 			LOGGER.info("Computing getTargetObjects() for " + toString() + " with BindingEvaluationContext=" + context);
 		}
@@ -1166,19 +1168,15 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			} catch (TypeMismatchException e) {
 				current = null;
 				// We silently escape...
-				// e.printStackTrace();
 			} catch (NullReferenceException e) {
 				current = null;
 				// We silently escape...
-				// e.printStackTrace();
 			} catch (InvocationTargetTransformException e) {
 				current = null;
 				// We silently escape...
-				// e.printStackTrace();
 			} catch (InvalidKeyValuePropertyException e) {
 				current = null;
 				// We silently escape...
-				// e.printStackTrace();
 			}
 			if (element instanceof FunctionPathElement) {
 				FunctionPathElement functionPathElement = (FunctionPathElement) element;
@@ -1191,23 +1189,19 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				return returned;
 			}
 		}
-		/*} catch (InvalidObjectSpecificationException e) {
-			logger.info("While computing getTargetObjects() for " + this + " with evaluation context=" + context);
-			logger.warning(e.getMessage());
-			return returned;
-		}*/
-
 		return returned;
 	}
 
-	private void debug() {
-		System.out.println("DEBUG BindingValue");
-		System.out.println("parsedBindingPath=" + parsedBindingPath);
-		System.out.println("bvar=" + bindingVariable);
-		System.out.println("bpath=" + bindingPath);
-		System.out.println("needsAnalysing=" + needsAnalysing);
-		System.out.println("analysingSuccessfull=" + analysingSuccessfull);
-	}
+	/* Unused
+		private void debug() {
+			System.out.println("DEBUG BindingValue");
+			System.out.println("parsedBindingPath=" + parsedBindingPath);
+			System.out.println("bvar=" + bindingVariable);
+			System.out.println("bpath=" + bindingPath);
+			System.out.println("needsAnalysing=" + needsAnalysing);
+			System.out.println("analysingSuccessfull=" + analysingSuccessfull);
+		}
+	 */
 
 	public static abstract class AbstractBindingPathElement {
 		public abstract String getSerializationRepresentation();

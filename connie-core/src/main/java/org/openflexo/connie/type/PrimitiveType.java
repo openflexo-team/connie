@@ -50,7 +50,7 @@ public enum PrimitiveType {
 	Boolean {
 		@Override
 		public Type getType() {
-			return Boolean.class;
+			return java.lang.Boolean.TYPE;
 		}
 	},
 	String {
@@ -68,25 +68,25 @@ public enum PrimitiveType {
 	Integer {
 		@Override
 		public Type getType() {
-			return Integer.class;
+			return java.lang.Integer.TYPE;
 		}
 	},
 	Long {
 		@Override
 		public Type getType() {
-			return Long.class;
+			return java.lang.Long.TYPE;
 		}
 	},
 	Float {
 		@Override
 		public Type getType() {
-			return Float.class;
+			return java.lang.Float.TYPE;
 		}
 	},
 	Double {
 		@Override
 		public Type getType() {
-			return Double.class;
+			return java.lang.Double.TYPE;
 		}
 	};
 

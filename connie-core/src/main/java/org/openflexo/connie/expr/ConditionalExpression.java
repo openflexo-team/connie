@@ -100,9 +100,15 @@ public class ConditionalExpression extends Expression {
 
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
-		condition.visit(visitor);
-		thenExpression.visit(visitor);
-		elseExpression.visit(visitor);
+		if (condition != null) {
+			condition.visit(visitor);
+		}
+		if (thenExpression != null) {
+			thenExpression.visit(visitor);
+		}
+		if (elseExpression != null) {
+			elseExpression.visit(visitor);
+		}
 		visitor.visit(this);
 	}
 

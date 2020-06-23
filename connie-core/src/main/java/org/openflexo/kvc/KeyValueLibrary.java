@@ -260,9 +260,11 @@ public class KeyValueLibrary {
 			Method[] declaredMethods = theClass.getDeclaredMethods();
 			for (int i = 0; i < declaredMethods.length; i++) {
 				Method method = declaredMethods[i];
-				MethodDefinition methodDefinition = MethodDefinition.getMethodDefinition(declaringType, method);
-				if (!excludedSignatures.contains(methodDefinition.getSignature())) {
-					returned.add(methodDefinition);
+				if (!Modifier.isStatic(method.getModifiers())) {
+					MethodDefinition methodDefinition = MethodDefinition.getMethodDefinition(declaringType, method);
+					if (!excludedSignatures.contains(methodDefinition.getSignature())) {
+						returned.add(methodDefinition);
+					}
 				}
 			}
 		} catch (NoClassDefFoundError e) {

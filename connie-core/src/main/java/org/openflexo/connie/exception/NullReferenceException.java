@@ -41,16 +41,13 @@ package org.openflexo.connie.exception;
 
 import org.openflexo.connie.expr.Operator;
 
-
 /**
  * This exception is thrown when an operator is invoked with ambiguous semantic, in a null operand context
  * 
  * @author sylvain
  * 
  */
-@SuppressWarnings("serial")
 public class NullReferenceException extends TransformException {
-
 	private Operator concernedOperator;
 
 	private final String message;
@@ -80,17 +77,11 @@ public class NullReferenceException extends TransformException {
 	public String getLocalizedMessage() {
 		if (concernedOperator != null) {
 			return "NullReferenceException on operator " + concernedOperator.getLocalizedName();
-			// return FlexoLocalization.localizedForKeyWithParams("NullReferenceException_on_operator_($0)",
-			// concernedOperator.getLocalizedName());
-		} else {
-			return getMessage();
 		}
+		return getMessage();
 	}
 
 	public String getHTMLLocalizedMessage() {
 		return "<html>" + getLocalizedMessage() + "</html>";
-		// return FlexoLocalization.localizedForKeyWithParams("<html>NullReferenceException_on_operator_($0)</html>",
-		// concernedOperator.getLocalizedName());
 	}
-
 }

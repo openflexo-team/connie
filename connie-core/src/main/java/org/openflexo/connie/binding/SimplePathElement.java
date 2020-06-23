@@ -98,20 +98,6 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	}
 
 	@Override
-	public final void delete() {
-		if (isActivated()) {
-			desactivate();
-		}
-		if (pcSupport != null) {
-			getPropertyChangeSupport().firePropertyChange(DELETED_PROPERTY, this, null);
-			pcSupport = null;
-		}
-		parent = null;
-		propertyName = null;
-		type = null;
-	}
-
-	@Override
 	public IBindingPathElement getParent() {
 		return parent;
 	}

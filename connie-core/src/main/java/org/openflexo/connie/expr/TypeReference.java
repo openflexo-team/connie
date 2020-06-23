@@ -41,7 +41,6 @@ package org.openflexo.connie.expr;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.openflexo.connie.type.ParameterizedTypeImpl;
 
@@ -52,9 +51,6 @@ import org.openflexo.connie.type.ParameterizedTypeImpl;
  * 
  */
 public class TypeReference {
-
-	private static final Logger LOGGER = Logger.getLogger(TypeReference.class.getPackage().getName());
-
 	private String baseType;
 	private List<TypeReference> parameters;
 	private Type type;
@@ -100,8 +96,6 @@ public class TypeReference {
 			}
 			return new ParameterizedTypeImpl(baseClass, params);
 		}
-		else {
-			return baseClass;
-		}
+		return baseClass;
 	}
 }

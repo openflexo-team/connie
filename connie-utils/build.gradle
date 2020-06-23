@@ -1,0 +1,4 @@
+dependencies {
+  testCompile project(':testutils')
+  compile group: 'commons-io', name: 'commons-io', version: '2.6'
+}

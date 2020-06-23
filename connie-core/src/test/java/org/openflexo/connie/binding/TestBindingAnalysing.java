@@ -86,19 +86,13 @@ public class TestBindingAnalysing extends TestCase {
 	}
 
 	public class TestBindingModel extends BindingModel {
-
 		private BindingVariable aString;
-		private BindingVariable aBoolean;
-		private BindingVariable anInt;
-		private BindingVariable aList;
 
 		public TestBindingModel() {
-			super();
 			addToBindingVariables(aString = new BindingVariable("aString", String.class));
-			addToBindingVariables(aBoolean = new BindingVariable("aBoolean", Boolean.TYPE));
-			addToBindingVariables(anInt = new BindingVariable("anInt", Integer.TYPE));
-			addToBindingVariables(aList = new BindingVariable("aList", new TypeToken<List<String>>() {
-			}.getType()));
+			addToBindingVariables(new BindingVariable("aBoolean", Boolean.TYPE));
+			addToBindingVariables(new BindingVariable("anInt", Integer.TYPE));
+			addToBindingVariables(new BindingVariable("aList", new TypeToken<List<String>>() {}.getType()));
 		}
 	}
 
@@ -125,11 +119,9 @@ public class TestBindingAnalysing extends TestCase {
 			return dataBinding;
 
 		}
-		else {
-			System.out.println("Could not Parse " + dataBinding + " defined as " + dataBinding.getUnparsedBinding());
-			fail("Unparseable binding");
-			return null;
-		}
+		System.out.println("Could not Parse " + dataBinding + " defined as " + dataBinding.getUnparsedBinding());
+		fail("Unparseable binding");
+		return null;
 	}
 
 	public void testTrivialCase() {

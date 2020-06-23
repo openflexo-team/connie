@@ -46,22 +46,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
-import java.util.logging.Logger;
 
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
 
 public final class MethodDefinition extends Observable implements Function {
-
-	private static final Logger LOGGER = Logger.getLogger(MethodDefinition.class.getPackage().getName());
-
 	private final Type declaringType;
 	private final Method method;
 	private final ArrayList<Function.FunctionArgument> arguments;
 	private static Map<Method, Map<Type, MethodDefinition>> cache = new HashMap<>();
 
 	public static MethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
-
 		Map<Type, MethodDefinition> mapForMethod = cache.get(method);
 		if (mapForMethod == null) {
 			mapForMethod = new HashMap<>();
@@ -77,7 +72,6 @@ public final class MethodDefinition extends Observable implements Function {
 	}
 
 	private MethodDefinition(Type aDeclaringType, Method method) {
-		super();
 		this.method = method;
 		this.declaringType = aDeclaringType;
 		arguments = new ArrayList<>();
@@ -135,26 +129,6 @@ public final class MethodDefinition extends Observable implements Function {
 		return _signatureFQ;
 	}
 
-	/*public String getSimplifiedSignatureInContext(Type context)
-	{
-		StringBuffer signature = new StringBuffer();
-		signature.append(method.getName());
-		signature.append("(");
-		signature.append(getParameterListAsStringInContext(context, false));
-		signature.append(")");
-		return signature.toString();
-	}
-	
-	public String getSignatureInContext(Type context)
-	{
-		StringBuffer signature = new StringBuffer();
-		signature.append(method.getName());
-		signature.append("(");
-		signature.append(getParameterListAsStringInContext(context, true));
-		signature.append(")");
-		return signature.toString();
-	}*/
-
 	private String getParameterListAsString(boolean fullyQualified) {
 		String _searched = fullyQualified ? _parameterListAsStringFQ : _parameterListAsString;
 		if (_searched == null) {
@@ -175,33 +149,6 @@ public final class MethodDefinition extends Observable implements Function {
 		}
 		return fullyQualified ? _parameterListAsStringFQ : _parameterListAsString;
 	}
-
-	// Warning: no cache for this method
-	/*String getParameterListAsStringInContext(Type context, boolean fullyQualified)
-	{
-		StringBuffer returned = new StringBuffer();
-		boolean isFirst = true;
-		for (Type p : method.getGenericParameterTypes()) {
-			Type typeInContext = TypeUtils.makeInstantiatedType(p, context);
-			returned.append((isFirst?"":",")+(fullyQualified?TypeUtils.fullQualifiedRepresentation(typeInContext):TypeUtils.simpleRepresentation(typeInContext)));
-			isFirst = false;          	
-		}
-		return returned.toString();
-	}*/
-
-	/*@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof MethodDefinition) {
-			// System.out.println("Compare "+getMethod()+" and "+((MethodDefinition)obj).getMethod());
-			return getMethod().equals(((MethodDefinition) obj).getMethod());
-		}
-		return super.equals(obj);
-	}
-	
-	@Override
-	public int hashCode() {
-		return getMethod().hashCode();
-	}*/
 
 	@Override
 	public String toString() {

@@ -89,6 +89,12 @@ public class TypeUtils {
 		if (aType == ExplicitNullType.INSTANCE) {
 			return Object.class;
 		}
+		if (aType == UndefinedType.INSTANCE) {
+			return Object.class;
+		}
+		if (aType instanceof UnresolvedType) {
+			return Object.class;
+		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).getBaseClass();
 		}
@@ -138,10 +144,7 @@ public class TypeUtils {
 			if (tv.getBounds().length > 0) {
 				return getBaseClass(tv.getBounds()[0]);
 			}
-			else {
-				return Object.class;
-			}
-
+			return Object.class;
 		}
 		if (aType instanceof GenericArrayType) {
 			Type componentType = ((GenericArrayType) aType).getGenericComponentType();
@@ -358,6 +361,10 @@ public class TypeUtils {
 		return false;
 	}
 
+	public static boolean isEnum(Type type) {
+		return (type instanceof Class && ((Class) type).isEnum());
+	}
+
 	public static EvaluationType kindOfType(Type type) {
 		if (isBoolean(type)) {
 			return EvaluationType.BOOLEAN;
@@ -423,6 +430,12 @@ public class TypeUtils {
 		}
 
 		if (anOtherType == ExplicitNullType.INSTANCE) {
+			return true;
+		}
+		if (anOtherType == UndefinedType.INSTANCE) {
+			return true;
+		}
+		if (anOtherType instanceof UnresolvedType) {
 			return true;
 		}
 
@@ -542,14 +555,14 @@ public class TypeUtils {
 				Type st1 = t1.getActualTypeArguments()[i];
 				if (isPureWildCard(st1) && t1.getRawType() instanceof Class
 						&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
-					// Fixed assignalibity issue with widcards as natural bounds of generic type
+					// Fixed assignability issue with wildcards as natural bounds of generic type
 					TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
 					st1 = new WilcardTypeImpl(TV1.getBounds(), new Type[0]);
 				}
 				Type st2 = t2.getActualTypeArguments()[i];
 				if (isPureWildCard(st2) && t2.getRawType() instanceof Class
 						&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
-					// Fixed assignalibity issue with widcards as natural bounds of generic type
+					// Fixed assignability issue with wildcards as natural bounds of generic type
 					TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
 					st2 = new WilcardTypeImpl(TV2.getBounds(), new Type[0]);
 				}
@@ -570,6 +583,10 @@ public class TypeUtils {
 
 		if (aType instanceof WildcardType) {
 			LOGGER.warning("WildcardType not implemented yet !");
+		}
+
+		if (aType instanceof UndefinedType) {
+			return true;
 		}
 
 		try {
@@ -633,19 +650,39 @@ public class TypeUtils {
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).isOfType(object, true);
 		}
-		else {
-			if (object == null) {
-				return true;
-			}
-			else {
-				return isTypeAssignableFrom(aType, object.getClass());
-			}
+		if (object == null) {
+			return true;
 		}
+		return isTypeAssignableFrom(aType, object.getClass());
 	}
 
 	public static String simpleRepresentation(Type aType) {
 		if (aType == null) {
 			return "null";
+		}
+		if (aType.equals(Boolean.TYPE)) {
+			return "boolean";
+		}
+		if (aType.equals(Character.TYPE)) {
+			return "char";
+		}
+		if (aType.equals(Byte.TYPE)) {
+			return "byte";
+		}
+		if (aType.equals(Short.TYPE)) {
+			return "short";
+		}
+		if (aType.equals(Integer.TYPE)) {
+			return "int";
+		}
+		if (aType.equals(Long.TYPE)) {
+			return "long";
+		}
+		if (aType.equals(Float.TYPE)) {
+			return "float";
+		}
+		if (aType.equals(Double.TYPE)) {
+			return "double";
 		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).simpleRepresentation();
@@ -902,11 +939,9 @@ public class TypeUtils {
 								}
 								return ((ParameterizedType) context).getActualTypeArguments()[i];
 							}
-							else {
-								LOGGER.warning(
-										"Could not retrieve parameterized type " + tv + " with context " + simpleRepresentation(context));
-								return type;
-							}
+							LOGGER.warning(
+									"Could not retrieve parameterized type " + tv + " with context " + simpleRepresentation(context));
+							return type;
 						}
 					}
 				}
@@ -980,10 +1015,8 @@ public class TypeUtils {
 				}
 				return new ParameterizedTypeImpl(((Class<?>) ((ParameterizedType) type).getRawType()).getSuperclass(), actualTypeArguments);
 			}
-			else {
-				// System.out.println("super type of " + simpleRepresentation(type) + " is " + simpleRepresentation(superType));
-				return superType;
-			}
+			// System.out.println("super type of " + simpleRepresentation(type) + " is " + simpleRepresentation(superType));
+			return superType;
 		}
 		else if (type instanceof Class) {
 			return ((Class<?>) type).getGenericSuperclass();
@@ -1144,99 +1177,97 @@ public class TypeUtils {
 		if (returned != null) {
 			return returned;
 		}
-		else {
 
-			// We first check for exact lookup
+		// We first check for exact lookup
 
-			Map<Class<?>, T> matchingClasses = new HashMap<>();
+		Map<Class<?>, T> matchingClasses = new HashMap<>();
 
-			// First on super class
-			Class<?> superclass = aClass.getSuperclass();
-			if (superclass != null) {
-				returned = storedObjectForClasses.get(superclass);
-				if (returned != null) {
-					matchingClasses.put(superclass, returned);
+		// First on super class
+		Class<?> superclass = aClass.getSuperclass();
+		if (superclass != null) {
+			returned = storedObjectForClasses.get(superclass);
+			if (returned != null) {
+				matchingClasses.put(superclass, returned);
+			}
+		}
+
+		// Then on interfaces
+		for (Class<?> superInterface : aClass.getInterfaces()) {
+			returned = storedObjectForClasses.get(superInterface);
+			if (returned != null) {
+				matchingClasses.put(superInterface, returned);
+			}
+		}
+
+		// If only one class match, nice, we return the value
+		if (matchingClasses.size() == 1) {
+			returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
+			if (storeResultInMap) {
+				storedObjectForClasses.put(aClass, returned);
+			}
+			return returned;
+		}
+
+		if (matchingClasses.size() > 1) {
+
+			// Ambigous, return first result
+			returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
+			if (storeResultInMap) {
+				storedObjectForClasses.put(aClass, returned);
+			}
+			return returned;
+		}
+
+		// No matching classes
+		// Now, we run recursively
+
+		// First on super class
+		if (superclass != null) {
+			returned = objectForClass(superclass, storedObjectForClasses, storeResultInMap);
+			if (returned != null) {
+				matchingClasses.put(superclass, returned);
+			}
+		}
+
+		// Then on interfaces
+		for (Class<?> superInterface : aClass.getInterfaces()) {
+			returned = objectForClass(superInterface, storedObjectForClasses, storeResultInMap);
+			if (returned != null) {
+				matchingClasses.put(superInterface, returned);
+			}
+		}
+
+		// If only one class match, nice, we return the value
+		if (matchingClasses.size() == 1) {
+
+			returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
+			if (storeResultInMap) {
+				storedObjectForClasses.put(aClass, returned);
+			}
+			return returned;
+
+		}
+
+		if (matchingClasses.size() > 1) {
+
+			// Ambigous, return most specialized
+
+			Class<?> mostSpecialized = null;
+			int bestDistance = 1001;
+			for (Class<?> c : matchingClasses.keySet()) {
+				if (distance(aClass, c) < bestDistance) {
+					mostSpecialized = c;
+					bestDistance = distance(aClass, c);
 				}
 			}
 
-			// Then on interfaces
-			for (Class<?> superInterface : aClass.getInterfaces()) {
-				returned = storedObjectForClasses.get(superInterface);
-				if (returned != null) {
-					matchingClasses.put(superInterface, returned);
-				}
+			returned = matchingClasses.get(mostSpecialized);
+			if (storeResultInMap) {
+				storedObjectForClasses.put(aClass, returned);
 			}
 
-			// If only one class match, nice, we return the value
-			if (matchingClasses.size() == 1) {
-				returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
-				if (storeResultInMap) {
-					storedObjectForClasses.put(aClass, returned);
-				}
-				return returned;
-			}
+			return returned;
 
-			if (matchingClasses.size() > 1) {
-
-				// Ambigous, return first result
-				returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
-				if (storeResultInMap) {
-					storedObjectForClasses.put(aClass, returned);
-				}
-				return returned;
-			}
-
-			// No matching classes
-			// Now, we run recursively
-
-			// First on super class
-			if (superclass != null) {
-				returned = objectForClass(superclass, storedObjectForClasses, storeResultInMap);
-				if (returned != null) {
-					matchingClasses.put(superclass, returned);
-				}
-			}
-
-			// Then on interfaces
-			for (Class<?> superInterface : aClass.getInterfaces()) {
-				returned = objectForClass(superInterface, storedObjectForClasses, storeResultInMap);
-				if (returned != null) {
-					matchingClasses.put(superInterface, returned);
-				}
-			}
-
-			// If only one class match, nice, we return the value
-			if (matchingClasses.size() == 1) {
-
-				returned = matchingClasses.get(matchingClasses.keySet().iterator().next());
-				if (storeResultInMap) {
-					storedObjectForClasses.put(aClass, returned);
-				}
-				return returned;
-
-			}
-
-			if (matchingClasses.size() > 1) {
-
-				// Ambigous, return most specialized
-
-				Class<?> mostSpecialized = null;
-				int bestDistance = 1001;
-				for (Class<?> c : matchingClasses.keySet()) {
-					if (distance(aClass, c) < bestDistance) {
-						mostSpecialized = c;
-						bestDistance = distance(aClass, c);
-					}
-				}
-
-				returned = matchingClasses.get(mostSpecialized);
-				if (storeResultInMap) {
-					storedObjectForClasses.put(aClass, returned);
-				}
-
-				return returned;
-
-			}
 		}
 
 		return null;
@@ -1286,7 +1317,6 @@ public class TypeUtils {
 				}
 			}
 		}
-
 		return 1000;
 	}
 
@@ -1313,86 +1343,6 @@ public class TypeUtils {
 	 * @return
 	 */
 	public static Type getTypeArgument(Type type, Class<?> rawType, int index) {
-
 		return getTypeArguments(type, rawType).get(rawType.getTypeParameters()[index]);
 	}
-
-	// TESTS
-
-	/*public static interface ShouldFail {
-		public void test4(short t1, double t2);
-	
-		public void test10(Vector t1, List<String> t2);
-	
-		public void test14(Vector<String> t1, List<String> t2);
-	}
-	
-	public static interface ShouldSucceed {
-		public void test1(Object t1, Object t2);
-	
-		public void test2(int t1, Integer t2);
-	
-		public void test3(float t1, int t2);
-	
-		public void test11(List t1, Vector<String> t2);
-	
-		public void test12(Vector<String> t1, Vector<String> t2);
-	
-		public void test13(List<String> t1, Vector<String> t2);
-	}
-	
-	public static interface TestSuperType {
-		public void test20(MyClass2<Integer, Boolean> t1, MyClass1<Boolean> t2);
-	
-		public void test21(MyClass2<Integer, List<Boolean>> t1, MyClass1<List<Boolean>> t2);
-	
-		public void test22(MyClass3<Integer> t1, MyClass1<List<Integer>> t2);
-	}
-	
-	private static boolean checkFail(Method m) {
-		Type t1 = m.getGenericParameterTypes()[0];
-		Type t2 = m.getGenericParameterTypes()[1];
-		System.out.println("checkFail " + (isTypeAssignableFrom(t1, t2, true) ? "NOK " : "OK  ") + "Method " + m.getName() + " t1: " + t1
-				+ " of " + t1.getClass().getSimpleName() + " t2: " + t2 + " of " + t2.getClass().getSimpleName());
-		return isTypeAssignableFrom(t1, t2, true);
-	}
-	
-	private static boolean checkSucceed(Method m) {
-		Type t1 = m.getGenericParameterTypes()[0];
-		Type t2 = m.getGenericParameterTypes()[1];
-		System.out.println("checkSucceed " + (isTypeAssignableFrom(t1, t2, true) ? "OK  " : "NOK ") + "Method " + m.getName() + " t1: "
-				+ t1 + " of " + t1.getClass().getSimpleName() + " t2: " + t2 + " of " + t2.getClass().getSimpleName());
-		return isTypeAssignableFrom(t1, t2, true);
-	}
-	
-	private static boolean checkSuperType(Method m) {
-		Type t1 = m.getGenericParameterTypes()[0];
-		Type t2 = m.getGenericParameterTypes()[1];
-		System.out.println("checkSuperType " + (getSuperType(t1).equals(t2) ? "OK  " : "NOK ") + "Method " + m.getName() + " type: "
-				+ simpleRepresentation(t1) + " super type: " + simpleRepresentation(t2));
-		return true;
-	}
-	
-	public static class MyClass1<A> {
-	
-	}
-	
-	public static class MyClass2<B, D> extends MyClass1<D> {
-	
-	}
-	
-	public static class MyClass3<C> extends MyClass1<List<C>> {
-	
-	}
-	
-	public static class MyVector extends Vector<String> {
-	
-	}
-	
-	public static void main(String[] args) {
-		System.out.println("Type Argument=" + getTypeArgument(MyVector.class, Vector.class, 0));
-		System.err.println(isTypeAssignableFrom(Number.class, Integer.class));
-		System.err.println(org.apache.commons.lang3.reflect.TypeUtils.isAssignable(Integer.class, Number.class));
-	}*/
-
 }

@@ -41,12 +41,12 @@ package org.openflexo.connie.expr;
 
 public interface ExpressionGrammar {
 
-	public abstract UnaryOperator[] getAllSupportedUnaryOperators();
+	UnaryOperator[] getAllSupportedUnaryOperators();
 
-	public abstract BinaryOperator[] getAllSupportedBinaryOperators();
+	BinaryOperator[] getAllSupportedBinaryOperators();
 
-	public abstract String getSymbol(Operator operator) throws OperatorNotSupportedException;
+	String getSymbol(Operator operator) throws OperatorNotSupportedException;
 
-	public abstract String getAlternativeSymbol(Operator operator) throws OperatorNotSupportedException;
+	String getAlternativeSymbol(Operator operator) throws OperatorNotSupportedException;
 
 }

@@ -74,6 +74,7 @@ import org.openflexo.connie.expr.parser.ExpressionParser;
 import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.UndefinedType;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.StringUtils;
 
@@ -233,7 +234,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					}
 				});
 			} catch (VisitorException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -530,7 +530,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		invalidBindingReason = "unknown";
 
 		isCacheable = true;
-		analyzedType = Object.class;
+		// analyzedType = Object.class;
+		// Fixing CONNIE-23
+		analyzedType = UndefinedType.INSTANCE;
 
 		if (isPerformingValidity) {
 			System.err.println("Stackoverflow prevented while performing validity for " + this);
@@ -554,9 +556,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 							if (!((BindingValue) e).isValid(DataBinding.this)) {
 								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
-							}
-							else {
-								// System.out.println("Valid binding " + e);
 							}
 							if (!((BindingValue) e).isCacheable()) {
 								isCacheable = false;
@@ -910,12 +909,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				if (!isParsingExpression) {
+					notifiedBindingModelStructurallyModified();
+				}
 			}
 			else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				if (!isParsingExpression) {
+					notifiedBindingModelStructurallyModified();
+				}
 			}
 			/*else if (evt.getPropertyName().equals(BindingVariable.DELETED_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
@@ -971,6 +974,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// System.out.println(">>>> STOP notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
 	}
 
+	private boolean isParsingExpression = false;
+
 	/**
 	 * This method is called whenever we need to parse the binding using string encoded in unparsedBinding field.<br>
 	 * Syntaxic checking of the binding is performed here. This phase is followed by the semantics analysis as performed by
@@ -985,6 +990,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		if (getOwner() != null) {
 			try {
+				isParsingExpression = true;
 				expression = ExpressionParser.parse(getUnparsedBinding());
 			} catch (ParseException e) {
 				// parse error
@@ -996,6 +1002,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			analyseExpressionAfterParsing();
 		}
 		checkBindingModelListening();
+		isParsingExpression = false;
 		needsParsing = false;
 
 		/*if (!isValid()) {
