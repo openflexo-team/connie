@@ -1,1 +1,7 @@
 ext.moduleName = 'org.openflexo.connie_utils'
+
+dependencies {
+
+testCompile('org.junit.jupiter:junit-jupiter:5.4.0')
+
+}

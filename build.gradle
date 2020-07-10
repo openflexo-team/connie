@@ -70,8 +70,10 @@ subprojects {
     // To generate correct .classpath file for eclipse
     apply plugin: 'eclipse'
     eclipse {
+
         classpath {
-            containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
+            containers 'org.eclipse.jdt.junit.JUNIT_CONTAINER/5'
+//            containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
             file {
                 whenMerged {
                     entries.findAll { it.properties.kind.equals('src')  }.each {
@@ -83,9 +85,9 @@ subprojects {
                     entries.findAll { it.properties.path.startsWith('org.eclipse.jdt.launching.JRE_CONTAINER') }.each {
                         it.entryAttributes['module'] = 'true'
                     }
-                    entries.findAll { it.properties.path.startsWith('org.eclipse.buildship.core.gradleclasspathcontainer') }.each {
-                        it.entryAttributes['module'] = 'true'
-                    }
+//                     entries.findAll { it.properties.path.startsWith('org.eclipse.buildship.core.gradleclasspathcontainer') }.each {
+//                         it.entryAttributes['module'] = 'true'
+//                     }
                     def testSrc = entries.find { it.path == 'src/test/java' }
                     if (testSrc != null) {
                         testSrc.output = 'bin/test'

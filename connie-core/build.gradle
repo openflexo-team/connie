@@ -5,4 +5,8 @@ dependencies {
   compile project(':connie-parser')
   compile group: 'com.google.guava', name: 'guava', version: '28.0-jre'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+
+testCompile('org.junit.jupiter:junit-jupiter:5.4.0')
+
 }
+
