@@ -1,1 +1,1 @@
-include 'testutils', 'connie-utils', 'connie-utils-test', 'connie-parser', 'connie-core'
+include 'testutils', 'connie-utils', 'connie-parser', 'connie-core'
