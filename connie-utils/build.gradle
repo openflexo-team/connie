@@ -1,4 +1,4 @@
 dependencies {
   testImplementation project(':testutils')
-  implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+  api group: 'commons-io', name: 'commons-io', version: '2.6'
 }
