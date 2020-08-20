@@ -4,12 +4,19 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.openflexo', name: 'buildplugin', version: '0.3'
-        classpath group: 'org.openflexo', name: 'buildconfig', version: '2.1.0'
+        classpath group: 'org.openflexo', name: 'buildconfig', version: '2.1.1'
         classpath 'org.openflexo:gradle-sablecc-plugin:[1.2.0,)'
+    }
+}
+
+subprojects {
+	repositories {
+        maven { url "https://maven.openflexo.org/artifactory/openflexo-deps/" }
+  		maven { url "https://maven.openflexo.org/artifactory/openflexo-java10/" }
     }
 }
 
 // The version must be initialized before the buildconfig plugin
 // The plugin will add '-SNAPSHOT' at the end by default or the content of the kind property
-version = "1.5.1"
+version = "1.5.2"
 apply plugin: 'org.openflexo.buildconfig'
