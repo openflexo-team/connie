@@ -258,6 +258,8 @@ Productions
      ;
 
    identifier_prefix = lidentifier dot;
+ //  	   {lower_case} lidentifier dot
+ //  	 | {upper_case} uidentifier dot;
    
    composite_ident = [prefixes]:identifier_prefix* [identifier]:lidentifier ;
  
@@ -268,6 +270,7 @@ Productions
      //| {super}      super dot non_wild_type_arguments? identifier l_par argument_list? r_par
      //| {class_name} [identifier1]:composite_ident [dot1]:dot super [dot2]:dot non_wild_type_arguments? [identifier2]:identifier l_par argument_list? r_par
      //| {type_name}  [identifier1]:composite_ident dot non_wild_type_arguments  [identifier2]:identifier l_par argument_list? r_par
+ 	 | {class_method} type dot /*non_wild_type_arguments?*/ lidentifier l_par argument_list? r_par
      ;
 
    // --------------------------------------------------------------------------------------

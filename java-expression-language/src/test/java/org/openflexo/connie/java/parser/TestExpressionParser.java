@@ -374,4 +374,12 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("(Map)(new java.util.HashTable(1,2))", "toto--", BindingValue.class, null, false);
 	}
 
+	public void testClassMethod1() {
+		tryToParse("Class.forName(\"Toto\")", "toto--", BindingValue.class, null, false);
+	}
+
+	public void testClassMethod2() {
+		tryToParse("java.Class.forName(\"Toto\")", "toto--", BindingValue.class, null, false);
+	}
+
 }
