@@ -271,6 +271,8 @@ Tokens
    // Identifier
    // --------------------------------------------------------------------------------------
    identifier = letter letter_or_digit*;
+   lidentifier = ['a'..'z'] letter_or_digit*;
+   uidentifier = ['A'..'Z'] letter_or_digit*;
 
    // --------------------------------------------------------------------------------------
    // White space and comments
@@ -424,8 +426,8 @@ Productions
        {postfix} postfix_exp
      | {tilde}   tilde unary_exp
      | {emark}   emark unary_exp
-     | {cast}    l_par primitive_type [dims]:dim* r_par unary_exp
-     | {cast2}   l_par identifier [dims]:dim* r_par unary_exp
+     | {cast}    l_par type [dims]:dim* r_par unary_exp
+//     | {cast2}   l_par identifier [dims]:dim* r_par unary_exp
      // | {cast2}   l_par reference_type [dims]:dim* r_par unary_exp
      ;
 
@@ -567,7 +569,16 @@ Productions
      | {boolean} ty_boolean
      ;
 
-   reference_type = [identifier]:composite_ident [args]:type_arguments?;
+   reference_type = [identifier]:composite_tident [args]:type_arguments?;
+
+   composite_tident =
+       {composite_type} [identifier]:lidentifier [additional_identifiers]:additional_tidentifier
+     | {simple_type} uidentifier
+     ;
+   additional_tidentifier =
+       {final_type} dot uidentifier
+     | {int_type} dot lidentifier additional_tidentifier
+     ;
 
    // Take care of the following lexical anomaly:
    //   A<B<C>>  and  A<B<C<D>>>
