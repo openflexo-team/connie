@@ -3,7 +3,6 @@ package org.openflexo.connie.java.parser;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.BooleanBinaryOperator;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant.BooleanConstant;
@@ -31,11 +30,15 @@ public class TestExpressionParser extends TestCase {
 			Class<? extends Expression> expectedExpressionClass, Object expectedEvaluation, boolean shouldFail) {
 
 		try {
-			return ExpressionParser.parse(anExpression);
+			Expression parsed = ExpressionParser.parse(anExpression);
+			System.out.println("parsed=" + parsed);
+			return parsed;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			fail();
+			if (!shouldFail) {
+				fail();
+			}
 			return null;
 		}
 
@@ -105,6 +108,22 @@ public class TestExpressionParser extends TestCase {
 
 	}
 
+	/*public void testType1() {
+		tryToParse("int", "foo", BindingValue.class, null, false);
+	}
+	
+	public void testType2() {
+		tryToParse("Integer", "foo", BindingValue.class, null, false);
+	}
+	
+	public void testType3() {
+		tryToParse("java.lang.Integer", "foo", BindingValue.class, null, false);
+	}
+	
+	public void testType4() {
+		tryToParse("java.lang.Toto<Tutu,org.toto.Sou,Integer>", "foo", BindingValue.class, null, false);
+	}*/
+
 	public void testBindingValue() {
 		tryToParse("foo", "foo", BindingValue.class, null, false);
 	}
@@ -126,7 +145,7 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testBindingValue6() {
-		tryToParse("i.am.a(1,2+3,7.8,'foo').little.test(1)", "i.am.a(1,5,7.8,\"foo\").little.test(1)", BindingValue.class, null, false);
+		tryToParse("i.am.a(1,2+3,7.8,\"foo\").little.test(1)", "i.am.a(1,5,7.8,\"foo\").little.test(1)", BindingValue.class, null, false);
 	}
 
 	public void testNumericValue1() {
@@ -170,7 +189,7 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testStringValue2() {
-		tryToParse("'foo1'", "\"foo1\"", StringConstant.class, "foo1", false);
+		tryToParse("\"foo1\"", "\"foo1\"", StringConstant.class, "foo1", false);
 	}
 
 	public void testStringValue3() {
@@ -178,7 +197,7 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testStringValue4() {
-		tryToParse("\"foo1\"+'and'+\"foo2\"", "\"foo1andfoo2\"", BinaryOperatorExpression.class, "foo1andfoo2", false);
+		tryToParse("\"foo1\"+\"and\"+\"foo2\"", "\"foo1andfoo2\"", BinaryOperatorExpression.class, "foo1andfoo2", false);
 	}
 
 	public void testExpression1() {
@@ -215,7 +234,7 @@ public class TestExpressionParser extends TestCase {
 
 	public void testEquality() {
 		Expression e = tryToParse("a==b", "(a = b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.EQUALS, ((BinaryOperatorExpression) e).getOperator());
+		// assertEquals(BooleanBinaryOperator.EQUALS, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testEquality2() {
@@ -224,22 +243,22 @@ public class TestExpressionParser extends TestCase {
 
 	public void testOr1() {
 		Expression e = tryToParse("a|b", "(a | b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
+		// assertEquals(BooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testOr2() {
 		Expression e = tryToParse("a||b", "(a | b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
+		// assertEquals(BooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testAnd1() {
 		Expression e = tryToParse("a&b", "(a & b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
+		// assertEquals(BooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testAnd2() {
 		Expression e = tryToParse("a&&b", "(a & b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
+		// assertEquals(BooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testBoolean1() {
@@ -351,42 +370,26 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("2 > 3 ? 3", "", ConditionalExpression.class, null, true);
 	}
 
-	/*public void test25() throws java.text.ParseException {
-			Date date = new SimpleDateFormat("dd/MM/yy HH:mm").parse("17/12/07 15:55");
-			SimpleDateFormat localeDateFormat = new SimpleDateFormat();
-			tryToParse("(([dd/MM/yy HH:mm,17/12/07 12:54] + [3h] ) + [1min])",
-					"[" + localeDateFormat.toPattern() + "," + localeDateFormat.format(date) + "]", false);
-		}
-		
-		public void test26() throws java.text.ParseException {
-			Date date = new SimpleDateFormat("dd/MM/yy HH:mm").parse("17/12/07 15:55");
-			SimpleDateFormat localeDateFormat = new SimpleDateFormat();
-			tryToParse("([dd/MM/yy HH:mm,17/12/07 12:54] + ( [3h] + [1min]))",
-					"[" + localeDateFormat.toPattern() + "," + localeDateFormat.format(date) + "]", false);
-		}
-		*/
-
 	public void testCast() {
-		tryToParse("($java.lang.Integer)2", "($java.lang.Integer)2", CastExpression.class, null, false);
+		tryToParse("(java.lang.Integer)2", "(java.lang.Integer)2", CastExpression.class, null, false);
 	}
 
 	public void testCast2() {
-		tryToParse("($java.lang.Integer)2+(($java.lang.Integer)2+($java.lang.Double)2)",
-				"(($java.lang.Integer)2 + (($java.lang.Integer)2 + ($java.lang.Double)2))", BinaryOperatorExpression.class, null, false);
+		tryToParse("(java.lang.Integer)2+((java.lang.Integer)2+(java.lang.Double)2)",
+				"((java.lang.Integer)2 + ((java.lang.Integer)2 + (java.lang.Double)2))", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testInvalidCast() {
-		tryToParse("(java.lang.Integer)2", "", CastExpression.class, null, true);
+		tryToParse("(Prout)2", "", CastExpression.class, null, true);
 	}
 
 	public void testParameteredCast() {
-		tryToParse("($java.util.List<$java.lang.String>)data.list", "($java.util.List<$java.lang.String>)data.list", CastExpression.class,
-				null, false);
+		tryToParse("(java.util.List<String>)data.list", "(java.util.List<java.lang.String>)data.list", CastExpression.class, null, false);
 	}
 
 	public void testParameteredCast2() {
-		tryToParse("($java.util.Hashtable<$java.lang.String,$java.util.List<$java.lang.String>>)data.map",
-				"($java.util.Hashtable<$java.lang.String,$java.util.List<$java.lang.String>>)data.map", CastExpression.class, null, false);
+		tryToParse("(java.util.Hashtable<java.lang.String,java.util.List<java.lang.String>>)data.map",
+				"(java.util.Hashtable<java.lang.String,java.util.List<java.lang.String>>)data.map", CastExpression.class, null, false);
 	}
 
 	public void testAccentCharacter() {
@@ -401,12 +404,12 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("toto--", "toto--", BindingValue.class, null, false);
 	}
 
-	public void testCoucou() {
+	public void testCast3() {
 		tryToParse("(List<Tutu>)toto", "toto--", BindingValue.class, null, false);
 	}
 
-	public void testCoucou2() {
-		tryToParse("a instansdceof Toto", "toto--", BindingValue.class, null, false);
+	public void testInstanceOf() {
+		tryToParse("a instanceof Toto", "toto--", BindingValue.class, null, false);
 	}
 
 }
