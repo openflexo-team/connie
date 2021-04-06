@@ -412,4 +412,12 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("a instanceof Toto", "toto--", BindingValue.class, null, false);
 	}
 
+	public void testNewInstance() {
+		tryToParse("new List()", "toto--", BindingValue.class, null, false);
+	}
+
+	public void testNewInstance2() {
+		tryToParse("(Map)(new java.util.HashTable(1,2))", "toto--", BindingValue.class, null, false);
+	}
+
 }

@@ -127,10 +127,6 @@ Helpers
     escape_sequence = '\b' | '\t' | '\n' | '\f' | '\r' | '\"' | '\' ''' | '\\' | octal_escape;
     string_character = [input_character - ['"' + '\']] | escape_sequence;
 
-// *****************************************************************************************
-States
-  normal,
-  binding;
 
 // *****************************************************************************************
 Tokens
@@ -179,68 +175,23 @@ Tokens
    // --------------------------------------------------------------------------------------
    // Separators
    // --------------------------------------------------------------------------------------
-   at = '@';
-   colon_colon = '::';
    comma = ',';
-   dollar = '$';
    dot = '.';
-   dot_dot_dot = '...';
-   {normal,binding-> normal} semi  = ';';
 
    l_par = '(';
    r_par = ')';
    l_bkt = '[';
    r_bkt = ']';
-   l_brc = '{';
-   r_brc = '}';
 
    // --------------------------------------------------------------------------------------
    // Keywords
    // --------------------------------------------------------------------------------------
 
-   // FML Keywords
-   {normal} kw_abstract = 'abstract';
-   {normal} kw_action = 'action';
-   {normal} kw_as = 'as';
-   {normal} kw_begin = 'begin';
-   {normal} kw_concept = 'concept';
-   {normal} kw_create = 'create';
-   {normal} kw_default = 'default';
-   {normal} kw_delete = 'delete';  
-   {normal} kw_do = 'do';
-   {normal} kw_else = 'else';
-   {normal} kw_end = 'end';
-   {normal} kw_extends = 'extends';
-   {normal} kw_for = 'for';
-   {normal} kw_from = 'from';
-   {normal} kw_get = 'get';
-   {normal} kw_if = 'if';
-   {normal} kw_import = 'import';
-   {normal} kw_in = 'in';
-   {normal} kw_instanceof = 'instanceof';
-   {normal} kw_listen = 'listen';
-   {normal} kw_log = 'log';
-   {normal} kw_match = 'match';
-   {normal} kw_model = 'model';
-   {normal} kw_namespace = 'namespace';
-   {normal} kw_new = 'new';
-   {normal} kw_private = 'private';
-   {normal} kw_protected = 'protected';
-   {normal} kw_public = 'public';
-   {normal} kw_receive = 'receive';
-   {normal} kw_required = 'required';
-   {normal} kw_return = 'return';
-   {normal} kw_select = 'select';
-   {normal} kw_set = 'set';
-   {normal} kw_super = 'super';
-   {normal} kw_then = 'then';
-   {normal} kw_unique = 'unique';
-   {normal} kw_use = 'use';
-   {normal -> binding} kw_values = 'values';
-   {normal} kw_where = 'where';
-   {normal} kw_while = 'while';
-   {normal} kw_with = 'with';
-
+   kw_new = 'new';
+   kw_instanceof = 'instanceof';
+   kw_super = 'super';
+   kw_extends = 'extends';
+ 
    // Types
    ty_boolean = 'boolean';
    ty_int = 'int';
@@ -272,7 +223,6 @@ Tokens
    // --------------------------------------------------------------------------------------
    lidentifier = ['a'..'z'] letter_or_digit*;
    uidentifier = ['A'..'Z'] letter_or_digit*;
-   //identifier = letter letter_or_digit*;
 
    // --------------------------------------------------------------------------------------
    // White space and comments
@@ -300,40 +250,7 @@ Productions
   expression =
        {assignment}  [left]:left_hand_side assignment_operator [right]:expression
      | {conditional} conditional_exp
- //	type
      ;
-
-  /* statement_expression =
-       {assignment}             [left]:left_hand_side assignment_operator [right]:expression
-     | {pre_increment}          pre_incr_exp
-     | {pre_decrement}          pre_decr_exp
-     | {post_increment}         post_incr_exp
-     | {post_decrement}         post_decr_exp
-     | {method_invocation}      method_invocation
-     | {fml_action_expression}  fml_action_exp
-     ;*/
-
-   /*composite_ident =
-       {composite_identifier} [identifier]:lidentifier [additional_identifiers]:additional_identifier
-     | {simple_identifier} lidentifier
-     ;
-   additional_identifier =
-       {final_id} dot lidentifier
-     | {additional_id} dot lidentifier additional_identifier
-     ;
-
-   composite_tident =
-       {composite_type} [identifier]:lidentifier [additional_identifiers]:additional_tidentifier
-     //| {composite_type2} [identifier]:uidentifier [additional_identifiers]:additional_tidentifier
-     | {simple_type} uidentifier
-     ;
-   additional_tidentifier =
-       {final_type} dot uidentifier
-     | {additional_type} dot lidentifier additional_tidentifier
-     ;*/
-
-   //composite_ident = [identifier]:lidentifier [additional_identifiers]:additional_identifier*;
-   //additional_identifier = dot lidentifier;
 
    identifier_prefix = lidentifier dot;
    
@@ -341,8 +258,6 @@ Productions
  
    composite_tident = [prefixes]:identifier_prefix* [identifier]:uidentifier ;
    
-   
-
    method_invocation =
        {primary}    primary /*dot *//*non_wild_type_arguments?*//* identifier*/ l_par argument_list? r_par
      //| {super}      super dot non_wild_type_arguments? identifier l_par argument_list? r_par
@@ -476,52 +391,9 @@ Productions
      | {expression}             l_par expression r_par
      | {field}                  field_access
      | {method}                 method_invocation
- //    | {fml_action_expression}  fml_action_exp
+     | {java_instance_creation} kw_new type l_par argument_list? r_par
      ;
 
- /*  fml_action_exp =
-       {java_instance_creation}                new_containment_clause? kw_new composite_ident type_arguments_or_diamond? l_par argument_list? r_par precise_fml_parameters_clause?
-     | {fml_instance_creation}  			   new_containment_clause? kw_new [concept_name]:identifier colon_colon [constructor_name]:identifier l_par argument_list? r_par precise_fml_parameters_clause?
-     | {ta_edition_action}                     [ta_id]:identifier colon_colon [edition_action]:identifier fml_parameters in_clause? from_clause? //FD remove ? on fml_parameters
-     | {delete_action}                         kw_delete l_par expression r_par from_clause?
-     | {select_action}                         kw_select kw_unique? [selected_type_name]:composite_ident from_clause where_clause?
-     | {log_action}                            kw_log l_par expression r_par
-     | {begin_match_action}                    kw_begin kw_match [concept_name]:identifier from_clause where_clause?
-     | {match_action}                          kw_match [concept_name]:identifier in_clause? from_clause qualified_where_clause? create_clause
-     | {end_match_action}                      kw_end kw_match [concept_name]:identifier in_clause abstract_action_clause
-     ;*/
-    
-  /* precise_fml_parameters_clause = kw_with fml_parameters;
-    
-   create_clause = kw_create colon_colon [constructor_name]:identifier l_par argument_list? r_par;
-
-   delete_clause = kw_delete colon_colon [destructor_name]:identifier l_par argument_list? r_par;
-
-   action_clause = kw_action colon_colon [action_name]:identifier l_par argument_list? r_par;*/
-    
-   // reduce/reduce conflict
-   /*create_clause = 
-     | {named_constructor}      kw_create colon_colon [constructor_name]:identifier l_par argument_list? r_par
-     | {anonymous_constructor}  kw_create l_par argument_list? r_par
-     ;
-
-   delete_clause = 
-     | {named_destructor}       kw_delete colon_colon [destructor_name]:identifier l_par argument_list? r_par
-     | {anonymous_destructor}   kw_delete l_par argument_list? r_par
-     ;
-     
-   action_clause = 
-     | {named_action}           kw_action colon_colon [action_name]:identifier l_par argument_list? r_par
-     | {anonymous_action}       kw_action l_par argument_list? r_par
-     ;
-    */
-    
-  /* abstract_action_clause =
-     | {normal}  				action_clause
-     | {delete}  				delete_clause
-     ;*/
-    
-  // new_containment_clause = composite_ident dot;
 
    type_arguments_or_diamond =
        {type_arguments} type_arguments
@@ -532,38 +404,6 @@ Productions
        {one}  expression
      | {many} argument_list comma expression
      ;
-
-   /*qualified_argument_list =
-       {one}  qualified_argument
-     | {many} qualified_argument_list comma qualified_argument
-     ;*/
-
-  /* qualified_instance =
-       {simple}         [arg_type]:identifier colon fml_parameters
-     | {full_qualified} [ta_id]:identifier colon_colon [arg_type]:identifier colon fml_parameters
-      ;
-
-   qualified_argument_list_instances =
-       {one}  qualified_instance
-     | {many} qualified_argument_list_instances comma qualified_instance
-     ;
-
-   qualified_argument =
-       {simple}         [arg_name]:identifier assign expression
-     | {instance}       [arg_name]:identifier assign qualified_instance
-     | {list_instances} [arg_name]:identifier assign l_brc qualified_argument_list_instances? r_brc
-     ;
-
-   fml_parameters =
-       {full_qualified} l_par qualified_argument_list? r_par
-//     | {unqualified} l_par argument_list? r_par
-      ;
-
-   in_clause    = kw_in l_par expression r_par;
-   from_clause  = kw_from l_par expression r_par;
-   where_clause = kw_where l_par argument_list? r_par;
-   qualified_where_clause = kw_where l_par qualified_argument_list? r_par;
-*/
 
    field_access =
        {super} kw_super dot lidentifier
