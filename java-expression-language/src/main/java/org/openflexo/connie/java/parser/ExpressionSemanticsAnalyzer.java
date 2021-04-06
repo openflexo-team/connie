@@ -45,6 +45,7 @@ import java.util.Map;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.Node;
+import org.openflexo.toolbox.StringUtils;
 
 /**
  * This class implements the semantics analyzer for a parsed AnTAR expression.<br>
@@ -84,6 +85,22 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 			return returned;
 		}
 		return null;
+	}
+
+	int ident = 0;
+
+	@Override
+	public void defaultIn(Node node) {
+		super.defaultIn(node);
+		ident++;
+		System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName());
+	}
+
+	@Override
+	public void defaultOut(Node node) {
+		// TODO Auto-generated method stub
+		super.defaultOut(node);
+		ident--;
 	}
 
 	/*	private BindingValue makeBinding(PBinding node) {
