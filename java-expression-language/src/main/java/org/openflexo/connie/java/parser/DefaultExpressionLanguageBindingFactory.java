@@ -4,7 +4,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -40,42 +40,27 @@
  * 
  */
 
-package org.openflexo.connie;
+package org.openflexo.connie.java.parser;
 
-import java.lang.reflect.Type;
-import java.util.List;
+import java.util.logging.Logger;
 
-import org.openflexo.connie.binding.Function;
-import org.openflexo.connie.binding.FunctionPathElement;
-import org.openflexo.connie.binding.IBindingPathElement;
-import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.JavaBasedBindingFactory;
+import org.openflexo.connie.ParseException;
 import org.openflexo.connie.expr.Expression;
 
 /**
- * A factory associated to a given expression language and allowing to build expressions
+ * A {@link BindingFactory} for default expression language
+ * 
  * 
  * @author sylvain
  *
  */
-public interface BindingFactory {
+public class DefaultExpressionLanguageBindingFactory extends JavaBasedBindingFactory {
+	static final Logger LOGGER = Logger.getLogger(DefaultExpressionLanguageBindingFactory.class.getPackage().getName());
 
-	/**
-	 * Parse supplied expressionAsString, build and return an {@link Expression} according to underlying expression language
-	 * 
-	 * @param expressionAsString
-	 * @return
-	 */
-	Expression parseExpression(String expressionAsString) throws ParseException;
-
-	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
-
-	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent);
-
-	SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName);
-
-	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
-
-	FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
-
-	public Type getTypeForObject(Object object);
+	@Override
+	public Expression parseExpression(String expressionAsString) throws ParseException {
+		return ExpressionParser.parse(expressionAsString);
+	}
 }

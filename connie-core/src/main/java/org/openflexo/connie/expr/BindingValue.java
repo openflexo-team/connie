@@ -53,8 +53,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.ParseException;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
@@ -70,8 +72,6 @@ import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Constant.ObjectSymbolicConstant;
-import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
@@ -112,8 +112,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		analysingSuccessfull = true;
 	}
 
-	public BindingValue(String stringToParse) throws ParseException {
-		this(parse(stringToParse));
+	public BindingValue(String stringToParse, BindingFactory bindingFactory) throws ParseException {
+		this(parse(stringToParse, bindingFactory));
 	}
 
 	public void delete() {
@@ -130,8 +130,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		}
 	}
 
-	private static List<AbstractBindingPathElement> parse(String stringToParse) throws ParseException {
-		Expression e = ExpressionParser.parse(stringToParse);
+	private static List<AbstractBindingPathElement> parse(String stringToParse, BindingFactory bindingFactory) throws ParseException {
+		Expression e = bindingFactory.parseExpression(stringToParse);
+		// Expression e = ExpressionParser.parse(stringToParse);
 		if (e instanceof BindingValue) {
 			return ((BindingValue) e).getParsedBindingPath();
 		}
@@ -1002,7 +1003,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					previous = e;
 				}
 			} catch (ConcurrentModificationException e) {
-				System.err.println("ConcurrentModificationException while executing BindingValue "+this);
+				System.err.println("ConcurrentModificationException while executing BindingValue " + this);
 				return null;
 			}
 			// System.out.println(" > return "+current);

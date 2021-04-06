@@ -1,8 +1,5 @@
 /**
  * 
- */
-/**
- * 
  * Copyright (c) 2013-2014, Openflexo
  * Copyright (c) 2011-2012, AgileBirds
  * 
@@ -42,40 +39,16 @@
 
 package org.openflexo.connie;
 
-import java.lang.reflect.Type;
-import java.util.List;
-
-import org.openflexo.connie.binding.Function;
-import org.openflexo.connie.binding.FunctionPathElement;
-import org.openflexo.connie.binding.IBindingPathElement;
-import org.openflexo.connie.binding.SimplePathElement;
-import org.openflexo.connie.expr.Expression;
-
-/**
- * A factory associated to a given expression language and allowing to build expressions
- * 
- * @author sylvain
- *
- */
-public interface BindingFactory {
+@SuppressWarnings("serial")
+public class ParseException extends Exception {
 
 	/**
-	 * Parse supplied expressionAsString, build and return an {@link Expression} according to underlying expression language
+	 * Constructs a new parse exception with the specified detail message.
 	 * 
-	 * @param expressionAsString
-	 * @return
+	 * @param message
+	 *            the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
 	 */
-	Expression parseExpression(String expressionAsString) throws ParseException;
-
-	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
-
-	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent);
-
-	SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName);
-
-	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
-
-	FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
-
-	public Type getTypeForObject(Object object);
+	public ParseException(String message) {
+		super(message);
+	}
 }

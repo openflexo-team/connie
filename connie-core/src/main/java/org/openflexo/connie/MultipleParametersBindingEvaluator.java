@@ -52,9 +52,6 @@ import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
-import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
-import org.openflexo.connie.java.JavaBindingFactory;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 /**
@@ -88,12 +85,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 
 		bindingModel = new BindingModel();
 
-		if (bindingFactory != null) {
-			this.bindingFactory = bindingFactory;
-		}
-		else {
-			this.bindingFactory = new JavaBindingFactory();
-		}
+		this.bindingFactory = bindingFactory;
 
 		for (String variableName : objects.keySet()) {
 			Object value = objects.get(variableName);
@@ -127,10 +119,11 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		return returned;
 	}
 
-	private static String normalizeBindingPath(String bindingPath, List<String> parameters) {
+	private static String normalizeBindingPath(String bindingPath, List<String> parameters, BindingFactory bindingFactory) {
 		Expression expression = null;
 		try {
-			expression = ExpressionParser.parse(bindingPath);
+			expression = bindingFactory.parseExpression(bindingPath);
+			// expression = ExpressionParser.parse(bindingPath);
 			if (expression != null) {
 				expression = expression.transform(new ExpressionTransformer() {
 					@Override
@@ -205,11 +198,6 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		return binding.getBindingValue(this);
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object receiver, Object... args)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		return evaluateBinding(bindingPath, null, receiver, args);
-	}
-
 	/**
 	 * Utility method used to instanciate a {@link MultipleParametersBindingEvaluator} to compute a given expression expressed in CONNIE
 	 * language, and a set of arguments given in appearing order in the expression<br>
@@ -236,7 +224,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		List<String> parameters = new ArrayList<>();
 		String extractedBindingPath = extractParameters(bindingPath, parameters, args);
 		// System.out.println("extractedBindingPath=" + extractedBindingPath);
-		String normalizedBindingPath = normalizeBindingPath(extractedBindingPath, parameters);
+		String normalizedBindingPath = normalizeBindingPath(extractedBindingPath, parameters, bindingFactory);
 		// System.out.println("normalizedBindingPath=" + normalizedBindingPath);
 		if (args.length != parameters.size()) {
 			throw new InvalidKeyValuePropertyException("Wrong number of args");

@@ -70,8 +70,6 @@ import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionVisitor;
 import org.openflexo.connie.expr.VisitorException;
-import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.UndefinedType;
@@ -991,7 +989,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (getOwner() != null) {
 			try {
 				isParsingExpression = true;
-				expression = ExpressionParser.parse(getUnparsedBinding());
+				expression = getOwner().getBindingFactory().parseExpression(getUnparsedBinding());
+				// expression = ExpressionParser.parse(getUnparsedBinding());
 			} catch (ParseException e) {
 				// parse error
 				expression = null;

@@ -50,9 +50,6 @@ import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
-import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
-import org.openflexo.connie.java.JavaBindingFactory;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 /**
@@ -72,13 +69,15 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
  */
 final public class BindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
 
-	private static final BindingFactory BINDING_FACTORY = new JavaBindingFactory();
+	// private static final BindingFactory BINDING_FACTORY = new JavaBasedBindingFactory();
 
 	private Object object;
 	private BindingModel bindingModel;
+	private BindingFactory bindingFactory;
 
-	private BindingEvaluator(Object object, Type objectType) {
+	private BindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
 		this.object = object;
+		this.bindingFactory = bindingFactory;
 
 		bindingModel = new BindingModel();
 		bindingModel.addToBindingVariables(new BindingVariable("object", objectType));
@@ -90,10 +89,11 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 		bindingModel = null;
 	}
 
-	private static String normalizeBindingPath(String bindingPath) {
+	private static String normalizeBindingPath(String bindingPath, BindingFactory bindingFactory) {
 		Expression expression = null;
 		try {
-			expression = ExpressionParser.parse(bindingPath);
+			// expression = ExpressionParser.parse(bindingPath);
+			expression = bindingFactory.parseExpression(bindingPath);
 			if (expression != null) {
 				expression = expression.transform(new ExpressionTransformer() {
 					@Override
@@ -130,7 +130,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 
 	@Override
 	public BindingFactory getBindingFactory() {
-		return BINDING_FACTORY;
+		return bindingFactory;
 	}
 
 	@Override
@@ -153,7 +153,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 
 	private Object evaluate(String bindingPath)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		String normalizedBindingPath = normalizeBindingPath(bindingPath);
+		String normalizedBindingPath = normalizeBindingPath(bindingPath, bindingFactory);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
@@ -165,18 +165,18 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 		return binding.getBindingValue(this);
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object, Type objectType)
+	public static Object evaluateBinding(String bindingPath, Object object, Type objectType, BindingFactory bindingFactory)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 
-		BindingEvaluator evaluator = new BindingEvaluator(object, objectType);
+		BindingEvaluator evaluator = new BindingEvaluator(object, objectType, bindingFactory);
 		Object returned = evaluator.evaluate(bindingPath);
 		evaluator.delete();
 		return returned;
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object)
+	public static Object evaluateBinding(String bindingPath, Object object, BindingFactory bindingFactory)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 
-		return evaluateBinding(bindingPath, object, object.getClass());
+		return evaluateBinding(bindingPath, object, object.getClass(), bindingFactory);
 	}
 }
