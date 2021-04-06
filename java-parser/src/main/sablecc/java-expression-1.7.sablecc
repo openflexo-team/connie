@@ -194,8 +194,13 @@ Tokens
  
    // Types
    ty_boolean = 'boolean';
+   ty_char = 'char';
+   ty_short = 'short';
    ty_int = 'int';
+   ty_long = 'long';
+   ty_byte = 'byte';
    ty_float = 'float';
+   ty_double = 'double';
    ty_void = 'void';
 
    // --------------------------------------------------------------------------------------
@@ -432,7 +437,12 @@ Productions
 
    primitive_type =
        {int}   ty_int
+     | {short} ty_short
+     | {long} ty_long
      | {float} ty_float
+     | {double} ty_double
+     | {char} ty_char
+     | {byte} ty_byte
      | {boolean} ty_boolean
      ;
 

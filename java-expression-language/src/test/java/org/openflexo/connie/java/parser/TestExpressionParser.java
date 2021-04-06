@@ -7,12 +7,10 @@ import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant.BooleanConstant;
 import org.openflexo.connie.expr.Constant.FloatConstant;
-import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
 import org.openflexo.connie.expr.Constant.IntegerConstant;
 import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.DefaultExpressionPrettyPrinter;
 import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.UnaryOperatorExpression;
 
 import junit.framework.TestCase;
 
@@ -108,22 +106,6 @@ public class TestExpressionParser extends TestCase {
 
 	}
 
-	/*public void testType1() {
-		tryToParse("int", "foo", BindingValue.class, null, false);
-	}
-	
-	public void testType2() {
-		tryToParse("Integer", "foo", BindingValue.class, null, false);
-	}
-	
-	public void testType3() {
-		tryToParse("java.lang.Integer", "foo", BindingValue.class, null, false);
-	}
-	
-	public void testType4() {
-		tryToParse("java.lang.Toto<Tutu,org.toto.Sou,Integer>", "foo", BindingValue.class, null, false);
-	}*/
-
 	public void testBindingValue() {
 		tryToParse("foo", "foo", BindingValue.class, null, false);
 	}
@@ -145,7 +127,8 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testBindingValue6() {
-		tryToParse("i.am.a(1,2+3,7.8,\"foo\").little.test(1)", "i.am.a(1,5,7.8,\"foo\").little.test(1)", BindingValue.class, null, false);
+		tryToParse("i.am.a(1,2+3,7.8,\"foo\",'a').little.test(1).foo()", "i.am.a(1,5,7.8,\"foo\").little.test(1)", BindingValue.class, null,
+				false);
 	}
 
 	public void testNumericValue1() {
@@ -184,20 +167,16 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("1+((298*7.1e-3)-9)", "-5.8842", BinaryOperatorExpression.class, -5.8842, false);
 	}
 
+	public void testCharValue() {
+		tryToParse("'a'", "'a'", StringConstant.class, 'a', false);
+	}
+
 	public void testStringValue1() {
 		tryToParse("\"foo1\"", "\"foo1\"", StringConstant.class, "foo1", false);
 	}
 
 	public void testStringValue2() {
-		tryToParse("\"foo1\"", "\"foo1\"", StringConstant.class, "foo1", false);
-	}
-
-	public void testStringValue3() {
 		tryToParse("\"foo1\"+\"foo2\"", "\"foo1foo2\"", BinaryOperatorExpression.class, "foo1foo2", false);
-	}
-
-	public void testStringValue4() {
-		tryToParse("\"foo1\"+\"and\"+\"foo2\"", "\"foo1andfoo2\"", BinaryOperatorExpression.class, "foo1andfoo2", false);
 	}
 
 	public void testExpression1() {
@@ -214,22 +193,6 @@ public class TestExpressionParser extends TestCase {
 
 	public void testExpression4() {
 		tryToParse("1+function(test,4<7-x)", "(1 + function(test,(4 < (7 - x))))", BinaryOperatorExpression.class, null, false);
-	}
-
-	public void testTrigonometricComputing1() {
-		tryToParse("sin(-pi/2)", "-1.0", UnaryOperatorExpression.class, -1, false);
-	}
-
-	public void testTrigonometricComputing2() {
-		tryToParse("-atan(2)", "-1.1071487177940904", UnaryOperatorExpression.class, -1.1071487177940904, false);
-	}
-
-	public void testTrigonometricComputing3() {
-		tryToParse("-(atan(-pi/2)*(3-5*pi/7+8/9))", "1.651284257012876", UnaryOperatorExpression.class, 1.651284257012876, false);
-	}
-
-	public void testTrigonometricComputing4() {
-		tryToParse("-cos(atan(-pi/2)*(3-5*pi/7+8/9))", "0.08040105411083133", UnaryOperatorExpression.class, 0.08040105411083133, false);
 	}
 
 	public void testEquality() {
@@ -275,14 +238,6 @@ public class TestExpressionParser extends TestCase {
 
 	public void testBooleanExpression1() {
 		tryToParse("!a&&b", "((!(a)) & b)", BinaryOperatorExpression.class, null, false);
-	}
-
-	public void testPi() {
-		tryToParse("pi", "3.141592653589793", FloatSymbolicConstant.class, null, false);
-	}
-
-	public void testPi2() {
-		tryToParse("-pi/2", "-1.5707963267948966", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testComplexCall() {
@@ -371,16 +326,19 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testCast() {
-		tryToParse("(java.lang.Integer)2", "(java.lang.Integer)2", CastExpression.class, null, false);
+		tryToParse("(AType)2", "", CastExpression.class, null, true);
 	}
 
 	public void testCast2() {
-		tryToParse("(java.lang.Integer)2+((java.lang.Integer)2+(java.lang.Double)2)",
-				"((java.lang.Integer)2 + ((java.lang.Integer)2 + (java.lang.Double)2))", BinaryOperatorExpression.class, null, false);
+		tryToParse("(java.lang.Integer)2", "(java.lang.Integer)2", CastExpression.class, null, false);
 	}
 
-	public void testInvalidCast() {
-		tryToParse("(Prout)2", "", CastExpression.class, null, true);
+	public void testCast3() {
+		tryToParse("(int)2+((float)2+(double)2)", "(int)2+((float)2+(double)2)", BinaryOperatorExpression.class, null, false);
+	}
+
+	public void testCast4() {
+		tryToParse("(List<Tutu>)toto", "toto--", BindingValue.class, null, false);
 	}
 
 	public void testParameteredCast() {
@@ -402,10 +360,6 @@ public class TestExpressionParser extends TestCase {
 
 	public void testPostDec() {
 		tryToParse("toto--", "toto--", BindingValue.class, null, false);
-	}
-
-	public void testCast3() {
-		tryToParse("(List<Tutu>)toto", "toto--", BindingValue.class, null, false);
 	}
 
 	public void testInstanceOf() {
