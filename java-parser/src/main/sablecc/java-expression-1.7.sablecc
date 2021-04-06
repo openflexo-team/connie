@@ -270,9 +270,9 @@ Tokens
    // --------------------------------------------------------------------------------------
    // Identifier
    // --------------------------------------------------------------------------------------
-   identifier = letter letter_or_digit*;
    lidentifier = ['a'..'z'] letter_or_digit*;
    uidentifier = ['A'..'Z'] letter_or_digit*;
+   //identifier = letter letter_or_digit*;
 
    // --------------------------------------------------------------------------------------
    // White space and comments
@@ -300,6 +300,7 @@ Productions
   expression =
        {assignment}  [left]:left_hand_side assignment_operator [right]:expression
      | {conditional} conditional_exp
+ //	type
      ;
 
   /* statement_expression =
@@ -312,8 +313,35 @@ Productions
      | {fml_action_expression}  fml_action_exp
      ;*/
 
-   composite_ident = [identifier]:identifier [additional_identifiers]:additional_identifier*;
-   additional_identifier = dot identifier;
+   /*composite_ident =
+       {composite_identifier} [identifier]:lidentifier [additional_identifiers]:additional_identifier
+     | {simple_identifier} lidentifier
+     ;
+   additional_identifier =
+       {final_id} dot lidentifier
+     | {additional_id} dot lidentifier additional_identifier
+     ;
+
+   composite_tident =
+       {composite_type} [identifier]:lidentifier [additional_identifiers]:additional_tidentifier
+     //| {composite_type2} [identifier]:uidentifier [additional_identifiers]:additional_tidentifier
+     | {simple_type} uidentifier
+     ;
+   additional_tidentifier =
+       {final_type} dot uidentifier
+     | {additional_type} dot lidentifier additional_tidentifier
+     ;*/
+
+   //composite_ident = [identifier]:lidentifier [additional_identifiers]:additional_identifier*;
+   //additional_identifier = dot lidentifier;
+
+   identifier_prefix = lidentifier dot;
+   
+   composite_ident = [prefixes]:identifier_prefix* [identifier]:lidentifier ;
+ 
+   composite_tident = [prefixes]:identifier_prefix* [identifier]:uidentifier ;
+   
+   
 
    method_invocation =
        {primary}    primary /*dot *//*non_wild_type_arguments?*//* identifier*/ l_par argument_list? r_par
@@ -388,7 +416,7 @@ Productions
      | {gt}         [shift_expression1]:shift_exp gt [shift_expression2]:shift_exp
      | {lteq}       [shift_expression1]:shift_exp lteq [shift_expression2]:shift_exp
      | {gteq}       [shift_expression1]:shift_exp gteq [shift_expression2]:shift_exp
-     | {instanceof} shift_exp kw_instanceof primitive_type [dims]:dim+
+     | {instanceof} shift_exp kw_instanceof type [dims]:dim*
      ;
 
    shift_exp =
@@ -427,8 +455,6 @@ Productions
      | {tilde}   tilde unary_exp
      | {emark}   emark unary_exp
      | {cast}    l_par type [dims]:dim* r_par unary_exp
-//     | {cast2}   l_par identifier [dims]:dim* r_par unary_exp
-     // | {cast2}   l_par reference_type [dims]:dim* r_par unary_exp
      ;
 
    postfix_exp =
@@ -450,10 +476,10 @@ Productions
      | {expression}             l_par expression r_par
      | {field}                  field_access
      | {method}                 method_invocation
-     | {fml_action_expression}  fml_action_exp
+ //    | {fml_action_expression}  fml_action_exp
      ;
 
-   fml_action_exp =
+ /*  fml_action_exp =
        {java_instance_creation}                new_containment_clause? kw_new composite_ident type_arguments_or_diamond? l_par argument_list? r_par precise_fml_parameters_clause?
      | {fml_instance_creation}  			   new_containment_clause? kw_new [concept_name]:identifier colon_colon [constructor_name]:identifier l_par argument_list? r_par precise_fml_parameters_clause?
      | {ta_edition_action}                     [ta_id]:identifier colon_colon [edition_action]:identifier fml_parameters in_clause? from_clause? //FD remove ? on fml_parameters
@@ -463,15 +489,15 @@ Productions
      | {begin_match_action}                    kw_begin kw_match [concept_name]:identifier from_clause where_clause?
      | {match_action}                          kw_match [concept_name]:identifier in_clause? from_clause qualified_where_clause? create_clause
      | {end_match_action}                      kw_end kw_match [concept_name]:identifier in_clause abstract_action_clause
-     ;
+     ;*/
     
-   precise_fml_parameters_clause = kw_with fml_parameters;
+  /* precise_fml_parameters_clause = kw_with fml_parameters;
     
    create_clause = kw_create colon_colon [constructor_name]:identifier l_par argument_list? r_par;
 
    delete_clause = kw_delete colon_colon [destructor_name]:identifier l_par argument_list? r_par;
 
-   action_clause = kw_action colon_colon [action_name]:identifier l_par argument_list? r_par;
+   action_clause = kw_action colon_colon [action_name]:identifier l_par argument_list? r_par;*/
     
    // reduce/reduce conflict
    /*create_clause = 
@@ -490,12 +516,12 @@ Productions
      ;
     */
     
-   abstract_action_clause =
+  /* abstract_action_clause =
      | {normal}  				action_clause
      | {delete}  				delete_clause
-     ;
+     ;*/
     
-   new_containment_clause = composite_ident dot;
+  // new_containment_clause = composite_ident dot;
 
    type_arguments_or_diamond =
        {type_arguments} type_arguments
@@ -507,12 +533,12 @@ Productions
      | {many} argument_list comma expression
      ;
 
-   qualified_argument_list =
+   /*qualified_argument_list =
        {one}  qualified_argument
      | {many} qualified_argument_list comma qualified_argument
-     ;
+     ;*/
 
-   qualified_instance =
+  /* qualified_instance =
        {simple}         [arg_type]:identifier colon fml_parameters
      | {full_qualified} [ta_id]:identifier colon_colon [arg_type]:identifier colon fml_parameters
       ;
@@ -537,11 +563,12 @@ Productions
    from_clause  = kw_from l_par expression r_par;
    where_clause = kw_where l_par argument_list? r_par;
    qualified_where_clause = kw_where l_par qualified_argument_list? r_par;
+*/
 
    field_access =
-       {super} kw_super dot identifier
-     | {reference_super} [identifier1]:composite_ident [dot1]:dot kw_super [dot2]:dot [identifier2]:identifier
-     | {primary} primary_no_id dot identifier
+       {super} kw_super dot lidentifier
+     | {reference_super} [identifier1]:composite_ident [dot1]:dot kw_super [dot2]:dot [identifier2]:lidentifier
+     | {primary} primary_no_id dot lidentifier
      ;
 
    literal =
@@ -571,16 +598,7 @@ Productions
 
    reference_type = [identifier]:composite_tident [args]:type_arguments?;
 
-   composite_tident =
-       {composite_type} [identifier]:lidentifier [additional_identifiers]:additional_tidentifier
-     | {simple_type} uidentifier
-     ;
-   additional_tidentifier =
-       {final_type} dot uidentifier
-     | {int_type} dot lidentifier additional_tidentifier
-     ;
-
-   // Take care of the following lexical anomaly:
+  // Take care of the following lexical anomaly:
    //   A<B<C>>  and  A<B<C<D>>>
    // Notice the '>>' and '>>>" tokens.
    //
@@ -590,8 +608,8 @@ Productions
 
    type_arguments =
        {gt} lt type_argument_list gt
-     | {shr} [lt1]:lt type_argument_list_head* [identifier]:composite_ident [lt2]:lt type_argument_list shr
-     | {ushr} [lt1]:lt [heads1]:type_argument_list_head* [specifier1]:composite_ident [lt2]:lt [heads2]:type_argument_list_head* [specifier2]:composite_ident [lt3]:lt type_argument_list ushr
+     | {shr} [lt1]:lt type_argument_list_head* [identifier]:composite_tident [lt2]:lt type_argument_list shr
+     | {ushr} [lt1]:lt [heads1]:type_argument_list_head* [specifier1]:composite_tident [lt2]:lt [heads2]:type_argument_list_head* [specifier2]:composite_tident [lt3]:lt type_argument_list ushr
      ;
 
    type_argument_list = type_argument_list_head* type_argument;
