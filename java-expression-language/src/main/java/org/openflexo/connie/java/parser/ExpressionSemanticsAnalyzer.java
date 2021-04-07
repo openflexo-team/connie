@@ -39,13 +39,38 @@
 
 package org.openflexo.connie.java.parser;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Constant.FloatConstant;
+import org.openflexo.connie.expr.Constant.IntegerConstant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
+import org.openflexo.connie.java.parser.node.AConditionalExpression;
+import org.openflexo.connie.java.parser.node.AFloatingPointLiteral;
+import org.openflexo.connie.java.parser.node.AIdentifierPrimary;
+import org.openflexo.connie.java.parser.node.AIntegerLiteral;
+import org.openflexo.connie.java.parser.node.ALiteralPrimaryNoId;
+import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
+import org.openflexo.connie.java.parser.node.APostfixUnaryExpNotPlusMinus;
+import org.openflexo.connie.java.parser.node.APrimaryNoIdPrimary;
+import org.openflexo.connie.java.parser.node.APrimaryPostfixExp;
+import org.openflexo.connie.java.parser.node.ASimpleAddExp;
+import org.openflexo.connie.java.parser.node.ASimpleAndExp;
+import org.openflexo.connie.java.parser.node.ASimpleConditionalAndExp;
+import org.openflexo.connie.java.parser.node.ASimpleConditionalExp;
+import org.openflexo.connie.java.parser.node.ASimpleConditionalOrExp;
+import org.openflexo.connie.java.parser.node.ASimpleEqualityExp;
+import org.openflexo.connie.java.parser.node.ASimpleExclusiveOrExp;
+import org.openflexo.connie.java.parser.node.ASimpleInclusiveOrExp;
+import org.openflexo.connie.java.parser.node.ASimpleMultExp;
+import org.openflexo.connie.java.parser.node.ASimpleRelationalExp;
+import org.openflexo.connie.java.parser.node.ASimpleShiftExp;
+import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
 import org.openflexo.connie.java.parser.node.Node;
-import org.openflexo.toolbox.StringUtils;
 
 /**
  * This class implements the semantics analyzer for a parsed AnTAR expression.<br>
@@ -74,12 +99,70 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		// System.out.println("REGISTER " + e + " for node " + n + " as " + n.getClass());
 		expressionNodes.put(n, e);
 		topLevel = n;
+		/*if (n.parent() != null) {
+			registerExpressionNode(n.parent(), e);
+		}*/
 	}
 
 	protected Expression getExpression(Node n) {
 		if (n != null) {
 			Expression returned = expressionNodes.get(n);
+
 			if (returned == null) {
+				if (n instanceof AConditionalExpression) {
+					System.out.println("Prout pour " + n);
+					return getExpression(((AConditionalExpression) n).getConditionalExp());
+				}
+				if (n instanceof ASimpleConditionalExp) {
+					System.out.println("Prout2 pour " + n);
+					return getExpression(((ASimpleConditionalExp) n).getConditionalOrExp());
+				}
+				if (n instanceof ASimpleConditionalOrExp) {
+					return getExpression(((ASimpleConditionalOrExp) n).getConditionalAndExp());
+				}
+				if (n instanceof ASimpleConditionalAndExp) {
+					return getExpression(((ASimpleConditionalAndExp) n).getInclusiveOrExp());
+				}
+				if (n instanceof ASimpleInclusiveOrExp) {
+					return getExpression(((ASimpleInclusiveOrExp) n).getExclusiveOrExp());
+				}
+				if (n instanceof ASimpleExclusiveOrExp) {
+					return getExpression(((ASimpleExclusiveOrExp) n).getAndExp());
+				}
+				if (n instanceof ASimpleAndExp) {
+					return getExpression(((ASimpleAndExp) n).getEqualityExp());
+				}
+				if (n instanceof ASimpleEqualityExp) {
+					return getExpression(((ASimpleEqualityExp) n).getRelationalExp());
+				}
+				if (n instanceof ASimpleRelationalExp) {
+					return getExpression(((ASimpleRelationalExp) n).getShiftExp());
+				}
+				if (n instanceof ASimpleShiftExp) {
+					return getExpression(((ASimpleShiftExp) n).getAddExp());
+				}
+				if (n instanceof ASimpleAddExp) {
+					return getExpression(((ASimpleAddExp) n).getMultExp());
+				}
+				if (n instanceof ASimpleMultExp) {
+					return getExpression(((ASimpleMultExp) n).getUnaryExp());
+				}
+				if (n instanceof AUnaryUnaryExp) {
+					return getExpression(((AUnaryUnaryExp) n).getUnaryExpNotPlusMinus());
+				}
+				if (n instanceof APostfixUnaryExpNotPlusMinus) {
+					return getExpression(((APostfixUnaryExpNotPlusMinus) n).getPostfixExp());
+				}
+				if (n instanceof APrimaryPostfixExp) {
+					return getExpression(((APrimaryPostfixExp) n).getPrimary());
+				}
+				if (n instanceof APrimaryNoIdPrimary) {
+					return getExpression(((APrimaryNoIdPrimary) n).getPrimaryNoId());
+				}
+				if (n instanceof ALiteralPrimaryNoId) {
+					return getExpression(((ALiteralPrimaryNoId) n).getLiteral());
+				}
+
 				System.out.println("No expression registered for " + n + " of  " + n.getClass());
 			}
 			return returned;
@@ -87,21 +170,147 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		return null;
 	}
 
-	int ident = 0;
-
+	/*int ident = 0;
+	
 	@Override
 	public void defaultIn(Node node) {
 		super.defaultIn(node);
 		ident++;
 		System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName());
 	}
-
+	
 	@Override
 	public void defaultOut(Node node) {
 		// TODO Auto-generated method stub
 		super.defaultOut(node);
 		ident--;
+	}*/
+
+	/*@Override
+	public void outAIdentifierPrefix(AIdentifierPrefix node) {
+		// TODO Auto-generated method stub
+		super.outAIdentifierPrefix(node);
+		System.out.println("Tiens on sort avec " + node + " of " + node.getClass().getSimpleName());
 	}
+	
+	@Override
+	public void outACompositeIdent(ACompositeIdent node) {
+		// TODO Auto-generated method stub
+		super.outACompositeIdent(node);
+		System.out.println("On sort de CompositeIdent avec " + node + " of " + node.getClass().getSimpleName());
+	}
+	
+	@Override
+	public void outAPrimaryMethodInvocation(APrimaryMethodInvocation node) {
+		// TODO Auto-generated method stub
+		super.outAPrimaryMethodInvocation(node);
+		System.out.println("On sort de PrimaryMethodInvocation avec " + node + " of " + node.getClass().getSimpleName());
+	}*/
+
+	/*@Override
+	public void inAIdentifierPrimary(AIdentifierPrimary node) {
+		super.inAIdentifierPrimary(node);
+		System.out.println(">> On entre dans primary/{identifier} avec " + node + " of " + node.getClass().getSimpleName());
+	}*/
+
+	@Override
+	public void outAIdentifierPrimary(AIdentifierPrimary node) {
+		super.outAIdentifierPrimary(node);
+		// System.out.println("<< On sort de primary/{identifier} avec " + node + " of " + node.getClass().getSimpleName());
+		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+	}
+
+	/*@Override
+	public void outAPrimaryNoIdPrimary(APrimaryNoIdPrimary node) {
+		super.outAPrimaryNoIdPrimary(node);
+		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+	}*/
+
+	@Override
+	public void outAMethodPrimaryNoId(AMethodPrimaryNoId node) {
+		super.outAMethodPrimaryNoId(node);
+		System.out.println("******** Hop on construit un binding avec " + node);
+		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+	}
+
+	public Constant<?> makeConstant(Number number) {
+		if (number instanceof Byte) {
+			return new IntegerConstant((Byte) number);
+		}
+		if (number instanceof Short) {
+			return new IntegerConstant((Short) number);
+		}
+		if (number instanceof Integer) {
+			return new IntegerConstant((Integer) number);
+		}
+		if (number instanceof Long) {
+			return new IntegerConstant((Long) number);
+		}
+		if (number instanceof Float) {
+			return new FloatConstant((Float) number);
+		}
+		if (number instanceof Double) {
+			return new FloatConstant((Double) number);
+		}
+		return null;
+	}
+
+	@Override
+	public void outAIntegerLiteral(AIntegerLiteral node) {
+		super.outAIntegerLiteral(node);
+
+		try {
+			String valueText = node.getLitInteger().getText();
+			Number value;
+
+			if (valueText.startsWith("0x") || valueText.startsWith("0X")) {
+				valueText = valueText.substring(2);
+				value = Long.parseLong(valueText, 16);
+			}
+			else if (valueText.startsWith("0")) {
+				valueText = valueText.substring(1);
+				value = Long.parseLong(valueText, 8);
+				System.out.println("value=" + value);
+			}
+			else {
+				value = NumberFormat.getNumberInstance().parse(valueText);
+			}
+			registerExpressionNode(node, makeConstant(value));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void outAFloatingPointLiteral(AFloatingPointLiteral node) {
+		super.outAFloatingPointLiteral(node);
+
+		Number value = null;
+		String valueText = node.getLitFloat().getText();
+		System.out.println("valueText=" + valueText);
+		try {
+			value = Double.parseDouble(valueText);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		System.out.println("value = " + value);
+		registerExpressionNode(node, makeConstant(value));
+
+	}
+
+	/*@Override
+	public void inAMethodPrimaryNoId(AMethodPrimaryNoId node) {
+		// TODO Auto-generated method stub
+		super.inAMethodPrimaryNoId(node);
+		System.out.println(">> On entre de primary_no_id/{method} avec " + node + " of " + node.getClass().getSimpleName());
+	}
+	
+	@Override
+	public void outAMethodPrimaryNoId(AMethodPrimaryNoId node) {
+		// TODO Auto-generated method stub
+		super.outAMethodPrimaryNoId(node);
+		System.out.println("<< On sort de primary_no_id/{method} avec " + node + " of " + node.getClass().getSimpleName());
+	}*/
 
 	/*	private BindingValue makeBinding(PBinding node) {
 			// System.out.println("Make binding with " + node);
