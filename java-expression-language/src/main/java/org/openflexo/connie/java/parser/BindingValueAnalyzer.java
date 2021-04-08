@@ -51,6 +51,7 @@ import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.ACompositeIdent;
 import org.openflexo.connie.java.parser.node.AIdentifierPrefix;
 import org.openflexo.connie.java.parser.node.AIdentifierPrimary;
+import org.openflexo.connie.java.parser.node.AManyArgumentList;
 import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AOneArgumentList;
 import org.openflexo.connie.java.parser.node.APrimaryMethodInvocation;
@@ -170,7 +171,7 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	public void outAIdentifierPrefix(AIdentifierPrefix node) {
 		// TODO Auto-generated method stub
 		super.outAIdentifierPrefix(node);
-		System.out.println("Tiens on tombe sur " + node.getLidentifier().getText());
+		// System.out.println("Tiens on tombe sur " + node.getLidentifier().getText());
 		if (weAreDealingWithTheRightBinding()) {
 			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getLidentifier().getText());
 			path.add(pathElement);
@@ -180,7 +181,7 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outACompositeIdent(ACompositeIdent node) {
 		super.outACompositeIdent(node);
-		System.out.println("Finalement on tombe sur l'identifiant " + node.getIdentifier().getText());
+		// System.out.println("Finalement on tombe sur l'identifiant " + node.getIdentifier().getText());
 		if (weAreDealingWithTheRightBinding()) {
 			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getIdentifier().getText());
 			path.add(pathElement);
@@ -192,9 +193,6 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		super.outAPrimaryMethodInvocation(node);
 		if (weAreDealingWithTheRightBinding()) {
 			List<AbstractBindingPathElement> bindingPath = makeBindingPath(node.getPrimary(), expressionAnalyzer);
-			System.out.println("On tombe sur l'invocation de methode " + node);
-			System.out.println("On a deja " + bindingPath);
-			System.out.println("Et voila les arguments: " + node.getArgumentList());
 
 			for (int i = 0; i < bindingPath.size() - 1; i++) {
 				path.add(bindingPath.get(i));
@@ -209,15 +207,40 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 			else if (argumentList instanceof AOneArgumentList) {
 				// One argument
 				PExpression pExpression = ((AOneArgumentList) argumentList).getExpression();
-				System.out.println("Tiens je cherche pour " + pExpression + " of " + pExpression.getClass().getSimpleName());
-				System.out.println("Et je tombe sur: " + expressionAnalyzer.getExpression(pExpression) + " of "
-						+ expressionAnalyzer.getExpression(pExpression).getClass().getSimpleName());
+				// System.out.println("Tiens je cherche pour " + pExpression + " of " + pExpression.getClass().getSimpleName());
+				// System.out.println("Et je tombe sur: " + expressionAnalyzer.getExpression(pExpression) + " of "
+				// + expressionAnalyzer.getExpression(pExpression).getClass().getSimpleName());
 				args.add(expressionAnalyzer.getExpression(pExpression));
+			}
+			else if (argumentList instanceof AManyArgumentList) {
+				List<PExpression> arguments = makeArguments((AManyArgumentList) argumentList);
+				for (PExpression pExpression : arguments) {
+					// System.out.println("Tiens je cherche pour " + pExpression + " of " + pExpression.getClass().getSimpleName());
+					// System.out.println("Et je tombe sur: " + expressionAnalyzer.getExpression(pExpression) + " of "
+					// + expressionAnalyzer.getExpression(pExpression).getClass().getSimpleName());
+					args.add(expressionAnalyzer.getExpression(pExpression));
+				}
 			}
 
 			MethodCallBindingPathElement returned = new MethodCallBindingPathElement(identifier, args);
-			path.add(0, returned);
+			path.add(returned);
 
+		}
+	}
+
+	private List<PExpression> makeArguments(AManyArgumentList args) {
+		List<PExpression> returned = new ArrayList<>();
+		buildArguments(args, returned);
+		return returned;
+	}
+
+	private void buildArguments(PArgumentList argList, List<PExpression> expressions) {
+		if (argList instanceof AOneArgumentList) {
+			expressions.add(0, ((AOneArgumentList) argList).getExpression());
+		}
+		else if (argList instanceof AManyArgumentList) {
+			expressions.add(0, ((AManyArgumentList) argList).getExpression());
+			buildArguments(((AManyArgumentList) argList).getArgumentList(), expressions);
 		}
 	}
 

@@ -110,11 +110,9 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 			if (returned == null) {
 				if (n instanceof AConditionalExpression) {
-					System.out.println("Prout pour " + n);
 					return getExpression(((AConditionalExpression) n).getConditionalExp());
 				}
 				if (n instanceof ASimpleConditionalExp) {
-					System.out.println("Prout2 pour " + n);
 					return getExpression(((ASimpleConditionalExp) n).getConditionalOrExp());
 				}
 				if (n instanceof ASimpleConditionalOrExp) {
@@ -270,7 +268,6 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 			else if (valueText.startsWith("0")) {
 				valueText = valueText.substring(1);
 				value = Long.parseLong(valueText, 8);
-				System.out.println("value=" + value);
 			}
 			else {
 				value = NumberFormat.getNumberInstance().parse(valueText);
@@ -287,13 +284,11 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 		Number value = null;
 		String valueText = node.getLitFloat().getText();
-		System.out.println("valueText=" + valueText);
 		try {
 			value = Double.parseDouble(valueText);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
-		System.out.println("value = " + value);
 		registerExpressionNode(node, makeConstant(value));
 
 	}

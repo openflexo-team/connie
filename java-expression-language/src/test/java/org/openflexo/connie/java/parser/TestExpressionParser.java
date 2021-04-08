@@ -168,29 +168,37 @@ public class TestExpressionParser extends TestCase {
 
 	// Test BindingValue
 
-	public void testBindingValue() {
+	public void testSimpleIdentifier() {
 		tryToParse("foo", "foo", BindingValue.class, null, false);
 	}
 
-	public void testBindingValue2() {
+	public void testUnderscoredIdentifier() {
 		tryToParse("foo_foo2", "foo_foo2", BindingValue.class, null, false);
 	}
 
-	public void testBindingValue3() {
+	public void testComposedIdentifier() {
 		tryToParse("foo.foo2.foo3", "foo.foo2.foo3", BindingValue.class, null, false);
 	}
 
-	public void testBindingValue4() {
-		tryToParse("method(1)", "method(1)", BindingValue.class, null, false);
-	}
-
-	public void testBindingValue41() {
+	public void testSimpleMethodNoArgs() {
 		tryToParse("method()", "method()", BindingValue.class, null, false);
 	}
 
-	/*public void testBindingValue5() {
+	public void testSimpleMethodWith1Arg() {
+		tryToParse("method(1)", "method(1)", BindingValue.class, null, false);
+	}
+
+	public void testSimpleMethodWith3Args() {
+		tryToParse("method(1,2,3)", "method(1,2,3)", BindingValue.class, null, false);
+	}
+
+	public void testFullQualifiedMethod() {
 		tryToParse("a.b.c.method(1)", "a.b.c.method(1)", BindingValue.class, null, false);
-	}*/
+	}
+
+	public void testImbricatedMethods() {
+		tryToParse("a.b.c.method(m1(1),d.e.f.m2(1))", "a.b.c.method(m1(1),d.e.f.m2(1))", BindingValue.class, null, false);
+	}
 
 	public void testBindingValue6() {
 		tryToParse("a.b.c.method1(1).method2(2)+c.d.e", "a.b.c.method(1).method2(2)", BindingValue.class, null, false);
