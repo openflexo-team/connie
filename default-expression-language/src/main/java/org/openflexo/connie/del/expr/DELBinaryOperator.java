@@ -37,53 +37,28 @@
  * 
  */
 
-package org.openflexo.connie.expr;
+package org.openflexo.connie.del.expr;
 
-import java.lang.reflect.Type;
-import java.util.Vector;
-
-import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.BinaryOperator;
+import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Expression;
 
 /**
- * Represents an expression which could not be resolved for any reason (eg during a NullReferenceException occured during an evaluation)
+ * Represents an binary operator (an operator with two operands)
  * 
  * @author sylvain
  * 
  */
-public abstract class UnresolvedExpression extends Expression {
+public abstract class DELBinaryOperator extends BinaryOperator {
+
 	@Override
-	public void visit(ExpressionVisitor visitor) throws VisitorException {
+	public Expression evaluate(Expression leftArg, Constant<?> rightArg) {
+		return new DELBinaryOperatorExpression(this, leftArg, rightArg);
 	}
 
 	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-		return this;
-	}
-
-	@Override
-	public int getDepth() {
-		return 0;
-	}
-
-	@Override
-	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return EvaluationType.LITERAL;
-	}
-
-	@Override
-	protected Vector<Expression> getChilds() {
-		return null;
-	}
-
-	@Override
-	public boolean isSettable() {
-		return false;
-	}
-
-	@Override
-	public Type getAccessedType() {
-		return null;
+	public Expression evaluate(Constant<?> leftArg, Expression rightArg) {
+		return new DELBinaryOperatorExpression(this, leftArg, rightArg);
 	}
 
 }

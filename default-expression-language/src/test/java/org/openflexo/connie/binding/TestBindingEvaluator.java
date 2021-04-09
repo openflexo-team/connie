@@ -41,9 +41,9 @@ package org.openflexo.connie.binding;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.openflexo.connie.BindingEvaluator;
 import org.openflexo.connie.BindingFactory;
-import org.openflexo.connie.del.parser.DefaultExpressionLanguageBindingFactory;
+import org.openflexo.connie.del.DELBindingFactory;
+import org.openflexo.connie.del.util.DELBindingEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
@@ -56,11 +56,11 @@ public class TestBindingEvaluator extends TestCase {
 
 		System.out.println("Evaluate " + bindingPath);
 
-		BindingFactory bindingFactory = new DefaultExpressionLanguageBindingFactory();
+		BindingFactory bindingFactory = new DELBindingFactory();
 
 		Object evaluatedResult = null;
 		try {
-			evaluatedResult = BindingEvaluator.evaluateBinding(bindingPath, object, bindingFactory);
+			evaluatedResult = DELBindingEvaluator.evaluateBinding(bindingPath, object, bindingFactory);
 		} catch (InvalidKeyValuePropertyException e) {
 			e.printStackTrace();
 			fail();

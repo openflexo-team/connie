@@ -39,15 +39,21 @@
 
 package org.openflexo.connie.java.parser;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Constant.FloatConstant;
-import org.openflexo.connie.expr.Constant.IntegerConstant;
 import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.java.expr.JavaArithmeticBinaryOperator;
+import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
+import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
+import org.openflexo.connie.java.expr.JavaConstant.ByteConstant;
+import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
+import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
+import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
+import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ShortConstant;
+import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.AConditionalExpression;
 import org.openflexo.connie.java.parser.node.AFloatingPointLiteral;
@@ -55,6 +61,9 @@ import org.openflexo.connie.java.parser.node.AIdentifierPrimary;
 import org.openflexo.connie.java.parser.node.AIntegerLiteral;
 import org.openflexo.connie.java.parser.node.ALiteralPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
+import org.openflexo.connie.java.parser.node.AMinusAddExp;
+import org.openflexo.connie.java.parser.node.AMinusUnaryExp;
+import org.openflexo.connie.java.parser.node.APlusAddExp;
 import org.openflexo.connie.java.parser.node.APostfixUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.APrimaryNoIdPrimary;
 import org.openflexo.connie.java.parser.node.APrimaryPostfixExp;
@@ -71,6 +80,8 @@ import org.openflexo.connie.java.parser.node.ASimpleRelationalExp;
 import org.openflexo.connie.java.parser.node.ASimpleShiftExp;
 import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
 import org.openflexo.connie.java.parser.node.Node;
+import org.openflexo.connie.java.parser.node.PUnaryExp;
+import org.openflexo.toolbox.StringUtils;
 
 /**
  * This class implements the semantics analyzer for a parsed AnTAR expression.<br>
@@ -168,21 +179,21 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		return null;
 	}
 
-	/*int ident = 0;
-	
+	int ident = 0;
+
 	@Override
 	public void defaultIn(Node node) {
 		super.defaultIn(node);
 		ident++;
 		System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName());
 	}
-	
+
 	@Override
 	public void defaultOut(Node node) {
 		// TODO Auto-generated method stub
 		super.defaultOut(node);
 		ident--;
-	}*/
+	}
 
 	/*@Override
 	public void outAIdentifierPrefix(AIdentifierPrefix node) {
@@ -233,22 +244,22 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 	public Constant<?> makeConstant(Number number) {
 		if (number instanceof Byte) {
-			return new IntegerConstant((Byte) number);
+			return new ByteConstant((Byte) number);
 		}
 		if (number instanceof Short) {
-			return new IntegerConstant((Short) number);
+			return new ShortConstant((Short) number);
 		}
 		if (number instanceof Integer) {
 			return new IntegerConstant((Integer) number);
 		}
 		if (number instanceof Long) {
-			return new IntegerConstant((Long) number);
+			return new LongConstant((Long) number);
 		}
 		if (number instanceof Float) {
 			return new FloatConstant((Float) number);
 		}
 		if (number instanceof Double) {
-			return new FloatConstant((Double) number);
+			return new DoubleConstant((Double) number);
 		}
 		return null;
 	}
@@ -257,25 +268,37 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	public void outAIntegerLiteral(AIntegerLiteral node) {
 		super.outAIntegerLiteral(node);
 
-		try {
-			String valueText = node.getLitInteger().getText();
-			Number value;
+		String valueText = node.getLitInteger().getText();
+		Number value;
 
-			if (valueText.startsWith("0x") || valueText.startsWith("0X")) {
-				valueText = valueText.substring(2);
+		System.out.println("parsing " + valueText);
+
+		if (valueText.startsWith("0x") || valueText.startsWith("0X")) {
+			valueText = valueText.substring(2);
+			try {
+				value = Integer.parseInt(valueText, 16);
+			} catch (NumberFormatException e) {
 				value = Long.parseLong(valueText, 16);
 			}
-			else if (valueText.startsWith("0")) {
-				valueText = valueText.substring(1);
+		}
+		else if (valueText.startsWith("0")) {
+			valueText = valueText.substring(1);
+			try {
+				value = Integer.parseInt(valueText, 8);
+			} catch (NumberFormatException e) {
 				value = Long.parseLong(valueText, 8);
 			}
-			else {
-				value = NumberFormat.getNumberInstance().parse(valueText);
-			}
-			registerExpressionNode(node, makeConstant(value));
-		} catch (ParseException e) {
-			e.printStackTrace();
 		}
+		else if (valueText.endsWith("L") || valueText.endsWith("l")) {
+			valueText = valueText.substring(0, valueText.length() - 1);
+			value = Long.parseLong(valueText);
+		}
+		else {
+			value = Integer.parseInt(valueText);
+			// value = NumberFormat.getNumberInstance().parse(valueText);
+			// System.out.println("Pour " + valueText + " j'obtiens " + value + " of " + value.getClass());
+		}
+		registerExpressionNode(node, makeConstant(value));
 	}
 
 	@Override
@@ -284,13 +307,56 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 		Number value = null;
 		String valueText = node.getLitFloat().getText();
-		try {
-			value = Double.parseDouble(valueText);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
+		if (valueText.endsWith("F") || valueText.endsWith("f")) {
+			valueText = valueText.substring(0, valueText.length() - 1);
+			try {
+				value = Float.parseFloat(valueText);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		else if (valueText.endsWith("D") || valueText.endsWith("d")) {
+			valueText = valueText.substring(0, valueText.length() - 1);
+			try {
+				value = Double.parseDouble(valueText);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			try {
+				value = Double.parseDouble(valueText);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
 		}
 		registerExpressionNode(node, makeConstant(value));
 
+	}
+
+	@Override
+	public void outAMinusUnaryExp(AMinusUnaryExp node) {
+		// TODO Auto-generated method stub
+		super.outAMinusUnaryExp(node);
+
+		PUnaryExp unaryExp = node.getUnaryExp();
+
+		registerExpressionNode(node, new JavaUnaryOperatorExpression(JavaArithmeticUnaryOperator.UNARY_MINUS, getExpression(unaryExp)));
+
+	}
+
+	@Override
+	public void outAPlusAddExp(APlusAddExp node) {
+		super.outAPlusAddExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.ADDITION,
+				getExpression(node.getAddExp()), getExpression(node.getMultExp())));
+	}
+
+	@Override
+	public void outAMinusAddExp(AMinusAddExp node) {
+		super.outAMinusAddExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.SUBSTRACTION,
+				getExpression(node.getAddExp()), getExpression(node.getMultExp())));
 	}
 
 	/*@Override
@@ -307,107 +373,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		System.out.println("<< On sort de primary_no_id/{method} avec " + node + " of " + node.getClass().getSimpleName());
 	}*/
 
-	/*	private BindingValue makeBinding(PBinding node) {
-			// System.out.println("Make binding with " + node);
-	
-			// Apply the translation.
-			BindingSemanticsAnalyzer bsa = new BindingSemanticsAnalyzer(node);
-	
-			// System.out.println("Built bsa as " + bsa.getPath());
-	
-			node.apply(bsa);
-	
-			// System.out.println("Make binding value with bsa as " + bsa.getPath());
-	
-			BindingValue returned = new BindingValue(bsa.getPath());
-			// System.out.println("Made binding as " + bsa.getPath());
-	
-			registerExpressionNode(node, returned);
-			return returned;
-		}
-	
-		private TypeReference makeTypeReference(PTypeReference node) {
-			if (node instanceof ABasicTypeReference) {
-				return makeBasicTypeReference((ABasicTypeReference) node);
-			}
-			else if (node instanceof AParameteredTypeReference) {
-				return makeParameteredTypeReference((AParameteredTypeReference) node);
-			}
-			System.err.println("Unexpected " + node);
-			return null;
-		}
-	
-		private String makeReferencePath(PTypeReferencePath path) {
-			if (path instanceof AIdentifierTypeReferencePath) {
-				return ((AIdentifierTypeReferencePath) path).getIdentifier().getText();
-			}
-			else if (path instanceof ATailTypeReferencePath) {
-				return ((ATailTypeReferencePath) path).getIdentifier().getText() + "."
-						+ makeReferencePath(((ATailTypeReferencePath) path).getTypeReferencePath());
-			}
-			System.err.println("Unexpected " + path);
-			return null;
-		}
-	
-		private TypeReference makeBasicTypeReference(ABasicTypeReference node) {
-			return new TypeReference(makeReferencePath(node.getTypeReferencePath()));
-		}
-	
-		private TypeReference makeParameteredTypeReference(AParameteredTypeReference node) {
-			PTypeReferenceArgList argList = node.getTypeReferenceArgList();
-			List<TypeReference> args = new ArrayList<>();
-			if (argList instanceof ATypeReferenceArgList) {
-				args.add(makeTypeReference(((ATypeReferenceArgList) argList).getTypeReference()));
-				for (PTypeReferenceAdditionalArg aa : ((ATypeReferenceArgList) argList).getTypeReferenceAdditionalArgs()) {
-					ATypeReferenceAdditionalArg additionalArg = (ATypeReferenceAdditionalArg) aa;
-					args.add(makeTypeReference(additionalArg.getTypeReference()));
-				}
-			}
-			return new TypeReference(makeReferencePath(node.getTypeReferencePath()), args);
-		}
-	
-		private IntegerConstant makeDecimalNumber(TDecimalNumber node) {
-			// System.out.println("Make decimal number with " + node + " as " + Long.parseLong(node.getText()));
-			IntegerConstant returned = new IntegerConstant(Long.parseLong(node.getText()));
-			registerExpressionNode(node, returned);
-			return returned;
-		}
-	
-		private FloatConstant makePreciseNumber(TPreciseNumber node) {
-			// System.out.println("Make precise number with " + node + " as " + Double.parseDouble(node.getText()));
-			FloatConstant returned = new FloatConstant(Double.parseDouble(node.getText()));
-			registerExpressionNode(node, returned);
-			return returned;
-		}
-	
-		private FloatConstant makeScientificNotationNumber(TScientificNotationNumber node) {
-			// System.out.println("Make scientific notation number with " + node + " as " + Double.parseDouble(node.getText()));
-			FloatConstant returned = new FloatConstant(Double.parseDouble(node.getText()));
-			registerExpressionNode(node, returned);
-			return returned;
-		}
-	
-		private StringConstant makeStringValue(TStringValue node) {
-			// System.out.println("Make string value with " + node);
-			StringConstant returned = new StringConstant(node.getText().substring(1, node.getText().length() - 1));
-			registerExpressionNode(node, returned);
-			return returned;
-		}
-	
-		private StringConstant makeCharsValue(TCharsValue node) {
-			// System.out.println("Make chars value with " + node);
-			StringConstant returned = new StringConstant(node.getText().substring(1, node.getText().length() - 1));
-			registerExpressionNode(node, returned);
-			return returned;
-		}
-	
-	
-		@Override
-		public void outAExpr2Expr(AExpr2Expr node) {
-			super.outAExpr2Expr(node);
-			registerExpressionNode(node, getExpression(node.getExpr2()));
-		}
-	
+	/*	
 		@Override
 		public void outACondExprExpr(ACondExprExpr node) {
 			super.outACondExprExpr(node);

@@ -71,7 +71,6 @@ import org.openflexo.connie.exception.NotSettableContextException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.Constant.ObjectSymbolicConstant;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
@@ -98,13 +97,16 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private String invalidBindingReason = "not analyzed yet";
 
-	public BindingValue() {
-		this(new ArrayList<AbstractBindingPathElement>());
+	private ExpressionPrettyPrinter prettyPrinter;
+
+	public BindingValue(ExpressionPrettyPrinter prettyPrinter) {
+		this(new ArrayList<AbstractBindingPathElement>(), prettyPrinter);
 	}
 
-	public BindingValue(List<AbstractBindingPathElement> aBindingPath) {
+	public BindingValue(List<AbstractBindingPathElement> aBindingPath, ExpressionPrettyPrinter prettyPrinter) {
 		super();
 
+		this.prettyPrinter = prettyPrinter;
 		this.parsedBindingPath = aBindingPath;
 		bindingVariable = null;
 		bindingPath = new ArrayList<>();
@@ -112,8 +114,13 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		analysingSuccessfull = true;
 	}
 
-	public BindingValue(String stringToParse, BindingFactory bindingFactory) throws ParseException {
-		this(parse(stringToParse, bindingFactory));
+	public BindingValue(String stringToParse, BindingFactory bindingFactory, ExpressionPrettyPrinter prettyPrinter) throws ParseException {
+		this(parse(stringToParse, bindingFactory), prettyPrinter);
+	}
+
+	@Override
+	public ExpressionPrettyPrinter getPrettyPrinter() {
+		return prettyPrinter;
 	}
 
 	public void delete() {
@@ -482,7 +489,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	private BindingValue makeTransformationForValidBindingValue(ExpressionTransformer transformer) throws TransformException {
-		BindingValue bv = new BindingValue();
+		BindingValue bv = new BindingValue(prettyPrinter);
 		bv.setDataBinding(getDataBinding());
 		bv.setBindingVariable(getBindingVariable());
 		for (BindingPathElement bpe : getBindingPath()) {
@@ -517,7 +524,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 		}
 
-		BindingValue bv = new BindingValue(newBindingPath);
+		BindingValue bv = new BindingValue(newBindingPath, prettyPrinter);
 		bv.needsAnalysing = true;
 		bv.setDataBinding(getDataBinding());
 
@@ -909,7 +916,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 								argDataBinding.setExpression(arg, false);
 							}
 							else {
-								argDataBinding.setExpression(ObjectSymbolicConstant.NULL);
+								if (getDataBinding() != null && getDataBinding().getOwner() != null) {
+									argDataBinding.setExpression(getDataBinding().getOwner().getBindingFactory().getNullExpression());
+								}
 							}
 							// argDataBinding.setDeclaredType(Object.class);
 							// IMPORTANT/HACK: following statement (call to
@@ -972,7 +981,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return analysingSuccessfull;
 	}
 
-	Object getBindingValue(BindingEvaluationContext context)
+	public Object getBindingValue(BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
 
 		// System.out.println(" > evaluate BindingValue " + this +

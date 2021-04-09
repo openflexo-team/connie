@@ -37,53 +37,18 @@
  * 
  */
 
-package org.openflexo.connie.expr;
+package org.openflexo.connie.del.expr;
 
-import java.lang.reflect.Type;
-import java.util.Vector;
+import org.openflexo.connie.del.expr.DELConstant.DateSymbolicConstant;
+import org.openflexo.connie.del.expr.DELConstant.FloatSymbolicConstant;
+import org.openflexo.connie.del.expr.DELConstant.ObjectSymbolicConstant;
 
-import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.exception.TypeMismatchException;
+public interface DELSymbolicConstant {
 
-/**
- * Represents an expression which could not be resolved for any reason (eg during a NullReferenceException occured during an evaluation)
- * 
- * @author sylvain
- * 
- */
-public abstract class UnresolvedExpression extends Expression {
-	@Override
-	public void visit(ExpressionVisitor visitor) throws VisitorException {
-	}
+	public static final DELSymbolicConstant[] allKnownSymbolicConstants = { ObjectSymbolicConstant.NULL, ObjectSymbolicConstant.THIS,
+			DateSymbolicConstant.NOW, DateSymbolicConstant.TODAY, FloatSymbolicConstant.PI, FloatSymbolicConstant.E };
 
-	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-		return this;
-	}
+	public String getSymbol();
 
-	@Override
-	public int getDepth() {
-		return 0;
-	}
-
-	@Override
-	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return EvaluationType.LITERAL;
-	}
-
-	@Override
-	protected Vector<Expression> getChilds() {
-		return null;
-	}
-
-	@Override
-	public boolean isSettable() {
-		return false;
-	}
-
-	@Override
-	public Type getAccessedType() {
-		return null;
-	}
-
+	public String getValueAsString();
 }

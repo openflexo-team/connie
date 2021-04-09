@@ -40,8 +40,6 @@
 package org.openflexo.connie;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,18 +67,18 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
  * @author sylvain
  * 
  */
-final public class MultipleParametersBindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
+public abstract class MultipleParametersBindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
 
 	private final BindingFactory bindingFactory;
 
 	private Map<String, Object> objects;
 	private BindingModel bindingModel;
 
-	private MultipleParametersBindingEvaluator(Map<String, Object> objects) {
+	protected MultipleParametersBindingEvaluator(Map<String, Object> objects) {
 		this(objects, null);
 	}
 
-	private MultipleParametersBindingEvaluator(Map<String, Object> objects, BindingFactory bindingFactory) {
+	protected MultipleParametersBindingEvaluator(Map<String, Object> objects, BindingFactory bindingFactory) {
 		this.objects = objects;
 
 		bindingModel = new BindingModel();
@@ -101,7 +99,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		objects = null;
 	}
 
-	private static String extractParameters(String bindingPath, List<String> parameters, Object... args) {
+	protected static String extractParameters(String bindingPath, List<String> parameters, Object... args) {
 		int index = 0;
 		String returned = bindingPath;
 		while (returned.contains("{$")) {
@@ -119,7 +117,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		return returned;
 	}
 
-	private static String normalizeBindingPath(String bindingPath, List<String> parameters, BindingFactory bindingFactory) {
+	protected static String normalizeBindingPath(String bindingPath, List<String> parameters, BindingFactory bindingFactory) {
 		Expression expression = null;
 		try {
 			expression = bindingFactory.parseExpression(bindingPath);
@@ -182,7 +180,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
 	}
 
-	private Object evaluate(String aBindingPath)
+	protected Object evaluate(String aBindingPath)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 		String normalizedBindingPath = aBindingPath;
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
@@ -198,46 +196,4 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		return binding.getBindingValue(this);
 	}
 
-	/**
-	 * Utility method used to instanciate a {@link MultipleParametersBindingEvaluator} to compute a given expression expressed in CONNIE
-	 * language, and a set of arguments given in appearing order in the expression<br>
-	 * 
-	 * @param bindingPath
-	 *            expression to compute
-	 * @param bindingFactory
-	 *            {@link BindingFactory} to use, JavaBindingFactory is used if none supplied
-	 * @param receiver
-	 *            the object which is the default target ('object' path)
-	 * @param args
-	 *            arguments given in appearing order in the expression
-	 * @return computed value
-	 * @throws InvalidKeyValuePropertyException
-	 * @throws TypeMismatchException
-	 * @throws NullReferenceException
-	 * @throws InvocationTargetException
-	 */
-	public static Object evaluateBinding(String bindingPath, BindingFactory bindingFactory, Object receiver, Object... args)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-
-		Map<String, Object> objects = new HashMap<>();
-
-		List<String> parameters = new ArrayList<>();
-		String extractedBindingPath = extractParameters(bindingPath, parameters, args);
-		// System.out.println("extractedBindingPath=" + extractedBindingPath);
-		String normalizedBindingPath = normalizeBindingPath(extractedBindingPath, parameters, bindingFactory);
-		// System.out.println("normalizedBindingPath=" + normalizedBindingPath);
-		if (args.length != parameters.size()) {
-			throw new InvalidKeyValuePropertyException("Wrong number of args");
-		}
-		objects.put("this", receiver);
-		for (int i = 0; i < args.length; i++) {
-			// System.out.println("i=" + i + " " + parameters.get(i) + "=" + args[i]);
-			objects.put(parameters.get(i), args[i]);
-		}
-
-		MultipleParametersBindingEvaluator evaluator = new MultipleParametersBindingEvaluator(objects, bindingFactory);
-		Object returned = evaluator.evaluate(normalizedBindingPath);
-		evaluator.delete();
-		return returned;
-	}
 }

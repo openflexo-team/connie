@@ -67,7 +67,7 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
  * @author sylvain
  * 
  */
-final public class BindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
+public abstract class BindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
 
 	// private static final BindingFactory BINDING_FACTORY = new JavaBasedBindingFactory();
 
@@ -75,7 +75,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 	private BindingModel bindingModel;
 	private BindingFactory bindingFactory;
 
-	private BindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
+	protected BindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
 		this.object = object;
 		this.bindingFactory = bindingFactory;
 
@@ -89,7 +89,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 		bindingModel = null;
 	}
 
-	private static String normalizeBindingPath(String bindingPath, BindingFactory bindingFactory) {
+	static String normalizeBindingPath(String bindingPath, BindingFactory bindingFactory) {
 		Expression expression = null;
 		try {
 			// expression = ExpressionParser.parse(bindingPath);
@@ -151,7 +151,7 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
 	}
 
-	private Object evaluate(String bindingPath)
+	protected Object evaluate(String bindingPath)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 		String normalizedBindingPath = normalizeBindingPath(bindingPath, bindingFactory);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
@@ -165,18 +165,4 @@ final public class BindingEvaluator extends DefaultBindable implements BindingEv
 		return binding.getBindingValue(this);
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object, Type objectType, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-
-		BindingEvaluator evaluator = new BindingEvaluator(object, objectType, bindingFactory);
-		Object returned = evaluator.evaluate(bindingPath);
-		evaluator.delete();
-		return returned;
-	}
-
-	public static Object evaluateBinding(String bindingPath, Object object, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-
-		return evaluateBinding(bindingPath, object, object.getClass(), bindingFactory);
-	}
 }

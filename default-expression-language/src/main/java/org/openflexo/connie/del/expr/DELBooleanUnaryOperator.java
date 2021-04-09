@@ -37,53 +37,46 @@
  * 
  */
 
-package org.openflexo.connie.expr;
+package org.openflexo.connie.del.expr;
 
-import java.lang.reflect.Type;
-import java.util.Vector;
-
-import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.del.expr.DELConstant.BooleanConstant;
+import org.openflexo.connie.del.expr.DELConstant.ObjectSymbolicConstant;
+import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.EvaluationType;
 
-/**
- * Represents an expression which could not be resolved for any reason (eg during a NullReferenceException occured during an evaluation)
- * 
- * @author sylvain
- * 
- */
-public abstract class UnresolvedExpression extends Expression {
-	@Override
-	public void visit(ExpressionVisitor visitor) throws VisitorException {
-	}
+public abstract class DELBooleanUnaryOperator extends DELUnaryOperator {
 
-	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-		return this;
-	}
+	public static final DELBooleanUnaryOperator NOT = new DELBooleanUnaryOperator() {
+		@Override
+		public int getPriority() {
+			return 4;
+		}
 
-	@Override
-	public int getDepth() {
-		return 0;
-	}
+		@Override
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException, NullReferenceException {
+			if (arg instanceof BooleanConstant) {
+				return BooleanConstant.get(!((BooleanConstant) arg).getValue());
+			}
+			if (arg == ObjectSymbolicConstant.NULL) {
+				throw new NullReferenceException(this);
+			}
+			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.BOOLEAN);
+		}
 
-	@Override
-	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return EvaluationType.LITERAL;
-	}
+		@Override
+		public String getName() {
+			return "logical_not";
+		}
 
-	@Override
-	protected Vector<Expression> getChilds() {
-		return null;
-	}
-
-	@Override
-	public boolean isSettable() {
-		return false;
-	}
-
-	@Override
-	public Type getAccessedType() {
-		return null;
-	}
+		@Override
+		public EvaluationType getEvaluationType(EvaluationType operandType) throws TypeMismatchException {
+			if (operandType.isBooleanOrLiteral()) {
+				return EvaluationType.BOOLEAN;
+			}
+			throw new TypeMismatchException(this, operandType, EvaluationType.BOOLEAN, EvaluationType.LITERAL);
+		}
+	};
 
 }

@@ -47,7 +47,7 @@ import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DefaultBindable;
-import org.openflexo.connie.del.parser.DefaultExpressionLanguageBindingFactory;
+import org.openflexo.connie.del.DELBindingFactory;
 
 import com.google.common.reflect.TypeToken;
 
@@ -55,7 +55,7 @@ import junit.framework.TestCase;
 
 public class TestBindingAnalysing extends TestCase {
 
-	private final BindingFactory BINDING_FACTORY = new DefaultExpressionLanguageBindingFactory();
+	private final BindingFactory BINDING_FACTORY = new DELBindingFactory();
 	private final TestBindable BINDABLE = new TestBindable();
 	private final TestBindingModel BINDING_MODEL = new TestBindingModel();
 

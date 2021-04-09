@@ -65,7 +65,6 @@ import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionVisitor;
@@ -701,12 +700,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public boolean isNull() {
-		return getExpression() != null && getExpression() == Constant.ObjectSymbolicConstant.NULL;
+		return getExpression() != null && getOwner() != null && getOwner().getBindingFactory() != null
+				&& getExpression() == getOwner().getBindingFactory().getNullExpression();
 	}
 
-	public boolean isStringConstant() {
+	/*public boolean isStringConstant() {
 		return getExpression() != null && getExpression() instanceof StringConstant;
-	}
+	}*/
 
 	public boolean isCompoundBinding() {
 		return isBindingValue() && ((BindingValue) getExpression()).isCompoundBinding();

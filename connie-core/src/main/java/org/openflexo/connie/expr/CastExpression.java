@@ -42,11 +42,10 @@ package org.openflexo.connie.expr;
 import java.lang.reflect.Type;
 import java.util.Vector;
 
-import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.type.TypeUtils;
 
-public class CastExpression extends Expression {
+public abstract class CastExpression extends Expression {
 
 	private final TypeReference castType;
 	private Expression argument;
@@ -72,19 +71,6 @@ public class CastExpression extends Expression {
 
 	public void setArgument(Expression argument) {
 		this.argument = argument;
-	}
-
-	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-
-		Expression expression = this;
-		Expression transformedArgument = argument.transform(transformer);
-
-		if (!transformedArgument.equals(argument)) {
-			expression = new CastExpression(castType, transformedArgument);
-		}
-
-		return transformer.performTransformation(expression);
 	}
 
 	@Override

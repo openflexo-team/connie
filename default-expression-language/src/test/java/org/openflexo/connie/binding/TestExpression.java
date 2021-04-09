@@ -43,16 +43,17 @@ import java.util.List;
 
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.ParseException;
-import org.openflexo.connie.del.parser.DefaultExpressionLanguageBindingFactory;
+import org.openflexo.connie.del.DELBindingFactory;
+import org.openflexo.connie.del.expr.DELPrettyPrinter;
+import org.openflexo.connie.del.expr.DELVariable;
 import org.openflexo.connie.del.parser.ExpressionParser;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.Variable;
 
 import junit.framework.TestCase;
 
 public class TestExpression extends TestCase {
 
-	private static final BindingFactory BINDING_FACTORY = new DefaultExpressionLanguageBindingFactory();
+	private static final BindingFactory BINDING_FACTORY = new DELBindingFactory();
 
 	@Override
 	protected void setUp() throws Exception {
@@ -64,10 +65,10 @@ public class TestExpression extends TestCase {
 			List<BindingValue> vars = ExpressionParser.parse("this+is+a+test").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(new Variable("this")));
-			assertTrue(vars.contains(new Variable("is")));
-			assertTrue(vars.contains(new Variable("a")));
-			assertTrue(vars.contains(new Variable("test")));
+			assertTrue(vars.contains(new DELVariable("this")));
+			assertTrue(vars.contains(new DELVariable("is")));
+			assertTrue(vars.contains(new DELVariable("a")));
+			assertTrue(vars.contains(new DELVariable("test")));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -79,10 +80,10 @@ public class TestExpression extends TestCase {
 			List<BindingValue> vars = ExpressionParser.parse("i+(am-a/test)+2").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(new Variable("i")));
-			assertTrue(vars.contains(new Variable("am")));
-			assertTrue(vars.contains(new Variable("a")));
-			assertTrue(vars.contains(new Variable("test")));
+			assertTrue(vars.contains(new DELVariable("i")));
+			assertTrue(vars.contains(new DELVariable("am")));
+			assertTrue(vars.contains(new DELVariable("a")));
+			assertTrue(vars.contains(new DELVariable("test")));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -94,10 +95,10 @@ public class TestExpression extends TestCase {
 			List<BindingValue> vars = ExpressionParser.parse("this.is.a.little.test+and+this+is.not()").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(new BindingValue("this.is.a.little.test", BINDING_FACTORY)));
-			assertTrue(vars.contains(new Variable("and")));
-			assertTrue(vars.contains(new Variable("this")));
-			assertTrue(vars.contains(new BindingValue("is.not()", BINDING_FACTORY)));
+			assertTrue(vars.contains(new BindingValue("this.is.a.little.test", BINDING_FACTORY, DELPrettyPrinter.getInstance())));
+			assertTrue(vars.contains(new DELVariable("and")));
+			assertTrue(vars.contains(new DELVariable("this")));
+			assertTrue(vars.contains(new BindingValue("is.not()", BINDING_FACTORY, DELPrettyPrinter.getInstance())));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -109,10 +110,10 @@ public class TestExpression extends TestCase {
 			List<BindingValue> vars = ExpressionParser.parse("i+am+a+test").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(new Variable("i")));
-			assertTrue(vars.contains(new Variable("am")));
-			assertTrue(vars.contains(new Variable("a")));
-			assertTrue(vars.contains(new Variable("test")));
+			assertTrue(vars.contains(new DELVariable("i")));
+			assertTrue(vars.contains(new DELVariable("am")));
+			assertTrue(vars.contains(new DELVariable("a")));
+			assertTrue(vars.contains(new DELVariable("test")));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -124,10 +125,10 @@ public class TestExpression extends TestCase {
 			List<BindingValue> vars = ExpressionParser.parse("i+(am-a/test)+2").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(new Variable("i")));
-			assertTrue(vars.contains(new Variable("am")));
-			assertTrue(vars.contains(new Variable("a")));
-			assertTrue(vars.contains(new Variable("test")));
+			assertTrue(vars.contains(new DELVariable("i")));
+			assertTrue(vars.contains(new DELVariable("am")));
+			assertTrue(vars.contains(new DELVariable("a")));
+			assertTrue(vars.contains(new DELVariable("test")));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -139,10 +140,10 @@ public class TestExpression extends TestCase {
 			List<BindingValue> vars = ExpressionParser.parse("i.am.a.little.test+and+following+is.not()").getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(new BindingValue("i.am.a.little.test", BINDING_FACTORY)));
-			assertTrue(vars.contains(new Variable("and")));
-			assertTrue(vars.contains(new Variable("following")));
-			assertTrue(vars.contains(new BindingValue("is.not()", BINDING_FACTORY)));
+			assertTrue(vars.contains(new BindingValue("i.am.a.little.test", BINDING_FACTORY, DELPrettyPrinter.getInstance())));
+			assertTrue(vars.contains(new DELVariable("and")));
+			assertTrue(vars.contains(new DELVariable("following")));
+			assertTrue(vars.contains(new BindingValue("is.not()", BINDING_FACTORY, DELPrettyPrinter.getInstance())));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();

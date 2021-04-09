@@ -42,10 +42,9 @@ package org.openflexo.connie.expr;
 import java.lang.reflect.Type;
 import java.util.Vector;
 
-import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 
-public class UnaryOperatorExpression extends Expression {
+public abstract class UnaryOperatorExpression extends Expression {
 
 	private UnaryOperator operator;
 	private Expression argument;
@@ -95,19 +94,6 @@ public class UnaryOperatorExpression extends Expression {
 		}
 		return new UnaryOperatorExpression(operator, evaluatedArgument);
 	}*/
-
-	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-
-		Expression expression = this;
-		Expression transformedArgument = argument.transform(transformer);
-
-		if (!transformedArgument.equals(argument)) {
-			expression = new UnaryOperatorExpression(operator, transformedArgument);
-		}
-
-		return transformer.performTransformation(expression);
-	}
 
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {

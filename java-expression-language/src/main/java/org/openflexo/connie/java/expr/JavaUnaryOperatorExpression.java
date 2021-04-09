@@ -37,53 +37,37 @@
  * 
  */
 
-package org.openflexo.connie.expr;
-
-import java.lang.reflect.Type;
-import java.util.Vector;
+package org.openflexo.connie.java.expr;
 
 import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.ExpressionPrettyPrinter;
+import org.openflexo.connie.expr.ExpressionTransformer;
+import org.openflexo.connie.expr.UnaryOperator;
+import org.openflexo.connie.expr.UnaryOperatorExpression;
 
-/**
- * Represents an expression which could not be resolved for any reason (eg during a NullReferenceException occured during an evaluation)
- * 
- * @author sylvain
- * 
- */
-public abstract class UnresolvedExpression extends Expression {
+public class JavaUnaryOperatorExpression extends UnaryOperatorExpression {
+
+	public JavaUnaryOperatorExpression(UnaryOperator operator, Expression argument) {
+		super(operator, argument);
+	}
+
 	@Override
-	public void visit(ExpressionVisitor visitor) throws VisitorException {
+	public ExpressionPrettyPrinter getPrettyPrinter() {
+		return JavaPrettyPrinter.getInstance();
 	}
 
 	@Override
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-		return this;
-	}
 
-	@Override
-	public int getDepth() {
-		return 0;
-	}
+		Expression expression = this;
+		Expression transformedArgument = getArgument().transform(transformer);
 
-	@Override
-	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return EvaluationType.LITERAL;
-	}
+		if (!transformedArgument.equals(getArgument())) {
+			expression = new JavaUnaryOperatorExpression(getOperator(), transformedArgument);
+		}
 
-	@Override
-	protected Vector<Expression> getChilds() {
-		return null;
-	}
-
-	@Override
-	public boolean isSettable() {
-		return false;
-	}
-
-	@Override
-	public Type getAccessedType() {
-		return null;
+		return transformer.performTransformation(expression);
 	}
 
 }

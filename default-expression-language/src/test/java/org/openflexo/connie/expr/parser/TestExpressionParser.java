@@ -41,35 +41,40 @@ package org.openflexo.connie.expr.parser;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.ParseException;
+import org.openflexo.connie.del.expr.DELBinaryOperatorExpression;
+import org.openflexo.connie.del.expr.DELBooleanBinaryOperator;
+import org.openflexo.connie.del.expr.DELCastExpression;
+import org.openflexo.connie.del.expr.DELConditionalExpression;
+import org.openflexo.connie.del.expr.DELConstant.BooleanConstant;
+import org.openflexo.connie.del.expr.DELConstant.FloatConstant;
+import org.openflexo.connie.del.expr.DELConstant.FloatSymbolicConstant;
+import org.openflexo.connie.del.expr.DELConstant.IntegerConstant;
+import org.openflexo.connie.del.expr.DELConstant.StringConstant;
+import org.openflexo.connie.del.expr.DELExpressionEvaluator;
+import org.openflexo.connie.del.expr.DELPrettyPrinter;
+import org.openflexo.connie.del.expr.DELUnaryOperatorExpression;
 import org.openflexo.connie.del.parser.ExpressionParser;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.BooleanBinaryOperator;
-import org.openflexo.connie.expr.CastExpression;
-import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Constant.BooleanConstant;
-import org.openflexo.connie.expr.Constant.FloatConstant;
-import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
-import org.openflexo.connie.expr.Constant.IntegerConstant;
-import org.openflexo.connie.expr.Constant.StringConstant;
-import org.openflexo.connie.expr.DefaultExpressionPrettyPrinter;
 import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.UnaryOperatorExpression;
+import org.openflexo.connie.expr.ExpressionEvaluator;
 
 import junit.framework.TestCase;
 
 public class TestExpressionParser extends TestCase {
 
-	private DefaultExpressionPrettyPrinter prettyPrinter;
+	private DELPrettyPrinter prettyPrinter;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		prettyPrinter = new DefaultExpressionPrettyPrinter();
+		prettyPrinter = new DELPrettyPrinter();
 	}
 
 	private Expression tryToParse(String anExpression, String expectedEvaluatedExpression,
@@ -78,7 +83,17 @@ public class TestExpressionParser extends TestCase {
 		try {
 			System.out.println("Parsing... " + anExpression);
 			Expression parsed = ExpressionParser.parse(anExpression);
-			Expression evaluated = parsed.evaluate(null);
+			Expression evaluated = parsed.evaluate(new BindingEvaluationContext() {
+				@Override
+				public Object getValue(BindingVariable variable) {
+					return null;
+				}
+
+				@Override
+				public ExpressionEvaluator getEvaluator() {
+					return new DELExpressionEvaluator(this);
+				}
+			});
 			System.out.println("parsed=" + parsed);
 			System.out.println("evaluated=" + evaluated);
 			System.out.println("Successfully parsed as : " + parsed.getClass().getSimpleName());
@@ -215,15 +230,15 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testNumericValue7() {
-		tryToParse("1+1", "2", BinaryOperatorExpression.class, 2, false);
+		tryToParse("1+1", "2", DELBinaryOperatorExpression.class, 2, false);
 	}
 
 	public void testNumericValue8() {
-		tryToParse("1+(2*7-9)", "6", BinaryOperatorExpression.class, 6, false);
+		tryToParse("1+(2*7-9)", "6", DELBinaryOperatorExpression.class, 6, false);
 	}
 
 	public void testNumericValue9() {
-		tryToParse("1+((298*7.1e-3)-9)", "-5.8842", BinaryOperatorExpression.class, -5.8842, false);
+		tryToParse("1+((298*7.1e-3)-9)", "-5.8842", DELBinaryOperatorExpression.class, -5.8842, false);
 	}
 
 	public void testStringValue1() {
@@ -235,72 +250,73 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testStringValue3() {
-		tryToParse("\"foo1\"+\"foo2\"", "\"foo1foo2\"", BinaryOperatorExpression.class, "foo1foo2", false);
+		tryToParse("\"foo1\"+\"foo2\"", "\"foo1foo2\"", DELBinaryOperatorExpression.class, "foo1foo2", false);
 	}
 
 	public void testStringValue4() {
-		tryToParse("\"foo1\"+'and'+\"foo2\"", "\"foo1andfoo2\"", BinaryOperatorExpression.class, "foo1andfoo2", false);
+		tryToParse("\"foo1\"+'and'+\"foo2\"", "\"foo1andfoo2\"", DELBinaryOperatorExpression.class, "foo1andfoo2", false);
 	}
 
 	public void testExpression1() {
-		tryToParse("machin+1", "(machin + 1)", BinaryOperatorExpression.class, null, false);
+		tryToParse("machin+1", "(machin + 1)", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testExpression2() {
-		tryToParse("machin+1*6-8/7+bidule", "(((machin + 6) - 1.1428571428571428) + bidule)", BinaryOperatorExpression.class, null, false);
+		tryToParse("machin+1*6-8/7+bidule", "(((machin + 6) - 1.1428571428571428) + bidule)", DELBinaryOperatorExpression.class, null,
+				false);
 	}
 
 	public void testExpression3() {
-		tryToParse("7-x-(-x-6-8*2)", "((7 - x) - (((-(x)) - 6) - 16))", BinaryOperatorExpression.class, null, false);
+		tryToParse("7-x-(-x-6-8*2)", "((7 - x) - (((-(x)) - 6) - 16))", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testExpression4() {
-		tryToParse("1+function(test,4<7-x)", "(1 + function(test,(4 < (7 - x))))", BinaryOperatorExpression.class, null, false);
+		tryToParse("1+function(test,4<7-x)", "(1 + function(test,(4 < (7 - x))))", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testTrigonometricComputing1() {
-		tryToParse("sin(-pi/2)", "-1.0", UnaryOperatorExpression.class, -1, false);
+		tryToParse("sin(-pi/2)", "-1.0", DELUnaryOperatorExpression.class, -1, false);
 	}
 
 	public void testTrigonometricComputing2() {
-		tryToParse("-atan(2)", "-1.1071487177940904", UnaryOperatorExpression.class, -1.1071487177940904, false);
+		tryToParse("-atan(2)", "-1.1071487177940904", DELUnaryOperatorExpression.class, -1.1071487177940904, false);
 	}
 
 	public void testTrigonometricComputing3() {
-		tryToParse("-(atan(-pi/2)*(3-5*pi/7+8/9))", "1.651284257012876", UnaryOperatorExpression.class, 1.651284257012876, false);
+		tryToParse("-(atan(-pi/2)*(3-5*pi/7+8/9))", "1.651284257012876", DELUnaryOperatorExpression.class, 1.651284257012876, false);
 	}
 
 	public void testTrigonometricComputing4() {
-		tryToParse("-cos(atan(-pi/2)*(3-5*pi/7+8/9))", "0.08040105411083133", UnaryOperatorExpression.class, 0.08040105411083133, false);
+		tryToParse("-cos(atan(-pi/2)*(3-5*pi/7+8/9))", "0.08040105411083133", DELUnaryOperatorExpression.class, 0.08040105411083133, false);
 	}
 
 	public void testEquality() {
-		Expression e = tryToParse("a==b", "(a = b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.EQUALS, ((BinaryOperatorExpression) e).getOperator());
+		Expression e = tryToParse("a==b", "(a = b)", DELBinaryOperatorExpression.class, null, false);
+		assertEquals(DELBooleanBinaryOperator.EQUALS, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testEquality2() {
-		tryToParse("binding1.a.b == binding2.a.b*7", "(binding1.a.b = (binding2.a.b * 7))", BinaryOperatorExpression.class, null, false);
+		tryToParse("binding1.a.b == binding2.a.b*7", "(binding1.a.b = (binding2.a.b * 7))", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testOr1() {
-		Expression e = tryToParse("a|b", "(a | b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
+		Expression e = tryToParse("a|b", "(a | b)", DELBinaryOperatorExpression.class, null, false);
+		assertEquals(DELBooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testOr2() {
-		Expression e = tryToParse("a||b", "(a | b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
+		Expression e = tryToParse("a||b", "(a | b)", DELBinaryOperatorExpression.class, null, false);
+		assertEquals(DELBooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testAnd1() {
-		Expression e = tryToParse("a&b", "(a & b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
+		Expression e = tryToParse("a&b", "(a & b)", DELBinaryOperatorExpression.class, null, false);
+		assertEquals(DELBooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testAnd2() {
-		Expression e = tryToParse("a&&b", "(a & b)", BinaryOperatorExpression.class, null, false);
-		assertEquals(BooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
+		Expression e = tryToParse("a&&b", "(a & b)", DELBinaryOperatorExpression.class, null, false);
+		assertEquals(DELBooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testBoolean1() {
@@ -312,11 +328,11 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testBoolean3() {
-		tryToParse("false && true", "false", BinaryOperatorExpression.class, false, false);
+		tryToParse("false && true", "false", DELBinaryOperatorExpression.class, false, false);
 	}
 
 	public void testBooleanExpression1() {
-		tryToParse("!a&&b", "((!(a)) & b)", BinaryOperatorExpression.class, null, false);
+		tryToParse("!a&&b", "((!(a)) & b)", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testPi() {
@@ -324,7 +340,7 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testPi2() {
-		tryToParse("-pi/2", "-1.5707963267948966", BinaryOperatorExpression.class, null, false);
+		tryToParse("-pi/2", "-1.5707963267948966", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testComplexCall() {
@@ -341,19 +357,19 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testComplexBooleanExpression() {
-		tryToParse("a && (c || d && (!f)) ||b", "((a & (c | (d & (!(f))))) | b)", BinaryOperatorExpression.class, null, false);
+		tryToParse("a && (c || d && (!f)) ||b", "((a & (c | (d & (!(f))))) | b)", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testArithmeticNumberComparison1() {
-		tryToParse("1 < 2", "true", BinaryOperatorExpression.class, true, false);
+		tryToParse("1 < 2", "true", DELBinaryOperatorExpression.class, true, false);
 	}
 
 	public void testArithmeticNumberComparison2() {
-		tryToParse("0.1109 < 1.1108E-03", "false", BinaryOperatorExpression.class, false, false);
+		tryToParse("0.1109 < 1.1108E-03", "false", DELBinaryOperatorExpression.class, false, false);
 	}
 
 	public void testStringConcatenation() {
-		tryToParse("\"a + ( 2 + b )\"+2", "\"a + ( 2 + b )2\"", BinaryOperatorExpression.class, null, false);
+		tryToParse("\"a + ( 2 + b )\"+2", "\"a + ( 2 + b )2\"", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testParsingError1() {
@@ -385,31 +401,31 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testConditional1() {
-		tryToParse("a?b:c", "(a ? b : c)", ConditionalExpression.class, null, false);
+		tryToParse("a?b:c", "(a ? b : c)", DELConditionalExpression.class, null, false);
 	}
 
 	public void testConditional2() {
-		tryToParse("a > 9 ?true:false", "((a > 9) ? true : false)", ConditionalExpression.class, null, false);
+		tryToParse("a > 9 ?true:false", "((a > 9) ? true : false)", DELConditionalExpression.class, null, false);
 	}
 
 	public void testConditional3() {
-		tryToParse("a+1 > 10-7 ?8+4:5", "(((a + 1) > 3) ? 12 : 5)", ConditionalExpression.class, null, false);
+		tryToParse("a+1 > 10-7 ?8+4:5", "(((a + 1) > 3) ? 12 : 5)", DELConditionalExpression.class, null, false);
 	}
 
 	public void testConditional4() {
-		tryToParse("a+1 > (a?1:2) ?8+4:5", "(((a + 1) > (a ? 1 : 2)) ? 12 : 5)", ConditionalExpression.class, null, false);
+		tryToParse("a+1 > (a?1:2) ?8+4:5", "(((a + 1) > (a ? 1 : 2)) ? 12 : 5)", DELConditionalExpression.class, null, false);
 	}
 
 	public void testConditional5() {
-		tryToParse("2 < 3 ? 4:2", "4", ConditionalExpression.class, 4, false);
+		tryToParse("2 < 3 ? 4:2", "4", DELConditionalExpression.class, 4, false);
 	}
 
 	public void testConditional6() {
-		tryToParse("2 > 3 ? 4:2", "2", ConditionalExpression.class, 2, false);
+		tryToParse("2 > 3 ? 4:2", "2", DELConditionalExpression.class, 2, false);
 	}
 
 	public void testInvalidConditional() {
-		tryToParse("2 > 3 ? 3", "", ConditionalExpression.class, null, true);
+		tryToParse("2 > 3 ? 3", "", DELConditionalExpression.class, null, true);
 	}
 
 	/*public void test25() throws java.text.ParseException {
@@ -428,26 +444,27 @@ public class TestExpressionParser extends TestCase {
 	*/
 
 	public void testCast() {
-		tryToParse("($java.lang.Integer)2", "($java.lang.Integer)2", CastExpression.class, null, false);
+		tryToParse("($java.lang.Integer)2", "($java.lang.Integer)2", DELCastExpression.class, null, false);
 	}
 
 	public void testCast2() {
 		tryToParse("($java.lang.Integer)2+(($java.lang.Integer)2+($java.lang.Double)2)",
-				"(($java.lang.Integer)2 + (($java.lang.Integer)2 + ($java.lang.Double)2))", BinaryOperatorExpression.class, null, false);
+				"(($java.lang.Integer)2 + (($java.lang.Integer)2 + ($java.lang.Double)2))", DELBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testInvalidCast() {
-		tryToParse("(java.lang.Integer)2", "", CastExpression.class, null, true);
+		tryToParse("(java.lang.Integer)2", "", DELCastExpression.class, null, true);
 	}
 
 	public void testParameteredCast() {
-		tryToParse("($java.util.List<$java.lang.String>)data.list", "($java.util.List<$java.lang.String>)data.list", CastExpression.class,
-				null, false);
+		tryToParse("($java.util.List<$java.lang.String>)data.list", "($java.util.List<$java.lang.String>)data.list",
+				DELCastExpression.class, null, false);
 	}
 
 	public void testParameteredCast2() {
 		tryToParse("($java.util.Hashtable<$java.lang.String,$java.util.List<$java.lang.String>>)data.map",
-				"($java.util.Hashtable<$java.lang.String,$java.util.List<$java.lang.String>>)data.map", CastExpression.class, null, false);
+				"($java.util.Hashtable<$java.lang.String,$java.util.List<$java.lang.String>>)data.map", DELCastExpression.class, null,
+				false);
 	}
 
 	public void testAccentCharacter() {

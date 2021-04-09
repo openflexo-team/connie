@@ -37,53 +37,58 @@
  * 
  */
 
-package org.openflexo.connie.binding;
+package org.openflexo.connie.del.util;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 
+import org.openflexo.connie.BindingEvaluator;
 import org.openflexo.connie.BindingFactory;
-import org.openflexo.connie.del.DELBindingFactory;
-import org.openflexo.connie.del.util.DELMultipleParametersBindingEvaluator;
+import org.openflexo.connie.del.expr.DELExpressionEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.ExpressionEvaluator;
 import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
-import junit.framework.TestCase;
+/**
+ * Utility class allowing to compute binding value over an expression and a given object.<br>
+ * Expression must be expressed with or without supplied object (when mentioned, use "object." prefix).<br>
+ * Considering we are passing a String, valid binding path are for example:
+ * <ul>
+ * <li>toString</li>
+ * <li>toString()</li>
+ * <li>toString()+' hash='+object.hashCode()</li>
+ * <li>substring(6,11)</li>
+ * <li>substring(3,length()-2)+' hash='+hashCode()</li>
+ * </ul>
+ * 
+ * @author sylvain
+ * 
+ */
+final public class DELBindingEvaluator extends BindingEvaluator {
 
-public class TestMultipleParametersBindingEvaluator extends TestCase {
-
-	public void test1() throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		String variable1 = "Hello";
-		String variable2 = "World";
-
-		BindingFactory bindingFactory = new DELBindingFactory();
-		assertEquals("Hello World !", DELMultipleParametersBindingEvaluator.evaluateBinding("{$variable1}+' '+{$variable2}+' !'",
-				bindingFactory, new Object(), variable1, variable2));
-
+	private DELBindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
+		super(object, objectType, bindingFactory);
 	}
 
-	public void test2() throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		String variable3 = "Hello World";
-
-		BindingFactory bindingFactory = new DELBindingFactory();
-		assertEquals("llo Wo", DELMultipleParametersBindingEvaluator.evaluateBinding("substring({$startIndex},{$endIndex})", bindingFactory,
-				variable3, 2, 8));
-
+	@Override
+	public ExpressionEvaluator getEvaluator() {
+		return new DELExpressionEvaluator(this);
 	}
 
-	public void test3() throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		String variable4 = "Hello World";
+	public static Object evaluateBinding(String bindingPath, Object object, Type objectType, BindingFactory bindingFactory)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
 
-		try {
-			BindingFactory bindingFactory = new DELBindingFactory();
-			DELMultipleParametersBindingEvaluator.evaluateBinding("regionMatches({$toffset},{$other},{$ooffset},{$len})", bindingFactory,
-					variable4, 0, null, 1, 2);
-			fail();
-		} catch (InvocationTargetException e) {
-			Throwable targetException = e.getTargetException();
-			assertTrue(targetException.getStackTrace()[0].toString().contains("java.lang.String.regionMatches"));
-		}
+		DELBindingEvaluator evaluator = new DELBindingEvaluator(object, objectType, bindingFactory);
+		Object returned = evaluator.evaluate(bindingPath);
+		evaluator.delete();
+		return returned;
+	}
 
+	public static Object evaluateBinding(String bindingPath, Object object, BindingFactory bindingFactory)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+
+		return evaluateBinding(bindingPath, object, object.getClass(), bindingFactory);
 	}
 
 }

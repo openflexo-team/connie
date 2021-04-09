@@ -50,9 +50,11 @@ import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DefaultBindable;
-import org.openflexo.connie.del.parser.DefaultExpressionLanguageBindingFactory;
+import org.openflexo.connie.del.DELBindingFactory;
+import org.openflexo.connie.del.expr.DELExpressionEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.ExpressionEvaluator;
 import org.openflexo.connie.type.TypeUtils;
 
 import com.google.common.reflect.TypeToken;
@@ -61,7 +63,7 @@ import junit.framework.TestCase;
 
 public class TestBinding extends TestCase {
 
-	private static final BindingFactory BINDING_FACTORY = new DefaultExpressionLanguageBindingFactory();
+	private static final BindingFactory BINDING_FACTORY = new DELBindingFactory();
 	private static final TestBindingContext BINDING_CONTEXT = new TestBindingContext();
 	private static final TestBindingModel BINDING_MODEL = new TestBindingModel();
 
@@ -89,6 +91,11 @@ public class TestBinding extends TestCase {
 		@Override
 		public BindingModel getBindingModel() {
 			return BINDING_MODEL;
+		}
+
+		@Override
+		public ExpressionEvaluator getEvaluator() {
+			return new DELExpressionEvaluator(this);
 		}
 
 		@Override

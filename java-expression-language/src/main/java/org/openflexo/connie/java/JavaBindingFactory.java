@@ -46,7 +46,11 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.JavaBasedBindingFactory;
+import org.openflexo.connie.ParseException;
+import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.java.expr.JavaConstant.ObjectSymbolicConstant;
+import org.openflexo.connie.java.parser.ExpressionParser;
 
 /**
  * A {@link BindingFactory} for java expressions
@@ -59,8 +63,13 @@ public class JavaBindingFactory extends JavaBasedBindingFactory {
 	static final Logger LOGGER = Logger.getLogger(JavaBindingFactory.class.getPackage().getName());
 
 	@Override
-	public Expression parseExpression(String expressionAsString) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression parseExpression(String expressionAsString) throws ParseException {
+		return ExpressionParser.parse(expressionAsString);
 	}
+
+	@Override
+	public Constant<?> getNullExpression() {
+		return ObjectSymbolicConstant.NULL;
+	}
+
 }

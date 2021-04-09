@@ -39,28 +39,27 @@
 
 package org.openflexo.connie.java;
 
-import org.openflexo.connie.expr.ArithmeticBinaryOperator;
-import org.openflexo.connie.expr.ArithmeticUnaryOperator;
 import org.openflexo.connie.expr.BinaryOperator;
-import org.openflexo.connie.expr.BooleanBinaryOperator;
-import org.openflexo.connie.expr.BooleanUnaryOperator;
 import org.openflexo.connie.expr.ExpressionGrammar;
 import org.openflexo.connie.expr.Operator;
 import org.openflexo.connie.expr.OperatorNotSupportedException;
 import org.openflexo.connie.expr.UnaryOperator;
+import org.openflexo.connie.java.expr.JavaArithmeticBinaryOperator;
+import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
+import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
+import org.openflexo.connie.java.expr.JavaBooleanUnaryOperator;
 
 public class JavaGrammar implements ExpressionGrammar {
 
-	private static final BinaryOperator[] ALL_SUPPORTED_BINARY_OPERATORS = { BooleanBinaryOperator.AND, BooleanBinaryOperator.OR,
-			BooleanBinaryOperator.EQUALS, BooleanBinaryOperator.NOT_EQUALS, BooleanBinaryOperator.LESS_THAN,
-			BooleanBinaryOperator.LESS_THAN_OR_EQUALS, BooleanBinaryOperator.GREATER_THAN, BooleanBinaryOperator.GREATER_THAN_OR_EQUALS,
-			ArithmeticBinaryOperator.ADDITION, ArithmeticBinaryOperator.SUBSTRACTION, ArithmeticBinaryOperator.MULTIPLICATION,
-			ArithmeticBinaryOperator.DIVISION, ArithmeticBinaryOperator.POWER, };
+	private static final BinaryOperator[] ALL_SUPPORTED_BINARY_OPERATORS = { JavaBooleanBinaryOperator.AND, JavaBooleanBinaryOperator.OR,
+			JavaBooleanBinaryOperator.EQUALS, JavaBooleanBinaryOperator.NOT_EQUALS, JavaBooleanBinaryOperator.LESS_THAN,
+			JavaBooleanBinaryOperator.LESS_THAN_OR_EQUALS, JavaBooleanBinaryOperator.GREATER_THAN,
+			JavaBooleanBinaryOperator.GREATER_THAN_OR_EQUALS, JavaArithmeticBinaryOperator.ADDITION,
+			JavaArithmeticBinaryOperator.SUBSTRACTION, JavaArithmeticBinaryOperator.MULTIPLICATION, JavaArithmeticBinaryOperator.DIVISION,
+			JavaArithmeticBinaryOperator.POWER, };
 
-	private static final UnaryOperator[] ALL_SUPPORTED_UNARY_OPERATORS = { BooleanUnaryOperator.NOT, ArithmeticUnaryOperator.UNARY_MINUS,
-			ArithmeticUnaryOperator.SIN, ArithmeticUnaryOperator.ASIN, ArithmeticUnaryOperator.COS, ArithmeticUnaryOperator.ACOS,
-			ArithmeticUnaryOperator.TAN, ArithmeticUnaryOperator.ATAN, ArithmeticUnaryOperator.EXP, ArithmeticUnaryOperator.LOG,
-			ArithmeticUnaryOperator.SQRT };
+	private static final UnaryOperator[] ALL_SUPPORTED_UNARY_OPERATORS = { JavaBooleanUnaryOperator.NOT,
+			JavaArithmeticUnaryOperator.UNARY_MINUS };
 
 	@Override
 	public BinaryOperator[] getAllSupportedBinaryOperators() {
@@ -73,114 +72,61 @@ public class JavaGrammar implements ExpressionGrammar {
 	}
 
 	private static String getSymbol(UnaryOperator operator) throws OperatorNotSupportedException {
-		if (operator == BooleanUnaryOperator.NOT) {
+		if (operator == JavaBooleanUnaryOperator.NOT) {
 			return "!";
 		}
-		if (operator == ArithmeticUnaryOperator.UNARY_MINUS) {
+		if (operator == JavaArithmeticUnaryOperator.UNARY_MINUS) {
 			return "-";
-		}
-		if (operator == ArithmeticUnaryOperator.SIN) {
-			return "Math.sin";
-		}
-		if (operator == ArithmeticUnaryOperator.ASIN) {
-			return "Math.asin";
-		}
-		if (operator == ArithmeticUnaryOperator.COS) {
-			return "Math.cos";
-		}
-		if (operator == ArithmeticUnaryOperator.ACOS) {
-			return "Math.acos";
-		}
-		if (operator == ArithmeticUnaryOperator.TAN) {
-			return "Math.tan";
-		}
-		if (operator == ArithmeticUnaryOperator.ATAN) {
-			return "Math.atan";
-		}
-		if (operator == ArithmeticUnaryOperator.EXP) {
-			return "Math.exp";
-		}
-		if (operator == ArithmeticUnaryOperator.LOG) {
-			return "Math.log";
-		}
-		if (operator == ArithmeticUnaryOperator.SQRT) {
-			return "Math.sqrt";
 		}
 		throw new OperatorNotSupportedException();
 	}
 
-	private static String getAlternativeSymbol(UnaryOperator operator) {
-		return null;
-	}
-
 	private static String getSymbol(BinaryOperator operator) throws OperatorNotSupportedException {
-		if (operator == BooleanBinaryOperator.AND) {
+		if (operator == JavaBooleanBinaryOperator.AND) {
 			return "&&";
 		}
-		if (operator == BooleanBinaryOperator.OR) {
+		if (operator == JavaBooleanBinaryOperator.OR) {
 			return "||";
 		}
-		if (operator == BooleanBinaryOperator.EQUALS) {
+		if (operator == JavaBooleanBinaryOperator.EQUALS) {
 			return "==";
 		}
-		if (operator == BooleanBinaryOperator.NOT_EQUALS) {
+		if (operator == JavaBooleanBinaryOperator.NOT_EQUALS) {
 			return "!=";
 		}
-		if (operator == BooleanBinaryOperator.LESS_THAN) {
+		if (operator == JavaBooleanBinaryOperator.LESS_THAN) {
 			return "<";
 		}
-		if (operator == BooleanBinaryOperator.LESS_THAN_OR_EQUALS) {
+		if (operator == JavaBooleanBinaryOperator.LESS_THAN_OR_EQUALS) {
 			return "<=";
 		}
-		if (operator == BooleanBinaryOperator.GREATER_THAN) {
+		if (operator == JavaBooleanBinaryOperator.GREATER_THAN) {
 			return ">";
 		}
-		if (operator == BooleanBinaryOperator.GREATER_THAN_OR_EQUALS) {
+		if (operator == JavaBooleanBinaryOperator.GREATER_THAN_OR_EQUALS) {
 			return ">=";
 		}
-		if (operator == ArithmeticBinaryOperator.ADDITION) {
+		if (operator == JavaArithmeticBinaryOperator.ADDITION) {
 			return "+";
 		}
-		if (operator == ArithmeticBinaryOperator.SUBSTRACTION) {
+		if (operator == JavaArithmeticBinaryOperator.SUBSTRACTION) {
 			return "-";
 		}
-		if (operator == ArithmeticBinaryOperator.MULTIPLICATION) {
+		if (operator == JavaArithmeticBinaryOperator.MULTIPLICATION) {
 			return "*";
 		}
-		if (operator == ArithmeticBinaryOperator.DIVISION) {
+		if (operator == JavaArithmeticBinaryOperator.DIVISION) {
 			return "/";
 		}
-		if (operator == ArithmeticBinaryOperator.POWER) {
+		if (operator == JavaArithmeticBinaryOperator.POWER) {
 			return "^";
 		}
 		throw new OperatorNotSupportedException();
 	}
 
-	private static String getAlternativeSymbol(BinaryOperator operator) {
-		if (operator == BooleanBinaryOperator.AND) {
-			return "&";
-		}
-		if (operator == BooleanBinaryOperator.OR) {
-			return "|";
-		}
-		if (operator == BooleanBinaryOperator.EQUALS) {
-			return "=";
-		}
-		if (operator == ArithmeticBinaryOperator.DIVISION) {
-			return ":";
-		}
-		return null;
-	}
-
 	@Override
 	public String getAlternativeSymbol(Operator operator) throws OperatorNotSupportedException {
-		if (operator instanceof UnaryOperator) {
-			return getAlternativeSymbol((UnaryOperator) operator);
-		}
-		if (operator instanceof BinaryOperator) {
-			return getAlternativeSymbol((BinaryOperator) operator);
-		}
-		throw new OperatorNotSupportedException();
+		return null;
 	}
 
 	@Override

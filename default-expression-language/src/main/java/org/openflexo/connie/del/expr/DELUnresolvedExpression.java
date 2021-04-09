@@ -37,13 +37,10 @@
  * 
  */
 
-package org.openflexo.connie.expr;
+package org.openflexo.connie.del.expr;
 
-import java.lang.reflect.Type;
-import java.util.Vector;
-
-import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.ExpressionPrettyPrinter;
+import org.openflexo.connie.expr.UnresolvedExpression;
 
 /**
  * Represents an expression which could not be resolved for any reason (eg during a NullReferenceException occured during an evaluation)
@@ -51,39 +48,11 @@ import org.openflexo.connie.exception.TypeMismatchException;
  * @author sylvain
  * 
  */
-public abstract class UnresolvedExpression extends Expression {
-	@Override
-	public void visit(ExpressionVisitor visitor) throws VisitorException {
-	}
+public class DELUnresolvedExpression extends UnresolvedExpression {
 
 	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-		return this;
-	}
-
-	@Override
-	public int getDepth() {
-		return 0;
-	}
-
-	@Override
-	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return EvaluationType.LITERAL;
-	}
-
-	@Override
-	protected Vector<Expression> getChilds() {
-		return null;
-	}
-
-	@Override
-	public boolean isSettable() {
-		return false;
-	}
-
-	@Override
-	public Type getAccessedType() {
-		return null;
+	public ExpressionPrettyPrinter getPrettyPrinter() {
+		return DELPrettyPrinter.getInstance();
 	}
 
 }

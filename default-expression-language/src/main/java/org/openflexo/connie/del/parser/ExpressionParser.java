@@ -44,10 +44,10 @@ import java.io.StringReader;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.ParseException;
-import org.openflexo.connie.expr.ArithmeticUnaryOperator;
-import org.openflexo.connie.expr.Constant.ArithmeticConstant;
-import org.openflexo.connie.expr.Constant.FloatConstant;
-import org.openflexo.connie.expr.Constant.IntegerConstant;
+import org.openflexo.connie.del.expr.DELArithmeticUnaryOperator;
+import org.openflexo.connie.del.expr.DELConstant.ArithmeticConstant;
+import org.openflexo.connie.del.expr.DELConstant.FloatConstant;
+import org.openflexo.connie.del.expr.DELConstant.IntegerConstant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.expr.parser.lexer.Lexer;
@@ -103,7 +103,7 @@ public class ExpressionParser {
 	 */
 	private static Expression postSemanticAnalysisReduction(Expression e) {
 		if (e != null && e instanceof UnaryOperatorExpression
-				&& ((UnaryOperatorExpression) e).getOperator() == ArithmeticUnaryOperator.UNARY_MINUS
+				&& ((UnaryOperatorExpression) e).getOperator() == DELArithmeticUnaryOperator.UNARY_MINUS
 				&& ((UnaryOperatorExpression) e).getArgument() instanceof ArithmeticConstant) {
 			// In this case, we will reduce this into a negative single arithmetic constant
 			ArithmeticConstant<?> c = (ArithmeticConstant<?>) ((UnaryOperatorExpression) e).getArgument();

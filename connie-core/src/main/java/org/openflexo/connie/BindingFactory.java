@@ -49,6 +49,7 @@ import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 
 /**
@@ -77,5 +78,7 @@ public interface BindingFactory {
 
 	FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
 
-	public Type getTypeForObject(Object object);
+	Type getTypeForObject(Object object);
+
+	Constant<?> getNullExpression();
 }

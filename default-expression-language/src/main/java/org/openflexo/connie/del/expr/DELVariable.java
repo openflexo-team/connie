@@ -37,53 +37,37 @@
  * 
  */
 
-package org.openflexo.connie.expr;
+package org.openflexo.connie.del.expr;
 
-import java.lang.reflect.Type;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.BindingValue;
 
 /**
- * Represents an expression which could not be resolved for any reason (eg during a NullReferenceException occured during an evaluation)
+ * Represents a basic access to a variable<br>
+ * An instance of Variable is a specialized {@link BindingValue} with a BindingVariable and an empty BindingPath.
  * 
  * @author sylvain
  * 
  */
-public abstract class UnresolvedExpression extends Expression {
-	@Override
-	public void visit(ExpressionVisitor visitor) throws VisitorException {
+public class DELVariable extends BindingValue {
+	public DELVariable(String variableName) {
+		super(makeSingleton(variableName), DELPrettyPrinter.getInstance());
+	}
+
+	private static List<AbstractBindingPathElement> makeSingleton(String aVariableName) {
+		List<AbstractBindingPathElement> returned = new ArrayList<>();
+		returned.add(new NormalBindingPathElement(aVariableName));
+		return returned;
+	}
+
+	public String getName() {
+		return getVariableName();
 	}
 
 	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-		return this;
+	public boolean isSimpleVariable() {
+		return true;
 	}
-
-	@Override
-	public int getDepth() {
-		return 0;
-	}
-
-	@Override
-	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return EvaluationType.LITERAL;
-	}
-
-	@Override
-	protected Vector<Expression> getChilds() {
-		return null;
-	}
-
-	@Override
-	public boolean isSettable() {
-		return false;
-	}
-
-	@Override
-	public Type getAccessedType() {
-		return null;
-	}
-
 }

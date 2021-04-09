@@ -2,26 +2,34 @@ package org.openflexo.connie.java.parser;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Constant.FloatConstant;
-import org.openflexo.connie.expr.Constant.IntegerConstant;
-import org.openflexo.connie.expr.DefaultExpressionPrettyPrinter;
 import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.ExpressionEvaluator;
+import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
+import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
+import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
+import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
+import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
+import org.openflexo.connie.java.expr.JavaExpressionEvaluator;
+import org.openflexo.connie.java.expr.JavaPrettyPrinter;
+import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 
 import junit.framework.TestCase;
 
 public class TestExpressionParser extends TestCase {
 
-	private DefaultExpressionPrettyPrinter prettyPrinter;
+	private JavaPrettyPrinter prettyPrinter;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		prettyPrinter = new DefaultExpressionPrettyPrinter();
+		prettyPrinter = new JavaPrettyPrinter();
 	}
 
 	private Expression tryToParse(String anExpression, String expectedEvaluatedExpression,
@@ -44,7 +52,17 @@ public class TestExpressionParser extends TestCase {
 			System.out.println("Parsing... " + anExpression);
 			Expression parsed = ExpressionParser.parse(anExpression);
 			System.out.println("parsed=" + parsed);
-			Expression evaluated = parsed.evaluate(null);
+			Expression evaluated = parsed.evaluate(new BindingEvaluationContext() {
+				@Override
+				public Object getValue(BindingVariable variable) {
+					return null;
+				}
+
+				@Override
+				public ExpressionEvaluator getEvaluator() {
+					return new JavaExpressionEvaluator(this);
+				}
+			});
 			System.out.println("evaluated=" + evaluated);
 			System.out.println("Successfully parsed as : " + parsed.getClass().getSimpleName());
 			System.out.println("Normalized: " + prettyPrinter.getStringRepresentation(parsed));
@@ -110,20 +128,28 @@ public class TestExpressionParser extends TestCase {
 
 	// Test numbers
 
+	public static void tutu(Object o) {
+		System.out.println("Number " + o + " of " + o.getClass());
+	}
+
+	public static void main(String[] args) {
+		tutu(0123776);
+	}
+
 	public void testSimpleInteger() {
 		tryToParse("42", "42", IntegerConstant.class, 42, false);
 	}
 
 	public void testLongIntegerWithFinalL() {
-		tryToParse("42L", "42", IntegerConstant.class, 42L, false);
+		tryToParse("42L", "42", LongConstant.class, 42L, false);
 	}
 
 	public void testLongIntegerWithFinall() {
-		tryToParse("42l", "42", IntegerConstant.class, 42L, false);
+		tryToParse("42l", "42", LongConstant.class, 42L, false);
 	}
 
 	public void testLongInteger() {
-		tryToParse("4242424242242424242L", "4242424242242424242", IntegerConstant.class, 4242424242242424242L, false);
+		tryToParse("4242424242242424242L", "4242424242242424242", LongConstant.class, 4242424242242424242L, false);
 	}
 
 	public void testHexIntegerWithx() {
@@ -139,7 +165,7 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testSimpleFloat() {
-		tryToParse("3.1415", "3.1415", FloatConstant.class, 3.1415, false);
+		tryToParse("3.1415", "3.1415", DoubleConstant.class, 3.1415, false);
 	}
 
 	public void testSimpleFloatWithF() {
@@ -151,19 +177,43 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testSimpleDoubleWithD() {
-		tryToParse("3.1415D", "3.1415", FloatConstant.class, 3.1415D, false);
+		tryToParse("3.1415D", "3.1415", DoubleConstant.class, 3.1415D, false);
 	}
 
 	public void testSimpleDoubleWithd() {
-		tryToParse("3.1415d", "3.1415", FloatConstant.class, 3.1415d, false);
+		tryToParse("3.1415d", "3.1415", DoubleConstant.class, 3.1415d, false);
 	}
 
 	public void testExpNumber1() {
-		tryToParse("1e42", "1.0E42", FloatConstant.class, 1e42, false);
+		tryToParse("1e42", "1.0E42", DoubleConstant.class, 1e42, false);
 	}
 
 	public void testExpNumber2() {
-		tryToParse("1.786e-42", "1.786E-42", FloatConstant.class, 1.786e-42, false);
+		tryToParse("1.786e-42", "1.786E-42", DoubleConstant.class, 1.786e-42, false);
+	}
+
+	public void testNumericValue1() {
+		tryToParse("34", "34", IntegerConstant.class, 34, false);
+	}
+
+	public void testNumericValue2() {
+		tryToParse("7.8", "7.8", DoubleConstant.class, 7.8, false);
+	}
+
+	public void testNumericValue3() {
+		tryToParse("1.876E12", "1.876E12", DoubleConstant.class, 1.876E12, false);
+	}
+
+	public void testNumericValue4() {
+		tryToParse("0.876e-9", "8.76E-10", DoubleConstant.class, 8.76E-10, false);
+	}
+
+	public void testNegativeInteger() {
+		tryToParse("-89", "-89", JavaUnaryOperatorExpression.class, -89, false);
+	}
+
+	public void testNegativeFloat() {
+		tryToParse("-89.7856", "-89.7856", JavaUnaryOperatorExpression.class, -89.7856, false);
 	}
 
 	// Test BindingValue
@@ -200,44 +250,29 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("a.b.c.method(m1(1),d.e.f.m2(1))", "a.b.c.method(m1(1),d.e.f.m2(1))", BindingValue.class, null, false);
 	}
 
-	public void testBindingValue6() {
+	/*public void testBindingValue6() {
 		tryToParse("a.b.c.method1(1).method2(2)+c.d.e", "a.b.c.method(1).method2(2)", BindingValue.class, null, false);
-	}
+	}*/
 
 	/*
 	public void testBindingValue7() {
 		tryToParse("i.am.a(1,2+3,7.8,\"foo\",'a').little.test(1).foo()", "i.am.a(1,5,7.8,\"foo\").little.test(1)", BindingValue.class, null,
 				false);
+	}*/
+
+	public void testSimpleNumberAddition() {
+		tryToParse("1+1", "2", JavaBinaryOperatorExpression.class, 2, false);
 	}
-	
-	public void testNumericValue1() {
-		tryToParse("34", "34", IntegerConstant.class, 34, false);
+
+	public void testSimpleSymbolicAddition() {
+		tryToParse("a+b", "(a + b)", JavaBinaryOperatorExpression.class, null, false);
 	}
-	
-	public void testNumericValue2() {
-		tryToParse("7.8", "7.8", FloatConstant.class, 7.8, false);
+
+	public void testSimpleSubstraction() {
+		tryToParse("7-8", "-1", JavaBinaryOperatorExpression.class, -1, false);
 	}
-	
-	public void testNumericValue3() {
-		tryToParse("1.876E12", "1.876E12", FloatConstant.class, 1.876E12, false);
-	}
-	
-	public void testNumericValue4() {
-		tryToParse("0.876e-9", "8.76E-10", FloatConstant.class, 8.76E-10, false);
-	}
-	
-	public void testNumericValue5() {
-		tryToParse("-89", "-89", IntegerConstant.class, -89, false);
-	}
-	
-	public void testNumericValue6() {
-		tryToParse("-89.7856", "-89.7856", FloatConstant.class, -89.7856, false);
-	}
-	
-	public void testNumericValue7() {
-		tryToParse("1+1", "2", BinaryOperatorExpression.class, 2, false);
-	}
-	
+
+	/*
 	public void testNumericValue8() {
 		tryToParse("1+(2*7-9)", "6", BinaryOperatorExpression.class, 6, false);
 	}

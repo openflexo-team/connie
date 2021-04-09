@@ -71,7 +71,7 @@ public abstract class Expression {
 	public final Expression evaluate(BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
 		try {
-			return transform(new ExpressionEvaluator(context));
+			return transform(context.getEvaluator());
 		} catch (TypeMismatchException e) {
 			String expressionAsString;
 			try {
@@ -106,10 +106,8 @@ public abstract class Expression {
 
 	@Override
 	public String toString() {
-		return debugPP.getStringRepresentation(this);
+		return getPrettyPrinter().getStringRepresentation(this);
 	}
-
-	private static final DefaultExpressionPrettyPrinter debugPP = new DefaultExpressionPrettyPrinter();
 
 	@Override
 	public boolean equals(Object obj) {
@@ -226,4 +224,6 @@ public abstract class Expression {
 	public abstract boolean isSettable();
 
 	public abstract Type getAccessedType();
+
+	public abstract ExpressionPrettyPrinter getPrettyPrinter();
 }

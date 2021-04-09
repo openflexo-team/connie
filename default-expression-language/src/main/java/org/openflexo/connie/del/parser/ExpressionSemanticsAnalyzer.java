@@ -44,23 +44,24 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.openflexo.connie.expr.ArithmeticBinaryOperator;
-import org.openflexo.connie.expr.ArithmeticUnaryOperator;
-import org.openflexo.connie.expr.BinaryOperatorExpression;
+import org.openflexo.connie.del.expr.DELArithmeticBinaryOperator;
+import org.openflexo.connie.del.expr.DELArithmeticUnaryOperator;
+import org.openflexo.connie.del.expr.DELBinaryOperatorExpression;
+import org.openflexo.connie.del.expr.DELBooleanBinaryOperator;
+import org.openflexo.connie.del.expr.DELBooleanUnaryOperator;
+import org.openflexo.connie.del.expr.DELCastExpression;
+import org.openflexo.connie.del.expr.DELConditionalExpression;
+import org.openflexo.connie.del.expr.DELConstant.BooleanConstant;
+import org.openflexo.connie.del.expr.DELConstant.FloatConstant;
+import org.openflexo.connie.del.expr.DELConstant.FloatSymbolicConstant;
+import org.openflexo.connie.del.expr.DELConstant.IntegerConstant;
+import org.openflexo.connie.del.expr.DELConstant.ObjectSymbolicConstant;
+import org.openflexo.connie.del.expr.DELConstant.StringConstant;
+import org.openflexo.connie.del.expr.DELPrettyPrinter;
+import org.openflexo.connie.del.expr.DELUnaryOperatorExpression;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.BooleanBinaryOperator;
-import org.openflexo.connie.expr.BooleanUnaryOperator;
-import org.openflexo.connie.expr.CastExpression;
-import org.openflexo.connie.expr.ConditionalExpression;
-import org.openflexo.connie.expr.Constant.BooleanConstant;
-import org.openflexo.connie.expr.Constant.FloatConstant;
-import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
-import org.openflexo.connie.expr.Constant.IntegerConstant;
-import org.openflexo.connie.expr.Constant.ObjectSymbolicConstant;
-import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.TypeReference;
-import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.expr.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.expr.parser.node.AAcosFuncFunction;
 import org.openflexo.connie.expr.parser.node.AAddExprExpr2;
@@ -179,7 +180,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 		// System.out.println("Make binding value with bsa as " + bsa.getPath());
 
-		BindingValue returned = new BindingValue(bsa.getPath());
+		BindingValue returned = new BindingValue(bsa.getPath(), DELPrettyPrinter.getInstance());
 		// System.out.println("Made binding as " + bsa.getPath());
 
 		registerExpressionNode(node, returned);
@@ -284,56 +285,56 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		super.outACondExprExpr(node);
 		// System.out.println("On chope une conditionnelle avec cond:" + node.getCondition() + " then:" + node.getThen() + " else:"+
 		// node.getElse());
-		registerExpressionNode(node, new ConditionalExpression(getExpression(node.getCondition()), getExpression(node.getThen()),
+		registerExpressionNode(node, new DELConditionalExpression(getExpression(node.getCondition()), getExpression(node.getThen()),
 				getExpression(node.getElse())));
 	}
 
 	@Override
 	public void outAEqExprExpr(AEqExprExpr node) {
 		super.outAEqExprExpr(node);
-		registerExpressionNode(node,
-				new BinaryOperatorExpression(BooleanBinaryOperator.EQUALS, getExpression(node.getLeft()), getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.EQUALS, getExpression(node.getLeft()),
+				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAEq2ExprExpr(AEq2ExprExpr node) {
 		super.outAEq2ExprExpr(node);
-		registerExpressionNode(node,
-				new BinaryOperatorExpression(BooleanBinaryOperator.EQUALS, getExpression(node.getLeft()), getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.EQUALS, getExpression(node.getLeft()),
+				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outANeqExprExpr(ANeqExprExpr node) {
 		super.outANeqExprExpr(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.NOT_EQUALS, getExpression(node.getLeft()),
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.NOT_EQUALS, getExpression(node.getLeft()),
 				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outALtExprExpr(ALtExprExpr node) {
 		super.outALtExprExpr(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.LESS_THAN, getExpression(node.getLeft()),
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.LESS_THAN, getExpression(node.getLeft()),
 				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outALteExprExpr(ALteExprExpr node) {
 		super.outALteExprExpr(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.LESS_THAN_OR_EQUALS, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.LESS_THAN_OR_EQUALS,
+				getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAGtExprExpr(AGtExprExpr node) {
 		super.outAGtExprExpr(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.GREATER_THAN, getExpression(node.getLeft()),
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.GREATER_THAN, getExpression(node.getLeft()),
 				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAGteExprExpr(AGteExprExpr node) {
 		super.outAGteExprExpr(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.GREATER_THAN_OR_EQUALS,
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.GREATER_THAN_OR_EQUALS,
 				getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
@@ -356,30 +357,30 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAOrExprExpr2(AOrExprExpr2 node) {
 		super.outAOrExprExpr2(node);
-		registerExpressionNode(node,
-				new BinaryOperatorExpression(BooleanBinaryOperator.OR, getExpression(node.getLeft()), getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.OR, getExpression(node.getLeft()),
+				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAOr2ExprExpr2(AOr2ExprExpr2 node) {
 		super.outAOr2ExprExpr2(node);
-		registerExpressionNode(node,
-				new BinaryOperatorExpression(BooleanBinaryOperator.OR, getExpression(node.getLeft()), getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.OR, getExpression(node.getLeft()),
+				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAAddExprExpr2(AAddExprExpr2 node) {
 		super.outAAddExprExpr2(node);
 		// System.out.println("OUT add with " + node);
-		registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.ADDITION, getExpression(node.getLeft()),
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELArithmeticBinaryOperator.ADDITION, getExpression(node.getLeft()),
 				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outASubExprExpr2(ASubExprExpr2 node) {
 		super.outASubExprExpr2(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.SUBSTRACTION, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELArithmeticBinaryOperator.SUBSTRACTION,
+				getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	// Following methods manage following grammar fragment
@@ -404,50 +405,50 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAAndExprExpr3(AAndExprExpr3 node) {
 		super.outAAndExprExpr3(node);
-		registerExpressionNode(node,
-				new BinaryOperatorExpression(BooleanBinaryOperator.AND, getExpression(node.getLeft()), getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.AND, getExpression(node.getLeft()),
+				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAAnd2ExprExpr3(AAnd2ExprExpr3 node) {
 		super.outAAnd2ExprExpr3(node);
-		registerExpressionNode(node,
-				new BinaryOperatorExpression(BooleanBinaryOperator.AND, getExpression(node.getLeft()), getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELBooleanBinaryOperator.AND, getExpression(node.getLeft()),
+				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAMultExprExpr3(AMultExprExpr3 node) {
 		super.outAMultExprExpr3(node);
 		// System.out.println("OUT mult with " + node);
-		registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.MULTIPLICATION, getExpression(node.getLeft()),
-				getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELArithmeticBinaryOperator.MULTIPLICATION,
+				getExpression(node.getLeft()), getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outADivExprExpr3(ADivExprExpr3 node) {
 		super.outADivExprExpr3(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.DIVISION, getExpression(node.getLeft()),
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELArithmeticBinaryOperator.DIVISION, getExpression(node.getLeft()),
 				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAModExprExpr3(AModExprExpr3 node) {
 		super.outAModExprExpr3(node);
-		registerExpressionNode(node,
-				new BinaryOperatorExpression(ArithmeticBinaryOperator.MOD, getExpression(node.getLeft()), getExpression(node.getRight())));
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELArithmeticBinaryOperator.MOD, getExpression(node.getLeft()),
+				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outAPowerExprExpr3(APowerExprExpr3 node) {
 		super.outAPowerExprExpr3(node);
-		registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.POWER, getExpression(node.getLeft()),
+		registerExpressionNode(node, new DELBinaryOperatorExpression(DELArithmeticBinaryOperator.POWER, getExpression(node.getLeft()),
 				getExpression(node.getRight())));
 	}
 
 	@Override
 	public void outANotExprExpr3(ANotExprExpr3 node) {
 		super.outANotExprExpr3(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(BooleanUnaryOperator.NOT, getExpression(node.getTerm())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELBooleanUnaryOperator.NOT, getExpression(node.getTerm())));
 	}
 
 	// Following methods manage following grammar fragment
@@ -465,55 +466,55 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outACosFuncFunction(ACosFuncFunction node) {
 		super.outACosFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.COS, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.COS, getExpression(node.getExpr2())));
 	}
 
 	@Override
 	public void outAAcosFuncFunction(AAcosFuncFunction node) {
 		super.outAAcosFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.ACOS, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.ACOS, getExpression(node.getExpr2())));
 	}
 
 	@Override
 	public void outASinFuncFunction(ASinFuncFunction node) {
 		super.outASinFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.SIN, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.SIN, getExpression(node.getExpr2())));
 	}
 
 	@Override
 	public void outAAsinFuncFunction(AAsinFuncFunction node) {
 		super.outAAsinFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.ASIN, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.ASIN, getExpression(node.getExpr2())));
 	}
 
 	@Override
 	public void outATanFuncFunction(ATanFuncFunction node) {
 		super.outATanFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.TAN, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.TAN, getExpression(node.getExpr2())));
 	}
 
 	@Override
 	public void outAAtanFuncFunction(AAtanFuncFunction node) {
 		super.outAAtanFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.ATAN, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.ATAN, getExpression(node.getExpr2())));
 	}
 
 	@Override
 	public void outAExpFuncFunction(AExpFuncFunction node) {
 		super.outAExpFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.EXP, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.EXP, getExpression(node.getExpr2())));
 	}
 
 	@Override
 	public void outALogFuncFunction(ALogFuncFunction node) {
 		super.outALogFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.LOG, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.LOG, getExpression(node.getExpr2())));
 	}
 
 	@Override
 	public void outASqrtFuncFunction(ASqrtFuncFunction node) {
 		super.outASqrtFuncFunction(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.SQRT, getExpression(node.getExpr2())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.SQRT, getExpression(node.getExpr2())));
 	}
 
 	// Following methods manage following grammar fragment
@@ -593,13 +594,13 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outACastTerm(ACastTerm node) {
 		super.outACastTerm(node);
-		registerExpressionNode(node, new CastExpression(makeTypeReference(node.getTypeReference()), getExpression(node.getTerm())));
+		registerExpressionNode(node, new DELCastExpression(makeTypeReference(node.getTypeReference()), getExpression(node.getTerm())));
 	}
 
 	@Override
 	public void outANegativeTerm(ANegativeTerm node) {
 		super.outANegativeTerm(node);
-		registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.UNARY_MINUS, getExpression(node.getTerm())));
+		registerExpressionNode(node, new DELUnaryOperatorExpression(DELArithmeticUnaryOperator.UNARY_MINUS, getExpression(node.getTerm())));
 	}
 
 	@Override

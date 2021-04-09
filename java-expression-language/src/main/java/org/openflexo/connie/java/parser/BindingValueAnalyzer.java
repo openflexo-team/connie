@@ -47,6 +47,7 @@ import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.MethodCallBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.ACompositeIdent;
 import org.openflexo.connie.java.parser.node.AIdentifierPrefix;
@@ -91,7 +92,7 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		
 		return returned;*/
 
-		return new BindingValue(makeBindingPath(node, expressionAnalyzer));
+		return new BindingValue(makeBindingPath(node, expressionAnalyzer), JavaPrettyPrinter.getInstance());
 	}
 
 	private static List<AbstractBindingPathElement> makeBindingPath(Node node, ExpressionSemanticsAnalyzer expressionAnalyzer) {

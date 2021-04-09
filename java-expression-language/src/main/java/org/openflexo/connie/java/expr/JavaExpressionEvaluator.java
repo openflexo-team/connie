@@ -37,27 +37,26 @@
  * 
  */
 
-package org.openflexo.connie.expr;
+package org.openflexo.connie.java.expr;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.ConditionalExpression;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.ExpressionEvaluator;
+import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
 
 /**
- * This {@link ExpressionEvaluator} is used to evaluate expressions
+ * This {@link JavaExpressionEvaluator} is used to evaluate DEL expressions
  * 
  * @author sylvain
  * 
  */
-public abstract class ExpressionEvaluator implements ExpressionTransformer {
+public class JavaExpressionEvaluator extends ExpressionEvaluator {
 
-	private BindingEvaluationContext context;
-
-	public ExpressionEvaluator(BindingEvaluationContext context) {
-		this.context = context;
-	}
-
-	public BindingEvaluationContext getContext() {
-		return context;
+	public JavaExpressionEvaluator(BindingEvaluationContext context) {
+		super(context);
 	}
 
 	/**
@@ -66,35 +65,25 @@ public abstract class ExpressionEvaluator implements ExpressionTransformer {
 	 */
 	@Override
 	public Expression performTransformation(Expression e) throws TransformException {
-		if (e instanceof BinaryOperatorExpression) {
-			return transformBinaryOperatorExpression((BinaryOperatorExpression) e);
+		if (e instanceof BindingValue) {
+			if (((BindingValue) e).isValid()) {
+				Object o = ((BindingValue) e).getBindingValue(getContext());
+				return JavaConstant.makeConstant(o);
+			}
+			return e;
 		}
-		else if (e instanceof UnaryOperatorExpression) {
-			return transformUnaryOperatorExpression((UnaryOperatorExpression) e);
+		else if (e instanceof ConditionalExpression) {
+			return transformConditionalExpression((ConditionalExpression) e);
 		}
-		return e;
+		return super.performTransformation(e);
 	}
 
-	private static Expression transformBinaryOperatorExpression(BinaryOperatorExpression e) throws TransformException {
-
-		// If both arguments are constants, we try to evaluate them
-		if (e.getLeftArgument() instanceof Constant && e.getRightArgument() instanceof Constant
-		/*&& e.getLeftArgument().getEvaluationType() == e.getRightArgument().getEvaluationType()*/
-		/*&& (e.getLeftArgument() != ObjectSymbolicConstant.NULL) && (e.getRightArgument() != ObjectSymbolicConstant.NULL)*/) {
-			return e.getOperator().evaluate((Constant<?>) e.getLeftArgument(), (Constant<?>) e.getRightArgument());
+	private static Expression transformConditionalExpression(ConditionalExpression e) {
+		if (e.getCondition() == BooleanConstant.TRUE) {
+			return e.getThenExpression();
 		}
-		if (e.getLeftArgument() instanceof Constant /*&& (e.getLeftArgument() != ObjectSymbolicConstant.NULL)*/) {
-			return e.getOperator().evaluate((Constant<?>) e.getLeftArgument(), e.getRightArgument());
-		}
-		if (e.getRightArgument() instanceof Constant /*&& (e.getRightArgument() != ObjectSymbolicConstant.NULL)*/) {
-			return e.getOperator().evaluate(e.getLeftArgument(), (Constant<?>) e.getRightArgument());
-		}
-		return e;
-	}
-
-	private static Expression transformUnaryOperatorExpression(UnaryOperatorExpression e) throws TransformException {
-		if (e.getArgument() instanceof Constant /*&& (e.getArgument() != ObjectSymbolicConstant.NULL)*/) {
-			return e.getOperator().evaluate((Constant<?>) e.getArgument());
+		else if (e.getCondition() == BooleanConstant.FALSE) {
+			return e.getElseExpression();
 		}
 		return e;
 	}

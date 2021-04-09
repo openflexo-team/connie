@@ -1,7 +1,10 @@
 /**
  * 
+ */
+/**
+ * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,53 +40,35 @@
  * 
  */
 
-package org.openflexo.connie.expr;
+package org.openflexo.connie.del;
 
-import java.lang.reflect.Type;
-import java.util.Vector;
+import java.util.logging.Logger;
 
-import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.JavaBasedBindingFactory;
+import org.openflexo.connie.ParseException;
+import org.openflexo.connie.del.expr.DELConstant.ObjectSymbolicConstant;
+import org.openflexo.connie.del.parser.ExpressionParser;
+import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Expression;
 
 /**
- * Represents an expression which could not be resolved for any reason (eg during a NullReferenceException occured during an evaluation)
+ * A {@link BindingFactory} for default expression language
+ * 
  * 
  * @author sylvain
- * 
+ *
  */
-public abstract class UnresolvedExpression extends Expression {
+public class DELBindingFactory extends JavaBasedBindingFactory {
+	static final Logger LOGGER = Logger.getLogger(DELBindingFactory.class.getPackage().getName());
+
 	@Override
-	public void visit(ExpressionVisitor visitor) throws VisitorException {
+	public Expression parseExpression(String expressionAsString) throws ParseException {
+		return ExpressionParser.parse(expressionAsString);
 	}
 
 	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-		return this;
+	public Constant<?> getNullExpression() {
+		return ObjectSymbolicConstant.NULL;
 	}
-
-	@Override
-	public int getDepth() {
-		return 0;
-	}
-
-	@Override
-	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return EvaluationType.LITERAL;
-	}
-
-	@Override
-	protected Vector<Expression> getChilds() {
-		return null;
-	}
-
-	@Override
-	public boolean isSettable() {
-		return false;
-	}
-
-	@Override
-	public Type getAccessedType() {
-		return null;
-	}
-
 }

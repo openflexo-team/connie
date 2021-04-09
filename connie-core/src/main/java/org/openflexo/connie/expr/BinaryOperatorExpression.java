@@ -43,10 +43,9 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Vector;
 
-import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 
-public class BinaryOperatorExpression extends Expression {
+public abstract class BinaryOperatorExpression extends Expression {
 
 	private BinaryOperator operator;
 	private Expression leftArgument;
@@ -124,20 +123,6 @@ public class BinaryOperatorExpression extends Expression {
 		}
 		return new BinaryOperatorExpression(operator, evaluatedLeftArgument, evaluatedRightArgument);
 	}*/
-
-	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-
-		Expression expression = this;
-		Expression transformedLeftArgument = leftArgument.transform(transformer);
-		Expression transformedRightArgument = rightArgument.transform(transformer);
-
-		if (!transformedLeftArgument.equals(leftArgument) || !transformedRightArgument.equals(rightArgument)) {
-			expression = new BinaryOperatorExpression(operator, transformedLeftArgument, transformedRightArgument);
-		}
-
-		return transformer.performTransformation(expression);
-	}
 
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
