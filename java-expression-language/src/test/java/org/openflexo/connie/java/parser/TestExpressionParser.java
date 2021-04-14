@@ -12,6 +12,8 @@ import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionEvaluator;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
+import org.openflexo.connie.java.expr.JavaConditionalExpression;
+import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
 import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
 import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
 import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
@@ -70,7 +72,7 @@ public class TestExpressionParser extends TestCase {
 			if (shouldFail) {
 				fail();
 			}
-			assertEquals(expectedExpressionClass, parsed.getClass());
+			assertTrue(expectedExpressionClass.isAssignableFrom(parsed.getClass()));
 			if (expectedEvaluatedExpression != null) {
 				assertEquals(expectedEvaluatedExpression, prettyPrinter.getStringRepresentation(evaluated));
 			}
@@ -128,12 +130,20 @@ public class TestExpressionParser extends TestCase {
 
 	// Test numbers
 
-	public static void tutu(Object o) {
+	/*public static void tutu(Object o) {
 		System.out.println("Number " + o + " of " + o.getClass());
 	}
-
+	
 	public static void main(String[] args) {
 		tutu(0123776);
+	}*/
+
+	public void testTrue() {
+		tryToParse("true", "true", BooleanConstant.class, true, false);
+	}
+
+	public void testFalse() {
+		tryToParse("false", "false", BooleanConstant.class, false, false);
 	}
 
 	public void testSimpleInteger() {
@@ -260,6 +270,66 @@ public class TestExpressionParser extends TestCase {
 				false);
 	}*/
 
+	// Test Conditional
+
+	public void testSimpleConditional() {
+		tryToParse("1 < 2 ? true : false", "true", JavaConditionalExpression.class, true, false);
+	}
+
+	public void testSymbolicConditional() {
+		tryToParse("a > b ? c : d", "((a > b) ? c : d)", JavaConditionalExpression.class, null, false);
+	}
+
+	// Test comparison
+
+	public void testSimpleEq() {
+		tryToParse("2 == 2 ? true : false", "true", JavaConditionalExpression.class, true, false);
+	}
+
+	public void testSymbolicEq() {
+		tryToParse("a == b", "(a == b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleNeq() {
+		tryToParse("1 != 2 ? true : false", "true", JavaConditionalExpression.class, true, false);
+	}
+
+	public void testSymbolicNeq() {
+		tryToParse("a != b", "(a != b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleLt() {
+		tryToParse("1 < 2 ? true : false", "true", JavaConditionalExpression.class, true, false);
+	}
+
+	public void testSymbolicLt() {
+		tryToParse("a < b", "(a < b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleGt() {
+		tryToParse("2 > 1 ? true : false", "true", JavaConditionalExpression.class, true, false);
+	}
+
+	public void testSymbolicGt() {
+		tryToParse("a > b", "(a > b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleLtEq() {
+		tryToParse("2 <= 2 ? true : false", "true", JavaConditionalExpression.class, true, false);
+	}
+
+	public void testSymbolicLtEq() {
+		tryToParse("a <= b", "(a <= b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleGtEq() {
+		tryToParse("1 >= 1 ? true : false", "true", JavaConditionalExpression.class, true, false);
+	}
+
+	public void testSymbolicGtEq() {
+		tryToParse("a >= b", "(a >= b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
 	public void testSimpleNumberAddition() {
 		tryToParse("1+1", "2", JavaBinaryOperatorExpression.class, 2, false);
 	}
@@ -270,6 +340,14 @@ public class TestExpressionParser extends TestCase {
 
 	public void testSimpleSubstraction() {
 		tryToParse("7-8", "-1", JavaBinaryOperatorExpression.class, -1, false);
+	}
+
+	public void testSymbolicEquals() {
+		tryToParse("a==b", "(a == b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleEquals() {
+		tryToParse("1==2", "false", JavaBinaryOperatorExpression.class, false, false);
 	}
 
 	/*

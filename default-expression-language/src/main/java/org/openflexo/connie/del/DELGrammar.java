@@ -49,18 +49,24 @@ import org.openflexo.connie.expr.Operator;
 import org.openflexo.connie.expr.OperatorNotSupportedException;
 import org.openflexo.connie.expr.UnaryOperator;
 
+/**
+ * Represents Default Expression Language (DEL) grammar
+ * 
+ * @author sylvain
+ *
+ */
 public class DELGrammar implements ExpressionGrammar {
 
 	private static final BinaryOperator[] allSupportedBinaryOperators = { DELBooleanBinaryOperator.AND, DELBooleanBinaryOperator.OR,
 			DELBooleanBinaryOperator.EQUALS, DELBooleanBinaryOperator.NOT_EQUALS, DELBooleanBinaryOperator.LESS_THAN,
-			DELBooleanBinaryOperator.LESS_THAN_OR_EQUALS, DELBooleanBinaryOperator.GREATER_THAN, DELBooleanBinaryOperator.GREATER_THAN_OR_EQUALS,
-			DELArithmeticBinaryOperator.ADDITION, DELArithmeticBinaryOperator.SUBSTRACTION, DELArithmeticBinaryOperator.MULTIPLICATION,
-			DELArithmeticBinaryOperator.DIVISION, DELArithmeticBinaryOperator.POWER, };
+			DELBooleanBinaryOperator.LESS_THAN_OR_EQUALS, DELBooleanBinaryOperator.GREATER_THAN,
+			DELBooleanBinaryOperator.GREATER_THAN_OR_EQUALS, DELArithmeticBinaryOperator.ADDITION, DELArithmeticBinaryOperator.SUBSTRACTION,
+			DELArithmeticBinaryOperator.MULTIPLICATION, DELArithmeticBinaryOperator.DIVISION, DELArithmeticBinaryOperator.POWER, };
 
 	private static final UnaryOperator[] allSupportedUnaryOperators = { DELBooleanUnaryOperator.NOT, DELArithmeticUnaryOperator.UNARY_MINUS,
-			DELArithmeticUnaryOperator.SIN, DELArithmeticUnaryOperator.ASIN, DELArithmeticUnaryOperator.COS, DELArithmeticUnaryOperator.ACOS,
-			DELArithmeticUnaryOperator.TAN, DELArithmeticUnaryOperator.ATAN, DELArithmeticUnaryOperator.EXP, DELArithmeticUnaryOperator.LOG,
-			DELArithmeticUnaryOperator.SQRT };
+			DELArithmeticUnaryOperator.SIN, DELArithmeticUnaryOperator.ASIN, DELArithmeticUnaryOperator.COS,
+			DELArithmeticUnaryOperator.ACOS, DELArithmeticUnaryOperator.TAN, DELArithmeticUnaryOperator.ATAN,
+			DELArithmeticUnaryOperator.EXP, DELArithmeticUnaryOperator.LOG, DELArithmeticUnaryOperator.SQRT };
 
 	@Override
 	public BinaryOperator[] getAllSupportedBinaryOperators() {

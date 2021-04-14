@@ -39,53 +39,50 @@
 
 package org.openflexo.connie.java.expr;
 
-import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.ExpressionEvaluator;
+import org.openflexo.connie.expr.ExpressionPrettyPrinter;
+import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
 
-/**
- * This {@link JavaExpressionEvaluator} is used to evaluate Java expressions
- * 
- * @author sylvain
- * 
- */
-public class JavaExpressionEvaluator extends ExpressionEvaluator {
+public class JavaConditionalExpression extends ConditionalExpression {
 
-	public JavaExpressionEvaluator(BindingEvaluationContext context) {
-		super(context);
+	public JavaConditionalExpression(Expression condition, Expression thenExpression, Expression elseExpression) {
+		super(condition, thenExpression, elseExpression);
 	}
 
-	/**
-	 * Performs the transformation of a resulting expression e, asserting that all contained expressions have already been transformed (this
-	 * method is not recursive, to do so, use Expression.transform(ExpressionTransformer) API)
-	 */
 	@Override
-	public Expression performTransformation(Expression e) throws TransformException {
-		if (e instanceof BindingValue) {
-			if (((BindingValue) e).isValid()) {
-				Object o = ((BindingValue) e).getBindingValue(getContext());
-				return JavaConstant.makeConstant(o);
-			}
-			return e;
-		}
-		else if (e instanceof ConditionalExpression) {
-			return transformConditionalExpression((ConditionalExpression) e);
-		}
-		return super.performTransformation(e);
+	public ExpressionPrettyPrinter getPrettyPrinter() {
+		return JavaPrettyPrinter.getInstance();
 	}
 
-	private static Expression transformConditionalExpression(ConditionalExpression e) {
-		if (e.getCondition() == BooleanConstant.TRUE) {
-			return e.getThenExpression();
+	@Override
+	public Expression transform(ExpressionTransformer transformer) throws TransformException {
+
+		Expression expression = this;
+		Expression transformedCondition = getCondition().transform(transformer);
+
+		// Lazy evaluation
+		// special case if condition has been evaluated
+		if (transformedCondition == BooleanConstant.TRUE) {
+			// No need to analyze further
+			return getThenExpression().transform(transformer);
 		}
-		else if (e.getCondition() == BooleanConstant.FALSE) {
-			return e.getElseExpression();
+		else if (transformedCondition == BooleanConstant.FALSE) {
+			// No need to analyze further
+			return getElseExpression().transform(transformer);
 		}
-		return e;
+
+		Expression transformedThenExpression = getThenExpression().transform(transformer);
+		Expression transformedElseExpression = getElseExpression().transform(transformer);
+
+		if (!transformedCondition.equals(getCondition()) || !transformedThenExpression.equals(getThenExpression())
+				|| !transformedElseExpression.equals(getElseExpression())) {
+			expression = new JavaConditionalExpression(transformedCondition, transformedThenExpression, transformedElseExpression);
+		}
+
+		return transformer.performTransformation(expression);
 	}
 
 }

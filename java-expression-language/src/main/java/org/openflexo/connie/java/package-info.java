@@ -1,5 +1,5 @@
 /**
- * This package contains default implementations for Java native technology
+ * This package contains default implementations for Java expression language
  * 
  * @author sylvain
  */

@@ -49,6 +49,12 @@ import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
 import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
 import org.openflexo.connie.java.expr.JavaBooleanUnaryOperator;
 
+/**
+ * Represents Java expression language grammar
+ * 
+ * @author sylvain
+ *
+ */
 public class JavaGrammar implements ExpressionGrammar {
 
 	private static final BinaryOperator[] ALL_SUPPORTED_BINARY_OPERATORS = { JavaBooleanBinaryOperator.AND, JavaBooleanBinaryOperator.OR,

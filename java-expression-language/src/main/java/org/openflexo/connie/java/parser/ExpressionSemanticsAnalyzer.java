@@ -47,6 +47,9 @@ import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaArithmeticBinaryOperator;
 import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
+import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
+import org.openflexo.connie.java.expr.JavaConditionalExpression;
+import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ByteConstant;
 import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
 import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
@@ -56,17 +59,26 @@ import org.openflexo.connie.java.expr.JavaConstant.ShortConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.AConditionalExpression;
+import org.openflexo.connie.java.parser.node.AEqEqualityExp;
+import org.openflexo.connie.java.parser.node.AFalseLiteral;
 import org.openflexo.connie.java.parser.node.AFloatingPointLiteral;
+import org.openflexo.connie.java.parser.node.AGtRelationalExp;
+import org.openflexo.connie.java.parser.node.AGteqRelationalExp;
 import org.openflexo.connie.java.parser.node.AIdentifierPrimary;
+import org.openflexo.connie.java.parser.node.AInstanceofRelationalExp;
 import org.openflexo.connie.java.parser.node.AIntegerLiteral;
 import org.openflexo.connie.java.parser.node.ALiteralPrimaryNoId;
+import org.openflexo.connie.java.parser.node.ALtRelationalExp;
+import org.openflexo.connie.java.parser.node.ALteqRelationalExp;
 import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AMinusAddExp;
 import org.openflexo.connie.java.parser.node.AMinusUnaryExp;
+import org.openflexo.connie.java.parser.node.ANeqEqualityExp;
 import org.openflexo.connie.java.parser.node.APlusAddExp;
 import org.openflexo.connie.java.parser.node.APostfixUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.APrimaryNoIdPrimary;
 import org.openflexo.connie.java.parser.node.APrimaryPostfixExp;
+import org.openflexo.connie.java.parser.node.AQmarkConditionalExp;
 import org.openflexo.connie.java.parser.node.ASimpleAddExp;
 import org.openflexo.connie.java.parser.node.ASimpleAndExp;
 import org.openflexo.connie.java.parser.node.ASimpleConditionalAndExp;
@@ -78,6 +90,7 @@ import org.openflexo.connie.java.parser.node.ASimpleInclusiveOrExp;
 import org.openflexo.connie.java.parser.node.ASimpleMultExp;
 import org.openflexo.connie.java.parser.node.ASimpleRelationalExp;
 import org.openflexo.connie.java.parser.node.ASimpleShiftExp;
+import org.openflexo.connie.java.parser.node.ATrueLiteral;
 import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
 import org.openflexo.connie.java.parser.node.Node;
 import org.openflexo.connie.java.parser.node.PUnaryExp;
@@ -265,13 +278,23 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	}
 
 	@Override
+	public void outATrueLiteral(ATrueLiteral node) {
+		super.outATrueLiteral(node);
+		registerExpressionNode(node, BooleanConstant.TRUE);
+	}
+
+	@Override
+	public void outAFalseLiteral(AFalseLiteral node) {
+		super.outAFalseLiteral(node);
+		registerExpressionNode(node, BooleanConstant.FALSE);
+	}
+
+	@Override
 	public void outAIntegerLiteral(AIntegerLiteral node) {
 		super.outAIntegerLiteral(node);
 
 		String valueText = node.getLitInteger().getText();
 		Number value;
-
-		System.out.println("parsing " + valueText);
 
 		if (valueText.startsWith("0x") || valueText.startsWith("0X")) {
 			valueText = valueText.substring(2);
@@ -281,7 +304,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 				value = Long.parseLong(valueText, 16);
 			}
 		}
-		else if (valueText.startsWith("0")) {
+		else if (valueText.startsWith("0") && valueText.length() > 1) {
 			valueText = valueText.substring(1);
 			try {
 				value = Integer.parseInt(valueText, 8);
@@ -334,6 +357,19 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 	}
 
+	// conditional_exp =
+	// {simple} conditional_or_exp
+	// | {qmark} conditional_or_exp qmark expression colon conditional_exp
+	// ;
+
+	@Override
+	public void outAQmarkConditionalExp(AQmarkConditionalExp node) {
+		// TODO Auto-generated method stub
+		super.outAQmarkConditionalExp(node);
+		registerExpressionNode(node, new JavaConditionalExpression(getExpression(node.getConditionalOrExp()),
+				getExpression(node.getExpression()), getExpression(node.getConditionalExp())));
+	}
+
 	@Override
 	public void outAMinusUnaryExp(AMinusUnaryExp node) {
 		// TODO Auto-generated method stub
@@ -359,326 +395,65 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 				getExpression(node.getAddExp()), getExpression(node.getMultExp())));
 	}
 
-	/*@Override
-	public void inAMethodPrimaryNoId(AMethodPrimaryNoId node) {
-		// TODO Auto-generated method stub
-		super.inAMethodPrimaryNoId(node);
-		System.out.println(">> On entre de primary_no_id/{method} avec " + node + " of " + node.getClass().getSimpleName());
-	}
-	
+	// equality_exp =
+	// {simple} relational_exp
+	// | {eq} equality_exp eq relational_exp
+	// | {neq} equality_exp neq relational_exp
+	// ;
+
 	@Override
-	public void outAMethodPrimaryNoId(AMethodPrimaryNoId node) {
-		// TODO Auto-generated method stub
-		super.outAMethodPrimaryNoId(node);
-		System.out.println("<< On sort de primary_no_id/{method} avec " + node + " of " + node.getClass().getSimpleName());
-	}*/
+	public void outAEqEqualityExp(AEqEqualityExp node) {
+		super.outAEqEqualityExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaBooleanBinaryOperator.EQUALS,
+				getExpression(node.getEqualityExp()), getExpression(node.getRelationalExp())));
+	}
 
-	/*	
-		@Override
-		public void outACondExprExpr(ACondExprExpr node) {
-			super.outACondExprExpr(node);
-			// System.out.println("On chope une conditionnelle avec cond:" + node.getCondition() + " then:" + node.getThen() + " else:"+
-			// node.getElse());
-			registerExpressionNode(node, new ConditionalExpression(getExpression(node.getCondition()), getExpression(node.getThen()),
-					getExpression(node.getElse())));
-		}
-	
-		@Override
-		public void outAEqExprExpr(AEqExprExpr node) {
-			super.outAEqExprExpr(node);
-			registerExpressionNode(node,
-					new BinaryOperatorExpression(BooleanBinaryOperator.EQUALS, getExpression(node.getLeft()), getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAEq2ExprExpr(AEq2ExprExpr node) {
-			super.outAEq2ExprExpr(node);
-			registerExpressionNode(node,
-					new BinaryOperatorExpression(BooleanBinaryOperator.EQUALS, getExpression(node.getLeft()), getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outANeqExprExpr(ANeqExprExpr node) {
-			super.outANeqExprExpr(node);
-			registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.NOT_EQUALS, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outALtExprExpr(ALtExprExpr node) {
-			super.outALtExprExpr(node);
-			registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.LESS_THAN, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outALteExprExpr(ALteExprExpr node) {
-			super.outALteExprExpr(node);
-			registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.LESS_THAN_OR_EQUALS, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAGtExprExpr(AGtExprExpr node) {
-			super.outAGtExprExpr(node);
-			registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.GREATER_THAN, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAGteExprExpr(AGteExprExpr node) {
-			super.outAGteExprExpr(node);
-			registerExpressionNode(node, new BinaryOperatorExpression(BooleanBinaryOperator.GREATER_THAN_OR_EQUALS,
-					getExpression(node.getLeft()), getExpression(node.getRight())));
-		}
-	
-	
-		@Override
-		public void outAExpr3Expr2(AExpr3Expr2 node) {
-			// System.out.println("OUT Expr3-Expr2 with " + node);
-			super.outAExpr3Expr2(node);
-			registerExpressionNode(node, getExpression(node.getExpr3()));
-			// System.out.println("***** AExpr3Expr2 " + node + "expression=" + getExpression(node.getExpr3()));
-		}
-	
-		@Override
-		public void outAOrExprExpr2(AOrExprExpr2 node) {
-			super.outAOrExprExpr2(node);
-			registerExpressionNode(node,
-					new BinaryOperatorExpression(BooleanBinaryOperator.OR, getExpression(node.getLeft()), getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAOr2ExprExpr2(AOr2ExprExpr2 node) {
-			super.outAOr2ExprExpr2(node);
-			registerExpressionNode(node,
-					new BinaryOperatorExpression(BooleanBinaryOperator.OR, getExpression(node.getLeft()), getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAAddExprExpr2(AAddExprExpr2 node) {
-			super.outAAddExprExpr2(node);
-			// System.out.println("OUT add with " + node);
-			registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.ADDITION, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outASubExprExpr2(ASubExprExpr2 node) {
-			super.outASubExprExpr2(node);
-			registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.SUBSTRACTION, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-	
-		@Override
-		public void outATermExpr3(ATermExpr3 node) {
-			// System.out.println("OUT Term-Expr3 with " + node + " term=" + node.getTerm() + " of " + node.getTerm().getClass());
-			super.outATermExpr3(node);
-			registerExpressionNode(node, getExpression(node.getTerm()));
-			// System.out.println("***** ATermExpr3 " + node + "expression=" + getExpression(node.getTerm()));
-		}
-	
-		@Override
-		public void outAAndExprExpr3(AAndExprExpr3 node) {
-			super.outAAndExprExpr3(node);
-			registerExpressionNode(node,
-					new BinaryOperatorExpression(BooleanBinaryOperator.AND, getExpression(node.getLeft()), getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAAnd2ExprExpr3(AAnd2ExprExpr3 node) {
-			super.outAAnd2ExprExpr3(node);
-			registerExpressionNode(node,
-					new BinaryOperatorExpression(BooleanBinaryOperator.AND, getExpression(node.getLeft()), getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAMultExprExpr3(AMultExprExpr3 node) {
-			super.outAMultExprExpr3(node);
-			// System.out.println("OUT mult with " + node);
-			registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.MULTIPLICATION, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outADivExprExpr3(ADivExprExpr3 node) {
-			super.outADivExprExpr3(node);
-			registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.DIVISION, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAModExprExpr3(AModExprExpr3 node) {
-			super.outAModExprExpr3(node);
-			registerExpressionNode(node,
-					new BinaryOperatorExpression(ArithmeticBinaryOperator.MOD, getExpression(node.getLeft()), getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outAPowerExprExpr3(APowerExprExpr3 node) {
-			super.outAPowerExprExpr3(node);
-			registerExpressionNode(node, new BinaryOperatorExpression(ArithmeticBinaryOperator.POWER, getExpression(node.getLeft()),
-					getExpression(node.getRight())));
-		}
-	
-		@Override
-		public void outANotExprExpr3(ANotExprExpr3 node) {
-			super.outANotExprExpr3(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(BooleanUnaryOperator.NOT, getExpression(node.getTerm())));
-		}
-	
-	
-		@Override
-		public void outACosFuncFunction(ACosFuncFunction node) {
-			super.outACosFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.COS, getExpression(node.getExpr2())));
-		}
-	
-		@Override
-		public void outAAcosFuncFunction(AAcosFuncFunction node) {
-			super.outAAcosFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.ACOS, getExpression(node.getExpr2())));
-		}
-	
-		@Override
-		public void outASinFuncFunction(ASinFuncFunction node) {
-			super.outASinFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.SIN, getExpression(node.getExpr2())));
-		}
-	
-		@Override
-		public void outAAsinFuncFunction(AAsinFuncFunction node) {
-			super.outAAsinFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.ASIN, getExpression(node.getExpr2())));
-		}
-	
-		@Override
-		public void outATanFuncFunction(ATanFuncFunction node) {
-			super.outATanFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.TAN, getExpression(node.getExpr2())));
-		}
-	
-		@Override
-		public void outAAtanFuncFunction(AAtanFuncFunction node) {
-			super.outAAtanFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.ATAN, getExpression(node.getExpr2())));
-		}
-	
-		@Override
-		public void outAExpFuncFunction(AExpFuncFunction node) {
-			super.outAExpFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.EXP, getExpression(node.getExpr2())));
-		}
-	
-		@Override
-		public void outALogFuncFunction(ALogFuncFunction node) {
-			super.outALogFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.LOG, getExpression(node.getExpr2())));
-		}
-	
-		@Override
-		public void outASqrtFuncFunction(ASqrtFuncFunction node) {
-			super.outASqrtFuncFunction(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.SQRT, getExpression(node.getExpr2())));
-		}
-	
-	
-		@Override
-		public void outATrueConstant(ATrueConstant node) {
-			super.outATrueConstant(node);
-			registerExpressionNode(node, BooleanConstant.TRUE);
-		}
-	
-		@Override
-		public void outAFalseConstant(AFalseConstant node) {
-			super.outAFalseConstant(node);
-			registerExpressionNode(node, BooleanConstant.FALSE);
-		}
-	
-		@Override
-		public void outAPiConstant(APiConstant node) {
-			super.outAPiConstant(node);
-			registerExpressionNode(node, FloatSymbolicConstant.PI);
-		}
-	
-		@Override
-		public void outANullConstant(ANullConstant node) {
-			super.outANullConstant(node);
-			registerExpressionNode(node, ObjectSymbolicConstant.NULL);
-		}
-	
-		@Override
-		public void outADecimalNumberNumber(ADecimalNumberNumber node) {
-			super.outADecimalNumberNumber(node);
-			registerExpressionNode(node, makeDecimalNumber(node.getDecimalNumber()));
-		}
-	
-		@Override
-		public void outAPreciseNumberNumber(APreciseNumberNumber node) {
-			super.outAPreciseNumberNumber(node);
-			registerExpressionNode(node, makePreciseNumber(node.getPreciseNumber()));
-		}
-	
-		@Override
-		public void outAScientificNotationNumberNumber(AScientificNotationNumberNumber node) {
-			super.outAScientificNotationNumberNumber(node);
-			registerExpressionNode(node, makeScientificNotationNumber(node.getScientificNotationNumber()));
-		}
-	
-		@Override
-		public void outAConstantNumber(AConstantNumber node) {
-			super.outAConstantNumber(node);
-			registerExpressionNode(node, getExpression(node.getConstant()));
-		}
-	
-	
-		@Override
-		public void outACastTerm(ACastTerm node) {
-			super.outACastTerm(node);
-			registerExpressionNode(node, new CastExpression(makeTypeReference(node.getTypeReference()), getExpression(node.getTerm())));
-		}
-	
-		@Override
-		public void outANegativeTerm(ANegativeTerm node) {
-			super.outANegativeTerm(node);
-			registerExpressionNode(node, new UnaryOperatorExpression(ArithmeticUnaryOperator.UNARY_MINUS, getExpression(node.getTerm())));
-		}
-	
-		@Override
-		public void outANumberTerm(ANumberTerm node) {
-			super.outANumberTerm(node);
-			registerExpressionNode(node, getExpression(node.getNumber()));
-		}
-	
-		@Override
-		public void outAStringValueTerm(AStringValueTerm node) {
-			super.outAStringValueTerm(node);
-			registerExpressionNode(node, makeStringValue(node.getStringValue()));
-		}
-	
-		@Override
-		public void outACharsValueTerm(ACharsValueTerm node) {
-			super.outACharsValueTerm(node);
-			registerExpressionNode(node, makeCharsValue(node.getCharsValue()));
-		}
-	
-		@Override
-		public void outAFunctionTerm(AFunctionTerm node) {
-			super.outAFunctionTerm(node);
-			registerExpressionNode(node, getExpression(node.getFunction()));
-		}
-	
-		@Override
-		public void outABindingTerm(ABindingTerm node) {
-			super.outABindingTerm(node);
-			registerExpressionNode(node, makeBinding(node.getBinding()));
-		}
-	
-		@Override
-		public void outAExprTerm(AExprTerm node) {
-			super.outAExprTerm(node);
-			registerExpressionNode(node, getExpression(node.getExpr()));
-		}*/
+	@Override
+	public void outANeqEqualityExp(ANeqEqualityExp node) {
+		super.outANeqEqualityExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaBooleanBinaryOperator.NOT_EQUALS,
+				getExpression(node.getEqualityExp()), getExpression(node.getRelationalExp())));
+	}
 
+	// relational_exp =
+	// {simple} shift_exp
+	// | {lt} [shift_exp1]:shift_exp lt [shift_expression2]:shift_exp
+	// | {gt} [shift_expression1]:shift_exp gt [shift_expression2]:shift_exp
+	// | {lteq} [shift_expression1]:shift_exp lteq [shift_expression2]:shift_exp
+	// | {gteq} [shift_expression1]:shift_exp gteq [shift_expression2]:shift_exp
+	// | {instanceof} shift_exp kw_instanceof type [dims]:dim*
+	// ;
+
+	@Override
+	public void outALtRelationalExp(ALtRelationalExp node) {
+		super.outALtRelationalExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaBooleanBinaryOperator.LESS_THAN,
+				getExpression(node.getShiftExp1()), getExpression(node.getShiftExpression2())));
+	}
+
+	@Override
+	public void outAGtRelationalExp(AGtRelationalExp node) {
+		super.outAGtRelationalExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaBooleanBinaryOperator.GREATER_THAN,
+				getExpression(node.getShiftExpression1()), getExpression(node.getShiftExpression2())));
+	}
+
+	@Override
+	public void outALteqRelationalExp(ALteqRelationalExp node) {
+		super.outALteqRelationalExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaBooleanBinaryOperator.LESS_THAN_OR_EQUALS,
+				getExpression(node.getShiftExpression1()), getExpression(node.getShiftExpression2())));
+	}
+
+	@Override
+	public void outAGteqRelationalExp(AGteqRelationalExp node) {
+		super.outAGteqRelationalExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaBooleanBinaryOperator.GREATER_THAN_OR_EQUALS,
+				getExpression(node.getShiftExpression1()), getExpression(node.getShiftExpression2())));
+	}
+
+	@Override
+	public void outAInstanceofRelationalExp(AInstanceofRelationalExp node) {
+		super.outAInstanceofRelationalExp(node);
+	}
 }

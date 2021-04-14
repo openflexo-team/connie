@@ -53,7 +53,7 @@ import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 
 /**
- * A {@link BindingFactory} for default expression language
+ * A {@link BindingFactory} for Default Expression Language (DEL)
  * 
  * 
  * @author sylvain
