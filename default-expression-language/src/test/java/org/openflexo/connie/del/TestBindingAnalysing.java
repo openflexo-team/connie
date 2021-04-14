@@ -37,7 +37,7 @@
  * 
  */
 
-package org.openflexo.connie.binding;
+package org.openflexo.connie.del;
 
 import java.lang.reflect.Type;
 import java.util.List;
