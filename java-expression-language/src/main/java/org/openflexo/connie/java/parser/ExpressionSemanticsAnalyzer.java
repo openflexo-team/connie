@@ -70,6 +70,7 @@ import org.openflexo.connie.java.parser.node.AMinusUnaryExp;
 import org.openflexo.connie.java.parser.node.ANeqEqualityExp;
 import org.openflexo.connie.java.parser.node.APercentMultExp;
 import org.openflexo.connie.java.parser.node.APlusAddExp;
+import org.openflexo.connie.java.parser.node.APlusUnaryExp;
 import org.openflexo.connie.java.parser.node.APostfixUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.APrimaryNoIdPrimary;
 import org.openflexo.connie.java.parser.node.APrimaryPostfixExp;
@@ -93,7 +94,6 @@ import org.openflexo.connie.java.parser.node.ATrueLiteral;
 import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
 import org.openflexo.connie.java.parser.node.AUshrShiftExp;
 import org.openflexo.connie.java.parser.node.Node;
-import org.openflexo.connie.java.parser.node.PUnaryExp;
 import org.openflexo.toolbox.StringUtils;
 
 /**
@@ -348,17 +348,6 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 				getExpression(node.getExpression()), getExpression(node.getConditionalExp())));
 	}
 
-	@Override
-	public void outAMinusUnaryExp(AMinusUnaryExp node) {
-		// TODO Auto-generated method stub
-		super.outAMinusUnaryExp(node);
-
-		PUnaryExp unaryExp = node.getUnaryExp();
-
-		registerExpressionNode(node, new JavaUnaryOperatorExpression(JavaArithmeticUnaryOperator.UNARY_MINUS, getExpression(unaryExp)));
-
-	}
-
 	// equality_exp =
 	// {simple} relational_exp
 	// | {eq} equality_exp eq relational_exp
@@ -496,6 +485,28 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		super.outAPercentMultExp(node);
 		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.MOD, getExpression(node.getMultExp()),
 				getExpression(node.getUnaryExp())));
+	}
+
+	// unary_exp =
+	// {pre_increment} pre_incr_exp
+	// | {pre_decrement} pre_decr_exp
+	// | {plus} plus unary_exp
+	// | {minus} minus unary_exp
+	// | {unary} unary_exp_not_plus_minus
+	// ;
+
+	@Override
+	public void outAPlusUnaryExp(APlusUnaryExp node) {
+		super.outAPlusUnaryExp(node);
+		registerExpressionNode(node,
+				new JavaUnaryOperatorExpression(JavaArithmeticUnaryOperator.UNARY_PLUS, getExpression(node.getUnaryExp())));
+	}
+
+	@Override
+	public void outAMinusUnaryExp(AMinusUnaryExp node) {
+		super.outAMinusUnaryExp(node);
+		registerExpressionNode(node,
+				new JavaUnaryOperatorExpression(JavaArithmeticUnaryOperator.UNARY_MINUS, getExpression(node.getUnaryExp())));
 	}
 
 }

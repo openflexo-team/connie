@@ -61,10 +61,12 @@ public class JavaGrammar implements ExpressionGrammar {
 			JavaBooleanBinaryOperator.EQUALS, JavaBooleanBinaryOperator.NOT_EQUALS, JavaBooleanBinaryOperator.LESS_THAN,
 			JavaBooleanBinaryOperator.LESS_THAN_OR_EQUALS, JavaBooleanBinaryOperator.GREATER_THAN,
 			JavaBooleanBinaryOperator.GREATER_THAN_OR_EQUALS, JavaArithmeticBinaryOperator.ADDITION,
-			JavaArithmeticBinaryOperator.SUBSTRACTION, JavaArithmeticBinaryOperator.MULTIPLICATION, JavaArithmeticBinaryOperator.DIVISION };
+			JavaArithmeticBinaryOperator.SUBSTRACTION, JavaArithmeticBinaryOperator.MULTIPLICATION, JavaArithmeticBinaryOperator.DIVISION,
+			JavaArithmeticBinaryOperator.MOD, JavaArithmeticBinaryOperator.SHIFT_LEFT, JavaArithmeticBinaryOperator.SHIFT_RIGHT,
+			JavaArithmeticBinaryOperator.SHIFT_RIGHT_2 };
 
 	private static final UnaryOperator[] ALL_SUPPORTED_UNARY_OPERATORS = { JavaBooleanUnaryOperator.NOT,
-			JavaArithmeticUnaryOperator.UNARY_MINUS };
+			JavaArithmeticUnaryOperator.UNARY_PLUS, JavaArithmeticUnaryOperator.UNARY_MINUS };
 
 	@Override
 	public BinaryOperator[] getAllSupportedBinaryOperators() {

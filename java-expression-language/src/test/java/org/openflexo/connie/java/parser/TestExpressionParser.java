@@ -222,8 +222,12 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("-89", "-89", JavaUnaryOperatorExpression.class, -89, false);
 	}
 
-	public void testNegativeFloat() {
-		tryToParse("-89.7856", "-89.7856", JavaUnaryOperatorExpression.class, -89.7856, false);
+	public void testExplicitPositiveInteger() {
+		tryToParse("+89", "89", JavaUnaryOperatorExpression.class, 89, false);
+	}
+
+	public void testExplicitPositiveFloat() {
+		tryToParse("+89.7856", "89.7856", JavaUnaryOperatorExpression.class, 89.7856, false);
 	}
 
 	// Test BindingValue
