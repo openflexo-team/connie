@@ -46,6 +46,14 @@ import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.expr.ExpressionPrettyPrinter;
 import org.openflexo.connie.type.ExplicitNullType;
 
+/**
+ * A Java constant value
+ * 
+ * @author sylvain
+ *
+ * @param <V>
+ *            type of constant value (a Java type)
+ */
 public abstract class JavaConstant<V> extends Constant<V> {
 
 	@Override
@@ -91,6 +99,45 @@ public abstract class JavaConstant<V> extends Constant<V> {
 			return new JavaConstant.IntegerConstant((Byte) value);
 		}
 		return new JavaConstant.ObjectConstant(value);
+	}
+
+	/**
+	 * An arithmetic Java constant
+	 * 
+	 * @author sylvain
+	 *
+	 * @param <V>
+	 *            type of constant value (a number)
+	 */
+	public static abstract class ArithmeticConstant<V extends Number> extends JavaConstant<V> {
+
+		/**
+		 * Return boolean indicating if this constant is a floating point type or a natural integer based type
+		 * 
+		 * @return
+		 */
+		public abstract boolean isFloatingPointType();
+
+		/**
+		 * Return the value of the constant
+		 * 
+		 * @return
+		 */
+		public abstract V getArithmeticValue();
+
+		/**
+		 * Return the double representation of constant value
+		 * 
+		 * @return
+		 */
+		public abstract double getDoubleValue();
+
+		/**
+		 * Return the long representation of constant value
+		 * 
+		 * @return
+		 */
+		public abstract long getLongValue();
 	}
 
 	public static abstract class BooleanConstant extends JavaConstant<Boolean> {
@@ -230,13 +277,13 @@ public abstract class JavaConstant<V> extends Constant<V> {
 		}
 	}
 
-	public static abstract class ArithmeticConstant<V extends Number> extends JavaConstant<V> {
-		public abstract double getArithmeticValue();
-
-	}
-
 	public static class ByteConstant extends ArithmeticConstant<Byte> {
 		private byte value;
+
+		@Override
+		public boolean isFloatingPointType() {
+			return false;
+		}
 
 		@Override
 		public EvaluationType getEvaluationType() {
@@ -258,13 +305,28 @@ public abstract class JavaConstant<V> extends Constant<V> {
 		}
 
 		@Override
-		public double getArithmeticValue() {
+		public Byte getArithmeticValue() {
+			return getValue();
+		}
+
+		@Override
+		public double getDoubleValue() {
+			return getValue();
+		}
+
+		@Override
+		public long getLongValue() {
 			return getValue();
 		}
 	}
 
 	public static class ShortConstant extends ArithmeticConstant<Short> {
 		private short value;
+
+		@Override
+		public boolean isFloatingPointType() {
+			return false;
+		}
 
 		@Override
 		public EvaluationType getEvaluationType() {
@@ -286,13 +348,28 @@ public abstract class JavaConstant<V> extends Constant<V> {
 		}
 
 		@Override
-		public double getArithmeticValue() {
+		public Short getArithmeticValue() {
+			return getValue();
+		}
+
+		@Override
+		public double getDoubleValue() {
+			return getValue();
+		}
+
+		@Override
+		public long getLongValue() {
 			return getValue();
 		}
 	}
 
 	public static class IntegerConstant extends ArithmeticConstant<Integer> {
 		private int value;
+
+		@Override
+		public boolean isFloatingPointType() {
+			return false;
+		}
 
 		@Override
 		public EvaluationType getEvaluationType() {
@@ -314,13 +391,28 @@ public abstract class JavaConstant<V> extends Constant<V> {
 		}
 
 		@Override
-		public double getArithmeticValue() {
+		public Integer getArithmeticValue() {
+			return getValue();
+		}
+
+		@Override
+		public double getDoubleValue() {
+			return getValue();
+		}
+
+		@Override
+		public long getLongValue() {
 			return getValue();
 		}
 	}
 
 	public static class LongConstant extends ArithmeticConstant<Long> {
 		private long value;
+
+		@Override
+		public boolean isFloatingPointType() {
+			return false;
+		}
 
 		@Override
 		public EvaluationType getEvaluationType() {
@@ -342,13 +434,28 @@ public abstract class JavaConstant<V> extends Constant<V> {
 		}
 
 		@Override
-		public double getArithmeticValue() {
+		public Long getArithmeticValue() {
+			return getValue();
+		}
+
+		@Override
+		public double getDoubleValue() {
+			return getValue();
+		}
+
+		@Override
+		public long getLongValue() {
 			return getValue();
 		}
 	}
 
 	public static class FloatConstant extends ArithmeticConstant<Float> {
 		private float value;
+
+		@Override
+		public boolean isFloatingPointType() {
+			return true;
+		}
 
 		@Override
 		public EvaluationType getEvaluationType() {
@@ -370,14 +477,28 @@ public abstract class JavaConstant<V> extends Constant<V> {
 		}
 
 		@Override
-		public double getArithmeticValue() {
+		public Float getArithmeticValue() {
 			return getValue();
 		}
 
+		@Override
+		public double getDoubleValue() {
+			return getValue();
+		}
+
+		@Override
+		public long getLongValue() {
+			return getValue().longValue();
+		}
 	}
 
 	public static class DoubleConstant extends ArithmeticConstant<Double> {
 		private double value;
+
+		@Override
+		public boolean isFloatingPointType() {
+			return true;
+		}
 
 		@Override
 		public EvaluationType getEvaluationType() {
@@ -399,10 +520,19 @@ public abstract class JavaConstant<V> extends Constant<V> {
 		}
 
 		@Override
-		public double getArithmeticValue() {
+		public Double getArithmeticValue() {
 			return getValue();
 		}
 
+		@Override
+		public double getDoubleValue() {
+			return getValue();
+		}
+
+		@Override
+		public long getLongValue() {
+			return getArithmeticValue().longValue();
+		}
 	}
 
 	public static class ObjectSymbolicConstant extends JavaConstant<Object> {

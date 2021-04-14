@@ -284,7 +284,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 				throw new NullReferenceException(this);
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getArithmeticValue() < ((ArithmeticConstant<?>) rightArg).getArithmeticValue()
+				return ((ArithmeticConstant<?>) leftArg).getDoubleValue() < ((ArithmeticConstant<?>) rightArg).getDoubleValue()
 						? BooleanConstant.TRUE
 						: BooleanConstant.FALSE;
 			}
@@ -314,7 +314,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 				throw new NullReferenceException(this);
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getArithmeticValue() <= ((ArithmeticConstant<?>) rightArg).getArithmeticValue()
+				return ((ArithmeticConstant<?>) leftArg).getDoubleValue() <= ((ArithmeticConstant<?>) rightArg).getDoubleValue()
 						? BooleanConstant.TRUE
 						: BooleanConstant.FALSE;
 			}
@@ -340,7 +340,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 				throw new NullReferenceException(this);
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getArithmeticValue() > ((ArithmeticConstant<?>) rightArg).getArithmeticValue()
+				return ((ArithmeticConstant<?>) leftArg).getDoubleValue() > ((ArithmeticConstant<?>) rightArg).getDoubleValue()
 						? BooleanConstant.TRUE
 						: BooleanConstant.FALSE;
 			}
@@ -368,7 +368,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 				throw new NullReferenceException(this);
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getArithmeticValue() >= ((ArithmeticConstant<?>) rightArg).getArithmeticValue()
+				return ((ArithmeticConstant<?>) leftArg).getDoubleValue() >= ((ArithmeticConstant<?>) rightArg).getDoubleValue()
 						? BooleanConstant.TRUE
 						: BooleanConstant.FALSE;
 			}

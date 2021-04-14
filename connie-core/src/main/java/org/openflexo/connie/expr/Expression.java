@@ -55,7 +55,7 @@ import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 
 /**
- * Represents a symbolic expression
+ * Represents a expression
  * 
  * @author sylvain
  * 

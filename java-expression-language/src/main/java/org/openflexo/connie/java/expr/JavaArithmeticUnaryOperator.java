@@ -71,7 +71,12 @@ public abstract class JavaArithmeticUnaryOperator extends JavaUnaryOperator {
 				return new LongConstant(-((LongConstant) arg).getValue());
 			}
 			else if (arg instanceof ArithmeticConstant) {
-				return new DoubleConstant(-((ArithmeticConstant<?>) arg).getArithmeticValue());
+				if (((ArithmeticConstant) arg).isFloatingPointType()) {
+					return JavaConstant.makeConstant(-((ArithmeticConstant<?>) arg).getDoubleValue());
+				}
+				else {
+					return JavaConstant.makeConstant(-((ArithmeticConstant<?>) arg).getLongValue());
+				}
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_FLOAT,
 					EvaluationType.ARITHMETIC_INTEGER);

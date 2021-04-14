@@ -350,6 +350,42 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("1==2", "false", JavaBinaryOperatorExpression.class, false, false);
 	}
 
+	public void testSymbolicShiftLeft() {
+		tryToParse("a<<b", "(a << b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleShiftLeft1() {
+		tryToParse("1<<2", "4", JavaBinaryOperatorExpression.class, 1 << 2, false);
+	}
+
+	public void testSimpleShiftLeft2() {
+		tryToParse("109675<<265", "56153600", JavaBinaryOperatorExpression.class, 109675 << 265, false);
+	}
+
+	public void testSymbolicShiftRight() {
+		tryToParse("a>>b", "(a >> b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleShiftRight1() {
+		tryToParse("1>>3", "0", JavaBinaryOperatorExpression.class, 1 >> 3, false);
+	}
+
+	public void testSimpleShiftRight2() {
+		tryToParse("256>>3", "32", JavaBinaryOperatorExpression.class, 256 >> 3, false);
+	}
+
+	public void testSymbolicUShiftRight() {
+		tryToParse("a>>>b", "(a >>> b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleUShiftRight1() {
+		tryToParse("1>>>3", "0", JavaBinaryOperatorExpression.class, 1 >>> 3, false);
+	}
+
+	public void testSimpleUShiftRight2() {
+		tryToParse("256>>>3", "32", JavaBinaryOperatorExpression.class, 256 >>> 3, false);
+	}
+
 	/*
 	public void testNumericValue8() {
 		tryToParse("1+(2*7-9)", "6", BinaryOperatorExpression.class, 6, false);

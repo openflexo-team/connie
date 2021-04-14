@@ -44,6 +44,14 @@ import java.util.Vector;
 
 import org.openflexo.connie.exception.TransformException;
 
+/**
+ * An expression defined as a constant value
+ * 
+ * @author sylvain
+ *
+ * @param <V>
+ *            type of constant
+ */
 public abstract class Constant<V> extends Expression {
 
 	@Override

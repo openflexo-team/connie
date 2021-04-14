@@ -42,20 +42,14 @@ package org.openflexo.connie.java.parser;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaArithmeticBinaryOperator;
 import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
 import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
 import org.openflexo.connie.java.expr.JavaConditionalExpression;
+import org.openflexo.connie.java.expr.JavaConstant;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
-import org.openflexo.connie.java.expr.JavaConstant.ByteConstant;
-import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
-import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
-import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
-import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
-import org.openflexo.connie.java.expr.JavaConstant.ShortConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.AConditionalExpression;
@@ -79,6 +73,8 @@ import org.openflexo.connie.java.parser.node.APostfixUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.APrimaryNoIdPrimary;
 import org.openflexo.connie.java.parser.node.APrimaryPostfixExp;
 import org.openflexo.connie.java.parser.node.AQmarkConditionalExp;
+import org.openflexo.connie.java.parser.node.AShlShiftExp;
+import org.openflexo.connie.java.parser.node.AShrShiftExp;
 import org.openflexo.connie.java.parser.node.ASimpleAddExp;
 import org.openflexo.connie.java.parser.node.ASimpleAndExp;
 import org.openflexo.connie.java.parser.node.ASimpleConditionalAndExp;
@@ -92,6 +88,7 @@ import org.openflexo.connie.java.parser.node.ASimpleRelationalExp;
 import org.openflexo.connie.java.parser.node.ASimpleShiftExp;
 import org.openflexo.connie.java.parser.node.ATrueLiteral;
 import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
+import org.openflexo.connie.java.parser.node.AUshrShiftExp;
 import org.openflexo.connie.java.parser.node.Node;
 import org.openflexo.connie.java.parser.node.PUnaryExp;
 import org.openflexo.toolbox.StringUtils;
@@ -255,28 +252,6 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
 	}
 
-	public Constant<?> makeConstant(Number number) {
-		if (number instanceof Byte) {
-			return new ByteConstant((Byte) number);
-		}
-		if (number instanceof Short) {
-			return new ShortConstant((Short) number);
-		}
-		if (number instanceof Integer) {
-			return new IntegerConstant((Integer) number);
-		}
-		if (number instanceof Long) {
-			return new LongConstant((Long) number);
-		}
-		if (number instanceof Float) {
-			return new FloatConstant((Float) number);
-		}
-		if (number instanceof Double) {
-			return new DoubleConstant((Double) number);
-		}
-		return null;
-	}
-
 	@Override
 	public void outATrueLiteral(ATrueLiteral node) {
 		super.outATrueLiteral(node);
@@ -321,7 +296,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 			// value = NumberFormat.getNumberInstance().parse(valueText);
 			// System.out.println("Pour " + valueText + " j'obtiens " + value + " of " + value.getClass());
 		}
-		registerExpressionNode(node, makeConstant(value));
+		registerExpressionNode(node, JavaConstant.makeConstant(value));
 	}
 
 	@Override
@@ -353,7 +328,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 				e.printStackTrace();
 			}
 		}
-		registerExpressionNode(node, makeConstant(value));
+		registerExpressionNode(node, JavaConstant.makeConstant(value));
 
 	}
 
@@ -455,5 +430,35 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAInstanceofRelationalExp(AInstanceofRelationalExp node) {
 		super.outAInstanceofRelationalExp(node);
+		// TODO
 	}
+
+	// shift_exp =
+	// {simple} add_exp
+	// | {shl} shift_exp shl add_exp
+	// | {shr} shift_exp shr add_exp
+	// | {ushr} shift_exp ushr add_exp
+	// ;
+
+	@Override
+	public void outAShlShiftExp(AShlShiftExp node) {
+		super.outAShlShiftExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.SHIFT_LEFT,
+				getExpression(node.getShiftExp()), getExpression(node.getAddExp())));
+	}
+
+	@Override
+	public void outAShrShiftExp(AShrShiftExp node) {
+		super.outAShrShiftExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.SHIFT_RIGHT,
+				getExpression(node.getShiftExp()), getExpression(node.getAddExp())));
+	}
+
+	@Override
+	public void outAUshrShiftExp(AUshrShiftExp node) {
+		super.outAUshrShiftExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.SHIFT_RIGHT_2,
+				getExpression(node.getShiftExp()), getExpression(node.getAddExp())));
+	}
+
 }

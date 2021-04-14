@@ -127,6 +127,15 @@ public class JavaGrammar implements ExpressionGrammar {
 		if (operator == JavaArithmeticBinaryOperator.POWER) {
 			return "^";
 		}
+		if (operator == JavaArithmeticBinaryOperator.SHIFT_LEFT) {
+			return "<<";
+		}
+		if (operator == JavaArithmeticBinaryOperator.SHIFT_RIGHT) {
+			return ">>";
+		}
+		if (operator == JavaArithmeticBinaryOperator.SHIFT_RIGHT_2) {
+			return ">>>";
+		}
 		throw new OperatorNotSupportedException();
 	}
 

@@ -43,9 +43,9 @@ import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.EvaluationType;
+import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator.ComparisonBinaryOperator;
 import org.openflexo.connie.java.expr.JavaConstant.ArithmeticConstant;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
-import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
 import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
 import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ObjectConstant;
@@ -64,12 +64,13 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant) {
 				if (rightArg instanceof ArithmeticConstant) {
-					if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
-						return new IntegerConstant(((IntegerConstant) leftArg).getValue() + ((IntegerConstant) rightArg).getValue());
-					}
 					// TODO: handle all number types
-					return new DoubleConstant(((ArithmeticConstant<?>) leftArg).getArithmeticValue()
-							+ ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
+					if (!((ArithmeticConstant) leftArg).isFloatingPointType() && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+						return JavaConstant.makeConstant(
+								((ArithmeticConstant) leftArg).getLongValue() + ((ArithmeticConstant) rightArg).getLongValue());
+					}
+					return JavaConstant.makeConstant(
+							((ArithmeticConstant<?>) leftArg).getDoubleValue() + ((ArithmeticConstant<?>) rightArg).getDoubleValue());
 				}
 				throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(), EvaluationType.values());
 			}
@@ -156,11 +157,13 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 		@Override
 		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
-					return new IntegerConstant(((IntegerConstant) leftArg).getValue() - ((IntegerConstant) rightArg).getValue());
+				// TODO: handle all number types
+				if (!((ArithmeticConstant) leftArg).isFloatingPointType() && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+					return JavaConstant
+							.makeConstant(((ArithmeticConstant) leftArg).getLongValue() - ((ArithmeticConstant) rightArg).getLongValue());
 				}
-				return new DoubleConstant(
-						((ArithmeticConstant<?>) leftArg).getArithmeticValue() - ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
+				return JavaConstant.makeConstant(
+						((ArithmeticConstant<?>) leftArg).getDoubleValue() - ((ArithmeticConstant<?>) rightArg).getDoubleValue());
 			}
 
 			if (rightArg == ObjectSymbolicConstant.NULL) {
@@ -224,11 +227,13 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 		@Override
 		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				if (leftArg instanceof IntegerConstant && rightArg instanceof IntegerConstant) {
-					return new IntegerConstant(((IntegerConstant) leftArg).getValue() * ((IntegerConstant) rightArg).getValue());
+				// TODO: handle all number types
+				if (!((ArithmeticConstant) leftArg).isFloatingPointType() && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+					return JavaConstant
+							.makeConstant(((ArithmeticConstant) leftArg).getLongValue() * ((ArithmeticConstant) rightArg).getLongValue());
 				}
-				return new DoubleConstant(
-						((ArithmeticConstant<?>) leftArg).getArithmeticValue() * ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
+				return JavaConstant.makeConstant(
+						((ArithmeticConstant<?>) leftArg).getDoubleValue() * ((ArithmeticConstant<?>) rightArg).getDoubleValue());
 			}
 			if (leftArg == ObjectSymbolicConstant.NULL || rightArg == ObjectSymbolicConstant.NULL) {
 				throw new NullReferenceException(this);
@@ -267,8 +272,8 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 		@Override
 		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return new DoubleConstant(
-						((ArithmeticConstant<?>) leftArg).getArithmeticValue() / ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
+				return JavaConstant.makeConstant(
+						((ArithmeticConstant<?>) leftArg).getDoubleValue() / ((ArithmeticConstant<?>) rightArg).getDoubleValue());
 			}
 			if (leftArg == ObjectSymbolicConstant.NULL || rightArg == ObjectSymbolicConstant.NULL) {
 				throw new NullReferenceException(this);
@@ -304,8 +309,8 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 		@Override
 		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return new DoubleConstant(
-						((ArithmeticConstant<?>) leftArg).getArithmeticValue() % ((ArithmeticConstant<?>) rightArg).getArithmeticValue());
+				return JavaConstant.makeConstant(
+						((ArithmeticConstant<?>) leftArg).getDoubleValue() % ((ArithmeticConstant<?>) rightArg).getDoubleValue());
 			}
 			if (leftArg == ObjectSymbolicConstant.NULL || rightArg == ObjectSymbolicConstant.NULL) {
 				throw new NullReferenceException(this);
@@ -341,8 +346,8 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 		@Override
 		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return new DoubleConstant(Math.pow(((ArithmeticConstant<?>) leftArg).getArithmeticValue(),
-						((ArithmeticConstant<?>) rightArg).getArithmeticValue()));
+				return JavaConstant.makeConstant(
+						Math.pow(((ArithmeticConstant<?>) leftArg).getDoubleValue(), ((ArithmeticConstant<?>) rightArg).getDoubleValue()));
 			}
 			if (leftArg == ObjectSymbolicConstant.NULL || rightArg == ObjectSymbolicConstant.NULL) {
 				throw new NullReferenceException(this);
@@ -367,6 +372,84 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 		public String getName() {
 			return "power";
 
+		}
+	};
+
+	public static final JavaBooleanBinaryOperator SHIFT_LEFT = new ComparisonBinaryOperator() {
+		@Override
+		public int getPriority() {
+			return 5;
+		}
+
+		@Override
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
+			if (leftArg.equals(ObjectSymbolicConstant.NULL) || rightArg.equals(ObjectSymbolicConstant.NULL)) {
+				throw new NullReferenceException(this);
+			}
+			if (leftArg instanceof ArithmeticConstant && !((ArithmeticConstant) leftArg).isFloatingPointType()
+					&& rightArg instanceof ArithmeticConstant && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+				return JavaConstant.makeConstant(
+						((ArithmeticConstant<?>) leftArg).getLongValue() << ((ArithmeticConstant<?>) rightArg).getLongValue());
+			}
+			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
+					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);
+		}
+
+		@Override
+		public String getName() {
+			return "shift_left";
+		}
+	};
+
+	public static final JavaBooleanBinaryOperator SHIFT_RIGHT = new ComparisonBinaryOperator() {
+		@Override
+		public int getPriority() {
+			return 5;
+		}
+
+		@Override
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
+			if (leftArg.equals(ObjectSymbolicConstant.NULL) || rightArg.equals(ObjectSymbolicConstant.NULL)) {
+				throw new NullReferenceException(this);
+			}
+			if (leftArg instanceof ArithmeticConstant && !((ArithmeticConstant) leftArg).isFloatingPointType()
+					&& rightArg instanceof ArithmeticConstant && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+				return JavaConstant.makeConstant(
+						((ArithmeticConstant<?>) leftArg).getLongValue() >> ((ArithmeticConstant<?>) rightArg).getLongValue());
+			}
+			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
+					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);
+		}
+
+		@Override
+		public String getName() {
+			return "shift_right";
+		}
+	};
+
+	public static final JavaBooleanBinaryOperator SHIFT_RIGHT_2 = new ComparisonBinaryOperator() {
+		@Override
+		public int getPriority() {
+			return 5;
+		}
+
+		@Override
+		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException, NullReferenceException {
+			if (leftArg.equals(ObjectSymbolicConstant.NULL) || rightArg.equals(ObjectSymbolicConstant.NULL)) {
+				throw new NullReferenceException(this);
+			}
+			if (leftArg instanceof ArithmeticConstant && !((ArithmeticConstant) leftArg).isFloatingPointType()
+					&& rightArg instanceof ArithmeticConstant && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+				return JavaConstant.makeConstant(
+						((ArithmeticConstant<?>) leftArg).getLongValue() >>> ((ArithmeticConstant<?>) rightArg).getLongValue());
+			}
+			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
+					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER);
+		}
+
+		@Override
+		public String getName() {
+			return "shift_right_2";
 		}
 	};
 
