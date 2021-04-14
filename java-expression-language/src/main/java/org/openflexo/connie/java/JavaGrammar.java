@@ -66,7 +66,7 @@ public class JavaGrammar implements ExpressionGrammar {
 			JavaArithmeticBinaryOperator.SHIFT_RIGHT_2 };
 
 	private static final UnaryOperator[] ALL_SUPPORTED_UNARY_OPERATORS = { JavaBooleanUnaryOperator.NOT,
-			JavaArithmeticUnaryOperator.UNARY_PLUS, JavaArithmeticUnaryOperator.UNARY_MINUS };
+			JavaArithmeticUnaryOperator.UNARY_PLUS, JavaArithmeticUnaryOperator.UNARY_MINUS, JavaArithmeticUnaryOperator.PRE_INCREMENT };
 
 	@Override
 	public BinaryOperator[] getAllSupportedBinaryOperators() {
@@ -84,6 +84,12 @@ public class JavaGrammar implements ExpressionGrammar {
 		}
 		if (operator == JavaArithmeticUnaryOperator.UNARY_MINUS) {
 			return "-";
+		}
+		if (operator == JavaArithmeticUnaryOperator.PRE_INCREMENT) {
+			return "++";
+		}
+		if (operator == JavaArithmeticUnaryOperator.PRE_DECREMENT) {
+			return "--";
 		}
 		throw new OperatorNotSupportedException();
 	}

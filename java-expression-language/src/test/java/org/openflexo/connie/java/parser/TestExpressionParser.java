@@ -422,6 +422,14 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("a%b", "(a % b)", JavaBinaryOperatorExpression.class, null, false);
 	}
 
+	public void testSimpleSymbolicPreIncrement() {
+		tryToParse("++a", "(++(a))", JavaUnaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleSymbolicPreDecrement() {
+		tryToParse("--a", "(--(a))", JavaUnaryOperatorExpression.class, null, false);
+	}
+
 	/*
 	public void testNumericValue8() {
 		tryToParse("1+(2*7-9)", "6", BinaryOperatorExpression.class, 6, false);

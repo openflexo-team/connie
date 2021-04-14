@@ -145,4 +145,66 @@ public abstract class JavaArithmeticUnaryOperator extends JavaUnaryOperator {
 		}
 	};
 
+	public static final JavaArithmeticUnaryOperator PRE_INCREMENT = new JavaArithmeticUnaryOperator() {
+		@Override
+		public int getPriority() {
+			return 3;
+		}
+
+		@Override
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
+			if (arg instanceof ArithmeticConstant && !((ArithmeticConstant) arg).isFloatingPointType()) {
+				return JavaConstant.makeConstant(((ArithmeticConstant<?>) arg).getLongValue() + 1);
+			}
+			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_INTEGER);
+		}
+
+		@Override
+		public EvaluationType getEvaluationType(EvaluationType operandType) throws TypeMismatchException {
+			if (operandType.isLiteral()) {
+				return EvaluationType.LITERAL;
+			}
+			if (operandType.isArithmeticInteger()) {
+				return EvaluationType.ARITHMETIC_INTEGER;
+			}
+			throw new TypeMismatchException(this, operandType, EvaluationType.ARITHMETIC_INTEGER, EvaluationType.LITERAL);
+		}
+
+		@Override
+		public String getName() {
+			return "pre_increment";
+		}
+	};
+
+	public static final JavaArithmeticUnaryOperator PRE_DECREMENT = new JavaArithmeticUnaryOperator() {
+		@Override
+		public int getPriority() {
+			return 3;
+		}
+
+		@Override
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
+			if (arg instanceof ArithmeticConstant && !((ArithmeticConstant) arg).isFloatingPointType()) {
+				return JavaConstant.makeConstant(((ArithmeticConstant<?>) arg).getLongValue() - 1);
+			}
+			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_INTEGER);
+		}
+
+		@Override
+		public EvaluationType getEvaluationType(EvaluationType operandType) throws TypeMismatchException {
+			if (operandType.isLiteral()) {
+				return EvaluationType.LITERAL;
+			}
+			if (operandType.isArithmeticInteger()) {
+				return EvaluationType.ARITHMETIC_INTEGER;
+			}
+			throw new TypeMismatchException(this, operandType, EvaluationType.ARITHMETIC_INTEGER, EvaluationType.LITERAL);
+		}
+
+		@Override
+		public String getName() {
+			return "pre_decrement";
+		}
+	};
+
 }
