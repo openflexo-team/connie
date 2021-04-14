@@ -68,6 +68,7 @@ import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AMinusAddExp;
 import org.openflexo.connie.java.parser.node.AMinusUnaryExp;
 import org.openflexo.connie.java.parser.node.ANeqEqualityExp;
+import org.openflexo.connie.java.parser.node.APercentMultExp;
 import org.openflexo.connie.java.parser.node.APlusAddExp;
 import org.openflexo.connie.java.parser.node.APostfixUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.APrimaryNoIdPrimary;
@@ -86,6 +87,8 @@ import org.openflexo.connie.java.parser.node.ASimpleInclusiveOrExp;
 import org.openflexo.connie.java.parser.node.ASimpleMultExp;
 import org.openflexo.connie.java.parser.node.ASimpleRelationalExp;
 import org.openflexo.connie.java.parser.node.ASimpleShiftExp;
+import org.openflexo.connie.java.parser.node.ASlashMultExp;
+import org.openflexo.connie.java.parser.node.AStarMultExp;
 import org.openflexo.connie.java.parser.node.ATrueLiteral;
 import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
 import org.openflexo.connie.java.parser.node.AUshrShiftExp;
@@ -356,20 +359,6 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 	}
 
-	@Override
-	public void outAPlusAddExp(APlusAddExp node) {
-		super.outAPlusAddExp(node);
-		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.ADDITION,
-				getExpression(node.getAddExp()), getExpression(node.getMultExp())));
-	}
-
-	@Override
-	public void outAMinusAddExp(AMinusAddExp node) {
-		super.outAMinusAddExp(node);
-		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.SUBSTRACTION,
-				getExpression(node.getAddExp()), getExpression(node.getMultExp())));
-	}
-
 	// equality_exp =
 	// {simple} relational_exp
 	// | {eq} equality_exp eq relational_exp
@@ -459,6 +448,54 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		super.outAUshrShiftExp(node);
 		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.SHIFT_RIGHT_2,
 				getExpression(node.getShiftExp()), getExpression(node.getAddExp())));
+	}
+
+	// add_exp =
+	// {simple} mult_exp
+	// | {plus} add_exp plus mult_exp
+	// | {minus} add_exp minus mult_exp
+	// ;
+
+	@Override
+	public void outAPlusAddExp(APlusAddExp node) {
+		super.outAPlusAddExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.ADDITION,
+				getExpression(node.getAddExp()), getExpression(node.getMultExp())));
+	}
+
+	@Override
+	public void outAMinusAddExp(AMinusAddExp node) {
+		super.outAMinusAddExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.SUBSTRACTION,
+				getExpression(node.getAddExp()), getExpression(node.getMultExp())));
+	}
+
+	// mult_exp =
+	// {simple} unary_exp
+	// | {star} mult_exp star unary_exp
+	// | {slash} mult_exp slash unary_exp
+	// | {percent} mult_exp percent unary_exp
+	// ;
+
+	@Override
+	public void outAStarMultExp(AStarMultExp node) {
+		super.outAStarMultExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.MULTIPLICATION,
+				getExpression(node.getMultExp()), getExpression(node.getUnaryExp())));
+	}
+
+	@Override
+	public void outASlashMultExp(ASlashMultExp node) {
+		super.outASlashMultExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.DIVISION,
+				getExpression(node.getMultExp()), getExpression(node.getUnaryExp())));
+	}
+
+	@Override
+	public void outAPercentMultExp(APercentMultExp node) {
+		super.outAPercentMultExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.MOD, getExpression(node.getMultExp()),
+				getExpression(node.getUnaryExp())));
 	}
 
 }

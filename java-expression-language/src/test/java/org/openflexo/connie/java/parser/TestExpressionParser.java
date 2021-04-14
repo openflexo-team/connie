@@ -386,6 +386,38 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("256>>>3", "32", JavaBinaryOperatorExpression.class, 256 >>> 3, false);
 	}
 
+	public void testSimpleIntegerMultiplication() {
+		tryToParse("2*2", "4", JavaBinaryOperatorExpression.class, 4, false);
+	}
+
+	public void testSimpleDoubleMultiplication() {
+		tryToParse("3.1415*3.1415", "9.86902225", JavaBinaryOperatorExpression.class, 3.1415 * 3.1415, false);
+	}
+
+	public void testSimpleSymbolicMultiplication() {
+		tryToParse("a*b", "(a * b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleIntegerDivision() {
+		tryToParse("27/3", "9.0", JavaBinaryOperatorExpression.class, 9.0, false);
+	}
+
+	public void testSimpleDoubleDivision() {
+		tryToParse("3.1415/2.1", "1.495952380952381", JavaBinaryOperatorExpression.class, 3.1415 / 2.1, false);
+	}
+
+	public void testSimpleSymbolicDivision() {
+		tryToParse("a/b", "(a / b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleModDivision() {
+		tryToParse("32%3", "2.0", JavaBinaryOperatorExpression.class, 2.0, false);
+	}
+
+	public void testSimpleSymbolicModDivision() {
+		tryToParse("a%b", "(a % b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
 	/*
 	public void testNumericValue8() {
 		tryToParse("1+(2*7-9)", "6", BinaryOperatorExpression.class, 6, false);

@@ -61,8 +61,7 @@ public class JavaGrammar implements ExpressionGrammar {
 			JavaBooleanBinaryOperator.EQUALS, JavaBooleanBinaryOperator.NOT_EQUALS, JavaBooleanBinaryOperator.LESS_THAN,
 			JavaBooleanBinaryOperator.LESS_THAN_OR_EQUALS, JavaBooleanBinaryOperator.GREATER_THAN,
 			JavaBooleanBinaryOperator.GREATER_THAN_OR_EQUALS, JavaArithmeticBinaryOperator.ADDITION,
-			JavaArithmeticBinaryOperator.SUBSTRACTION, JavaArithmeticBinaryOperator.MULTIPLICATION, JavaArithmeticBinaryOperator.DIVISION,
-			JavaArithmeticBinaryOperator.POWER, };
+			JavaArithmeticBinaryOperator.SUBSTRACTION, JavaArithmeticBinaryOperator.MULTIPLICATION, JavaArithmeticBinaryOperator.DIVISION };
 
 	private static final UnaryOperator[] ALL_SUPPORTED_UNARY_OPERATORS = { JavaBooleanUnaryOperator.NOT,
 			JavaArithmeticUnaryOperator.UNARY_MINUS };
@@ -124,8 +123,8 @@ public class JavaGrammar implements ExpressionGrammar {
 		if (operator == JavaArithmeticBinaryOperator.DIVISION) {
 			return "/";
 		}
-		if (operator == JavaArithmeticBinaryOperator.POWER) {
-			return "^";
+		if (operator == JavaArithmeticBinaryOperator.MOD) {
+			return "%";
 		}
 		if (operator == JavaArithmeticBinaryOperator.SHIFT_LEFT) {
 			return "<<";
