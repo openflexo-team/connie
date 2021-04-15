@@ -46,10 +46,14 @@ import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator.ComparisonBinaryOperator;
 import org.openflexo.connie.java.expr.JavaConstant.ArithmeticConstant;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ByteConstant;
+import org.openflexo.connie.java.expr.JavaConstant.CharConstant;
 import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
 import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
+import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ObjectConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ObjectSymbolicConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ShortConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 
 public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
@@ -78,8 +82,20 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 				if (rightArg instanceof StringConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((StringConstant) rightArg).getValue());
 				}
+				else if (rightArg instanceof CharConstant) {
+					return new StringConstant(((StringConstant) leftArg).getValue() + ((CharConstant) rightArg).getValue());
+				}
+				else if (rightArg instanceof ByteConstant) {
+					return new StringConstant(((StringConstant) leftArg).getValue() + ((ByteConstant) rightArg).getValue());
+				}
+				else if (rightArg instanceof ShortConstant) {
+					return new StringConstant(((StringConstant) leftArg).getValue() + ((ShortConstant) rightArg).getValue());
+				}
 				else if (rightArg instanceof IntegerConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((IntegerConstant) rightArg).getValue());
+				}
+				else if (rightArg instanceof LongConstant) {
+					return new StringConstant(((StringConstant) leftArg).getValue() + ((LongConstant) rightArg).getValue());
 				}
 				else if (rightArg instanceof FloatConstant) {
 					return new StringConstant(((StringConstant) leftArg).getValue() + ((FloatConstant) rightArg).getValue());
@@ -102,8 +118,8 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 			if (leftArg == ObjectSymbolicConstant.NULL && rightArg == ObjectSymbolicConstant.NULL) {
 				throw new NullReferenceException();
 			}
-			// System.out.println("leftArg=" + leftArg + " of " + leftArg.getClass() + " eval type =" + leftArg.getEvaluationType());
-			// System.out.println("rightArg=" + rightArg + " of " + rightArg.getClass() + " eval type =" + rightArg.getEvaluationType());
+			System.out.println("leftArg=" + leftArg + " of " + leftArg.getClass() + " eval type =" + leftArg.getEvaluationType());
+			System.out.println("rightArg=" + rightArg + " of " + rightArg.getClass() + " eval type =" + rightArg.getEvaluationType());
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(), EvaluationType.values());
 		}
 

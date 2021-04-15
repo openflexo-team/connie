@@ -7,17 +7,18 @@ import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionEvaluator;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
 import org.openflexo.connie.java.expr.JavaConditionalExpression;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
+import org.openflexo.connie.java.expr.JavaConstant.CharConstant;
 import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
 import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
 import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
 import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
+import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 import org.openflexo.connie.java.expr.JavaExpressionEvaluator;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
@@ -146,6 +147,14 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("false", "false", BooleanConstant.class, false, false);
 	}
 
+	public void testSimpleString() {
+		tryToParse("\"aString\"", "\"aString\"", StringConstant.class, "aString", false);
+	}
+
+	public void testSimpleCharacter() {
+		tryToParse("'a'", "'a'", CharConstant.class, 'a', false);
+	}
+
 	public void testSimpleInteger() {
 		tryToParse("42", "42", IntegerConstant.class, 42, false);
 	}
@@ -229,50 +238,6 @@ public class TestExpressionParser extends TestCase {
 	public void testExplicitPositiveFloat() {
 		tryToParse("+89.7856", "89.7856", JavaUnaryOperatorExpression.class, 89.7856, false);
 	}
-
-	// Test BindingValue
-
-	public void testSimpleIdentifier() {
-		tryToParse("foo", "foo", BindingValue.class, null, false);
-	}
-
-	public void testUnderscoredIdentifier() {
-		tryToParse("foo_foo2", "foo_foo2", BindingValue.class, null, false);
-	}
-
-	public void testComposedIdentifier() {
-		tryToParse("foo.foo2.foo3", "foo.foo2.foo3", BindingValue.class, null, false);
-	}
-
-	public void testSimpleMethodNoArgs() {
-		tryToParse("method()", "method()", BindingValue.class, null, false);
-	}
-
-	public void testSimpleMethodWith1Arg() {
-		tryToParse("method(1)", "method(1)", BindingValue.class, null, false);
-	}
-
-	public void testSimpleMethodWith3Args() {
-		tryToParse("method(1,2,3)", "method(1,2,3)", BindingValue.class, null, false);
-	}
-
-	public void testFullQualifiedMethod() {
-		tryToParse("a.b.c.method(1)", "a.b.c.method(1)", BindingValue.class, null, false);
-	}
-
-	public void testImbricatedMethods() {
-		tryToParse("a.b.c.method(m1(1),d.e.f.m2(1))", "a.b.c.method(m1(1),d.e.f.m2(1))", BindingValue.class, null, false);
-	}
-
-	/*public void testBindingValue6() {
-		tryToParse("a.b.c.method1(1).method2(2)+c.d.e", "a.b.c.method(1).method2(2)", BindingValue.class, null, false);
-	}*/
-
-	/*
-	public void testBindingValue7() {
-		tryToParse("i.am.a(1,2+3,7.8,\"foo\",'a').little.test(1).foo()", "i.am.a(1,5,7.8,\"foo\").little.test(1)", BindingValue.class, null,
-				false);
-	}*/
 
 	// Test Conditional
 

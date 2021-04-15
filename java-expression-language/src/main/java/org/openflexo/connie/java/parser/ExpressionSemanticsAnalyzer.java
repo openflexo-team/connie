@@ -50,11 +50,16 @@ import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
 import org.openflexo.connie.java.expr.JavaConditionalExpression;
 import org.openflexo.connie.java.expr.JavaConstant;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
+import org.openflexo.connie.java.expr.JavaConstant.CharConstant;
+import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
+import org.openflexo.connie.java.parser.node.ACharacterLiteral;
 import org.openflexo.connie.java.parser.node.AConditionalExpression;
 import org.openflexo.connie.java.parser.node.AEqEqualityExp;
+import org.openflexo.connie.java.parser.node.AExpressionPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AFalseLiteral;
+import org.openflexo.connie.java.parser.node.AFieldPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AFloatingPointLiteral;
 import org.openflexo.connie.java.parser.node.AGtRelationalExp;
 import org.openflexo.connie.java.parser.node.AGteqRelationalExp;
@@ -92,6 +97,7 @@ import org.openflexo.connie.java.parser.node.ASimpleRelationalExp;
 import org.openflexo.connie.java.parser.node.ASimpleShiftExp;
 import org.openflexo.connie.java.parser.node.ASlashMultExp;
 import org.openflexo.connie.java.parser.node.AStarMultExp;
+import org.openflexo.connie.java.parser.node.AStringLiteral;
 import org.openflexo.connie.java.parser.node.ATrueLiteral;
 import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
 import org.openflexo.connie.java.parser.node.AUshrShiftExp;
@@ -186,6 +192,9 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 				if (n instanceof ALiteralPrimaryNoId) {
 					return getExpression(((ALiteralPrimaryNoId) n).getLiteral());
 				}
+				if (n instanceof AExpressionPrimaryNoId) {
+					return getExpression(((AExpressionPrimaryNoId) n).getExpression());
+				}
 
 				System.out.println("No expression registered for " + n + " of  " + n.getClass());
 			}
@@ -200,7 +209,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	public void defaultIn(Node node) {
 		super.defaultIn(node);
 		ident++;
-		System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName());
+		System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName() + " : " + node);
 	}
 
 	@Override
@@ -244,16 +253,15 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
 	}
 
-	/*@Override
-	public void outAPrimaryNoIdPrimary(APrimaryNoIdPrimary node) {
-		super.outAPrimaryNoIdPrimary(node);
-		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
-	}*/
-
 	@Override
 	public void outAMethodPrimaryNoId(AMethodPrimaryNoId node) {
 		super.outAMethodPrimaryNoId(node);
-		System.out.println("******** Hop on construit un binding avec " + node);
+		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+	}
+
+	@Override
+	public void outAFieldPrimaryNoId(AFieldPrimaryNoId node) {
+		super.outAFieldPrimaryNoId(node);
 		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
 	}
 
@@ -267,6 +275,22 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	public void outAFalseLiteral(AFalseLiteral node) {
 		super.outAFalseLiteral(node);
 		registerExpressionNode(node, BooleanConstant.FALSE);
+	}
+
+	@Override
+	public void outAStringLiteral(AStringLiteral node) {
+		super.outAStringLiteral(node);
+		String value = node.getLitString().getText();
+		value = value.substring(1, value.length() - 1);
+		registerExpressionNode(node, new StringConstant(value));
+	}
+
+	@Override
+	public void outACharacterLiteral(ACharacterLiteral node) {
+		super.outACharacterLiteral(node);
+		String value = node.getLitCharacter().getText();
+		Character c = value.charAt(1);
+		registerExpressionNode(node, new CharConstant(c));
 	}
 
 	@Override

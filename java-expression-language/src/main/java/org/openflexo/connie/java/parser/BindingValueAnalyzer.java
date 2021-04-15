@@ -50,16 +50,17 @@ import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.ACompositeIdent;
+import org.openflexo.connie.java.parser.node.AFieldPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AIdentifierPrefix;
 import org.openflexo.connie.java.parser.node.AIdentifierPrimary;
 import org.openflexo.connie.java.parser.node.AManyArgumentList;
 import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AOneArgumentList;
+import org.openflexo.connie.java.parser.node.APrimaryFieldAccess;
 import org.openflexo.connie.java.parser.node.APrimaryMethodInvocation;
 import org.openflexo.connie.java.parser.node.Node;
 import org.openflexo.connie.java.parser.node.PArgumentList;
 import org.openflexo.connie.java.parser.node.PExpression;
-import org.openflexo.toolbox.StringUtils;
 
 /**
  * This class implements the semantics analyzer for a parsed {@link BindingValue}<br>
@@ -74,6 +75,14 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	private final ExpressionSemanticsAnalyzer expressionAnalyzer;
 	private final List<AbstractBindingPathElement> path;
 	private final Node rootNode;
+
+	private int depth = -1;
+
+	int ident = 0;
+
+	private boolean weAreDealingWithTheRightBinding() {
+		return depth == 0;
+	}
 
 	/**
 	 * This flag is used to escape binding processing that may happen in call args handling
@@ -107,20 +116,23 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		this.expressionAnalyzer = expressionAnalyzer;
 		this.rootNode = node;
 		path = new ArrayList<>();
-		// System.out.println(">>>> node=" + node + " of " + node.getClass());
+	}
+
+	// boolean DEBUG = false;
+
+	public Node getRootNode() {
+		return rootNode;
 	}
 
 	private List<BindingValue.AbstractBindingPathElement> getPath() {
 		return path;
 	};
 
-	int ident = 0;
-
 	@Override
 	public void defaultIn(Node node) {
 		super.defaultIn(node);
 		ident++;
-		System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName());
+		// System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName() + " " + node);
 	}
 
 	@Override
@@ -129,20 +141,6 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		super.defaultOut(node);
 		ident--;
 	}
-
-	/*@Override
-	public void inAPrimaryNoIdPrimary(APrimaryNoIdPrimary node) {
-		// TODO Auto-generated method stub
-		super.inAPrimaryNoIdPrimary(node);
-		depth++;
-	}
-	
-	@Override
-	public void outAPrimaryNoIdPrimary(APrimaryNoIdPrimary node) {
-		// TODO Auto-generated method stub
-		super.outAPrimaryNoIdPrimary(node);
-		depth--;
-	}*/
 
 	@Override
 	public void inAIdentifierPrimary(AIdentifierPrimary node) {
@@ -169,10 +167,25 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	}
 
 	@Override
+	public void inAFieldPrimaryNoId(AFieldPrimaryNoId node) {
+		// TODO Auto-generated method stub
+		super.inAFieldPrimaryNoId(node);
+		depth++;
+	}
+
+	@Override
+	public void outAFieldPrimaryNoId(AFieldPrimaryNoId node) {
+		// TODO Auto-generated method stub
+		super.outAFieldPrimaryNoId(node);
+		depth--;
+	}
+
+	@Override
 	public void outAIdentifierPrefix(AIdentifierPrefix node) {
 		// TODO Auto-generated method stub
 		super.outAIdentifierPrefix(node);
-		// System.out.println("Tiens on tombe sur " + node.getLidentifier().getText());
+		// if (DEBUG)
+		// System.out.println("outAIdentifierPrefix " + node.getLidentifier().getText());
 		if (weAreDealingWithTheRightBinding()) {
 			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getLidentifier().getText());
 			path.add(pathElement);
@@ -182,9 +195,25 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outACompositeIdent(ACompositeIdent node) {
 		super.outACompositeIdent(node);
-		// System.out.println("Finalement on tombe sur l'identifiant " + node.getIdentifier().getText());
+		// if (DEBUG)
+		// System.out.println("outACompositeIdent " + node.getIdentifier().getText());
 		if (weAreDealingWithTheRightBinding()) {
 			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getIdentifier().getText());
+			path.add(pathElement);
+		}
+	}
+
+	@Override
+	public void outAPrimaryFieldAccess(APrimaryFieldAccess node) {
+		super.outAPrimaryFieldAccess(node);
+		// if (DEBUG)
+		// System.out.println("outAPrimaryFieldAccess " + node + " rightbinding=" + weAreDealingWithTheRightBinding());
+		if (weAreDealingWithTheRightBinding()) {
+			List<AbstractBindingPathElement> bindingPath = makeBindingPath(node.getPrimaryNoId(), expressionAnalyzer);
+			for (int i = 0; i < bindingPath.size(); i++) {
+				path.add(bindingPath.get(i));
+			}
+			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getLidentifier().getText());
 			path.add(pathElement);
 		}
 	}
@@ -193,12 +222,20 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	public void outAPrimaryMethodInvocation(APrimaryMethodInvocation node) {
 		super.outAPrimaryMethodInvocation(node);
 		if (weAreDealingWithTheRightBinding()) {
+
 			List<AbstractBindingPathElement> bindingPath = makeBindingPath(node.getPrimary(), expressionAnalyzer);
+
+			// System.out.println("********* Handling node: " + node);
+			// System.out.println("bindingPath=" + bindingPath);
+			// System.out.println("node.getPrimary()=" + node.getPrimary());
+			// System.out.println("node.getArgumentList()=" + node.getArgumentList());
 
 			for (int i = 0; i < bindingPath.size() - 1; i++) {
 				path.add(bindingPath.get(i));
 			}
-			String identifier = ((NormalBindingPathElement) bindingPath.get(bindingPath.size() - 1)).property;
+
+			NormalBindingPathElement pathElement = (NormalBindingPathElement) bindingPath.get(bindingPath.size() - 1);
+			String identifier = pathElement.property;
 
 			List<Expression> args = new ArrayList<>();
 			PArgumentList argumentList = node.getArgumentList();
@@ -245,89 +282,4 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		}
 	}
 
-	/*@Override
-	public void outAMethodPrimaryNoId(AMethodPrimaryNoId node) {
-		// TODO Auto-generated method stub
-		super.outAMethodPrimaryNoId(node);
-	}*/
-
-	/*protected BindingValue.NormalBindingPathElement makeNormalBindingPathElement(TIdentifier identifier) {
-		BindingValue.NormalBindingPathElement returned = new BindingValue.NormalBindingPathElement(identifier.getText());
-		if (weAreDealingWithTheRightBinding()) {
-			path.add(0, returned);
-		}
-		return returned;
-	}
-	
-	public BindingValue.MethodCallBindingPathElement makeMethodCallBindingPathElement(ACall node) {
-		PArgList argList = node.getArgList();
-		List<Expression> args = new ArrayList<>();
-		if (argList instanceof ANonEmptyListArgList) {
-			args.add(getExpression(((ANonEmptyListArgList) argList).getExpr()));
-			for (PAdditionalArg aa : ((ANonEmptyListArgList) argList).getAdditionalArgs()) {
-				AAdditionalArg additionalArg = (AAdditionalArg) aa;
-				args.add(getExpression(additionalArg.getExpr()));
-			}
-		}
-		BindingValue.MethodCallBindingPathElement returned = new BindingValue.MethodCallBindingPathElement(node.getIdentifier().getText(),
-				args);
-		if (weAreDealingWithTheRightBinding()) {
-			path.add(0, returned);
-		}
-		return returned;
-	}
-	
-	@Override
-	public void outAIdentifierBinding(AIdentifierBinding node) {
-		super.outAIdentifierBinding(node);
-		if (weAreDealingWithTheRightBinding()) {
-			makeNormalBindingPathElement(node.getIdentifier());
-		}
-	}
-	
-	@Override
-	public void outACallBinding(ACallBinding node) {
-		super.outACallBinding(node);
-		if (weAreDealingWithTheRightBinding()) {
-			makeMethodCallBindingPathElement((ACall) node.getCall());
-		}
-	}
-	
-	@Override
-	public void outATail1Binding(ATail1Binding node) {
-		super.outATail1Binding(node);
-		if (weAreDealingWithTheRightBinding()) {
-			makeNormalBindingPathElement(node.getIdentifier());
-		}
-	}
-	
-	@Override
-	public void outATail2Binding(ATail2Binding node) {
-		super.outATail2Binding(node);
-		if (weAreDealingWithTheRightBinding()) {
-			makeMethodCallBindingPathElement((ACall) node.getCall());
-		}
-	}*/
-
-	private int depth = -1;
-
-	/*@Override
-	public void inABindingTerm(ABindingTerm node) {
-		super.inABindingTerm(node);
-		// System.out.println("IN binding " + node);
-		// weAreDealingWithTheRightBinding = false;
-		depth++;
-	}
-	
-	@Override
-	public void outABindingTerm(ABindingTerm node) {
-		super.outABindingTerm(node);
-		// System.out.println("OUT binding " + node);
-		// weAreDealingWithTheRightBinding = true;
-		depth--;
-	}*/
-
-	private boolean weAreDealingWithTheRightBinding() {
-		return depth == 0;
-	}
 }
