@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,35 +37,53 @@
  * 
  */
 
-package org.openflexo.connie.exception;
+package org.openflexo.connie.java;
 
-import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.binding.SettableBindingEvaluationContext;
+import java.lang.reflect.InvocationTargetException;
 
-/**
- * This exception is thrown when a set is requested on a BindingVariable not in a {@link SettableBindingEvaluationContext}
- * 
- * @author sylvain
- * 
- */
-@SuppressWarnings("serial")
-public class NotSettableContextException extends TransformException {
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.java.util.JavaBindingEvaluator;
+import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
-	private String message;
+import junit.framework.TestCase;
 
-	public NotSettableContextException(BindingVariable bindingVariable, BindingEvaluationContext context) {
-		super();
-		message = "NotSettableContextException: variable " + bindingVariable + " context=" + context;
-	}
+public abstract class EvaluatorTestCase extends TestCase {
 
-	public NotSettableContextException(String message) {
-		super(message);
-	}
+	public static void genericTest(String bindingPath, Object object, Object expectedResult) {
 
-	@Override
-	public String getMessage() {
-		return message;
+		System.out.println("Evaluate " + bindingPath);
+
+		BindingFactory bindingFactory = new JavaBindingFactory();
+
+		Object evaluatedResult = null;
+		try {
+			evaluatedResult = JavaBindingEvaluator.evaluateBinding(bindingPath, object, bindingFactory);
+		} catch (InvalidKeyValuePropertyException e) {
+			e.printStackTrace();
+			fail();
+		} catch (TypeMismatchException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NullReferenceException e) {
+			fail();
+		} catch (InvocationTargetException e) {
+			fail();
+		}
+		System.out.println("Evaluated as " + evaluatedResult);
+
+		if (expectedResult instanceof Number) {
+			if (evaluatedResult instanceof Number) {
+				assertEquals(((Number) expectedResult).doubleValue(), ((Number) evaluatedResult).doubleValue());
+			}
+			else {
+				fail("Evaluated value is not a number (expected: " + expectedResult + ") but " + evaluatedResult);
+			}
+		}
+		else {
+			assertEquals(expectedResult, evaluatedResult);
+		}
 	}
 
 }

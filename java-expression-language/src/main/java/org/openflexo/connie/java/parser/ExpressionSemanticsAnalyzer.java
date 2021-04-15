@@ -76,6 +76,8 @@ import org.openflexo.connie.java.parser.node.ANeqEqualityExp;
 import org.openflexo.connie.java.parser.node.APercentMultExp;
 import org.openflexo.connie.java.parser.node.APlusAddExp;
 import org.openflexo.connie.java.parser.node.APlusUnaryExp;
+import org.openflexo.connie.java.parser.node.APostDecrExp;
+import org.openflexo.connie.java.parser.node.APostIncrExp;
 import org.openflexo.connie.java.parser.node.APostfixUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.APreDecrExp;
 import org.openflexo.connie.java.parser.node.APreIncrExp;
@@ -552,4 +554,29 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 				new JavaUnaryOperatorExpression(JavaArithmeticUnaryOperator.PRE_DECREMENT, getExpression(node.getUnaryExp())));
 	}
 
+	// unary_exp_not_plus_minus =
+	// {postfix} postfix_exp
+	// | {tilde} tilde unary_exp
+	// | {emark} emark unary_exp
+	// | {cast} l_par type [dims]:dim* r_par unary_exp
+	// ;
+
+	// TODO
+
+	// post_incr_exp = postfix_exp plus_plus;
+	// post_decr_exp = postfix_exp minus_minus;
+
+	@Override
+	public void outAPostDecrExp(APostDecrExp node) {
+		super.outAPostDecrExp(node);
+		registerExpressionNode(node,
+				new JavaUnaryOperatorExpression(JavaArithmeticUnaryOperator.POST_DECREMENT, getExpression(node.getPostfixExp())));
+	}
+
+	@Override
+	public void outAPostIncrExp(APostIncrExp node) {
+		super.outAPostIncrExp(node);
+		registerExpressionNode(node,
+				new JavaUnaryOperatorExpression(JavaArithmeticUnaryOperator.POST_INCREMENT, getExpression(node.getPostfixExp())));
+	}
 }

@@ -39,12 +39,18 @@
 
 package org.openflexo.connie.java.expr;
 
+import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.exception.NotSettableContextException;
 import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionPrettyPrinter;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.expr.UnaryOperator;
 import org.openflexo.connie.expr.UnaryOperatorExpression;
+import org.openflexo.connie.java.expr.JavaUnaryOperator.PostSettableUnaryOperator;
+import org.openflexo.connie.java.expr.JavaUnaryOperator.PreSettableUnaryOperator;
 
 public class JavaUnaryOperatorExpression extends UnaryOperatorExpression {
 
@@ -63,11 +69,62 @@ public class JavaUnaryOperatorExpression extends UnaryOperatorExpression {
 		Expression expression = this;
 		Expression transformedArgument = getArgument().transform(transformer);
 
+		if (getOperator() instanceof PreSettableUnaryOperator && transformedArgument instanceof Constant) {
+			if (transformer instanceof JavaExpressionEvaluator) {
+				transformedArgument = ((PreSettableUnaryOperator) getOperator()).preSet((Constant<?>) transformedArgument);
+				BindingEvaluationContext context = ((JavaExpressionEvaluator) transformer).getContext();
+				if (!getArgument().isSettable()) {
+					throw new NotSettableContextException(
+							"Invalid context for PreSettableUnaryOperator, not settable argument : " + getArgument());
+				}
+				else {
+					Object value = ((Constant<?>) transformedArgument).getValue();
+					if (getArgument() instanceof BindingValue) {
+						((BindingValue) getArgument()).setBindingValue(value, context);
+					}
+					else {
+						throw new NotSettableContextException(
+								"Invalid context for PreSettableUnaryOperator, don't know how to set for argument : " + getArgument());
+					}
+				}
+			}
+			else {
+				throw new NotSettableContextException("Invalid context for PreSettableUnaryOperator : " + transformer);
+			}
+		}
+
 		if (!transformedArgument.equals(getArgument())) {
 			expression = new JavaUnaryOperatorExpression(getOperator(), transformedArgument);
 		}
 
-		return transformer.performTransformation(expression);
+		Expression returned = transformer.performTransformation(expression);
+
+		if (getOperator() instanceof PostSettableUnaryOperator && transformedArgument instanceof Constant) {
+			if (transformer instanceof JavaExpressionEvaluator) {
+				Constant<?> postArgumentConstant = ((PostSettableUnaryOperator) getOperator()).postSet((Constant<?>) transformedArgument);
+				BindingEvaluationContext context = ((JavaExpressionEvaluator) transformer).getContext();
+				if (!getArgument().isSettable()) {
+					throw new NotSettableContextException(
+							"Invalid context for PostSettableUnaryOperator, not settable argument : " + getArgument());
+				}
+				else {
+					Object value = ((Constant<?>) postArgumentConstant).getValue();
+					if (getArgument() instanceof BindingValue) {
+						((BindingValue) getArgument()).setBindingValue(value, context);
+					}
+					else {
+						throw new NotSettableContextException(
+								"Invalid context for PostSettableUnaryOperator, don't know how to set for argument : " + getArgument());
+					}
+				}
+			}
+			else {
+				throw new NotSettableContextException("Invalid context for PostSettableUnaryOperator : " + transformer);
+			}
+		}
+
+		return returned;
+
 	}
 
 }

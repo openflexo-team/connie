@@ -1,243 +1,10 @@
 package org.openflexo.connie.java.parser;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.ParseException;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Expression;
-import org.openflexo.connie.expr.ExpressionEvaluator;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
 import org.openflexo.connie.java.expr.JavaConditionalExpression;
-import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
-import org.openflexo.connie.java.expr.JavaConstant.CharConstant;
-import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
-import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
-import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
-import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
-import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
-import org.openflexo.connie.java.expr.JavaExpressionEvaluator;
-import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 
-import junit.framework.TestCase;
-
-public class TestExpressionParser extends TestCase {
-
-	private JavaPrettyPrinter prettyPrinter;
-
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		prettyPrinter = new JavaPrettyPrinter();
-	}
-
-	private Expression tryToParse(String anExpression, String expectedEvaluatedExpression,
-			Class<? extends Expression> expectedExpressionClass, Object expectedEvaluation, boolean shouldFail) {
-
-		/*try {
-			Expression parsed = ExpressionParser.parse(anExpression);
-			System.out.println("parsed=" + parsed);
-			return parsed;
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			if (!shouldFail) {
-				fail();
-			}
-			return null;
-		}*/
-
-		try {
-			System.out.println("Parsing... " + anExpression);
-			Expression parsed = ExpressionParser.parse(anExpression);
-			System.out.println("parsed=" + parsed);
-			Expression evaluated = parsed.evaluate(new BindingEvaluationContext() {
-				@Override
-				public Object getValue(BindingVariable variable) {
-					return null;
-				}
-
-				@Override
-				public ExpressionEvaluator getEvaluator() {
-					return new JavaExpressionEvaluator(this);
-				}
-			});
-			System.out.println("evaluated=" + evaluated);
-			System.out.println("Successfully parsed as : " + parsed.getClass().getSimpleName());
-			System.out.println("Normalized: " + prettyPrinter.getStringRepresentation(parsed));
-			System.out.println("Evaluated: " + prettyPrinter.getStringRepresentation(evaluated));
-			if (shouldFail) {
-				fail();
-			}
-			assertTrue(expectedExpressionClass.isAssignableFrom(parsed.getClass()));
-			if (expectedEvaluatedExpression != null) {
-				assertEquals(expectedEvaluatedExpression, prettyPrinter.getStringRepresentation(evaluated));
-			}
-			if (expectedEvaluation != null) {
-				if (!(evaluated instanceof Constant)) {
-					fail("Evaluated value is not a constant (expected: " + expectedEvaluation + ") but " + expectedEvaluation);
-				}
-				if (expectedEvaluation instanceof Number) {
-					Object value = ((Constant<?>) evaluated).getValue();
-					if (value instanceof Number) {
-						assertEquals(((Number) expectedEvaluation).doubleValue(), ((Number) value).doubleValue());
-					}
-					else {
-						fail("Evaluated value is not a number (expected: " + expectedEvaluation + ") but " + expectedEvaluation);
-					}
-				}
-				else {
-					assertEquals(expectedEvaluation, ((Constant<?>) evaluated).getValue());
-				}
-			}
-			return parsed;
-		} catch (ParseException e) {
-			if (!shouldFail) {
-				e.printStackTrace();
-				fail();
-			}
-			else {
-				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
-			}
-			return null;
-		} catch (TypeMismatchException e) {
-			if (!shouldFail) {
-				e.printStackTrace();
-				fail();
-			}
-			else {
-				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
-			}
-			return null;
-		} catch (NullReferenceException e) {
-			if (!shouldFail) {
-				e.printStackTrace();
-				fail();
-			}
-			else {
-				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
-			}
-			return null;
-		} catch (InvocationTargetException e) {
-			fail();
-			return null;
-		}
-
-	}
-
-	// Test numbers
-
-	/*public static void tutu(Object o) {
-		System.out.println("Number " + o + " of " + o.getClass());
-	}
-	
-	public static void main(String[] args) {
-		tutu(0123776);
-	}*/
-
-	public void testTrue() {
-		tryToParse("true", "true", BooleanConstant.class, true, false);
-	}
-
-	public void testFalse() {
-		tryToParse("false", "false", BooleanConstant.class, false, false);
-	}
-
-	public void testSimpleString() {
-		tryToParse("\"aString\"", "\"aString\"", StringConstant.class, "aString", false);
-	}
-
-	public void testSimpleCharacter() {
-		tryToParse("'a'", "'a'", CharConstant.class, 'a', false);
-	}
-
-	public void testSimpleInteger() {
-		tryToParse("42", "42", IntegerConstant.class, 42, false);
-	}
-
-	public void testLongIntegerWithFinalL() {
-		tryToParse("42L", "42", LongConstant.class, 42L, false);
-	}
-
-	public void testLongIntegerWithFinall() {
-		tryToParse("42l", "42", LongConstant.class, 42L, false);
-	}
-
-	public void testLongInteger() {
-		tryToParse("4242424242242424242L", "4242424242242424242", LongConstant.class, 4242424242242424242L, false);
-	}
-
-	public void testHexIntegerWithx() {
-		tryToParse("0xFF", "255", IntegerConstant.class, 255, false);
-	}
-
-	public void testHexIntegerWithX() {
-		tryToParse("0xFE", "254", IntegerConstant.class, 254, false);
-	}
-
-	public void testOctalInteger() {
-		tryToParse("0123776", "43006", IntegerConstant.class, 0123776, false);
-	}
-
-	public void testSimpleFloat() {
-		tryToParse("3.1415", "3.1415", DoubleConstant.class, 3.1415, false);
-	}
-
-	public void testSimpleFloatWithF() {
-		tryToParse("3.1415F", null, FloatConstant.class, null, false);
-	}
-
-	public void testSimpleFloatWithf() {
-		tryToParse("3.1415f", null, FloatConstant.class, null, false);
-	}
-
-	public void testSimpleDoubleWithD() {
-		tryToParse("3.1415D", "3.1415", DoubleConstant.class, 3.1415D, false);
-	}
-
-	public void testSimpleDoubleWithd() {
-		tryToParse("3.1415d", "3.1415", DoubleConstant.class, 3.1415d, false);
-	}
-
-	public void testExpNumber1() {
-		tryToParse("1e42", "1.0E42", DoubleConstant.class, 1e42, false);
-	}
-
-	public void testExpNumber2() {
-		tryToParse("1.786e-42", "1.786E-42", DoubleConstant.class, 1.786e-42, false);
-	}
-
-	public void testNumericValue1() {
-		tryToParse("34", "34", IntegerConstant.class, 34, false);
-	}
-
-	public void testNumericValue2() {
-		tryToParse("7.8", "7.8", DoubleConstant.class, 7.8, false);
-	}
-
-	public void testNumericValue3() {
-		tryToParse("1.876E12", "1.876E12", DoubleConstant.class, 1.876E12, false);
-	}
-
-	public void testNumericValue4() {
-		tryToParse("0.876e-9", "8.76E-10", DoubleConstant.class, 8.76E-10, false);
-	}
-
-	public void testNegativeInteger() {
-		tryToParse("-89", "-89", JavaUnaryOperatorExpression.class, -89, false);
-	}
-
-	public void testExplicitPositiveInteger() {
-		tryToParse("+89", "89", JavaUnaryOperatorExpression.class, 89, false);
-	}
-
-	public void testExplicitPositiveFloat() {
-		tryToParse("+89.7856", "89.7856", JavaUnaryOperatorExpression.class, 89.7856, false);
-	}
+public class TestExpressionParser extends ParserTestCase {
 
 	// Test Conditional
 
@@ -391,8 +158,32 @@ public class TestExpressionParser extends TestCase {
 		tryToParse("++a", "(++(a))", JavaUnaryOperatorExpression.class, null, false);
 	}
 
+	public void testSimpleSymbolicPreIncrement2() {
+		tryToParse("++a.b", "(++(a.b))", JavaUnaryOperatorExpression.class, null, false);
+	}
+
 	public void testSimpleSymbolicPreDecrement() {
 		tryToParse("--a", "(--(a))", JavaUnaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleSymbolicPreDecrement2() {
+		tryToParse("--a.b", "(--(a.b))", JavaUnaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleSymbolicPostIncrement() {
+		tryToParse("a++", "((a)++)", JavaUnaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleSymbolicPostIncrement2() {
+		tryToParse("a.b++", "((a.b)++)", JavaUnaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleSymbolicPostDecrement() {
+		tryToParse("a--", "((a)--)", JavaUnaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleSymbolicPostDecrement2() {
+		tryToParse("a.b--", "((a.b)--)", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	/*

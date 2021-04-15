@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,35 +37,50 @@
  * 
  */
 
-package org.openflexo.connie.exception;
+package org.openflexo.connie.java;
 
-import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.binding.SettableBindingEvaluationContext;
+public class TestSettableOperators extends EvaluatorTestCase {
 
-/**
- * This exception is thrown when a set is requested on a BindingVariable not in a {@link SettableBindingEvaluationContext}
- * 
- * @author sylvain
- * 
- */
-@SuppressWarnings("serial")
-public class NotSettableContextException extends TransformException {
-
-	private String message;
-
-	public NotSettableContextException(BindingVariable bindingVariable, BindingEvaluationContext context) {
-		super();
-		message = "NotSettableContextException: variable " + bindingVariable + " context=" + context;
+	public void testPreInc() {
+		TestObject object = new TestObject(42);
+		genericTest("++object.value", object, 43);
+		assertEquals(43, object.value);
 	}
 
-	public NotSettableContextException(String message) {
-		super(message);
+	public void testPreDec() {
+		TestObject object = new TestObject(42);
+		genericTest("--object.value", object, 41);
+		assertEquals(41, object.value);
 	}
 
-	@Override
-	public String getMessage() {
-		return message;
+	public void testPostInc() {
+		TestObject object = new TestObject(42);
+		genericTest("object.value++", object, 42);
+		assertEquals(43, object.value);
 	}
 
+	public void testPostDec() {
+		TestObject object = new TestObject(42);
+		genericTest("object.value--", object, 42);
+		assertEquals(41, object.value);
+	}
+
+	public static class TestObject {
+
+		private int value = 0;
+
+		public TestObject(int value) {
+			this.value = value;
+		}
+
+		public int getValue() {
+			return value;
+		}
+
+		public void setValue(int aValue) {
+			System.out.println("sets value with " + aValue);
+			value = aValue;
+		}
+
+	}
 }

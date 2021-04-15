@@ -91,6 +91,12 @@ public class JavaGrammar implements ExpressionGrammar {
 		if (operator == JavaArithmeticUnaryOperator.PRE_DECREMENT) {
 			return "--";
 		}
+		if (operator == JavaArithmeticUnaryOperator.POST_INCREMENT) {
+			return "++";
+		}
+		if (operator == JavaArithmeticUnaryOperator.POST_DECREMENT) {
+			return "--";
+		}
 		throw new OperatorNotSupportedException();
 	}
 

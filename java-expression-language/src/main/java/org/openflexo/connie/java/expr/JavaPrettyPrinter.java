@@ -61,6 +61,7 @@ import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ObjectConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ShortConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
+import org.openflexo.connie.java.expr.JavaUnaryOperator.PostSettableUnaryOperator;
 
 public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 
@@ -163,6 +164,13 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 
 	@Override
 	protected String makeStringRepresentation(UnaryOperatorExpression expression) {
+		if (expression.getOperator() instanceof PostSettableUnaryOperator) {
+			try {
+				return "(" + "(" + getStringRepresentation(expression.getArgument()) + ")" + getSymbol(expression.getOperator()) + ")";
+			} catch (OperatorNotSupportedException e) {
+				return "<unsupported>";
+			}
+		}
 		try {
 			return "(" + getSymbol(expression.getOperator()) + "(" + getStringRepresentation(expression.getArgument()) + ")" + ")";
 		} catch (OperatorNotSupportedException e) {

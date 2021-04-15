@@ -43,10 +43,12 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.java.expr.JavaConstant.ArithmeticConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ByteConstant;
 import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
 import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
 import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
 import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ShortConstant;
 
 public abstract class JavaArithmeticUnaryOperator extends JavaUnaryOperator {
 
@@ -145,18 +147,11 @@ public abstract class JavaArithmeticUnaryOperator extends JavaUnaryOperator {
 		}
 	};
 
-	public static final JavaArithmeticUnaryOperator PRE_INCREMENT = new JavaArithmeticUnaryOperator() {
-		@Override
-		public int getPriority() {
-			return 3;
-		}
+	public static abstract class PreOrPostIncrementOrDecrementOperator extends JavaArithmeticUnaryOperator {
 
 		@Override
 		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
-			if (arg instanceof ArithmeticConstant && !((ArithmeticConstant) arg).isFloatingPointType()) {
-				return JavaConstant.makeConstant(((ArithmeticConstant<?>) arg).getLongValue() + 1);
-			}
-			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_INTEGER);
+			return arg;
 		}
 
 		@Override
@@ -170,41 +165,126 @@ public abstract class JavaArithmeticUnaryOperator extends JavaUnaryOperator {
 			throw new TypeMismatchException(this, operandType, EvaluationType.ARITHMETIC_INTEGER, EvaluationType.LITERAL);
 		}
 
+	}
+
+	public static abstract class PreIncrementOrDecrementOperator extends PreOrPostIncrementOrDecrementOperator
+			implements PreSettableUnaryOperator {
+
+		@Override
+		public int getPriority() {
+			return 3;
+		}
+
+	}
+
+	public static abstract class PostIncrementOrDecrementOperator extends PreOrPostIncrementOrDecrementOperator
+			implements PostSettableUnaryOperator {
+
+		@Override
+		public int getPriority() {
+			return 3;
+		}
+
+	}
+
+	public static final JavaArithmeticUnaryOperator PRE_INCREMENT = new PreIncrementOrDecrementOperator() {
 		@Override
 		public String getName() {
 			return "pre_increment";
 		}
-	};
-
-	public static final JavaArithmeticUnaryOperator PRE_DECREMENT = new JavaArithmeticUnaryOperator() {
-		@Override
-		public int getPriority() {
-			return 3;
-		}
 
 		@Override
-		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
-			if (arg instanceof ArithmeticConstant && !((ArithmeticConstant) arg).isFloatingPointType()) {
-				return JavaConstant.makeConstant(((ArithmeticConstant<?>) arg).getLongValue() - 1);
+		public Constant<?> preSet(Constant<?> arg) throws TypeMismatchException {
+			if (arg instanceof ByteConstant) {
+				return JavaConstant.makeConstant(((ByteConstant) arg).getValue() + 1);
+			}
+			if (arg instanceof ShortConstant) {
+				return JavaConstant.makeConstant(((ShortConstant) arg).getValue() + 1);
+			}
+			if (arg instanceof IntegerConstant) {
+				return JavaConstant.makeConstant(((IntegerConstant) arg).getValue() + 1);
+			}
+			if (arg instanceof LongConstant) {
+				return JavaConstant.makeConstant(((LongConstant) arg).getValue() + 1);
 			}
 			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_INTEGER);
 		}
 
-		@Override
-		public EvaluationType getEvaluationType(EvaluationType operandType) throws TypeMismatchException {
-			if (operandType.isLiteral()) {
-				return EvaluationType.LITERAL;
-			}
-			if (operandType.isArithmeticInteger()) {
-				return EvaluationType.ARITHMETIC_INTEGER;
-			}
-			throw new TypeMismatchException(this, operandType, EvaluationType.ARITHMETIC_INTEGER, EvaluationType.LITERAL);
-		}
+	};
 
+	public static final JavaArithmeticUnaryOperator PRE_DECREMENT = new PreIncrementOrDecrementOperator() {
 		@Override
 		public String getName() {
 			return "pre_decrement";
 		}
+
+		@Override
+		public Constant<?> preSet(Constant<?> arg) throws TypeMismatchException {
+			if (arg instanceof ByteConstant) {
+				return JavaConstant.makeConstant(((ByteConstant) arg).getValue() - 1);
+			}
+			if (arg instanceof ShortConstant) {
+				return JavaConstant.makeConstant(((ShortConstant) arg).getValue() - 1);
+			}
+			if (arg instanceof IntegerConstant) {
+				return JavaConstant.makeConstant(((IntegerConstant) arg).getValue() - 1);
+			}
+			if (arg instanceof LongConstant) {
+				return JavaConstant.makeConstant(((LongConstant) arg).getValue() - 1);
+			}
+			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_INTEGER);
+		}
+
+	};
+
+	public static final JavaArithmeticUnaryOperator POST_INCREMENT = new PostIncrementOrDecrementOperator() {
+		@Override
+		public String getName() {
+			return "post_increment";
+		}
+
+		@Override
+		public Constant<?> postSet(Constant<?> arg) throws TypeMismatchException {
+			if (arg instanceof ByteConstant) {
+				return JavaConstant.makeConstant(((ByteConstant) arg).getValue() + 1);
+			}
+			if (arg instanceof ShortConstant) {
+				return JavaConstant.makeConstant(((ShortConstant) arg).getValue() + 1);
+			}
+			if (arg instanceof IntegerConstant) {
+				return JavaConstant.makeConstant(((IntegerConstant) arg).getValue() + 1);
+			}
+			if (arg instanceof LongConstant) {
+				return JavaConstant.makeConstant(((LongConstant) arg).getValue() + 1);
+			}
+			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_INTEGER);
+		}
+
+	};
+
+	public static final JavaArithmeticUnaryOperator POST_DECREMENT = new PostIncrementOrDecrementOperator() {
+		@Override
+		public String getName() {
+			return "post_decrement";
+		}
+
+		@Override
+		public Constant<?> postSet(Constant<?> arg) throws TypeMismatchException {
+			if (arg instanceof ByteConstant) {
+				return JavaConstant.makeConstant(((ByteConstant) arg).getValue() - 1);
+			}
+			if (arg instanceof ShortConstant) {
+				return JavaConstant.makeConstant(((ShortConstant) arg).getValue() - 1);
+			}
+			if (arg instanceof IntegerConstant) {
+				return JavaConstant.makeConstant(((IntegerConstant) arg).getValue() - 1);
+			}
+			if (arg instanceof LongConstant) {
+				return JavaConstant.makeConstant(((LongConstant) arg).getValue() - 1);
+			}
+			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_INTEGER);
+		}
+
 	};
 
 }

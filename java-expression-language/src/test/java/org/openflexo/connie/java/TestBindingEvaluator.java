@@ -39,57 +39,7 @@
 
 package org.openflexo.connie.java;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.openflexo.connie.BindingFactory;
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.java.util.JavaBindingEvaluator;
-import org.openflexo.kvc.InvalidKeyValuePropertyException;
-
-import junit.framework.TestCase;
-
-public class TestBindingEvaluator extends TestCase {
-
-	public static void genericTest(String bindingPath, Object object, Object expectedResult) {
-
-		System.out.println("Evaluate " + bindingPath);
-
-		BindingFactory bindingFactory = new JavaBindingFactory();
-
-		Object evaluatedResult = null;
-		try {
-			evaluatedResult = JavaBindingEvaluator.evaluateBinding(bindingPath, object, bindingFactory);
-		} catch (InvalidKeyValuePropertyException e) {
-			e.printStackTrace();
-			fail();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
-			fail();
-		} catch (NullReferenceException e) {
-			fail();
-		} catch (InvocationTargetException e) {
-			fail();
-		}
-		System.out.println("Evaluated as " + evaluatedResult);
-
-		if (expectedResult instanceof Number) {
-			if (evaluatedResult instanceof Number) {
-				assertEquals(((Number) expectedResult).doubleValue(), ((Number) evaluatedResult).doubleValue());
-			}
-			else {
-				fail("Evaluated value is not a number (expected: " + expectedResult + ") but " + evaluatedResult);
-			}
-		}
-		else {
-			assertEquals(expectedResult, evaluatedResult);
-		}
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
+public class TestBindingEvaluator extends EvaluatorTestCase {
 
 	public void test1() {
 		String thisIsATest = "Hello world, this is a test";

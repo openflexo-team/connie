@@ -39,6 +39,8 @@
 
 package org.openflexo.connie.java.expr;
 
+import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.UnaryOperator;
 
 /**
@@ -49,4 +51,26 @@ import org.openflexo.connie.expr.UnaryOperator;
  */
 public abstract class JavaUnaryOperator extends UnaryOperator {
 
+	/**
+	 * Implemented by operators changing the value of evaluated expression before to be evaluated
+	 * 
+	 * @author sylvain
+	 *
+	 */
+	public interface PreSettableUnaryOperator {
+
+		public Constant<?> preSet(Constant<?> arg) throws TypeMismatchException;
+
+	}
+
+	/**
+	 * Implemented by operators changing the value of evaluated expression after being evaluated
+	 * 
+	 * @author sylvain
+	 *
+	 */
+	public interface PostSettableUnaryOperator {
+
+		public Constant<?> postSet(Constant<?> arg) throws TypeMismatchException;
+	}
 }
