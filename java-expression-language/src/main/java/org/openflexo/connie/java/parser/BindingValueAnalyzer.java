@@ -58,6 +58,9 @@ import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AOneArgumentList;
 import org.openflexo.connie.java.parser.node.APrimaryFieldAccess;
 import org.openflexo.connie.java.parser.node.APrimaryMethodInvocation;
+import org.openflexo.connie.java.parser.node.AReferenceSuperFieldAccess;
+import org.openflexo.connie.java.parser.node.ASuperFieldAccess;
+import org.openflexo.connie.java.parser.node.ASuperMethodInvocation;
 import org.openflexo.connie.java.parser.node.Node;
 import org.openflexo.connie.java.parser.node.PArgumentList;
 import org.openflexo.connie.java.parser.node.PExpression;
@@ -91,10 +94,12 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 
 	public static BindingValue makeBindingValue(Node node, ExpressionSemanticsAnalyzer expressionAnalyzer) {
 
+		// System.out.println("Make BindingValue for " + node);
+
 		/*BindingValueAnalyzer bsa = new BindingValueAnalyzer(node);
 		node.apply(bsa);
 		
-		// System.out.println("Make binding value with bsa as " + bsa.getPath());
+		System.out.println("Make binding value with bsa as " + bsa.getPath());
 		
 		BindingValue returned = new BindingValue(bsa.getPath());
 		// System.out.println("Made binding as " + bsa.getPath());
@@ -219,48 +224,79 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	}
 
 	@Override
+	public void outASuperFieldAccess(ASuperFieldAccess node) {
+		super.outASuperFieldAccess(node);
+		if (weAreDealingWithTheRightBinding()) {
+			path.add(new NormalBindingPathElement("super"));
+			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getLidentifier().getText());
+			path.add(pathElement);
+		}
+	}
+
+	@Override
+	public void outAReferenceSuperFieldAccess(AReferenceSuperFieldAccess node) {
+		// TODO Auto-generated method stub
+		super.outAReferenceSuperFieldAccess(node);
+
+		if (weAreDealingWithTheRightBinding()) {
+			List<AbstractBindingPathElement> bindingPath = makeBindingPath(node.getIdentifier1(), expressionAnalyzer);
+			for (int i = 0; i < bindingPath.size(); i++) {
+				path.add(bindingPath.get(i));
+			}
+			path.add(new NormalBindingPathElement("super"));
+			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getIdentifier2().getText());
+			path.add(pathElement);
+		}
+	}
+
+	private List<Expression> makeArgs(PArgumentList argumentList) {
+		List<Expression> args = new ArrayList<>();
+		if (argumentList == null) {
+			// No argument
+		}
+		else if (argumentList instanceof AOneArgumentList) {
+			// One argument
+			PExpression pExpression = ((AOneArgumentList) argumentList).getExpression();
+			// System.out.println("Tiens je cherche pour " + pExpression + " of " + pExpression.getClass().getSimpleName());
+			// System.out.println("Et je tombe sur: " + expressionAnalyzer.getExpression(pExpression) + " of "
+			// + expressionAnalyzer.getExpression(pExpression).getClass().getSimpleName());
+			args.add(expressionAnalyzer.getExpression(pExpression));
+		}
+		else if (argumentList instanceof AManyArgumentList) {
+			List<PExpression> arguments = makeArguments((AManyArgumentList) argumentList);
+			for (PExpression pExpression : arguments) {
+				// System.out.println("Tiens je cherche pour " + pExpression + " of " + pExpression.getClass().getSimpleName());
+				// System.out.println("Et je tombe sur: " + expressionAnalyzer.getExpression(pExpression) + " of "
+				// + expressionAnalyzer.getExpression(pExpression).getClass().getSimpleName());
+				args.add(expressionAnalyzer.getExpression(pExpression));
+			}
+		}
+		return args;
+	}
+
+	@Override
 	public void outAPrimaryMethodInvocation(APrimaryMethodInvocation node) {
 		super.outAPrimaryMethodInvocation(node);
 		if (weAreDealingWithTheRightBinding()) {
 
 			List<AbstractBindingPathElement> bindingPath = makeBindingPath(node.getPrimary(), expressionAnalyzer);
-
-			// System.out.println("********* Handling node: " + node);
-			// System.out.println("bindingPath=" + bindingPath);
-			// System.out.println("node.getPrimary()=" + node.getPrimary());
-			// System.out.println("node.getArgumentList()=" + node.getArgumentList());
-
 			for (int i = 0; i < bindingPath.size() - 1; i++) {
 				path.add(bindingPath.get(i));
 			}
 
 			NormalBindingPathElement pathElement = (NormalBindingPathElement) bindingPath.get(bindingPath.size() - 1);
 			String identifier = pathElement.property;
+			MethodCallBindingPathElement returned = new MethodCallBindingPathElement(identifier, makeArgs(node.getArgumentList()));
+			path.add(returned);
 
-			List<Expression> args = new ArrayList<>();
-			PArgumentList argumentList = node.getArgumentList();
-			if (argumentList == null) {
-				// No argument
-			}
-			else if (argumentList instanceof AOneArgumentList) {
-				// One argument
-				PExpression pExpression = ((AOneArgumentList) argumentList).getExpression();
-				// System.out.println("Tiens je cherche pour " + pExpression + " of " + pExpression.getClass().getSimpleName());
-				// System.out.println("Et je tombe sur: " + expressionAnalyzer.getExpression(pExpression) + " of "
-				// + expressionAnalyzer.getExpression(pExpression).getClass().getSimpleName());
-				args.add(expressionAnalyzer.getExpression(pExpression));
-			}
-			else if (argumentList instanceof AManyArgumentList) {
-				List<PExpression> arguments = makeArguments((AManyArgumentList) argumentList);
-				for (PExpression pExpression : arguments) {
-					// System.out.println("Tiens je cherche pour " + pExpression + " of " + pExpression.getClass().getSimpleName());
-					// System.out.println("Et je tombe sur: " + expressionAnalyzer.getExpression(pExpression) + " of "
-					// + expressionAnalyzer.getExpression(pExpression).getClass().getSimpleName());
-					args.add(expressionAnalyzer.getExpression(pExpression));
-				}
-			}
+		}
+	}
 
-			MethodCallBindingPathElement returned = new MethodCallBindingPathElement(identifier, args);
+	@Override
+	public void outASuperMethodInvocation(ASuperMethodInvocation node) {
+		super.outASuperMethodInvocation(node);
+		if (weAreDealingWithTheRightBinding()) {
+			MethodCallBindingPathElement returned = new MethodCallBindingPathElement("super", makeArgs(node.getArgumentList()));
 			path.add(returned);
 
 		}

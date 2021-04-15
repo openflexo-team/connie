@@ -267,7 +267,7 @@ Productions
    
    method_invocation =
        {primary}    primary /*dot *//*non_wild_type_arguments?*//* identifier*/ l_par argument_list? r_par
-     //| {super}      super dot non_wild_type_arguments? identifier l_par argument_list? r_par
+       | {super}      kw_super /*dot*/ /*non_wild_type_arguments?*/ /*lidentifier*/ l_par argument_list? r_par
      //| {class_name} [identifier1]:composite_ident [dot1]:dot super [dot2]:dot non_wild_type_arguments? [identifier2]:identifier l_par argument_list? r_par
      //| {type_name}  [identifier1]:composite_ident dot non_wild_type_arguments  [identifier2]:identifier l_par argument_list? r_par
  	 | {class_method} type dot /*non_wild_type_arguments?*/ lidentifier l_par argument_list? r_par
