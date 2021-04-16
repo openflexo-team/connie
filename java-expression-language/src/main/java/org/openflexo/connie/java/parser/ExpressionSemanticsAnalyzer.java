@@ -47,6 +47,7 @@ import org.openflexo.connie.java.expr.JavaArithmeticBinaryOperator;
 import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
 import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
+import org.openflexo.connie.java.expr.JavaBooleanUnaryOperator;
 import org.openflexo.connie.java.expr.JavaConditionalExpression;
 import org.openflexo.connie.java.expr.JavaConstant;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
@@ -54,8 +55,10 @@ import org.openflexo.connie.java.expr.JavaConstant.CharConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
+import org.openflexo.connie.java.parser.node.ACastUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.ACharacterLiteral;
 import org.openflexo.connie.java.parser.node.AConditionalExpression;
+import org.openflexo.connie.java.parser.node.AEmarkUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.AEqEqualityExp;
 import org.openflexo.connie.java.parser.node.AExpressionPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AFalseLiteral;
@@ -100,6 +103,7 @@ import org.openflexo.connie.java.parser.node.ASimpleShiftExp;
 import org.openflexo.connie.java.parser.node.ASlashMultExp;
 import org.openflexo.connie.java.parser.node.AStarMultExp;
 import org.openflexo.connie.java.parser.node.AStringLiteral;
+import org.openflexo.connie.java.parser.node.ATildeUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.ATrueLiteral;
 import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
 import org.openflexo.connie.java.parser.node.AUshrShiftExp;
@@ -561,7 +565,24 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	// | {cast} l_par type [dims]:dim* r_par unary_exp
 	// ;
 
-	// TODO
+	@Override
+	public void outATildeUnaryExpNotPlusMinus(ATildeUnaryExpNotPlusMinus node) {
+		super.outATildeUnaryExpNotPlusMinus(node);
+		registerExpressionNode(node,
+				new JavaUnaryOperatorExpression(JavaArithmeticUnaryOperator.BITWISE_COMPLEMENT, getExpression(node.getUnaryExp())));
+	}
+
+	@Override
+	public void outAEmarkUnaryExpNotPlusMinus(AEmarkUnaryExpNotPlusMinus node) {
+		super.outAEmarkUnaryExpNotPlusMinus(node);
+		registerExpressionNode(node, new JavaUnaryOperatorExpression(JavaBooleanUnaryOperator.NOT, getExpression(node.getUnaryExp())));
+	}
+
+	@Override
+	public void outACastUnaryExpNotPlusMinus(ACastUnaryExpNotPlusMinus node) {
+		// TODO
+		super.outACastUnaryExpNotPlusMinus(node);
+	}
 
 	// post_incr_exp = postfix_exp plus_plus;
 	// post_decr_exp = postfix_exp minus_minus;

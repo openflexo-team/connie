@@ -147,6 +147,46 @@ public abstract class JavaArithmeticUnaryOperator extends JavaUnaryOperator {
 		}
 	};
 
+	public static final JavaArithmeticUnaryOperator BITWISE_COMPLEMENT = new JavaArithmeticUnaryOperator() {
+		@Override
+		public int getPriority() {
+			return 3;
+		}
+
+		@Override
+		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException {
+			if (arg instanceof ByteConstant) {
+				return JavaConstant.makeConstant(~((ByteConstant) arg).getValue());
+			}
+			if (arg instanceof ShortConstant) {
+				return JavaConstant.makeConstant(~((ShortConstant) arg).getValue());
+			}
+			if (arg instanceof IntegerConstant) {
+				return JavaConstant.makeConstant(~((IntegerConstant) arg).getValue());
+			}
+			if (arg instanceof LongConstant) {
+				return JavaConstant.makeConstant(~((LongConstant) arg).getValue());
+			}
+			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.ARITHMETIC_INTEGER);
+		}
+
+		@Override
+		public EvaluationType getEvaluationType(EvaluationType operandType) throws TypeMismatchException {
+			if (operandType.isLiteral()) {
+				return EvaluationType.LITERAL;
+			}
+			if (operandType.isArithmeticInteger()) {
+				return EvaluationType.ARITHMETIC_INTEGER;
+			}
+			throw new TypeMismatchException(this, operandType, EvaluationType.ARITHMETIC_INTEGER, EvaluationType.LITERAL);
+		}
+
+		@Override
+		public String getName() {
+			return "bitwise_complement";
+		}
+	};
+
 	public static abstract class PreOrPostIncrementOrDecrementOperator extends JavaArithmeticUnaryOperator {
 
 		@Override
