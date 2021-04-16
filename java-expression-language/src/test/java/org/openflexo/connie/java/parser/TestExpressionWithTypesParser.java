@@ -89,4 +89,17 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 				CastExpression.class, null, false);
 	}
 
+	public void testWilcardUpperBound() {
+		tryToParse("(List<? extends Tutu>)toto", "(List<? extends Tutu>)toto", CastExpression.class, null, false);
+	}
+
+	public void testWilcardLowerBound() {
+		tryToParse("(List<? extends Tutu>)toto", "(List<? extends Tutu>)toto", CastExpression.class, null, false);
+	}
+
+	public void testWilcardUpperBounds() {
+		tryToParse("(Map<? extends Key, ? extends Value>)toto", "(Map<? extends Key,? extends Value>)toto", CastExpression.class, null,
+				false);
+	}
+
 }

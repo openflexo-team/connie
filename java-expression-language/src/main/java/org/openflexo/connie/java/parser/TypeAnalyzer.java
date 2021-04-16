@@ -53,6 +53,7 @@ import org.openflexo.connie.java.parser.node.ACharPrimitiveType;
 import org.openflexo.connie.java.parser.node.AComplexType;
 import org.openflexo.connie.java.parser.node.ACompositeTident;
 import org.openflexo.connie.java.parser.node.ADoublePrimitiveType;
+import org.openflexo.connie.java.parser.node.AExtendsWildcardBounds;
 import org.openflexo.connie.java.parser.node.AFloatPrimitiveType;
 import org.openflexo.connie.java.parser.node.AGtTypeArguments;
 import org.openflexo.connie.java.parser.node.AIdentifierPrefix;
@@ -63,21 +64,23 @@ import org.openflexo.connie.java.parser.node.AReferenceType;
 import org.openflexo.connie.java.parser.node.AReferenceTypeArgument;
 import org.openflexo.connie.java.parser.node.AShortPrimitiveType;
 import org.openflexo.connie.java.parser.node.AShrTypeArguments;
+import org.openflexo.connie.java.parser.node.ASuperWildcardBounds;
 import org.openflexo.connie.java.parser.node.ATypeArgumentList;
 import org.openflexo.connie.java.parser.node.ATypeArgumentListHead;
 import org.openflexo.connie.java.parser.node.AUshrTypeArguments;
 import org.openflexo.connie.java.parser.node.AVoidType;
+import org.openflexo.connie.java.parser.node.AWildcardTypeArgument;
 import org.openflexo.connie.java.parser.node.Node;
 import org.openflexo.connie.java.parser.node.PCompositeTident;
 import org.openflexo.connie.java.parser.node.PIdentifierPrefix;
 import org.openflexo.connie.java.parser.node.PReferenceType;
 import org.openflexo.connie.java.parser.node.PType;
-import org.openflexo.connie.java.parser.node.PTypeArgument;
 import org.openflexo.connie.java.parser.node.PTypeArgumentList;
 import org.openflexo.connie.java.parser.node.PTypeArgumentListHead;
 import org.openflexo.connie.java.parser.node.PTypeArguments;
 import org.openflexo.connie.type.ParameterizedTypeImpl;
 import org.openflexo.connie.type.UnresolvedType;
+import org.openflexo.connie.type.WilcardTypeImpl;
 
 /**
  * This class implements the semantics analyzer for a parsed {@link BindingValue}<br>
@@ -131,10 +134,9 @@ class TypeAnalyzer extends DepthFirstAdapter {
 				if (n instanceof AComplexType) {
 					return getType(((AComplexType) n).getReferenceType());
 				}
-				/*if (n instanceof AReferenceType && ((AReferenceType) n).getArgs() == null) {
-					return getType(((AReferenceType) n).getIdentifier());
-				}*/
-
+				if (n instanceof AReferenceTypeArgument) {
+					return getType(((AReferenceTypeArgument) n).getReferenceType());
+				}
 				System.out.println("No expression registered for " + n + " of  " + n.getClass());
 			}
 			return returned;
@@ -250,8 +252,29 @@ class TypeAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAReferenceType(AReferenceType node) {
 		super.outAReferenceType(node);
-		Type t = makeType(node);
 		registerTypeNode(node, makeType(node));
+	}
+
+	@Override
+	public void outAWildcardTypeArgument(AWildcardTypeArgument node) {
+		super.outAWildcardTypeArgument(node);
+		if (node.getWildcardBounds() != null) {
+			registerTypeNode(node, getType(node.getWildcardBounds()));
+		}
+	}
+
+	@Override
+	public void outAExtendsWildcardBounds(AExtendsWildcardBounds node) {
+		super.outAExtendsWildcardBounds(node);
+		Type upperBound = getType(node.getReferenceType());
+		registerTypeNode(node, WilcardTypeImpl.makeUpperBoundWilcard(upperBound));
+	}
+
+	@Override
+	public void outASuperWildcardBounds(ASuperWildcardBounds node) {
+		super.outASuperWildcardBounds(node);
+		Type lowerBound = getType(node.getReferenceType());
+		registerTypeNode(node, WilcardTypeImpl.makeLowerBoundWilcard(lowerBound));
 	}
 
 	private Type makeType(String fullQualifiedName) {
@@ -308,10 +331,10 @@ class TypeAnalyzer extends DepthFirstAdapter {
 	private List<Type> makeTypeArguments(PTypeArgumentList someArgs) {
 		if (someArgs instanceof ATypeArgumentList) {
 			List<Type> returned = new ArrayList<>();
-			returned.add(makeTypeArgument(((ATypeArgumentList) someArgs).getTypeArgument()));
+			returned.add(getType(((ATypeArgumentList) someArgs).getTypeArgument()));
 			for (PTypeArgumentListHead pTypeArgumentListHead : ((ATypeArgumentList) someArgs).getTypeArgumentListHead()) {
 				if (pTypeArgumentListHead instanceof ATypeArgumentListHead) {
-					returned.add(makeTypeArgument(((ATypeArgumentListHead) pTypeArgumentListHead).getTypeArgument()));
+					returned.add(0, getType(((ATypeArgumentListHead) pTypeArgumentListHead).getTypeArgument()));
 				}
 				else {
 					System.err.println("Unexpected " + pTypeArgumentListHead + " of " + pTypeArgumentListHead.getClass());
@@ -326,7 +349,7 @@ class TypeAnalyzer extends DepthFirstAdapter {
 	private List<Type> makeTypeArguments(List<PTypeArgumentListHead> argumentListHead) {
 		List<Type> returned = new ArrayList<Type>();
 		for (PTypeArgumentListHead pTypeArgumentListHead : argumentListHead) {
-			returned.add(makeTypeArgument(((ATypeArgumentListHead) pTypeArgumentListHead).getTypeArgument()));
+			returned.add(getType(((ATypeArgumentListHead) pTypeArgumentListHead).getTypeArgument()));
 		}
 		return returned;
 	}
@@ -344,14 +367,6 @@ class TypeAnalyzer extends DepthFirstAdapter {
 		returned.addAll(makeTypeArguments(head2));
 		returned.addAll(makeTypeArguments(someArgs));
 		return returned;
-	}
-
-	private Type makeTypeArgument(PTypeArgument arg) {
-		if (arg instanceof AReferenceTypeArgument) {
-			return makeType(((AReferenceTypeArgument) arg).getReferenceType());
-		}
-		System.err.println("Unexpected " + arg + " of " + arg.getClass());
-		return null;
 	}
 
 }

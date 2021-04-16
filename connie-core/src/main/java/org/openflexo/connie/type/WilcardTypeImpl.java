@@ -48,6 +48,20 @@ public class WilcardTypeImpl implements WildcardType {
 	private Type[] upperBounds = new Type[0];
 	private Type[] lowerBounds = new Type[0];
 
+	public static WilcardTypeImpl makeUpperBoundWilcard(Type upperBound) {
+		WilcardTypeImpl returned = new WilcardTypeImpl();
+		returned.upperBounds = new Type[1];
+		returned.upperBounds[0] = upperBound;
+		return returned;
+	}
+
+	public static WilcardTypeImpl makeLowerBoundWilcard(Type lowerBound) {
+		WilcardTypeImpl returned = new WilcardTypeImpl();
+		returned.lowerBounds = new Type[1];
+		returned.lowerBounds[0] = lowerBound;
+		return returned;
+	}
+
 	public WilcardTypeImpl() {
 	}
 
@@ -56,11 +70,11 @@ public class WilcardTypeImpl implements WildcardType {
 		this.lowerBounds = lowerBounds;
 	}
 
-	public WilcardTypeImpl(Type upperBound) {
+	/*public WilcardTypeImpl(Type upperBound) {
 		upperBounds = new Type[1];
 		upperBounds[0] = upperBound;
 		lowerBounds = new Type[0];
-	}
+	}*/
 
 	@Override
 	public Type[] getLowerBounds() {
