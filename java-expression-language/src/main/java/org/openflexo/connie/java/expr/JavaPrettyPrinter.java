@@ -46,6 +46,7 @@ import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionGrammar;
 import org.openflexo.connie.expr.ExpressionPrettyPrinter;
 import org.openflexo.connie.expr.OperatorNotSupportedException;
@@ -82,6 +83,14 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 
 	protected JavaPrettyPrinter(ExpressionGrammar grammar) {
 		super(grammar);
+	}
+
+	@Override
+	public String getStringRepresentation(Expression expression) {
+		if (expression instanceof JavaInstanceOfExpression) {
+			return makeStringRepresentation((JavaInstanceOfExpression) expression);
+		}
+		return super.getStringRepresentation(expression);
 	}
 
 	@Override
@@ -231,6 +240,10 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 	@Override
 	protected String makeStringRepresentation(CastExpression expression) {
 		return "(" + makeStringRepresentation(expression.getCastType()) + ")" + getStringRepresentation(expression.getArgument());
+	}
+
+	private String makeStringRepresentation(JavaInstanceOfExpression expression) {
+		return getStringRepresentation(expression.getArgument()) + " instanceof " + makeStringRepresentation(expression.getType());
 	}
 
 	@Override

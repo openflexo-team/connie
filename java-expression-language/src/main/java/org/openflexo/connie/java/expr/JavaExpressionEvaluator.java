@@ -42,10 +42,12 @@ package org.openflexo.connie.java.expr;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.ConditionalExpression;
+import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionEvaluator;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ObjectSymbolicConstant;
+import org.openflexo.connie.type.TypeUtils;
 
 /**
  * This {@link JavaExpressionEvaluator} is used to evaluate Java expressions
@@ -72,18 +74,42 @@ public class JavaExpressionEvaluator extends ExpressionEvaluator {
 			}
 			return e;
 		}
-		else if (e instanceof ConditionalExpression) {
-			return transformConditionalExpression((ConditionalExpression) e);
+		else if (e instanceof JavaConditionalExpression) {
+			return transformConditionalExpression((JavaConditionalExpression) e);
+		}
+		else if (e instanceof JavaInstanceOfExpression) {
+			return transformInstanceOfExpression((JavaInstanceOfExpression) e);
 		}
 		return super.performTransformation(e);
 	}
 
-	private static Expression transformConditionalExpression(ConditionalExpression e) {
+	private static Expression transformConditionalExpression(JavaConditionalExpression e) {
 		if (e.getCondition() == BooleanConstant.TRUE) {
 			return e.getThenExpression();
 		}
 		else if (e.getCondition() == BooleanConstant.FALSE) {
 			return e.getElseExpression();
+		}
+		return e;
+	}
+
+	private static Expression transformInstanceOfExpression(JavaInstanceOfExpression e) {
+
+		System.out.println("Je dois evaluer " + e);
+		System.out.println("argument : " + e.getArgument());
+		System.out.println("type : " + e.getType());
+
+		if (e.getArgument() == ObjectSymbolicConstant.NULL) {
+			return BooleanConstant.FALSE;
+		}
+
+		if (e.getArgument() instanceof Constant) {
+			if (TypeUtils.isOfType(((Constant<?>) e.getArgument()).getValue(), e.getType())) {
+				return BooleanConstant.TRUE;
+			}
+			else {
+				return BooleanConstant.FALSE;
+			}
 		}
 		return e;
 	}

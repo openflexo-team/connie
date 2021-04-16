@@ -888,7 +888,7 @@ public class TypeUtils {
 				}
 			}
 			if (contextualizeType) {
-				ParameterizedType fullyContextualizedType = new ParameterizedTypeImpl((Class<?>) contextParameterizedType.getRawType(),
+				ParameterizedType fullyContextualizedType = new ParameterizedTypeImpl(contextParameterizedType.getRawType(),
 						actualTypeArguments);
 				// In this case, we use the bounds defined by the TypeVariable, and we recall the method with this most contextualized type
 				return makeInstantiatedType(type, fullyContextualizedType);
@@ -908,7 +908,7 @@ public class TypeUtils {
 			for (int i = 0; i < ((ParameterizedType) type).getActualTypeArguments().length; i++) {
 				actualTypeArguments[i] = makeInstantiatedType(((ParameterizedType) type).getActualTypeArguments()[i], context);
 			}
-			return new ParameterizedTypeImpl((Class<?>) ((ParameterizedType) type).getRawType(), actualTypeArguments);
+			return new ParameterizedTypeImpl(((ParameterizedType) type).getRawType(), actualTypeArguments);
 		}
 
 		if (type instanceof GenericArrayType) {

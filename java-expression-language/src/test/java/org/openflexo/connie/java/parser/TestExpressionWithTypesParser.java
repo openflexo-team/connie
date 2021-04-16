@@ -5,15 +5,24 @@ import java.util.List;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.java.expr.JavaCastExpression;
+import org.openflexo.connie.java.expr.JavaInstanceOfExpression;
 import org.openflexo.connie.type.ParameterizedTypeImpl;
 
 public class TestExpressionWithTypesParser extends ParserTestCase {
 
 	// Test instanceof
 
-	/*public void testInstanceOf() {
-		tryToParse("a instanceof Toto", "toto--", BindingValue.class, null, false);
-	}*/
+	public void testInstanceOf() {
+		tryToParse("a instanceof Toto", "a instanceof Toto", JavaInstanceOfExpression.class, null, false);
+	}
+
+	public void testInstanceOfInteger() {
+		tryToParse("2 instanceof Integer", "true", JavaInstanceOfExpression.class, true, false);
+	}
+
+	public void testInstanceOfInteger2() {
+		tryToParse("2.2 instanceof Integer", "false", JavaInstanceOfExpression.class, false, false);
+	}
 
 	// Test new instance
 

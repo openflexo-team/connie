@@ -55,6 +55,7 @@ import org.openflexo.connie.java.expr.JavaConstant;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
 import org.openflexo.connie.java.expr.JavaConstant.CharConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
+import org.openflexo.connie.java.expr.JavaInstanceOfExpression;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.AAmpAmpConditionalAndExp;
@@ -523,7 +524,8 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAInstanceofRelationalExp(AInstanceofRelationalExp node) {
 		super.outAInstanceofRelationalExp(node);
-		// TODO
+		Type type = TypeAnalyzer.makeType(node.getType(), this);
+		registerExpressionNode(node, new JavaInstanceOfExpression(getExpression(node.getShiftExp()), type));
 	}
 
 	// shift_exp =
@@ -665,7 +667,6 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	public void outACastUnaryExpNotPlusMinus(ACastUnaryExpNotPlusMinus node) {
 		super.outACastUnaryExpNotPlusMinus(node);
 		Type type = TypeAnalyzer.makeType(node.getType(), this);
-		System.out.println("On trouve type=" + type);
 		registerExpressionNode(node, new JavaCastExpression(type, getExpression(node.getUnaryExp())));
 	}
 
