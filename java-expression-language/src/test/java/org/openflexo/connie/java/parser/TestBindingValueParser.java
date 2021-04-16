@@ -87,4 +87,16 @@ public class TestBindingValueParser extends ParserTestCase {
 		tryToParse("a.super.b(1)", "a.super.b(1)", BindingValue.class, null, false);
 	}
 
+	public void testAccentCharacter() {
+		tryToParse("flexoConcept.unité", "flexoConcept.unité", BindingValue.class, null, false);
+	}
+
+	/*public void testClassMethod1() {
+		tryToParse("Class.forName(\"Toto\")", "toto--", BindingValue.class, null, false);
+	}
+	
+	public void testClassMethod2() {
+		tryToParse("java.Class.forName(\"Toto\")", "toto--", BindingValue.class, null, false);
+	}*/
+
 }
