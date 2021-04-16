@@ -19,7 +19,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicConditional() {
-		tryToParse("a > b ? c : d", "((a > b) ? c : d)", JavaConditionalExpression.class, null, false);
+		tryToParse("a > b ? c : d", "(a > b ? c : d)", JavaConditionalExpression.class, null, false);
 	}
 
 	// Test comparison
@@ -29,7 +29,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicEq() {
-		tryToParse("a == b", "(a == b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a == b", "a == b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleNeq() {
@@ -37,7 +37,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicNeq() {
-		tryToParse("a != b", "(a != b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a != b", "a != b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleLt() {
@@ -45,7 +45,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicLt() {
-		tryToParse("a < b", "(a < b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a < b", "a < b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleGt() {
@@ -53,7 +53,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicGt() {
-		tryToParse("a > b", "(a > b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a > b", "a > b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleLtEq() {
@@ -61,7 +61,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicLtEq() {
-		tryToParse("a <= b", "(a <= b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a <= b", "a <= b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleGtEq() {
@@ -69,7 +69,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicGtEq() {
-		tryToParse("a >= b", "(a >= b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a >= b", "a >= b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleNumberAddition() {
@@ -77,7 +77,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicAddition() {
-		tryToParse("a+b", "(a + b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a+b", "a + b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSubstraction() {
@@ -85,7 +85,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicEquals() {
-		tryToParse("a==b", "(a == b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a==b", "a == b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleEquals() {
@@ -93,7 +93,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicShiftLeft() {
-		tryToParse("a<<b", "(a << b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a<<b", "a << b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleShiftLeft1() {
@@ -105,7 +105,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicShiftRight() {
-		tryToParse("a>>b", "(a >> b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a>>b", "a >> b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleShiftRight1() {
@@ -117,7 +117,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSymbolicUShiftRight() {
-		tryToParse("a>>>b", "(a >>> b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a>>>b", "a >>> b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleUShiftRight1() {
@@ -137,7 +137,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicMultiplication() {
-		tryToParse("a*b", "(a * b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a*b", "a * b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleIntegerDivision() {
@@ -149,7 +149,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicDivision() {
-		tryToParse("a/b", "(a / b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a/b", "a / b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleModDivision() {
@@ -157,43 +157,43 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicModDivision() {
-		tryToParse("a%b", "(a % b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a%b", "a % b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicPreIncrement() {
-		tryToParse("++a", "(++(a))", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("++a", "++a", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicPreIncrement2() {
-		tryToParse("++a.b", "(++(a.b))", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("++a.b", "++a.b", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicPreDecrement() {
-		tryToParse("--a", "(--(a))", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("--a", "--a", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicPreDecrement2() {
-		tryToParse("--a.b", "(--(a.b))", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("--a.b", "--a.b", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicPostIncrement() {
-		tryToParse("a++", "((a)++)", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("a++", "a++", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicPostIncrement2() {
-		tryToParse("a.b++", "((a.b)++)", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("a.b++", "a.b++", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicPostDecrement() {
-		tryToParse("a--", "((a)--)", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("a--", "a--", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicPostDecrement2() {
-		tryToParse("a.b--", "((a.b)--)", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("a.b--", "a.b--", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleSymbolicBitwiseComplement() {
-		tryToParse("~a", "(~(a))", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("~a", "~a", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleBitwiseComplement() {
@@ -201,7 +201,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicNot() {
-		tryToParse("!a", "(!(a))", JavaUnaryOperatorExpression.class, null, false);
+		tryToParse("!a", "!a", JavaUnaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleNot() {
@@ -209,7 +209,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicBitwiseAnd() {
-		tryToParse("a & b", "(a & b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a & b", "a & b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleBitwiseAnd() {
@@ -217,7 +217,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicBitwiseOr() {
-		tryToParse("a | b", "(a | b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a | b", "a | b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleBitwiseOr() {
@@ -225,7 +225,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicBitwiseXOr() {
-		tryToParse("a ^ b", "(a ^ b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a ^ b", "a ^ b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleBitwiseXOr() {
@@ -233,7 +233,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicOr() {
-		tryToParse("a || b", "(a || b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a || b", "a || b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleOr() {
@@ -241,7 +241,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testSimpleSymbolicAnd() {
-		tryToParse("a && b", "(a && b)", JavaBinaryOperatorExpression.class, null, false);
+		tryToParse("a && b", "a && b", JavaBinaryOperatorExpression.class, null, false);
 	}
 
 	public void testSimpleAnd() {
@@ -261,28 +261,28 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testExpression1() {
-		tryToParse("machin+1", "(machin + 1)", BinaryOperatorExpression.class, null, false);
+		tryToParse("machin+1", "machin + 1", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testExpression2() {
-		tryToParse("machin+1*6-8/7+bidule", "(((machin + 6) - 1.1428571428571428) + bidule)", BinaryOperatorExpression.class, null, false);
+		tryToParse("machin+1*6-8/7+bidule", "machin + 6 - 1.1428571428571428 + bidule", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testExpression3() {
-		tryToParse("7-x-(-x-6-8*2)", "((7 - x) - (((-(x)) - 6) - 16))", BinaryOperatorExpression.class, null, false);
+		tryToParse("7-x-(-x-6-8*2)", "7 - x - (-x - 6 - 16)", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testExpression4() {
-		tryToParse("1+function(test,4<7-x)", "(1 + function(test,(4 < (7 - x))))", BinaryOperatorExpression.class, null, false);
+		tryToParse("1+function(test,4<7-x)", "1 + function(test,4 < 7 - x)", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testEquality() {
-		Expression e = tryToParse("a==b", "(a == b)", BinaryOperatorExpression.class, null, false);
+		Expression e = tryToParse("a==b", "a == b", BinaryOperatorExpression.class, null, false);
 		assertEquals(JavaBooleanBinaryOperator.EQUALS, ((BinaryOperatorExpression) e).getOperator());
 	}
 
 	public void testEquality2() {
-		tryToParse("binding1.a.b == binding2.a.b*7", "(binding1.a.b == (binding2.a.b * 7))", BinaryOperatorExpression.class, null, false);
+		tryToParse("binding1.a.b == binding2.a.b*7", "binding1.a.b == binding2.a.b * 7", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testBoolean1() {
@@ -298,7 +298,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testBooleanExpression1() {
-		tryToParse("!a&&b", "((!(a)) && b)", BinaryOperatorExpression.class, null, false);
+		tryToParse("!a&&b", "!a && b", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testImbricatedCall() {
@@ -310,7 +310,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testComplexBooleanExpression() {
-		tryToParse("a && (c || d && (!f)) ||b", "((a && (c || (d && (!(f))))) || b)", BinaryOperatorExpression.class, null, false);
+		tryToParse("a && (c || d && (!f)) ||b", "a && (c || d && !f) || b", BinaryOperatorExpression.class, null, false);
 	}
 
 	public void testArithmeticNumberComparison1() {
@@ -353,20 +353,22 @@ public class TestExpressionParser extends ParserTestCase {
 		tryToParse(" test  \n\n", "test", BindingValue.class, null, false);
 	}
 
+	// Test conditionals
+
 	public void testConditional1() {
 		tryToParse("a?b:c", "(a ? b : c)", ConditionalExpression.class, null, false);
 	}
 
 	public void testConditional2() {
-		tryToParse("a > 9 ?true:false", "((a > 9) ? true : false)", ConditionalExpression.class, null, false);
+		tryToParse("a > 9 ?true:false", "(a > 9 ? true : false)", ConditionalExpression.class, null, false);
 	}
 
 	public void testConditional3() {
-		tryToParse("a+1 > 10-7 ?8+4:5", "(((a + 1) > 3) ? 12 : 5)", ConditionalExpression.class, null, false);
+		tryToParse("a+1 > 10-7 ?8+4:5", "(a + 1 > 3 ? 12 : 5)", ConditionalExpression.class, null, false);
 	}
 
 	public void testConditional4() {
-		tryToParse("a+1 > (a?1:2) ?8+4:5", "(((a + 1) > (a ? 1 : 2)) ? 12 : 5)", ConditionalExpression.class, null, false);
+		tryToParse("a+1 > (a?1:2) ?8+4:5", "(a + 1 > ((a ? 1 : 2)) ? 12 : 5)", ConditionalExpression.class, null, false);
 	}
 
 	public void testConditional5() {
@@ -379,6 +381,12 @@ public class TestExpressionParser extends ParserTestCase {
 
 	public void testInvalidConditional() {
 		tryToParse("2 > 3 ? 3", "", ConditionalExpression.class, null, true);
+	}
+
+	// Tests associativity
+
+	public void testAssociativity() {
+		tryToParse("a+b*c", "a + b * c", BinaryOperatorExpression.class, null, false);
 	}
 
 	// Test instanceof

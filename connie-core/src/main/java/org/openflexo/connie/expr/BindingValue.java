@@ -123,6 +123,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return prettyPrinter;
 	}
 
+	@Override
+	public int getPriority() {
+		return -1;
+	}
+
 	public void delete() {
 		clearBindingPathAndBindingVariable();
 	}

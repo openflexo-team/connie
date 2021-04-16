@@ -56,7 +56,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 	public static final JavaBooleanBinaryOperator AND = new LogicalBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 6;
+			return 12;
 		}
 
 		@Override
@@ -107,7 +107,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 	public static final JavaBooleanBinaryOperator OR = new LogicalBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 7;
+			return 13;
 		}
 
 		@Override
@@ -158,7 +158,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 	public static final JavaBooleanBinaryOperator EQUALS = new ComparisonBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 8;
 		}
 
 		@Override
@@ -242,7 +242,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 	public static final JavaBooleanBinaryOperator NOT_EQUALS = new ComparisonBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 8;
 		}
 
 		@Override
@@ -275,7 +275,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 	public static final JavaBooleanBinaryOperator LESS_THAN = new ComparisonBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 7;
 		}
 
 		@Override
@@ -305,7 +305,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 	public static final JavaBooleanBinaryOperator LESS_THAN_OR_EQUALS = new ComparisonBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 7;
 		}
 
 		@Override
@@ -331,7 +331,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 	public static final JavaBooleanBinaryOperator GREATER_THAN = new ComparisonBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 7;
 		}
 
 		@Override
@@ -359,7 +359,7 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 	public static final JavaBooleanBinaryOperator GREATER_THAN_OR_EQUALS = new ComparisonBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 7;
 		}
 
 		@Override

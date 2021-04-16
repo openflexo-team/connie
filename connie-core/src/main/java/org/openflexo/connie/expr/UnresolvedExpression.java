@@ -62,6 +62,11 @@ public abstract class UnresolvedExpression extends Expression {
 	}
 
 	@Override
+	public int getPriority() {
+		return -1;
+	}
+
+	@Override
 	public int getDepth() {
 		return 0;
 	}

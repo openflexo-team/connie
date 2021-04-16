@@ -164,15 +164,22 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 
 	@Override
 	protected String makeStringRepresentation(UnaryOperatorExpression expression) {
+
+		int currentPriority = expression.getPriority();
+		int argPriority = expression.getArgument().getPriority();
+		boolean parenthesisRequired = argPriority > currentPriority;
+
 		if (expression.getOperator() instanceof PostSettableUnaryOperator) {
 			try {
-				return "(" + "(" + getStringRepresentation(expression.getArgument()) + ")" + getSymbol(expression.getOperator()) + ")";
+				return (parenthesisRequired ? "(" : "") + getStringRepresentation(expression.getArgument())
+						+ (parenthesisRequired ? ")" : "") + getSymbol(expression.getOperator());
 			} catch (OperatorNotSupportedException e) {
 				return "<unsupported>";
 			}
 		}
 		try {
-			return "(" + getSymbol(expression.getOperator()) + "(" + getStringRepresentation(expression.getArgument()) + ")" + ")";
+			return getSymbol(expression.getOperator()) + (parenthesisRequired ? "(" : "")
+					+ getStringRepresentation(expression.getArgument()) + (parenthesisRequired ? ")" : "");
 		} catch (OperatorNotSupportedException e) {
 			return "<unsupported>";
 		}
@@ -180,9 +187,21 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 
 	@Override
 	protected String makeStringRepresentation(BinaryOperatorExpression expression) {
+
+		// System.out.println(
+		// "----> Prettyprint " + expression.getClass().getSimpleName() + " priority " + expression.getOperator().getPriority());
+
 		try {
-			return "(" + getStringRepresentation(expression.getLeftArgument()) + " " + getSymbol(expression.getOperator()) + " "
-					+ getStringRepresentation(expression.getRightArgument()) + ")";
+			int currentPriority = expression.getPriority();
+			int leftPriority = expression.getLeftArgument().getPriority();
+			int rightPriority = expression.getRightArgument().getPriority();
+			boolean parenthesisLeftRequired = leftPriority > currentPriority;
+			boolean parenthesisRightRequired = rightPriority >= currentPriority;
+
+			return (parenthesisLeftRequired ? "(" : "") + getStringRepresentation(expression.getLeftArgument())
+					+ (parenthesisLeftRequired ? ")" : "") + " " + getSymbol(expression.getOperator()) + " "
+					+ (parenthesisRightRequired ? "(" : "") + getStringRepresentation(expression.getRightArgument())
+					+ (parenthesisRightRequired ? ")" : "");
 		} catch (OperatorNotSupportedException e) {
 			return "<unsupported>";
 		}

@@ -102,6 +102,8 @@ public abstract class Expression {
 		}
 	}
 
+	public abstract int getPriority();
+
 	public abstract int getDepth();
 
 	@Override

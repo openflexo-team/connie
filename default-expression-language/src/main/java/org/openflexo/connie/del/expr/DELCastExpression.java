@@ -58,6 +58,11 @@ public class DELCastExpression extends CastExpression {
 	}
 
 	@Override
+	public int getPriority() {
+		return 2;
+	}
+
+	@Override
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 
 		Expression expression = this;

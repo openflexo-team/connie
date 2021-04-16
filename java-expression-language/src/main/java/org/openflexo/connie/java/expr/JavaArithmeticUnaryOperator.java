@@ -150,7 +150,7 @@ public abstract class JavaArithmeticUnaryOperator extends JavaUnaryOperator {
 	public static final JavaArithmeticUnaryOperator BITWISE_COMPLEMENT = new JavaArithmeticUnaryOperator() {
 		@Override
 		public int getPriority() {
-			return 3;
+			return 2;
 		}
 
 		@Override
@@ -222,7 +222,7 @@ public abstract class JavaArithmeticUnaryOperator extends JavaUnaryOperator {
 
 		@Override
 		public int getPriority() {
-			return 3;
+			return 1;
 		}
 
 	}

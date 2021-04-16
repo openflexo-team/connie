@@ -65,6 +65,7 @@ public abstract class BinaryOperatorExpression extends Expression {
 		return Math.max(left, right) + 1;
 	}
 
+	@Override
 	public int getPriority() {
 		if (operator != null) {
 			return operator.getPriority();

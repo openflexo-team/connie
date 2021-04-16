@@ -65,6 +65,11 @@ public abstract class Constant<V> extends Expression {
 	}
 
 	@Override
+	public int getPriority() {
+		return -1;
+	}
+
+	@Override
 	public int getDepth() { // NOPMD by beugnard on 31/10/14 00:05
 		return 0;
 	}

@@ -60,7 +60,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator ADDITION = new JavaArithmeticBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 3;
+			return 5;
 		}
 
 		@Override
@@ -166,7 +166,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator SUBSTRACTION = new JavaArithmeticBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 3;
+			return 5;
 		}
 
 		@Override
@@ -236,7 +236,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator MULTIPLICATION = new JavaArithmeticBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 2;
+			return 4;
 		}
 
 		@Override
@@ -281,7 +281,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator DIVISION = new JavaArithmeticBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 2;
+			return 4;
 		}
 
 		@Override
@@ -318,7 +318,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator MOD = new JavaArithmeticBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 2;
+			return 4;
 		}
 
 		@Override
@@ -367,7 +367,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator SHIFT_LEFT = new BitwiseBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 6;
 		}
 
 		@Override
@@ -402,7 +402,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator SHIFT_RIGHT = new BitwiseBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 6;
 		}
 
 		@Override
@@ -437,7 +437,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator SHIFT_RIGHT_2 = new BitwiseBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 6;
 		}
 
 		@Override
@@ -472,7 +472,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator BITWISE_AND = new BitwiseBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 9;
 		}
 
 		@Override
@@ -507,7 +507,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator BITWISE_OR = new BitwiseBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 11;
 		}
 
 		@Override
@@ -542,7 +542,7 @@ public abstract class JavaArithmeticBinaryOperator extends JavaBinaryOperator {
 	public static final JavaArithmeticBinaryOperator BITWISE_XOR = new BitwiseBinaryOperator() {
 		@Override
 		public int getPriority() {
-			return 5;
+			return 10;
 		}
 
 		@Override

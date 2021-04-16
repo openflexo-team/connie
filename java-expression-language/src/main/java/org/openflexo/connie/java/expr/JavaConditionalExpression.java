@@ -58,6 +58,11 @@ public class JavaConditionalExpression extends ConditionalExpression {
 	}
 
 	@Override
+	public int getPriority() {
+		return 14;
+	}
+
+	@Override
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 
 		Expression expression = this;

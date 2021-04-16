@@ -39,44 +39,40 @@
 
 package org.openflexo.connie.java.expr;
 
-import org.openflexo.connie.exception.NullReferenceException;
-import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.EvaluationType;
-import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
-import org.openflexo.connie.java.expr.JavaConstant.ObjectSymbolicConstant;
+import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.expr.CastExpression;
+import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.expr.ExpressionPrettyPrinter;
+import org.openflexo.connie.expr.ExpressionTransformer;
+import org.openflexo.connie.expr.TypeReference;
 
-public abstract class JavaBooleanUnaryOperator extends JavaUnaryOperator {
+public class JavaCastExpression extends CastExpression {
 
-	public static final JavaBooleanUnaryOperator NOT = new JavaBooleanUnaryOperator() {
-		@Override
-		public int getPriority() {
-			return 2;
+	public JavaCastExpression(TypeReference castType, Expression argument) {
+		super(castType, argument);
+	}
+
+	@Override
+	public ExpressionPrettyPrinter getPrettyPrinter() {
+		return JavaPrettyPrinter.getInstance();
+	}
+
+	@Override
+	public int getPriority() {
+		return 2;
+	}
+
+	@Override
+	public Expression transform(ExpressionTransformer transformer) throws TransformException {
+
+		Expression expression = this;
+		Expression transformedArgument = getArgument().transform(transformer);
+
+		if (!transformedArgument.equals(getArgument())) {
+			expression = new JavaCastExpression(getCastType(), transformedArgument);
 		}
 
-		@Override
-		public Constant<?> evaluate(Constant<?> arg) throws TypeMismatchException, NullReferenceException {
-			if (arg instanceof BooleanConstant) {
-				return BooleanConstant.get(!((BooleanConstant) arg).getValue());
-			}
-			if (arg == ObjectSymbolicConstant.NULL) {
-				throw new NullReferenceException(this);
-			}
-			throw new TypeMismatchException(this, arg.getEvaluationType(), EvaluationType.BOOLEAN);
-		}
-
-		@Override
-		public String getName() {
-			return "logical_not";
-		}
-
-		@Override
-		public EvaluationType getEvaluationType(EvaluationType operandType) throws TypeMismatchException {
-			if (operandType.isBooleanOrLiteral()) {
-				return EvaluationType.BOOLEAN;
-			}
-			throw new TypeMismatchException(this, operandType, EvaluationType.BOOLEAN, EvaluationType.LITERAL);
-		}
-	};
+		return transformer.performTransformation(expression);
+	}
 
 }

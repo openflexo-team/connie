@@ -58,6 +58,11 @@ public class DELConditionalExpression extends ConditionalExpression {
 	}
 
 	@Override
+	public int getPriority() {
+		return 10;
+	}
+
+	@Override
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 
 		Expression expression = this;

@@ -50,7 +50,7 @@ public class TestBindingValueParser extends ParserTestCase {
 	}
 
 	public void testExpressionWithBindings() {
-		tryToParse("a.b.c.method1(1).method2(2)+c.d.e", "(a.b.c.method1(1).method2(2) + c.d.e)", JavaBinaryOperatorExpression.class, null,
+		tryToParse("a.b.c.method1(1).method2(2)+c.d.e", "a.b.c.method1(1).method2(2) + c.d.e", JavaBinaryOperatorExpression.class, null,
 				false);
 	}
 
