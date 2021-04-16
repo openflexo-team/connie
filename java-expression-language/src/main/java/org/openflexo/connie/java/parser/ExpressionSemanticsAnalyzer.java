@@ -85,10 +85,14 @@ import org.openflexo.connie.java.parser.node.APercentMultExp;
 import org.openflexo.connie.java.parser.node.APlusAddExp;
 import org.openflexo.connie.java.parser.node.APlusUnaryExp;
 import org.openflexo.connie.java.parser.node.APostDecrExp;
+import org.openflexo.connie.java.parser.node.APostDecrementPostfixExp;
 import org.openflexo.connie.java.parser.node.APostIncrExp;
+import org.openflexo.connie.java.parser.node.APostIncrementPostfixExp;
 import org.openflexo.connie.java.parser.node.APostfixUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.APreDecrExp;
+import org.openflexo.connie.java.parser.node.APreDecrementUnaryExp;
 import org.openflexo.connie.java.parser.node.APreIncrExp;
+import org.openflexo.connie.java.parser.node.APreIncrementUnaryExp;
 import org.openflexo.connie.java.parser.node.APrimaryNoIdPrimary;
 import org.openflexo.connie.java.parser.node.APrimaryPostfixExp;
 import org.openflexo.connie.java.parser.node.AQmarkConditionalExp;
@@ -205,6 +209,18 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 				}
 				if (n instanceof AExpressionPrimaryNoId) {
 					return getExpression(((AExpressionPrimaryNoId) n).getExpression());
+				}
+				if (n instanceof APreIncrementUnaryExp) {
+					return getExpression(((APreIncrementUnaryExp) n).getPreIncrExp());
+				}
+				if (n instanceof APreDecrementUnaryExp) {
+					return getExpression(((APreDecrementUnaryExp) n).getPreDecrExp());
+				}
+				if (n instanceof APostIncrementPostfixExp) {
+					return getExpression(((APostIncrementPostfixExp) n).getPostIncrExp());
+				}
+				if (n instanceof APostDecrementPostfixExp) {
+					return getExpression(((APostDecrementPostfixExp) n).getPostDecrExp());
 				}
 
 				System.out.println("No expression registered for " + n + " of  " + n.getClass());
