@@ -1,8 +1,11 @@
 package org.openflexo.connie.java.parser;
 
+import java.util.List;
+
 import org.openflexo.connie.expr.BinaryOperatorExpression;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.java.expr.JavaCastExpression;
+import org.openflexo.connie.type.ParameterizedTypeImpl;
 
 public class TestExpressionWithTypesParser extends ParserTestCase {
 
@@ -77,7 +80,12 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 	}
 
 	public void testCast5() {
-		tryToParse("(List<Tutu>)toto", "(List<Tutu>)toto", CastExpression.class, null, false);
+		CastExpression e = (CastExpression) tryToParse("(List<Tutu>)toto", "(List<Tutu>)toto", CastExpression.class, null, false);
+		assertEquals(((ParameterizedTypeImpl) e.getCastType()).getRawType(), List.class);
+	}
+
+	public void testCast6() {
+		tryToParse("(Foo<Tutu>)toto", "(Foo<Tutu>)toto", CastExpression.class, null, false);
 	}
 
 	public void testParameteredCast() {

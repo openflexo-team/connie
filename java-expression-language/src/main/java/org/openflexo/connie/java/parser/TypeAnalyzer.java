@@ -277,11 +277,19 @@ class TypeAnalyzer extends DepthFirstAdapter {
 		registerTypeNode(node, WildcardTypeImpl.makeLowerBoundWilcard(lowerBound));
 	}
 
-	private Type makeType(String fullQualifiedName) {
+	private Type makeType(String typeName) {
 		try {
-			return Class.forName(fullQualifiedName);
-		} catch (ClassNotFoundException e) {
-			return new UnresolvedType(fullQualifiedName);
+			return Class.forName(typeName);
+		} catch (ClassNotFoundException e1) {
+			try {
+				return Class.forName("java.lang." + typeName);
+			} catch (ClassNotFoundException e2) {
+				try {
+					return Class.forName("java.util." + typeName);
+				} catch (ClassNotFoundException e3) {
+					return new UnresolvedType(typeName);
+				}
+			}
 		}
 	}
 
