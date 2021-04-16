@@ -55,6 +55,11 @@ import org.openflexo.connie.java.expr.JavaConstant.CharConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
+import org.openflexo.connie.java.parser.node.AAmpAmpConditionalAndExp;
+import org.openflexo.connie.java.parser.node.AAmpAndExp;
+import org.openflexo.connie.java.parser.node.ABarBarConditionalOrExp;
+import org.openflexo.connie.java.parser.node.ABarInclusiveOrExp;
+import org.openflexo.connie.java.parser.node.ACaretExclusiveOrExp;
 import org.openflexo.connie.java.parser.node.ACastUnaryExpNotPlusMinus;
 import org.openflexo.connie.java.parser.node.ACharacterLiteral;
 import org.openflexo.connie.java.parser.node.AConditionalExpression;
@@ -378,6 +383,66 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		super.outAQmarkConditionalExp(node);
 		registerExpressionNode(node, new JavaConditionalExpression(getExpression(node.getConditionalOrExp()),
 				getExpression(node.getExpression()), getExpression(node.getConditionalExp())));
+	}
+
+	// conditional_or_exp =
+	// {simple} conditional_and_exp
+	// | {bar_bar} conditional_or_exp bar_bar conditional_and_exp
+	// ;
+
+	@Override
+	public void outABarBarConditionalOrExp(ABarBarConditionalOrExp node) {
+		super.outABarBarConditionalOrExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaBooleanBinaryOperator.OR,
+				getExpression(node.getConditionalOrExp()), getExpression(node.getConditionalAndExp())));
+	}
+
+	// conditional_and_exp =
+	// {simple} inclusive_or_exp
+	// | {amp_amp} conditional_and_exp amp_amp inclusive_or_exp
+	// ;
+
+	@Override
+	public void outAAmpAmpConditionalAndExp(AAmpAmpConditionalAndExp node) {
+		super.outAAmpAmpConditionalAndExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaBooleanBinaryOperator.AND,
+				getExpression(node.getConditionalAndExp()), getExpression(node.getInclusiveOrExp())));
+	}
+
+	// inclusive_or_exp =
+	// {simple} exclusive_or_exp
+	// | {bar} inclusive_or_exp bar exclusive_or_exp
+	// ;
+
+	@Override
+	public void outABarInclusiveOrExp(ABarInclusiveOrExp node) {
+		super.outABarInclusiveOrExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.BITWISE_OR,
+				getExpression(node.getInclusiveOrExp()), getExpression(node.getExclusiveOrExp())));
+	}
+
+	// exclusive_or_exp =
+	// {simple} and_exp
+	// | {caret} exclusive_or_exp caret and_exp
+	// ;
+
+	@Override
+	public void outACaretExclusiveOrExp(ACaretExclusiveOrExp node) {
+		super.outACaretExclusiveOrExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.BITWISE_XOR,
+				getExpression(node.getExclusiveOrExp()), getExpression(node.getAndExp())));
+	}
+
+	// and_exp =
+	// {simple} equality_exp
+	// | {amp} and_exp amp equality_exp
+	// ;
+
+	@Override
+	public void outAAmpAndExp(AAmpAndExp node) {
+		super.outAAmpAndExp(node);
+		registerExpressionNode(node, new JavaBinaryOperatorExpression(JavaArithmeticBinaryOperator.BITWISE_AND,
+				getExpression(node.getAndExp()), getExpression(node.getEqualityExp())));
 	}
 
 	// equality_exp =

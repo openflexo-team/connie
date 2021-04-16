@@ -1,14 +1,7 @@
 package org.openflexo.connie.java.parser;
 
-import org.openflexo.connie.expr.BinaryOperatorExpression;
-import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.CastExpression;
-import org.openflexo.connie.expr.ConditionalExpression;
-import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
-import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
 import org.openflexo.connie.java.expr.JavaConditionalExpression;
-import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 
 public class TestExpressionParser extends ParserTestCase {
@@ -209,219 +202,259 @@ public class TestExpressionParser extends ParserTestCase {
 		tryToParse("!true", "false", JavaUnaryOperatorExpression.class, false, false);
 	}
 
-	public void testNumericValue8() {
-		tryToParse("1+(2*7-9)", "6", BinaryOperatorExpression.class, 6, false);
+	public void testSimpleSymbolicBitwiseAnd() {
+		tryToParse("a & b", "(a & b)", JavaBinaryOperatorExpression.class, null, false);
 	}
 
+	public void testSimpleBitwiseAnd() {
+		tryToParse("255 & 13", "13", JavaBinaryOperatorExpression.class, 255 & 13, false);
+	}
+
+	public void testSimpleSymbolicBitwiseOr() {
+		tryToParse("a | b", "(a | b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleBitwiseOr() {
+		tryToParse("128 | 15", "143", JavaBinaryOperatorExpression.class, 128 | 15, false);
+	}
+
+	public void testSimpleSymbolicBitwiseXOr() {
+		tryToParse("a ^ b", "(a ^ b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleBitwiseXOr() {
+		tryToParse("8 ^ 15", "7", JavaBinaryOperatorExpression.class, 8 ^ 15, false);
+	}
+
+	public void testSimpleSymbolicOr() {
+		tryToParse("a || b", "(a || b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleOr() {
+		tryToParse("(1<2)||(2<1)", "true", JavaBinaryOperatorExpression.class, true, false);
+	}
+
+	public void testSimpleSymbolicAnd() {
+		tryToParse("a && b", "(a && b)", JavaBinaryOperatorExpression.class, null, false);
+	}
+
+	public void testSimpleAnd() {
+		tryToParse("(1<2)&&(2<1)", "false", JavaBinaryOperatorExpression.class, false, false);
+	}
+
+	/*public void testNumericValue8() {
+		tryToParse("1+(2*7-9)", "6", BinaryOperatorExpression.class, 6, false);
+	}
+	
 	public void testNumericValue9() {
 		tryToParse("1+((298*7.1e-3)-9)", "-5.8842", BinaryOperatorExpression.class, -5.8842, false);
 	}
-
+	
 	public void testStringExpression() {
 		tryToParse("\"foo1\"+\"foo2\"", "\"foo1foo2\"", BinaryOperatorExpression.class, "foo1foo2", false);
 	}
-
+	
 	public void testExpression1() {
 		tryToParse("machin+1", "(machin + 1)", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testExpression2() {
 		tryToParse("machin+1*6-8/7+bidule", "(((machin + 6) - 1.1428571428571428) + bidule)", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testExpression3() {
 		tryToParse("7-x-(-x-6-8*2)", "((7 - x) - (((-(x)) - 6) - 16))", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testExpression4() {
 		tryToParse("1+function(test,4<7-x)", "(1 + function(test,(4 < (7 - x))))", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testEquality() {
 		Expression e = tryToParse("a==b", "(a = b)", BinaryOperatorExpression.class, null, false);
 		assertEquals(JavaBooleanBinaryOperator.EQUALS, ((BinaryOperatorExpression) e).getOperator());
 	}
-
+	
 	public void testEquality2() {
 		tryToParse("binding1.a.b == binding2.a.b*7", "(binding1.a.b = (binding2.a.b * 7))", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testOr1() {
 		Expression e = tryToParse("a|b", "(a | b)", BinaryOperatorExpression.class, null, false);
 		assertEquals(JavaBooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
 	}
-
+	
 	public void testOr2() {
 		Expression e = tryToParse("a||b", "(a | b)", BinaryOperatorExpression.class, null, false);
 		assertEquals(JavaBooleanBinaryOperator.OR, ((BinaryOperatorExpression) e).getOperator());
 	}
-
+	
 	public void testAnd1() {
 		Expression e = tryToParse("a&b", "(a & b)", BinaryOperatorExpression.class, null, false);
 		assertEquals(JavaBooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
 	}
-
+	
 	public void testAnd2() {
 		Expression e = tryToParse("a&&b", "(a & b)", BinaryOperatorExpression.class, null, false);
 		assertEquals(JavaBooleanBinaryOperator.AND, ((BinaryOperatorExpression) e).getOperator());
 	}
-
+	
 	public void testBoolean1() {
 		tryToParse("false", "false", BooleanConstant.FALSE.getClass(), false, false);
 	}
-
+	
 	public void testBoolean2() {
 		tryToParse("true", "true", BooleanConstant.TRUE.getClass(), true, false);
 	}
-
+	
 	public void testBoolean3() {
 		tryToParse("false && true", "false", BinaryOperatorExpression.class, false, false);
 	}
-
+	
 	public void testBooleanExpression1() {
 		tryToParse("!a&&b", "((!(a)) & b)", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testComplexCall() {
 		tryToParse("testFunction(-pi/2,7.8,1-9*7/9,aVariable,foo1+foo2,e)",
 				"testFunction(-1.5707963267948966,7.8,-6.0,aVariable,(foo1 + foo2),e)", BindingValue.class, null, false);
 	}
-
+	
 	public void testImbricatedCall() {
 		tryToParse("function1(function2(8+1,9,10-1))", "function1(function2(9,9,9))", BindingValue.class, null, false);
 	}
-
+	
 	public void testEmptyCall() {
 		tryToParse("function1()", "function1()", BindingValue.class, null, false);
 	}
-
+	
 	public void testComplexBooleanExpression() {
 		tryToParse("a && (c || d && (!f)) ||b", "((a & (c | (d & (!(f))))) | b)", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testArithmeticNumberComparison1() {
 		tryToParse("1 < 2", "true", BinaryOperatorExpression.class, true, false);
 	}
-
+	
 	public void testArithmeticNumberComparison2() {
 		tryToParse("0.1109 < 1.1108E-03", "false", BinaryOperatorExpression.class, false, false);
 	}
-
+	
 	public void testStringConcatenation() {
 		tryToParse("\"a + ( 2 + b )\"+2", "\"a + ( 2 + b )2\"", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testParsingError1() {
 		tryToParse("a\"b", "", null, null, true);
 	}
-
+	
 	public void testParsingError2() {
 		tryToParse("a'b", "", null, null, true);
 	}
-
+	
 	public void testParsingError3() {
 		tryToParse("\"", "", null, null, true);
 	}
-
+	
 	public void testParsingError4() {
 		tryToParse("test23 ( fdfd + 1", "", null, null, true);
 	}
-
+	
 	public void testParsingError5() {
 		tryToParse("test24 [ fdfd + 1", "", null, null, true);
 	}
-
+	
 	public void testParsingError6() {
 		tryToParse("obj..f()", "", null, null, true);
 	}
-
+	
 	public void testIgnoredChars() {
 		tryToParse(" test  \n\n", "test", BindingValue.class, null, false);
 	}
-
+	
 	public void testConditional1() {
 		tryToParse("a?b:c", "(a ? b : c)", ConditionalExpression.class, null, false);
 	}
-
+	
 	public void testConditional2() {
 		tryToParse("a > 9 ?true:false", "((a > 9) ? true : false)", ConditionalExpression.class, null, false);
 	}
-
+	
 	public void testConditional3() {
 		tryToParse("a+1 > 10-7 ?8+4:5", "(((a + 1) > 3) ? 12 : 5)", ConditionalExpression.class, null, false);
 	}
-
+	
 	public void testConditional4() {
 		tryToParse("a+1 > (a?1:2) ?8+4:5", "(((a + 1) > (a ? 1 : 2)) ? 12 : 5)", ConditionalExpression.class, null, false);
 	}
-
+	
 	public void testConditional5() {
 		tryToParse("2 < 3 ? 4:2", "4", ConditionalExpression.class, 4, false);
 	}
-
+	
 	public void testConditional6() {
 		tryToParse("2 > 3 ? 4:2", "2", ConditionalExpression.class, 2, false);
 	}
-
+	
 	public void testInvalidConditional() {
 		tryToParse("2 > 3 ? 3", "", ConditionalExpression.class, null, true);
 	}
-
+	
 	public void testCast() {
 		tryToParse("(AType)2", "", CastExpression.class, null, true);
 	}
-
+	
 	public void testCast2() {
 		tryToParse("(java.lang.Integer)2", "(java.lang.Integer)2", CastExpression.class, null, false);
 	}
-
+	
 	public void testCast3() {
 		tryToParse("(int)2+((float)2+(double)2)", "(int)2+((float)2+(double)2)", BinaryOperatorExpression.class, null, false);
 	}
-
+	
 	public void testCast4() {
 		tryToParse("(List<Tutu>)toto", "toto--", BindingValue.class, null, false);
 	}
-
+	
 	public void testParameteredCast() {
 		tryToParse("(java.util.List<String>)data.list", "(java.util.List<java.lang.String>)data.list", CastExpression.class, null, false);
 	}
-
+	
 	public void testParameteredCast2() {
 		tryToParse("(java.util.Hashtable<java.lang.String,java.util.List<java.lang.String>>)data.map",
 				"(java.util.Hashtable<java.lang.String,java.util.List<java.lang.String>>)data.map", CastExpression.class, null, false);
 	}
-
+	
 	public void testAccentCharacter() {
 		tryToParse("flexoConcept.unité", "flexoConcept.unité", BindingValue.class, null, false);
 	}
-
+	
 	public void testPostInc() {
 		tryToParse("toto++", "toto++", BindingValue.class, null, false);
 	}
-
+	
 	public void testPostDec() {
 		tryToParse("toto--", "toto--", BindingValue.class, null, false);
 	}
-
+	
 	public void testInstanceOf() {
 		tryToParse("a instanceof Toto", "toto--", BindingValue.class, null, false);
 	}
-
+	
 	public void testNewInstance() {
 		tryToParse("new List()", "toto--", BindingValue.class, null, false);
 	}
-
+	
 	public void testNewInstance2() {
 		tryToParse("(Map)(new java.util.HashTable(1,2))", "toto--", BindingValue.class, null, false);
 	}
-
+	
 	public void testClassMethod1() {
 		tryToParse("Class.forName(\"Toto\")", "toto--", BindingValue.class, null, false);
 	}
-
+	
 	public void testClassMethod2() {
 		tryToParse("java.Class.forName(\"Toto\")", "toto--", BindingValue.class, null, false);
 	}
-
+	*/
 }

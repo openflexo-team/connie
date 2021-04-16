@@ -63,10 +63,13 @@ public class JavaGrammar implements ExpressionGrammar {
 			JavaBooleanBinaryOperator.GREATER_THAN_OR_EQUALS, JavaArithmeticBinaryOperator.ADDITION,
 			JavaArithmeticBinaryOperator.SUBSTRACTION, JavaArithmeticBinaryOperator.MULTIPLICATION, JavaArithmeticBinaryOperator.DIVISION,
 			JavaArithmeticBinaryOperator.MOD, JavaArithmeticBinaryOperator.SHIFT_LEFT, JavaArithmeticBinaryOperator.SHIFT_RIGHT,
-			JavaArithmeticBinaryOperator.SHIFT_RIGHT_2 };
+			JavaArithmeticBinaryOperator.SHIFT_RIGHT_2, JavaArithmeticBinaryOperator.BITWISE_AND, JavaArithmeticBinaryOperator.BITWISE_OR,
+			JavaArithmeticBinaryOperator.BITWISE_XOR };
 
 	private static final UnaryOperator[] ALL_SUPPORTED_UNARY_OPERATORS = { JavaBooleanUnaryOperator.NOT,
-			JavaArithmeticUnaryOperator.UNARY_PLUS, JavaArithmeticUnaryOperator.UNARY_MINUS, JavaArithmeticUnaryOperator.PRE_INCREMENT };
+			JavaArithmeticUnaryOperator.UNARY_PLUS, JavaArithmeticUnaryOperator.UNARY_MINUS, JavaArithmeticUnaryOperator.PRE_INCREMENT,
+			JavaArithmeticUnaryOperator.PRE_DECREMENT, JavaArithmeticUnaryOperator.POST_INCREMENT,
+			JavaArithmeticUnaryOperator.POST_DECREMENT, JavaArithmeticUnaryOperator.BITWISE_COMPLEMENT };
 
 	@Override
 	public BinaryOperator[] getAllSupportedBinaryOperators() {
@@ -96,6 +99,9 @@ public class JavaGrammar implements ExpressionGrammar {
 		}
 		if (operator == JavaArithmeticUnaryOperator.POST_DECREMENT) {
 			return "--";
+		}
+		if (operator == JavaArithmeticUnaryOperator.BITWISE_COMPLEMENT) {
+			return "~";
 		}
 		throw new OperatorNotSupportedException();
 	}
@@ -148,6 +154,15 @@ public class JavaGrammar implements ExpressionGrammar {
 		}
 		if (operator == JavaArithmeticBinaryOperator.SHIFT_RIGHT_2) {
 			return ">>>";
+		}
+		if (operator == JavaArithmeticBinaryOperator.BITWISE_AND) {
+			return "&";
+		}
+		if (operator == JavaArithmeticBinaryOperator.BITWISE_OR) {
+			return "|";
+		}
+		if (operator == JavaArithmeticBinaryOperator.BITWISE_XOR) {
+			return "^";
 		}
 		throw new OperatorNotSupportedException();
 	}
