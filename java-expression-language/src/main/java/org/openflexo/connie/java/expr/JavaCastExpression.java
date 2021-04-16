@@ -39,16 +39,17 @@
 
 package org.openflexo.connie.java.expr;
 
+import java.lang.reflect.Type;
+
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionPrettyPrinter;
 import org.openflexo.connie.expr.ExpressionTransformer;
-import org.openflexo.connie.expr.TypeReference;
 
 public class JavaCastExpression extends CastExpression {
 
-	public JavaCastExpression(TypeReference castType, Expression argument) {
+	public JavaCastExpression(Type castType, Expression argument) {
 		super(castType, argument);
 	}
 

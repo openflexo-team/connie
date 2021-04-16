@@ -39,6 +39,8 @@
 
 package org.openflexo.connie.java.expr;
 
+import java.lang.reflect.Type;
+
 import org.openflexo.connie.expr.BinaryOperatorExpression;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.CastExpression;
@@ -47,7 +49,6 @@ import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.ExpressionGrammar;
 import org.openflexo.connie.expr.ExpressionPrettyPrinter;
 import org.openflexo.connie.expr.OperatorNotSupportedException;
-import org.openflexo.connie.expr.TypeReference;
 import org.openflexo.connie.expr.UnaryOperatorExpression;
 import org.openflexo.connie.java.JavaGrammar;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
@@ -62,6 +63,7 @@ import org.openflexo.connie.java.expr.JavaConstant.ObjectConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ShortConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperator.PostSettableUnaryOperator;
+import org.openflexo.connie.type.TypeUtils;
 
 public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 
@@ -232,8 +234,8 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected String makeStringRepresentation(TypeReference tr) {
-		StringBuffer sb = new StringBuffer();
+	protected String makeStringRepresentation(Type type) {
+		/*StringBuffer sb = new StringBuffer();
 		sb.append("$" + tr.getBaseType());
 		if (tr.getParameters().size() > 0) {
 			sb.append("<");
@@ -244,6 +246,8 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 			}
 			sb.append(">");
 		}
-		return sb.toString();
+		return sb.toString();*/
+
+		return TypeUtils.simpleRepresentation(type);
 	}
 }

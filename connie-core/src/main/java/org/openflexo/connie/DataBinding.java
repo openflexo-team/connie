@@ -383,7 +383,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				return ((BindingValue) getExpression()).getAccessedType();
 			}
 			else if (getExpression() instanceof CastExpression) {
-				return ((CastExpression) getExpression()).getCastType().getType();
+				return ((CastExpression) getExpression()).getCastType();
 			}
 			else if (getExpression() instanceof Constant) {
 				return ((Constant<?>) getExpression()).getType();

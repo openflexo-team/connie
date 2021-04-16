@@ -39,6 +39,8 @@
 
 package org.openflexo.connie.del.expr;
 
+import java.lang.reflect.Type;
+
 import org.openflexo.connie.del.DELGrammar;
 import org.openflexo.connie.del.expr.DELConstant.BooleanConstant;
 import org.openflexo.connie.del.expr.DELConstant.DateConstant;
@@ -56,8 +58,8 @@ import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.ExpressionGrammar;
 import org.openflexo.connie.expr.ExpressionPrettyPrinter;
 import org.openflexo.connie.expr.OperatorNotSupportedException;
-import org.openflexo.connie.expr.TypeReference;
 import org.openflexo.connie.expr.UnaryOperatorExpression;
+import org.openflexo.connie.type.TypeUtils;
 
 public class DELPrettyPrinter extends ExpressionPrettyPrinter {
 
@@ -198,18 +200,7 @@ public class DELPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected String makeStringRepresentation(TypeReference tr) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("$" + tr.getBaseType());
-		if (tr.getParameters().size() > 0) {
-			sb.append("<");
-			boolean isFirst = true;
-			for (TypeReference param : tr.getParameters()) {
-				sb.append((isFirst ? "" : ",") + makeStringRepresentation(param));
-				isFirst = false;
-			}
-			sb.append(">");
-		}
-		return sb.toString();
+	protected String makeStringRepresentation(Type type) {
+		return TypeUtils.simpleRepresentation(type);
 	}
 }

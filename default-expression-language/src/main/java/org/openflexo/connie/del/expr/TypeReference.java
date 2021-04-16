@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.connie.expr;
+package org.openflexo.connie.del.expr;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ import org.openflexo.connie.type.ParameterizedTypeImpl;
  * @author sylvain
  * 
  */
-public class TypeReference {
+public class TypeReference implements Type {
 	private String baseType;
 	private List<TypeReference> parameters;
 	private Type type;
@@ -97,5 +97,21 @@ public class TypeReference {
 			return new ParameterizedTypeImpl(baseClass, params);
 		}
 		return baseClass;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("$" + getBaseType());
+		if (getParameters().size() > 0) {
+			sb.append("<");
+			boolean isFirst = true;
+			for (TypeReference param : getParameters()) {
+				sb.append((isFirst ? "" : ",") + param.toString());
+				isFirst = false;
+			}
+			sb.append(">");
+		}
+		return sb.toString();
 	}
 }

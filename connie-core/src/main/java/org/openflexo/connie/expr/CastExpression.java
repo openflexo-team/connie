@@ -47,10 +47,11 @@ import org.openflexo.connie.type.TypeUtils;
 
 public abstract class CastExpression extends Expression {
 
-	private final TypeReference castType;
+	// private final TypeReference castType;
+	private final Type castType;
 	private Expression argument;
 
-	public CastExpression(TypeReference castType, Expression argument) {
+	public CastExpression(Type castType, Expression argument) {
 		super();
 		this.castType = castType;
 		this.argument = argument;
@@ -61,7 +62,7 @@ public abstract class CastExpression extends Expression {
 		return argument.getDepth() + 1;
 	}
 
-	public TypeReference getCastType() {
+	public Type getCastType() {
 		return castType;
 	}
 
@@ -81,7 +82,7 @@ public abstract class CastExpression extends Expression {
 
 	@Override
 	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return TypeUtils.kindOfType(castType.getType());
+		return TypeUtils.kindOfType(castType);
 	}
 
 	@Override
@@ -112,7 +113,7 @@ public abstract class CastExpression extends Expression {
 
 	@Override
 	public Type getAccessedType() {
-		return getCastType().getType();
+		return getCastType();
 	}
 
 }

@@ -40,6 +40,7 @@
 package org.openflexo.connie.expr;
 
 import java.io.PrintStream;
+import java.lang.reflect.Type;
 
 public abstract class ExpressionPrettyPrinter {
 
@@ -102,7 +103,7 @@ public abstract class ExpressionPrettyPrinter {
 
 	protected abstract String makeStringRepresentation(Constant<?> constant);
 
-	protected abstract String makeStringRepresentation(TypeReference tr);
+	protected abstract String makeStringRepresentation(Type type);
 
 	protected abstract String makeStringRepresentation(BindingValue bv);
 

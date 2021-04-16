@@ -39,6 +39,7 @@
 
 package org.openflexo.connie.java.parser;
 
+import java.lang.reflect.Type;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
 import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
 import org.openflexo.connie.java.expr.JavaBooleanUnaryOperator;
+import org.openflexo.connie.java.expr.JavaCastExpression;
 import org.openflexo.connie.java.expr.JavaConditionalExpression;
 import org.openflexo.connie.java.expr.JavaConstant;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
@@ -661,8 +663,10 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 	@Override
 	public void outACastUnaryExpNotPlusMinus(ACastUnaryExpNotPlusMinus node) {
-		// TODO
 		super.outACastUnaryExpNotPlusMinus(node);
+		Type type = TypeAnalyzer.makeType(node.getType(), this);
+		System.out.println("On trouve type=" + type);
+		registerExpressionNode(node, new JavaCastExpression(type, getExpression(node.getUnaryExp())));
 	}
 
 	// post_incr_exp = postfix_exp plus_plus;

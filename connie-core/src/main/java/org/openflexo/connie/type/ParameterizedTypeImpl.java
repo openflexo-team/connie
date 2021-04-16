@@ -44,11 +44,15 @@ import java.lang.reflect.Type;
 
 public class ParameterizedTypeImpl implements ParameterizedType {
 
-	public ParameterizedTypeImpl(Class<?> rawType, Type... actualTypeArguments) {
+	private Type rawType;
+	private Type ownerType;
+	private Type[] actualTypeArguments;
+
+	public ParameterizedTypeImpl(Type rawType, Type... actualTypeArguments) {
 		this(rawType, null, actualTypeArguments);
 	}
 
-	public ParameterizedTypeImpl(Class<?> rawType, Type actualTypeArgument) {
+	public ParameterizedTypeImpl(Type rawType, Type actualTypeArgument) {
 		this(rawType, null, makeTypeArray(actualTypeArgument));
 	}
 
@@ -58,16 +62,12 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 		return returned;
 	}
 
-	public ParameterizedTypeImpl(Class<?> rawType, Type ownerType, Type[] actualTypeArguments) {
+	public ParameterizedTypeImpl(Type rawType, Type ownerType, Type[] actualTypeArguments) {
 		super();
 		this.rawType = rawType;
 		this.ownerType = ownerType;
 		this.actualTypeArguments = actualTypeArguments;
 	}
-
-	private Class<?> rawType;
-	private Type ownerType;
-	private Type[] actualTypeArguments;
 
 	@Override
 	public Type[] getActualTypeArguments() {
@@ -87,7 +87,8 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(rawType.getSimpleName() + "<");
+		sb.append(TypeUtils.simpleRepresentation(rawType) + "<");
+		// sb.append(rawType.getSimpleName() + "<");
 		boolean isFirst = true;
 		for (Type t : getActualTypeArguments()) {
 			sb.append((isFirst ? "" : ",") + TypeUtils.simpleRepresentation(t));
@@ -99,7 +100,8 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 
 	public String fullQualifiedRepresentation() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(rawType.getName() + "<");
+		// sb.append(rawType.getName() + "<");
+		sb.append(TypeUtils.fullQualifiedRepresentation(rawType) + "<");
 		boolean isFirst = true;
 		for (Type t : getActualTypeArguments()) {
 			sb.append((isFirst ? "" : ",") + TypeUtils.fullQualifiedRepresentation(t));
