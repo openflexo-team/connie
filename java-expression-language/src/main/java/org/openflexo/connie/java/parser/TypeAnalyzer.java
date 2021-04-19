@@ -107,7 +107,7 @@ class TypeAnalyzer extends DepthFirstAdapter {
 
 	public static Type makeType(PType node, ExpressionSemanticsAnalyzer expressionAnalyzer) {
 
-		// System.out.println("Hop, on cherche le type pour " + node);
+		// System.out.println("Resolving type for node " + node + " of " + node.getClass());
 		TypeAnalyzer bsa = new TypeAnalyzer(node, expressionAnalyzer);
 		node.apply(bsa);
 
@@ -115,7 +115,7 @@ class TypeAnalyzer extends DepthFirstAdapter {
 			System.out.println("*** " + n + " -> " + TypeUtils.simpleRepresentation(bsa.typeNodes.get(n)));
 		}*/
 
-		// System.out.println("On trouve: " + bsa.getType(node));
+		// System.out.println("Returning: " + bsa.getType(node) + " of " + bsa.getType(node).getClass());
 		return bsa.getType(node);
 	}
 
