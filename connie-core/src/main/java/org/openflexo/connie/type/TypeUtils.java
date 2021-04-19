@@ -436,7 +436,10 @@ public class TypeUtils {
 			return true;
 		}
 		if (anOtherType instanceof UnresolvedType) {
-			return true;
+			return false;
+		}
+		if (aType instanceof UnresolvedType) {
+			return false;
 		}
 
 		// Everything could be assigned to Object
