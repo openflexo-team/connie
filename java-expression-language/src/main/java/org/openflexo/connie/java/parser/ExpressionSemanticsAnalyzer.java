@@ -77,6 +77,7 @@ import org.openflexo.connie.java.parser.node.AGteqRelationalExp;
 import org.openflexo.connie.java.parser.node.AIdentifierPrimary;
 import org.openflexo.connie.java.parser.node.AInstanceofRelationalExp;
 import org.openflexo.connie.java.parser.node.AIntegerLiteral;
+import org.openflexo.connie.java.parser.node.AJavaInstanceCreationPrimaryNoId;
 import org.openflexo.connie.java.parser.node.ALiteralPrimaryNoId;
 import org.openflexo.connie.java.parser.node.ALtRelationalExp;
 import org.openflexo.connie.java.parser.node.ALteqRelationalExp;
@@ -120,7 +121,6 @@ import org.openflexo.connie.java.parser.node.ATrueLiteral;
 import org.openflexo.connie.java.parser.node.AUnaryUnaryExp;
 import org.openflexo.connie.java.parser.node.AUshrShiftExp;
 import org.openflexo.connie.java.parser.node.Node;
-import org.openflexo.toolbox.StringUtils;
 
 /**
  * This class implements the semantics analyzer for a parsed AnTAR expression.<br>
@@ -239,7 +239,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	public void defaultIn(Node node) {
 		super.defaultIn(node);
 		ident++;
-		System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName() + " : " + node);
+		// System.out.println(StringUtils.buildWhiteSpaceIndentation(ident) + " > " + node.getClass().getSimpleName() + " : " + node);
 	}
 
 	@Override
@@ -292,6 +292,12 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAFieldPrimaryNoId(AFieldPrimaryNoId node) {
 		super.outAFieldPrimaryNoId(node);
+		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+	}
+
+	@Override
+	public void outAJavaInstanceCreationPrimaryNoId(AJavaInstanceCreationPrimaryNoId node) {
+		super.outAJavaInstanceCreationPrimaryNoId(node);
 		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
 	}
 

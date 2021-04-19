@@ -107,9 +107,15 @@ class TypeAnalyzer extends DepthFirstAdapter {
 
 	public static Type makeType(PType node, ExpressionSemanticsAnalyzer expressionAnalyzer) {
 
-		System.out.println("Hop, on cherche le type pour " + node);
+		// System.out.println("Hop, on cherche le type pour " + node);
 		TypeAnalyzer bsa = new TypeAnalyzer(node, expressionAnalyzer);
 		node.apply(bsa);
+
+		/*for (Node n : bsa.typeNodes.keySet()) {
+			System.out.println("*** " + n + " -> " + TypeUtils.simpleRepresentation(bsa.typeNodes.get(n)));
+		}*/
+
+		// System.out.println("On trouve: " + bsa.getType(node));
 		return bsa.getType(node);
 	}
 
@@ -325,29 +331,35 @@ class TypeAnalyzer extends DepthFirstAdapter {
 			return makeTypeArguments(((AGtTypeArguments) someArgs).getTypeArgumentList());
 		}
 		if (someArgs instanceof AShrTypeArguments) {
-			return makeTypeArguments(((AShrTypeArguments) someArgs).getTypeArgumentListHead(),
-					((AShrTypeArguments) someArgs).getTypeArgumentList());
+			List<Type> returned = makeTypeArguments(((AShrTypeArguments) someArgs).getTypeArgumentListHead(),
+					((AShrTypeArguments) someArgs).getIdentifier(), ((AShrTypeArguments) someArgs).getTypeArgumentList());
+			return returned;
 		}
 		if (someArgs instanceof AUshrTypeArguments) {
-			return makeTypeArguments(((AUshrTypeArguments) someArgs).getHeads1(), ((AUshrTypeArguments) someArgs).getHeads2(),
+			return makeTypeArguments(((AUshrTypeArguments) someArgs).getHeads1(), ((AUshrTypeArguments) someArgs).getSpecifier1(),
+					((AUshrTypeArguments) someArgs).getHeads2(), ((AUshrTypeArguments) someArgs).getSpecifier2(),
 					((AUshrTypeArguments) someArgs).getTypeArgumentList());
 		}
 		System.err.println("Unexpected " + someArgs + " of " + someArgs.getClass());
 		return null;
 	}
 
+	// type_argument_list = type_argument_list_head* type_argument;
+
+	// type_argument_list_head = type_argument comma;
+
 	private List<Type> makeTypeArguments(PTypeArgumentList someArgs) {
 		if (someArgs instanceof ATypeArgumentList) {
 			List<Type> returned = new ArrayList<>();
-			returned.add(getType(((ATypeArgumentList) someArgs).getTypeArgument()));
 			for (PTypeArgumentListHead pTypeArgumentListHead : ((ATypeArgumentList) someArgs).getTypeArgumentListHead()) {
 				if (pTypeArgumentListHead instanceof ATypeArgumentListHead) {
-					returned.add(0, getType(((ATypeArgumentListHead) pTypeArgumentListHead).getTypeArgument()));
+					returned.add(getType(((ATypeArgumentListHead) pTypeArgumentListHead).getTypeArgument()));
 				}
 				else {
 					System.err.println("Unexpected " + pTypeArgumentListHead + " of " + pTypeArgumentListHead.getClass());
 				}
 			}
+			returned.add(getType(((ATypeArgumentList) someArgs).getTypeArgument()));
 			return returned;
 		}
 		System.err.println("Unexpected " + someArgs + " of " + someArgs.getClass());
@@ -362,18 +374,29 @@ class TypeAnalyzer extends DepthFirstAdapter {
 		return returned;
 	}
 
-	private List<Type> makeTypeArguments(List<PTypeArgumentListHead> argumentListHead, PTypeArgumentList someArgs) {
+	// Shr syntax
+	// {shr} [lt1]:lt type_argument_list_head* [identifier]:composite_tident [lt2]:lt type_argument_list shr
+	private List<Type> makeTypeArguments(List<PTypeArgumentListHead> argumentListHead, PCompositeTident identifier,
+			PTypeArgumentList someArgs) {
 		List<Type> returned = new ArrayList<Type>();
 		returned.addAll(makeTypeArguments(argumentListHead));
-		returned.addAll(makeTypeArguments(someArgs));
+		Type baseType = makeType(identifier);
+		List<Type> typeArguments = makeTypeArguments(someArgs);
+		returned.add(new ParameterizedTypeImpl(baseType, typeArguments.toArray(new Type[typeArguments.size()])));
 		return returned;
 	}
 
-	private List<Type> makeTypeArguments(List<PTypeArgumentListHead> head1, List<PTypeArgumentListHead> head2, PTypeArgumentList someArgs) {
+	// Ushr syntax
+	// {ushr} [lt1]:lt [heads1]:type_argument_list_head* [specifier1]:composite_tident [lt2]:lt [heads2]:type_argument_list_head*
+	// [specifier2]:composite_tident [lt3]:lt type_argument_list ushr
+	private List<Type> makeTypeArguments(List<PTypeArgumentListHead> head1, PCompositeTident specifier1, List<PTypeArgumentListHead> head2,
+			PCompositeTident specifier2, PTypeArgumentList someArgs) {
 		List<Type> returned = new ArrayList<Type>();
 		returned.addAll(makeTypeArguments(head1));
-		returned.addAll(makeTypeArguments(head2));
-		returned.addAll(makeTypeArguments(someArgs));
+
+		Type baseType = makeType(specifier1);
+		List<Type> typeArguments = makeTypeArguments(head2, specifier2, someArgs);
+		returned.add(new ParameterizedTypeImpl(baseType, typeArguments.toArray(new Type[typeArguments.size()])));
 		return returned;
 	}
 

@@ -3,6 +3,7 @@ package org.openflexo.connie.java.parser;
 import java.util.List;
 
 import org.openflexo.connie.expr.BinaryOperatorExpression;
+import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.java.expr.JavaCastExpression;
 import org.openflexo.connie.java.expr.JavaInstanceOfExpression;
@@ -26,13 +27,30 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 
 	// Test new instance
 
-	/*public void testNewInstance() {
-		tryToParse("new List()", "toto--", BindingValue.class, null, false);
+	public void testNewInstance() {
+		tryToParse("new ArrayList()", "new ArrayList()", BindingValue.class, null, false);
 	}
-	
+
 	public void testNewInstance2() {
-		tryToParse("(Map)(new java.util.HashTable(1,2))", "toto--", BindingValue.class, null, false);
-	}*/
+		tryToParse("new a.A()", "new a.A()", BindingValue.class, null, false);
+	}
+
+	public void testNewInstance3() {
+		tryToParse("new a.A(new a.B(),new a.C())", "new a.A(new a.B(),new a.C())", BindingValue.class, null, false);
+	}
+
+	public void testNewInstance4() {
+		tryToParse("new java.util.Hashtable<String,java.util.List<String>>()", "new Hashtable<String,List<String>>()", BindingValue.class,
+				null, false);
+	}
+
+	public void testNewInstance5() {
+		tryToParse("(Map)(new java.util.Hashtable(1,2))", "(Map)new Hashtable(1,2)", JavaCastExpression.class, null, false);
+	}
+
+	public void testCombo() {
+		tryToParse("new Object().toString()", "new Object().toString()", BindingValue.class, null, false);
+	}
 
 	// Test cast
 
@@ -102,8 +120,19 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 	}
 
 	public void testParameteredCast2() {
-		tryToParse("(java.util.Hashtable<java.lang.String,java.util.List<java.lang.String>>)data.map", "(Hashtable<String,String>)data.map",
-				CastExpression.class, null, false);
+		tryToParse("(java.util.Hashtable<java.lang.String,java.util.List<java.lang.String>, Boolean>)data.map",
+				"(Hashtable<String,List<String>,Boolean>)data.map", CastExpression.class, null, false);
+	}
+
+	// Test with Shr syntax
+	public void testParameteredCast3() {
+		tryToParse("(java.util.Hashtable<java.lang.String,java.util.List<java.lang.String>>)data.map",
+				"(Hashtable<String,List<String>>)data.map", CastExpression.class, null, false);
+	}
+
+	// Test with Ushr syntax
+	public void testParameteredCast4() {
+		tryToParse("(A<B<C<D>>>)a.path", "(A<B<C<D>>>)a.path", CastExpression.class, null, false);
 	}
 
 	public void testWilcardUpperBound() {

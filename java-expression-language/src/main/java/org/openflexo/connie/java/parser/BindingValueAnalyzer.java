@@ -39,21 +39,27 @@
 
 package org.openflexo.connie.java.parser;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.MethodCallBindingPathElement;
+import org.openflexo.connie.expr.BindingValue.NewInstanceBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.AClassMethodMethodInvocation;
+import org.openflexo.connie.java.parser.node.AComplexType;
 import org.openflexo.connie.java.parser.node.ACompositeIdent;
 import org.openflexo.connie.java.parser.node.AFieldPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AIdentifierPrefix;
 import org.openflexo.connie.java.parser.node.AIdentifierPrimary;
+import org.openflexo.connie.java.parser.node.AJavaInstanceCreationInvokation;
+import org.openflexo.connie.java.parser.node.AJavaInstanceCreationPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AManyArgumentList;
 import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AOneArgumentList;
@@ -88,6 +94,8 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		return depth == 0;
 	}
 
+	private Stack<Boolean> isInsideTypeStack;
+
 	/**
 	 * This flag is used to escape binding processing that may happen in call args handling
 	 */
@@ -95,19 +103,12 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 
 	public static BindingValue makeBindingValue(Node node, ExpressionSemanticsAnalyzer expressionAnalyzer) {
 
-		// System.out.println("Make BindingValue for " + node);
+		//System.out.println("Make BindingValue for " + node);
 
-		/*BindingValueAnalyzer bsa = new BindingValueAnalyzer(node);
-		node.apply(bsa);
-		
-		System.out.println("Make binding value with bsa as " + bsa.getPath());
-		
-		BindingValue returned = new BindingValue(bsa.getPath());
-		// System.out.println("Made binding as " + bsa.getPath());
-		
-		return returned;*/
+		List<AbstractBindingPathElement> bindingPath = makeBindingPath(node, expressionAnalyzer);
+		//System.out.println("bindingPath = " + bindingPath);
 
-		return new BindingValue(makeBindingPath(node, expressionAnalyzer), JavaPrettyPrinter.getInstance());
+		return new BindingValue(bindingPath, JavaPrettyPrinter.getInstance());
 	}
 
 	private static List<AbstractBindingPathElement> makeBindingPath(Node node, ExpressionSemanticsAnalyzer expressionAnalyzer) {
@@ -122,6 +123,8 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		this.expressionAnalyzer = expressionAnalyzer;
 		this.rootNode = node;
 		path = new ArrayList<>();
+		isInsideTypeStack = new Stack<>();
+		isInsideTypeStack.push(new Boolean(false));
 	}
 
 	// boolean DEBUG = false;
@@ -174,25 +177,46 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 
 	@Override
 	public void inAFieldPrimaryNoId(AFieldPrimaryNoId node) {
-		// TODO Auto-generated method stub
 		super.inAFieldPrimaryNoId(node);
 		depth++;
 	}
 
 	@Override
 	public void outAFieldPrimaryNoId(AFieldPrimaryNoId node) {
-		// TODO Auto-generated method stub
 		super.outAFieldPrimaryNoId(node);
 		depth--;
 	}
 
 	@Override
+	public void inAJavaInstanceCreationPrimaryNoId(AJavaInstanceCreationPrimaryNoId node) {
+		super.inAJavaInstanceCreationPrimaryNoId(node);
+		depth++;
+	}
+
+	@Override
+	public void outAJavaInstanceCreationPrimaryNoId(AJavaInstanceCreationPrimaryNoId node) {
+		super.outAJavaInstanceCreationPrimaryNoId(node);
+		depth--;
+	}
+
+	@Override
+	public void inAComplexType(AComplexType node) {
+		super.inAComplexType(node);
+		isInsideTypeStack.push(new Boolean(true));
+	}
+
+	@Override
+	public void outAComplexType(AComplexType node) {
+		super.outAComplexType(node);
+		isInsideTypeStack.pop();
+	}
+
+	@Override
 	public void outAIdentifierPrefix(AIdentifierPrefix node) {
-		// TODO Auto-generated method stub
 		super.outAIdentifierPrefix(node);
 		// if (DEBUG)
 		// System.out.println("outAIdentifierPrefix " + node.getLidentifier().getText());
-		if (weAreDealingWithTheRightBinding()) {
+		if (weAreDealingWithTheRightBinding() && !isInsideTypeStack.peek()) {
 			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getLidentifier().getText());
 			path.add(pathElement);
 		}
@@ -203,7 +227,7 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		super.outACompositeIdent(node);
 		// if (DEBUG)
 		// System.out.println("outACompositeIdent " + node.getIdentifier().getText());
-		if (weAreDealingWithTheRightBinding()) {
+		if (weAreDealingWithTheRightBinding() && !isInsideTypeStack.peek()) {
 			NormalBindingPathElement pathElement = new NormalBindingPathElement(node.getIdentifier().getText());
 			path.add(pathElement);
 		}
@@ -299,7 +323,16 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		if (weAreDealingWithTheRightBinding()) {
 			MethodCallBindingPathElement returned = new MethodCallBindingPathElement("super", makeArgs(node.getArgumentList()));
 			path.add(returned);
+		}
+	}
 
+	@Override
+	public void outAJavaInstanceCreationInvokation(AJavaInstanceCreationInvokation node) {
+		super.outAJavaInstanceCreationInvokation(node);
+		if (weAreDealingWithTheRightBinding()) {
+			Type type = TypeAnalyzer.makeType(node.getType(), expressionAnalyzer);
+			NewInstanceBindingPathElement returned = new NewInstanceBindingPathElement(type, makeArgs(node.getArgumentList()));
+			path.add(returned);
 		}
 	}
 
