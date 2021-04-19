@@ -41,51 +41,51 @@ package org.openflexo.connie.java;
 
 public class TestBindingEvaluator extends EvaluatorTestCase {
 
-	public void test1() {
+	public void testString1() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("toString", thisIsATest, thisIsATest);
 	}
 
-	public void test2() {
+	public void testString2() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("toString()", thisIsATest, thisIsATest);
 	}
 
-	public void test3() {
+	public void testString3() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("substring(2,8)", thisIsATest, "llo wo");
 	}
 
-	public void test4() {
+	public void testString4() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("substring(2,5*2-2)", thisIsATest, "llo wo");
 	}
 
-	public void test5() {
+	public void testString5() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("toString()+toString()", thisIsATest, "Hello world, this is a testHello world, this is a test");
 	}
 
-	public void test6() {
+	public void testString6() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("toString()+\" hash=\"+object.hashCode()", thisIsATest, thisIsATest + " hash=" + thisIsATest.hashCode());
 	}
 
-	public void test7() {
+	public void testString7() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("substring(0,5)+' '+substring(23,27).toUpperCase()", thisIsATest, "Hello TEST");
 	}
 
-	public void test8() {
-		genericTest("object*2-7", 10, 13);
-	}
-
-	public void test9() {
+	public void testString8() {
 		String thisIsATest = "Hello world, this is a test";
 		genericTest("substring(3,length()-2)+\" hash=\"+hashCode()", thisIsATest, "lo world, this is a te hash=" + thisIsATest.hashCode());
 	}
 
-	public void test10() {
+	public void testInteger() {
+		genericTest("object*2-7", 10, 13);
+	}
+
+	public void testObjectManipulations1() {
 		TestObject object = new TestObject();
 		genericTest("object.getValue(object)", object, 0);
 		genericTest("object.setValue(10,object)", object, null);
@@ -93,20 +93,30 @@ public class TestBindingEvaluator extends EvaluatorTestCase {
 		genericTest("object.setValue(object.getValue(object),object)", object, null);
 	}
 
-	public void test11() {
+	public void testObjectManipulations2() {
 		TestObject object = new TestObject();
 		genericTest("object.setValue(object.getValue(object)+1,object)", object, null);
 		genericTest("object.getValue(object)", object, 1);
 	}
 
-	public void test12() {
+	public void testCallMethod() {
 		TestObject object = new TestObject();
 		genericTest("object.method()", object, null);
+		assertTrue(object.methodWasCalled);
+	}
+
+	public void testInstanceof() throws ClassNotFoundException {
+		TestObject object = new TestObject();
+		System.out.println("Hop: " + TestObject.class);
+		System.out.println("Class: " + Class.forName("org.openflexo.connie.java.TestBindingEvaluator$TestObject"));
+		genericTest("object instanceof org.openflexo.connie.java.TestBindingEvaluator$TestObject", object, true);
+		// genericTest("object instanceof org.openflexo.connie.java.TestObject2", object, false);
 	}
 
 	public static class TestObject {
 
 		private int value = 0;
+		public boolean methodWasCalled = false;
 
 		public int getValue(TestObject o) {
 			return value;
@@ -119,6 +129,8 @@ public class TestBindingEvaluator extends EvaluatorTestCase {
 
 		public void method() {
 			System.out.println("Called method");
+			methodWasCalled = true;
 		}
+
 	}
 }
