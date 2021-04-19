@@ -95,10 +95,6 @@ public class JavaExpressionEvaluator extends ExpressionEvaluator {
 
 	private static Expression transformInstanceOfExpression(JavaInstanceOfExpression e) {
 
-		System.out.println("Je dois evaluer " + e);
-		System.out.println("argument : " + e.getArgument());
-		System.out.println("type : " + e.getType());
-
 		if (e.getArgument() == ObjectSymbolicConstant.NULL) {
 			return BooleanConstant.FALSE;
 		}
