@@ -117,10 +117,10 @@ public abstract class MultipleParametersBindingEvaluator extends DefaultBindable
 		return returned;
 	}
 
-	protected static String normalizeBindingPath(String bindingPath, List<String> parameters, BindingFactory bindingFactory) {
+	protected String normalizeBindingPath(String bindingPath, List<String> parameters, BindingFactory bindingFactory) {
 		Expression expression = null;
 		try {
-			expression = bindingFactory.parseExpression(bindingPath);
+			expression = bindingFactory.parseExpression(bindingPath, this);
 			// expression = ExpressionParser.parse(bindingPath);
 			if (expression != null) {
 				expression = expression.transform(new ExpressionTransformer() {

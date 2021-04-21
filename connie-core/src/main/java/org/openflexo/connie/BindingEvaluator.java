@@ -89,11 +89,11 @@ public abstract class BindingEvaluator extends DefaultBindable implements Bindin
 		bindingModel = null;
 	}
 
-	static String normalizeBindingPath(String bindingPath, BindingFactory bindingFactory) {
+	String normalizeBindingPath(String bindingPath, BindingFactory bindingFactory) {
 		Expression expression = null;
 		try {
 			// expression = ExpressionParser.parse(bindingPath);
-			expression = bindingFactory.parseExpression(bindingPath);
+			expression = bindingFactory.parseExpression(bindingPath, this);
 			if (expression != null) {
 				expression = expression.transform(new ExpressionTransformer() {
 					@Override

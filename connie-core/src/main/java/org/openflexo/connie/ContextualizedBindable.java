@@ -1,8 +1,5 @@
 /**
  * 
- */
-/**
- * 
  * Copyright (c) 2013-2014, Openflexo
  * Copyright (c) 2011-2012, AgileBirds
  * 
@@ -43,42 +40,43 @@
 package org.openflexo.connie;
 
 import java.lang.reflect.Type;
-import java.util.List;
-
-import org.openflexo.connie.binding.Function;
-import org.openflexo.connie.binding.FunctionPathElement;
-import org.openflexo.connie.binding.IBindingPathElement;
-import org.openflexo.connie.binding.SimplePathElement;
-import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Expression;
 
 /**
- * A factory associated to a given expression language and allowing to build expressions
+ * Represent a {@link Bindable} with typing context. A typing context defines a typing space where types may be declared
  * 
  * @author sylvain
- *
+ * 
  */
-public interface BindingFactory {
+public interface ContextualizedBindable extends Bindable {
 
 	/**
-	 * Parse supplied expressionAsString, build and return an {@link Expression} according to underlying expression language
+	 * Return boolean indicating if supplied {@link Type} is actually in current typing space
 	 * 
-	 * @param expressionAsString
+	 * @param type
 	 * @return
 	 */
-	Expression parseExpression(String expressionAsString, Bindable bindable) throws ParseException;
+	boolean isTypeImported(Type type);
 
-	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
+	/**
+	 * Return boolean indicating if this {@link Bindable} support the import of supplied {@link Type}
+	 * 
+	 * @param type
+	 * @return
+	 */
+	boolean shouldImportType(Type type);
 
-	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent);
+	/**
+	 * Import supplied type in this typing space
+	 * 
+	 * @param type
+	 */
+	void importType(Type type);
 
-	SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName);
-
-	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
-
-	FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
-
-	Type getTypeForObject(Object object);
-
-	Constant<?> getNullExpression();
+	/**
+	 * Resolve {@link Type} according to current typing space using supplied type {@link String} representation
+	 * 
+	 * @param typeAsString
+	 * @return
+	 */
+	Type resolveType(String typeAsString);
 }

@@ -41,6 +41,8 @@ package org.openflexo.connie.java.expr;
 
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.Bindable;
+import org.openflexo.connie.ContextualizedBindable;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.CastExpression;
@@ -86,15 +88,15 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	public String getStringRepresentation(Expression expression) {
+	public String getStringRepresentation(Expression expression, Bindable context) {
 		if (expression instanceof JavaInstanceOfExpression) {
-			return makeStringRepresentation((JavaInstanceOfExpression) expression);
+			return makeStringRepresentation((JavaInstanceOfExpression) expression, context);
 		}
-		return super.getStringRepresentation(expression);
+		return super.getStringRepresentation(expression, context);
 	}
 
 	@Override
-	protected String makeStringRepresentation(Constant<?> constant) {
+	protected String makeStringRepresentation(Constant<?> constant, Bindable context) {
 		if (constant instanceof BooleanConstant) {
 			return makeStringRepresentation((BooleanConstant) constant);
 		}
@@ -174,7 +176,7 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected String makeStringRepresentation(UnaryOperatorExpression expression) {
+	protected String makeStringRepresentation(UnaryOperatorExpression expression, Bindable context) {
 
 		int currentPriority = expression.getPriority();
 		int argPriority = expression.getArgument().getPriority();
@@ -182,7 +184,7 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 
 		if (expression.getOperator() instanceof PostSettableUnaryOperator) {
 			try {
-				return (parenthesisRequired ? "(" : "") + getStringRepresentation(expression.getArgument())
+				return (parenthesisRequired ? "(" : "") + getStringRepresentation(expression.getArgument(), context)
 						+ (parenthesisRequired ? ")" : "") + getSymbol(expression.getOperator());
 			} catch (OperatorNotSupportedException e) {
 				return "<unsupported>";
@@ -190,14 +192,14 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 		}
 		try {
 			return getSymbol(expression.getOperator()) + (parenthesisRequired ? "(" : "")
-					+ getStringRepresentation(expression.getArgument()) + (parenthesisRequired ? ")" : "");
+					+ getStringRepresentation(expression.getArgument(), context) + (parenthesisRequired ? ")" : "");
 		} catch (OperatorNotSupportedException e) {
 			return "<unsupported>";
 		}
 	}
 
 	@Override
-	protected String makeStringRepresentation(BinaryOperatorExpression expression) {
+	protected String makeStringRepresentation(BinaryOperatorExpression expression, Bindable context) {
 
 		// System.out.println(
 		// "----> Prettyprint " + expression.getClass().getSimpleName() + " priority " + expression.getOperator().getPriority());
@@ -209,9 +211,9 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 			boolean parenthesisLeftRequired = leftPriority > currentPriority;
 			boolean parenthesisRightRequired = rightPriority >= currentPriority;
 
-			return (parenthesisLeftRequired ? "(" : "") + getStringRepresentation(expression.getLeftArgument())
+			return (parenthesisLeftRequired ? "(" : "") + getStringRepresentation(expression.getLeftArgument(), context)
 					+ (parenthesisLeftRequired ? ")" : "") + " " + getSymbol(expression.getOperator()) + " "
-					+ (parenthesisRightRequired ? "(" : "") + getStringRepresentation(expression.getRightArgument())
+					+ (parenthesisRightRequired ? "(" : "") + getStringRepresentation(expression.getRightArgument(), context)
 					+ (parenthesisRightRequired ? ")" : "");
 		} catch (OperatorNotSupportedException e) {
 			return "<unsupported>";
@@ -227,40 +229,41 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected String makeStringRepresentation(BindingValue bv) {
+	protected String makeStringRepresentation(BindingValue bv, Bindable context) {
 		return bv.toString();
 	}
 
 	@Override
-	protected String makeStringRepresentation(ConditionalExpression expression) {
-		return "(" + getStringRepresentation(expression.getCondition()) + " ? " + getStringRepresentation(expression.getThenExpression())
-				+ " : " + getStringRepresentation(expression.getElseExpression()) + ")";
+	protected String makeStringRepresentation(ConditionalExpression expression, Bindable context) {
+		return "(" + getStringRepresentation(expression.getCondition(), context) + " ? "
+				+ getStringRepresentation(expression.getThenExpression(), context) + " : "
+				+ getStringRepresentation(expression.getElseExpression(), context) + ")";
 	}
 
 	@Override
-	protected String makeStringRepresentation(CastExpression expression) {
-		return "(" + makeStringRepresentation(expression.getCastType()) + ")" + getStringRepresentation(expression.getArgument());
+	protected String makeStringRepresentation(CastExpression expression, Bindable context) {
+		return "(" + makeStringRepresentation(expression.getCastType(), context) + ")"
+				+ getStringRepresentation(expression.getArgument(), context);
 	}
 
-	private String makeStringRepresentation(JavaInstanceOfExpression expression) {
-		return getStringRepresentation(expression.getArgument()) + " instanceof " + makeStringRepresentation(expression.getType());
+	private String makeStringRepresentation(JavaInstanceOfExpression expression, Bindable context) {
+		return getStringRepresentation(expression.getArgument(), context) + " instanceof "
+				+ makeStringRepresentation(expression.getType(), context);
 	}
 
 	@Override
-	protected String makeStringRepresentation(Type type) {
-		/*StringBuffer sb = new StringBuffer();
-		sb.append("$" + tr.getBaseType());
-		if (tr.getParameters().size() > 0) {
-			sb.append("<");
-			boolean isFirst = true;
-			for (TypeReference param : tr.getParameters()) {
-				sb.append((isFirst ? "" : ",") + makeStringRepresentation(param));
-				isFirst = false;
+	protected String makeStringRepresentation(Type type, Bindable context) {
+		/*System.out.println("makeStringRepresentation for " + type);
+		if (context instanceof DefaultContextualizedBindable) {
+			System.out.println("TypingSpace=" + ((DefaultContextualizedBindable) context).getTypingSpace());
+		}*/
+
+		if (context instanceof ContextualizedBindable) {
+			if (((ContextualizedBindable) context).isTypeImported(type)) {
+				return TypeUtils.simpleRepresentation(type);
 			}
-			sb.append(">");
 		}
-		return sb.toString();*/
 
-		return TypeUtils.simpleRepresentation(type);
+		return TypeUtils.fullQualifiedRepresentation(type);
 	}
 }

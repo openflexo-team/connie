@@ -3,13 +3,19 @@ package org.openflexo.connie.java.parser;
 import java.lang.reflect.InvocationTargetException;
 
 import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.ContextualizedBindable;
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.DefaultContextualizedBindable;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionEvaluator;
+import org.openflexo.connie.java.JavaTypingSpace;
 import org.openflexo.connie.java.expr.JavaExpressionEvaluator;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 
@@ -42,8 +48,30 @@ public abstract class ParserTestCase extends TestCase {
 		}*/
 
 		try {
+
+			JavaTypingSpace typingSpace = new JavaTypingSpace();
+			ContextualizedBindable bindable = new DefaultContextualizedBindable(typingSpace) {
+				@Override
+				public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
+				}
+
+				@Override
+				public void notifiedBindingChanged(DataBinding<?> dataBinding) {
+				}
+
+				@Override
+				public BindingModel getBindingModel() {
+					return null;
+				}
+
+				@Override
+				public BindingFactory getBindingFactory() {
+					return null;
+				}
+
+			};
 			System.out.println("Parsing... " + anExpression);
-			Expression parsed = ExpressionParser.parse(anExpression);
+			Expression parsed = ExpressionParser.parse(anExpression, bindable);
 			System.out.println("parsed=" + parsed);
 			Expression evaluated = parsed.evaluate(new BindingEvaluationContext() {
 				@Override
@@ -56,16 +84,17 @@ public abstract class ParserTestCase extends TestCase {
 					return new JavaExpressionEvaluator(this);
 				}
 			});
+
 			System.out.println("evaluated=" + evaluated);
 			System.out.println("Successfully parsed as : " + parsed.getClass().getSimpleName());
-			System.out.println("Normalized: " + prettyPrinter.getStringRepresentation(parsed));
-			System.out.println("Evaluated: " + prettyPrinter.getStringRepresentation(evaluated));
+			System.out.println("Normalized: " + prettyPrinter.getStringRepresentation(parsed, bindable));
+			System.out.println("Evaluated: " + prettyPrinter.getStringRepresentation(evaluated, bindable));
 			if (shouldFail) {
 				fail();
 			}
 			assertTrue(expectedExpressionClass.isAssignableFrom(parsed.getClass()));
 			if (expectedEvaluatedExpression != null) {
-				assertEquals(expectedEvaluatedExpression, prettyPrinter.getStringRepresentation(evaluated));
+				assertEquals(expectedEvaluatedExpression, prettyPrinter.getStringRepresentation(evaluated, bindable));
 			}
 			if (expectedEvaluation != null) {
 				if (!(evaluated instanceof Constant)) {

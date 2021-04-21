@@ -106,8 +106,6 @@ final public class JavaMultipleParametersBindingEvaluator extends MultipleParame
 		List<String> parameters = new ArrayList<>();
 		String extractedBindingPath = extractParameters(bindingPath, parameters, args);
 		// System.out.println("extractedBindingPath=" + extractedBindingPath);
-		String normalizedBindingPath = normalizeBindingPath(extractedBindingPath, parameters, bindingFactory);
-		// System.out.println("normalizedBindingPath=" + normalizedBindingPath);
 		if (args.length != parameters.size()) {
 			throw new InvalidKeyValuePropertyException("Wrong number of args");
 		}
@@ -118,6 +116,10 @@ final public class JavaMultipleParametersBindingEvaluator extends MultipleParame
 		}
 
 		JavaMultipleParametersBindingEvaluator evaluator = new JavaMultipleParametersBindingEvaluator(objects, bindingFactory);
+
+		String normalizedBindingPath = evaluator.normalizeBindingPath(extractedBindingPath, parameters, bindingFactory);
+		// System.out.println("normalizedBindingPath=" + normalizedBindingPath);
+
 		Object returned = evaluator.evaluate(normalizedBindingPath);
 		evaluator.delete();
 		return returned;

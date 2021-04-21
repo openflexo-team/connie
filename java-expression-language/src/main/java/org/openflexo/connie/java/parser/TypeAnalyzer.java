@@ -45,6 +45,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.openflexo.connie.Bindable;
+import org.openflexo.connie.ContextualizedBindable;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.ABooleanPrimitiveType;
@@ -123,6 +125,17 @@ class TypeAnalyzer extends DepthFirstAdapter {
 		this.expressionAnalyzer = expressionAnalyzer;
 		this.rootNode = node;
 		typeNodes = new Hashtable<>();
+	}
+
+	public Bindable getBindable() {
+		return expressionAnalyzer.getBindable();
+	}
+
+	public ContextualizedBindable getContextualizedBindable() {
+		if (getBindable() instanceof ContextualizedBindable) {
+			return (ContextualizedBindable) getBindable();
+		}
+		return null;
 	}
 
 	private void registerTypeNode(Node n, Type t) {
@@ -284,17 +297,18 @@ class TypeAnalyzer extends DepthFirstAdapter {
 	}
 
 	private Type makeType(String typeName) {
-		try {
-			return Class.forName(typeName);
-		} catch (ClassNotFoundException e1) {
+		if (getContextualizedBindable() != null) {
+			Type returnedType = getContextualizedBindable().resolveType(typeName);
+			if (getContextualizedBindable().shouldImportType(returnedType) && !getContextualizedBindable().isTypeImported(returnedType)) {
+				getContextualizedBindable().importType(returnedType);
+			}
+			return returnedType;
+		}
+		else {
 			try {
-				return Class.forName("java.lang." + typeName);
-			} catch (ClassNotFoundException e2) {
-				try {
-					return Class.forName("java.util." + typeName);
-				} catch (ClassNotFoundException e3) {
-					return new UnresolvedType(typeName);
-				}
+				return Class.forName(typeName);
+			} catch (ClassNotFoundException e1) {
+				return new UnresolvedType(typeName);
 			}
 		}
 	}

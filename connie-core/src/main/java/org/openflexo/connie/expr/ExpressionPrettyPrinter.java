@@ -42,6 +42,8 @@ package org.openflexo.connie.expr;
 import java.io.PrintStream;
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.Bindable;
+
 public abstract class ExpressionPrettyPrinter {
 
 	private ExpressionGrammar grammar;
@@ -51,8 +53,8 @@ public abstract class ExpressionPrettyPrinter {
 		this.grammar = grammar;
 	}
 
-	public void print(Expression expression, PrintStream out) {
-		out.print(getStringRepresentation(expression));
+	public void print(Expression expression, Bindable context, PrintStream out) {
+		out.print(getStringRepresentation(expression, context));
 	}
 
 	public BinaryOperator[] getAllSupportedBinaryOperators() {
@@ -71,27 +73,27 @@ public abstract class ExpressionPrettyPrinter {
 		return grammar.getSymbol(operator);
 	}
 
-	public String getStringRepresentation(Expression expression) {
+	public String getStringRepresentation(Expression expression, Bindable context) {
 		if (expression == null) {
 			return "null";
 		}
 		if (expression instanceof BindingValue) {
-			return makeStringRepresentation((BindingValue) expression);
+			return makeStringRepresentation((BindingValue) expression, context);
 		}
 		if (expression instanceof Constant) {
-			return makeStringRepresentation((Constant<?>) expression);
+			return makeStringRepresentation((Constant<?>) expression, context);
 		}
 		if (expression instanceof UnaryOperatorExpression) {
-			return makeStringRepresentation((UnaryOperatorExpression) expression);
+			return makeStringRepresentation((UnaryOperatorExpression) expression, context);
 		}
 		if (expression instanceof BinaryOperatorExpression) {
-			return makeStringRepresentation((BinaryOperatorExpression) expression);
+			return makeStringRepresentation((BinaryOperatorExpression) expression, context);
 		}
 		if (expression instanceof ConditionalExpression) {
-			return makeStringRepresentation((ConditionalExpression) expression);
+			return makeStringRepresentation((ConditionalExpression) expression, context);
 		}
 		if (expression instanceof CastExpression) {
-			return makeStringRepresentation((CastExpression) expression);
+			return makeStringRepresentation((CastExpression) expression, context);
 		}
 
 		if (expression instanceof UnresolvedExpression) {
@@ -101,18 +103,18 @@ public abstract class ExpressionPrettyPrinter {
 		return expression.toString();
 	}
 
-	protected abstract String makeStringRepresentation(Constant<?> constant);
+	protected abstract String makeStringRepresentation(Constant<?> constant, Bindable context);
 
-	protected abstract String makeStringRepresentation(Type type);
+	protected abstract String makeStringRepresentation(Type type, Bindable context);
 
-	protected abstract String makeStringRepresentation(BindingValue bv);
+	protected abstract String makeStringRepresentation(BindingValue bv, Bindable context);
 
-	protected abstract String makeStringRepresentation(UnaryOperatorExpression expression);
+	protected abstract String makeStringRepresentation(UnaryOperatorExpression expression, Bindable context);
 
-	protected abstract String makeStringRepresentation(BinaryOperatorExpression expression);
+	protected abstract String makeStringRepresentation(BinaryOperatorExpression expression, Bindable context);
 
-	protected abstract String makeStringRepresentation(ConditionalExpression expression);
+	protected abstract String makeStringRepresentation(ConditionalExpression expression, Bindable context);
 
-	protected abstract String makeStringRepresentation(CastExpression expression);
+	protected abstract String makeStringRepresentation(CastExpression expression, Bindable context);
 
 }

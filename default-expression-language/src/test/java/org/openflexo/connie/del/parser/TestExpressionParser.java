@@ -56,7 +56,6 @@ import org.openflexo.connie.del.expr.DELConstant.StringConstant;
 import org.openflexo.connie.del.expr.DELExpressionEvaluator;
 import org.openflexo.connie.del.expr.DELPrettyPrinter;
 import org.openflexo.connie.del.expr.DELUnaryOperatorExpression;
-import org.openflexo.connie.del.parser.ExpressionParser;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
@@ -97,13 +96,13 @@ public class TestExpressionParser extends TestCase {
 			System.out.println("parsed=" + parsed);
 			System.out.println("evaluated=" + evaluated);
 			System.out.println("Successfully parsed as : " + parsed.getClass().getSimpleName());
-			System.out.println("Normalized: " + prettyPrinter.getStringRepresentation(parsed));
-			System.out.println("Evaluated: " + prettyPrinter.getStringRepresentation(evaluated));
+			System.out.println("Normalized: " + prettyPrinter.getStringRepresentation(parsed, null));
+			System.out.println("Evaluated: " + prettyPrinter.getStringRepresentation(evaluated, null));
 			if (shouldFail) {
 				fail();
 			}
 			assertEquals(expectedExpressionClass, parsed.getClass());
-			assertEquals(expectedEvaluatedExpression, prettyPrinter.getStringRepresentation(evaluated));
+			assertEquals(expectedEvaluatedExpression, prettyPrinter.getStringRepresentation(evaluated, null));
 			if (expectedEvaluation != null) {
 				if (!(evaluated instanceof Constant)) {
 					fail("Evaluated value is not a constant (expected: " + expectedEvaluation + ") but " + expectedEvaluation);

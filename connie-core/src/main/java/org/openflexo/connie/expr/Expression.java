@@ -108,7 +108,7 @@ public abstract class Expression {
 
 	@Override
 	public String toString() {
-		return getPrettyPrinter().getStringRepresentation(this);
+		return getPrettyPrinter().getStringRepresentation(this, null);
 	}
 
 	@Override

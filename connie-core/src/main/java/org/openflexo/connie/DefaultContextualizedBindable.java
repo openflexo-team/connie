@@ -1,10 +1,6 @@
 /**
  * 
- */
-/**
- * 
- * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2014, Openflexo
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -43,42 +39,49 @@
 package org.openflexo.connie;
 
 import java.lang.reflect.Type;
-import java.util.List;
 
-import org.openflexo.connie.binding.Function;
-import org.openflexo.connie.binding.FunctionPathElement;
-import org.openflexo.connie.binding.IBindingPathElement;
-import org.openflexo.connie.binding.SimplePathElement;
-import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Expression;
+import org.openflexo.connie.type.TypingSpace;
+import org.openflexo.connie.type.UnresolvedType;
 
 /**
- * A factory associated to a given expression language and allowing to build expressions
+ * Default partial implementation for {@link Bindable} interface<br>
  * 
  * @author sylvain
- *
+ * 
  */
-public interface BindingFactory {
+public abstract class DefaultContextualizedBindable extends DefaultBindable implements ContextualizedBindable {
 
-	/**
-	 * Parse supplied expressionAsString, build and return an {@link Expression} according to underlying expression language
-	 * 
-	 * @param expressionAsString
-	 * @return
-	 */
-	Expression parseExpression(String expressionAsString, Bindable bindable) throws ParseException;
+	private final TypingSpace typingSpace;
 
-	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
+	public DefaultContextualizedBindable(TypingSpace typingSpace) {
+		this.typingSpace = typingSpace;
+	}
 
-	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent);
+	public TypingSpace getTypingSpace() {
+		return typingSpace;
+	}
 
-	SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName);
+	@Override
+	public boolean shouldImportType(Type type) {
+		if (type instanceof UnresolvedType) {
+			return false;
+		}
+		return true;
+	}
 
-	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
+	@Override
+	public Type resolveType(String typeAsString) {
+		return typingSpace.resolveType(typeAsString);
+	}
 
-	FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
+	@Override
+	public boolean isTypeImported(Type type) {
+		return typingSpace.isTypeImported(type);
+	}
 
-	Type getTypeForObject(Object object);
+	@Override
+	public void importType(Type type) {
+		typingSpace.importType(type);
+	}
 
-	Constant<?> getNullExpression();
 }

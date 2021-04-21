@@ -989,7 +989,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (getOwner() != null) {
 			try {
 				isParsingExpression = true;
-				expression = getOwner().getBindingFactory().parseExpression(getUnparsedBinding());
+				expression = getOwner().getBindingFactory().parseExpression(getUnparsedBinding(), getOwner());
 				// expression = ExpressionParser.parse(getUnparsedBinding());
 			} catch (ParseException e) {
 				// parse error

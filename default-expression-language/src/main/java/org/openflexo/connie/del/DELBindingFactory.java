@@ -44,6 +44,7 @@ package org.openflexo.connie.del;
 
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.JavaBasedBindingFactory;
 import org.openflexo.connie.ParseException;
@@ -63,7 +64,7 @@ public class DELBindingFactory extends JavaBasedBindingFactory {
 	static final Logger LOGGER = Logger.getLogger(DELBindingFactory.class.getPackage().getName());
 
 	@Override
-	public Expression parseExpression(String expressionAsString) throws ParseException {
+	public Expression parseExpression(String expressionAsString, Bindable bindable) throws ParseException {
 		return ExpressionParser.parse(expressionAsString);
 	}
 

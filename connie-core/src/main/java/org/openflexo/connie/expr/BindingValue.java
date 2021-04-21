@@ -52,8 +52,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
-import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.ParseException;
@@ -114,8 +114,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		analysingSuccessfull = true;
 	}
 
-	public BindingValue(String stringToParse, BindingFactory bindingFactory, ExpressionPrettyPrinter prettyPrinter) throws ParseException {
-		this(parse(stringToParse, bindingFactory), prettyPrinter);
+	public BindingValue(String stringToParse, Bindable bindable, ExpressionPrettyPrinter prettyPrinter) throws ParseException {
+		this(parse(stringToParse, bindable), prettyPrinter);
 	}
 
 	@Override
@@ -142,8 +142,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		}
 	}
 
-	private static List<AbstractBindingPathElement> parse(String stringToParse, BindingFactory bindingFactory) throws ParseException {
-		Expression e = bindingFactory.parseExpression(stringToParse);
+	private static List<AbstractBindingPathElement> parse(String stringToParse, Bindable bindable) throws ParseException {
+		Expression e = bindable.getBindingFactory().parseExpression(stringToParse, bindable);
 		// Expression e = ExpressionParser.parse(stringToParse);
 		if (e instanceof BindingValue) {
 			return ((BindingValue) e).getParsedBindingPath();

@@ -43,6 +43,8 @@ import java.lang.reflect.Type;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.openflexo.connie.Bindable;
+import org.openflexo.connie.ContextualizedBindable;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaArithmeticBinaryOperator;
 import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
@@ -134,8 +136,13 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	private final Map<Node, Expression> expressionNodes;
 	private Node topLevel = null;
 
-	public ExpressionSemanticsAnalyzer() {
+	private Bindable bindable;
+
+	public ExpressionSemanticsAnalyzer(Bindable aBindable) {
 		expressionNodes = new Hashtable<>();
+		if (aBindable instanceof ContextualizedBindable) {
+			this.bindable = aBindable;
+		}
 	}
 
 	public Expression getExpression() {
@@ -143,6 +150,10 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 			return expressionNodes.get(topLevel);
 		}
 		return null;
+	}
+
+	public Bindable getBindable() {
+		return bindable;
 	}
 
 	private void registerExpressionNode(Node n, Expression e) {

@@ -41,6 +41,7 @@ package org.openflexo.connie.del.expr;
 
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.del.DELGrammar;
 import org.openflexo.connie.del.expr.DELConstant.BooleanConstant;
 import org.openflexo.connie.del.expr.DELConstant.DateConstant;
@@ -81,7 +82,7 @@ public class DELPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected String makeStringRepresentation(Constant<?> constant) {
+	protected String makeStringRepresentation(Constant<?> constant, Bindable context) {
 		if (constant instanceof DELSymbolicConstant) {
 			return makeStringRepresentation((DELSymbolicConstant) constant);
 		}
@@ -139,19 +140,19 @@ public class DELPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected String makeStringRepresentation(UnaryOperatorExpression expression) {
+	protected String makeStringRepresentation(UnaryOperatorExpression expression, Bindable context) {
 		try {
-			return "(" + getSymbol(expression.getOperator()) + "(" + getStringRepresentation(expression.getArgument()) + ")" + ")";
+			return "(" + getSymbol(expression.getOperator()) + "(" + getStringRepresentation(expression.getArgument(), context) + ")" + ")";
 		} catch (OperatorNotSupportedException e) {
 			return "<unsupported>";
 		}
 	}
 
 	@Override
-	protected String makeStringRepresentation(BinaryOperatorExpression expression) {
+	protected String makeStringRepresentation(BinaryOperatorExpression expression, Bindable context) {
 		try {
-			return "(" + getStringRepresentation(expression.getLeftArgument()) + " " + getSymbol(expression.getOperator()) + " "
-					+ getStringRepresentation(expression.getRightArgument()) + ")";
+			return "(" + getStringRepresentation(expression.getLeftArgument(), context) + " " + getSymbol(expression.getOperator()) + " "
+					+ getStringRepresentation(expression.getRightArgument(), context) + ")";
 		} catch (OperatorNotSupportedException e) {
 			return "<unsupported>";
 		}
@@ -184,23 +185,25 @@ public class DELPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected String makeStringRepresentation(BindingValue bv) {
+	protected String makeStringRepresentation(BindingValue bv, Bindable context) {
 		return bv.toString();
 	}
 
 	@Override
-	protected String makeStringRepresentation(ConditionalExpression expression) {
-		return "(" + getStringRepresentation(expression.getCondition()) + " ? " + getStringRepresentation(expression.getThenExpression())
-				+ " : " + getStringRepresentation(expression.getElseExpression()) + ")";
+	protected String makeStringRepresentation(ConditionalExpression expression, Bindable context) {
+		return "(" + getStringRepresentation(expression.getCondition(), context) + " ? "
+				+ getStringRepresentation(expression.getThenExpression(), context) + " : "
+				+ getStringRepresentation(expression.getElseExpression(), context) + ")";
 	}
 
 	@Override
-	protected String makeStringRepresentation(CastExpression expression) {
-		return "(" + makeStringRepresentation(expression.getCastType()) + ")" + getStringRepresentation(expression.getArgument());
+	protected String makeStringRepresentation(CastExpression expression, Bindable context) {
+		return "(" + makeStringRepresentation(expression.getCastType(), context) + ")"
+				+ getStringRepresentation(expression.getArgument(), context);
 	}
 
 	@Override
-	protected String makeStringRepresentation(Type type) {
+	protected String makeStringRepresentation(Type type, Bindable context) {
 		return TypeUtils.simpleRepresentation(type);
 	}
 }
