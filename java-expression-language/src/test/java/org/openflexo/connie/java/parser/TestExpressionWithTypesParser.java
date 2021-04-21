@@ -157,4 +157,14 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 		assertTrue(getTypingSpace().isTypeImported(java.lang.reflect.Type.class));
 	}
 
+	// Test class methods
+
+	public void testClassMethod1() {
+		tryToParse("Class.forName(\"Foo\")", "Class.forName(\"Foo\")", BindingValue.class, null, false);
+	}
+
+	public void testClassMethod2() {
+		tryToParse("java.lang.Class.forName(\"Foo\")", "Class.forName(\"Foo\")", BindingValue.class, null, false);
+	}
+
 }

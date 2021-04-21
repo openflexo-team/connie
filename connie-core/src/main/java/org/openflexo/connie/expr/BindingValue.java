@@ -1366,4 +1366,75 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	}
 
+	public static class StaticMethodCallBindingPathElement extends AbstractBindingPathElement {
+		public Type type;
+		public String method;
+		public List<Expression> args;
+
+		public StaticMethodCallBindingPathElement(Type aType, String aMethod, List<Expression> someArgs) {
+			type = aType;
+			method = aMethod;
+			args = someArgs;
+		}
+
+		@Override
+		public String toString() {
+			return "StaticCall[" + type + "." + method + "(" + args + ")" + "]";
+		}
+
+		@Override
+		public String getSerializationRepresentation() {
+			StringBuffer sb = new StringBuffer();
+			sb.append(TypeUtils.simpleRepresentation(type) + "." + method + "(");
+			boolean isFirst = true;
+			for (Expression arg : args) {
+				sb.append((isFirst ? "" : ",") + arg);
+				isFirst = false;
+			}
+			sb.append(")");
+			return sb.toString();
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((args == null) ? 0 : args.hashCode());
+			result = prime * result + ((method == null) ? 0 : method.hashCode());
+			result = prime * result + ((type == null) ? 0 : type.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			StaticMethodCallBindingPathElement other = (StaticMethodCallBindingPathElement) obj;
+			if (args == null) {
+				if (other.args != null)
+					return false;
+			}
+			else if (!args.equals(other.args))
+				return false;
+			if (method == null) {
+				if (other.method != null)
+					return false;
+			}
+			else if (!method.equals(other.method))
+				return false;
+			if (type == null) {
+				if (other.type != null)
+					return false;
+			}
+			else if (!type.equals(other.type))
+				return false;
+			return true;
+		}
+
+	}
+
 }

@@ -49,6 +49,7 @@ import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.MethodCallBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NewInstanceBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
+import org.openflexo.connie.expr.BindingValue.StaticMethodCallBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
@@ -354,7 +355,12 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAClassMethodMethodInvocation(AClassMethodMethodInvocation node) {
 		super.outAClassMethodMethodInvocation(node);
-		// TODO handle class methods
+		if (weAreDealingWithTheRightBinding()) {
+			Type type = TypeAnalyzer.makeType(node.getType(), expressionAnalyzer);
+			StaticMethodCallBindingPathElement returned = new StaticMethodCallBindingPathElement(type, node.getLidentifier().getText(),
+					makeArgs(node.getArgumentList()));
+			path.add(returned);
+		}
 	}
 
 	private List<PExpression> makeArguments(AManyArgumentList args) {
