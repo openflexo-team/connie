@@ -52,6 +52,10 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 		tryToParse("new Object().toString()", "new Object().toString()", BindingValue.class, null, false);
 	}
 
+	public void testInnerNewInstance() {
+		tryToParse("a.b.new c.d.E()", "a.b.new c.d.E()", BindingValue.class, null, false);
+	}
+
 	// Test cast
 
 	public void testVoidCast() {
@@ -146,6 +150,11 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 	public void testWilcardUpperBounds() {
 		tryToParse("(Map<? extends Key, ? extends Value>)toto", "(Map<? extends Key,? extends Value>)toto", CastExpression.class, null,
 				false);
+	}
+
+	public void testImportType() {
+		tryToParse("(java.lang.reflect.Type)object", "(Type)object", JavaCastExpression.class, null, false);
+		assertTrue(getTypingSpace().isTypeImported(java.lang.reflect.Type.class));
 	}
 
 }

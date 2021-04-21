@@ -24,11 +24,17 @@ import junit.framework.TestCase;
 public abstract class ParserTestCase extends TestCase {
 
 	private JavaPrettyPrinter prettyPrinter;
+	private JavaTypingSpace typingSpace;
+	private ContextualizedBindable bindable;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		prettyPrinter = new JavaPrettyPrinter();
+	}
+
+	public JavaTypingSpace getTypingSpace() {
+		return typingSpace;
 	}
 
 	protected Expression tryToParse(String anExpression, String expectedEvaluatedExpression,
@@ -49,8 +55,8 @@ public abstract class ParserTestCase extends TestCase {
 
 		try {
 
-			JavaTypingSpace typingSpace = new JavaTypingSpace();
-			ContextualizedBindable bindable = new DefaultContextualizedBindable(typingSpace) {
+			typingSpace = new JavaTypingSpace();
+			bindable = new DefaultContextualizedBindable(typingSpace) {
 				@Override
 				public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
 				}

@@ -417,7 +417,9 @@ Productions
      | {java_instance_creation} java_instance_creation_invokation
      ;
 
-   java_instance_creation_invokation = kw_new type l_par argument_list? r_par;
+   java_instance_creation_invokation = 
+   	   {basic} kw_new type l_par argument_list? r_par
+  	 | {inner} primary dot kw_new type l_par argument_list? r_par;
 
    type_arguments_or_diamond =
        {type_arguments} type_arguments

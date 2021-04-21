@@ -52,13 +52,14 @@ import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
+import org.openflexo.connie.java.parser.node.ABasicJavaInstanceCreationInvokation;
 import org.openflexo.connie.java.parser.node.AClassMethodMethodInvocation;
 import org.openflexo.connie.java.parser.node.AComplexType;
 import org.openflexo.connie.java.parser.node.ACompositeIdent;
 import org.openflexo.connie.java.parser.node.AFieldPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AIdentifierPrefix;
 import org.openflexo.connie.java.parser.node.AIdentifierPrimary;
-import org.openflexo.connie.java.parser.node.AJavaInstanceCreationInvokation;
+import org.openflexo.connie.java.parser.node.AInnerJavaInstanceCreationInvokation;
 import org.openflexo.connie.java.parser.node.AJavaInstanceCreationPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AManyArgumentList;
 import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
@@ -103,10 +104,10 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 
 	public static BindingValue makeBindingValue(Node node, ExpressionSemanticsAnalyzer expressionAnalyzer) {
 
-		//System.out.println("Make BindingValue for " + node);
+		// System.out.println("Make BindingValue for " + node);
 
 		List<AbstractBindingPathElement> bindingPath = makeBindingPath(node, expressionAnalyzer);
-		//System.out.println("bindingPath = " + bindingPath);
+		// System.out.println("bindingPath = " + bindingPath);
 
 		return new BindingValue(bindingPath, JavaPrettyPrinter.getInstance());
 	}
@@ -327,9 +328,23 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 	}
 
 	@Override
-	public void outAJavaInstanceCreationInvokation(AJavaInstanceCreationInvokation node) {
-		super.outAJavaInstanceCreationInvokation(node);
+	public void outABasicJavaInstanceCreationInvokation(ABasicJavaInstanceCreationInvokation node) {
+		super.outABasicJavaInstanceCreationInvokation(node);
 		if (weAreDealingWithTheRightBinding()) {
+			Type type = TypeAnalyzer.makeType(node.getType(), expressionAnalyzer);
+			NewInstanceBindingPathElement returned = new NewInstanceBindingPathElement(type, makeArgs(node.getArgumentList()));
+			path.add(returned);
+		}
+	}
+
+	@Override
+	public void outAInnerJavaInstanceCreationInvokation(AInnerJavaInstanceCreationInvokation node) {
+		super.outAInnerJavaInstanceCreationInvokation(node);
+		if (weAreDealingWithTheRightBinding()) {
+			List<AbstractBindingPathElement> bindingPath = makeBindingPath(node.getPrimary(), expressionAnalyzer);
+			for (int i = 0; i < bindingPath.size(); i++) {
+				path.add(bindingPath.get(i));
+			}
 			Type type = TypeAnalyzer.makeType(node.getType(), expressionAnalyzer);
 			NewInstanceBindingPathElement returned = new NewInstanceBindingPathElement(type, makeArgs(node.getArgumentList()));
 			path.add(returned);
