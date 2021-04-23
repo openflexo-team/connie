@@ -72,7 +72,13 @@ public class TestBindingEvaluatorWithTypes extends EvaluatorTestCase {
 	public void testNewInnerClassInstance() throws ClassNotFoundException {
 		TestObject object = new TestObject();
 		genericTest("object.new org.openflexo.connie.java.TestBindingEvaluatorWithTypes$TestObject$InnerClass().toString()", object,
-				"InnerClass in TestObject");
+				"TestObject/InnerClass in TestObject");
+	}
+
+	public void testNewInnerClassInstance2() throws ClassNotFoundException {
+		TestObject2 object = new TestObject2(7);
+		genericTest("object.new org.openflexo.connie.java.TestBindingEvaluatorWithTypes$TestObject2$InnerClass2(9).toString()", object,
+				"InnerClass2/63");
 	}
 
 	public static class TestObject {
@@ -93,10 +99,21 @@ public class TestBindingEvaluatorWithTypes extends EvaluatorTestCase {
 
 		public class InnerClass {
 
+			public InnerClass() {
+				// TODO Auto-generated constructor stub
+				System.out.println("Passe-t-on la ???");
+				Thread.dumpStack();
+			}
+
 			@Override
 			public String toString() {
-				return "InnerClass in TestObject";
+				return TestObject.this.toString() + "/InnerClass in TestObject";
 			}
+		}
+
+		@Override
+		public String toString() {
+			return "TestObject";
 		}
 
 		@Override
@@ -122,4 +139,34 @@ public class TestBindingEvaluatorWithTypes extends EvaluatorTestCase {
 		}
 
 	}
+
+	public static class TestObject2 {
+
+		private int value;
+
+		public TestObject2(int aValue) {
+			this.value = aValue;
+		}
+
+		@Override
+		public String toString() {
+			return "TestObject2/" + value;
+		}
+
+		public class InnerClass2 {
+
+			private int innerValue;
+
+			public InnerClass2(int anInnerValue) {
+				this.innerValue = anInnerValue;
+			}
+
+			@Override
+			public String toString() {
+				return "InnerClass2/" + innerValue * value;
+			}
+		}
+
+	}
+
 }

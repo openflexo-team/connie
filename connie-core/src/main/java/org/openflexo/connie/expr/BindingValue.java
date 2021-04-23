@@ -56,6 +56,7 @@ import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.BindingPathElement.BindingPathCheck;
@@ -832,7 +833,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			currentElement = element;
 			
 			currentType = TypeUtils.makeInstantiatedType(currentElement.getType(), currentType);
-			*/
+			 */
 		}
 
 		analyzedType = currentType;
@@ -854,6 +855,32 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	@Override
 	public int hashCode() {
 		return toString().hashCode();
+	}
+
+	/**
+	 * Build a {@link DataBinding} representing a sub {@link BindingValue} extracted from this {@link BindingValue} with binding path
+	 * trucated at supplied index
+	 * <ul>
+	 * <li>If bindingPathIndex values 1, build a {@link BindingValue} with BindingVariable and the first binding path element</li>
+	 * <li>If bindingPathIndex values 0, build a {@link BindingValue} with BindingVariable</li>
+	 * </ul>
+	 * 
+	 * @param bindingPathIndex
+	 * @return
+	 */
+	public DataBinding<?> makeSubBindingValue(int bindingPathIndex) {
+
+		StringBuffer sb = new StringBuffer();
+		boolean isFirst = true;
+		if (getBindingVariable() != null) {
+			sb.append(getBindingVariable().getVariableName());
+			isFirst = false;
+		}
+		for (BindingPathElement e : getBindingPath()) {
+			sb.append((isFirst ? "" : ".") + e.getSerializationRepresentation());
+			isFirst = false;
+		}
+		return new DataBinding<>(sb.toString(), getDataBinding().getOwner(), Object.class, BindingDefinitionType.GET);
 	}
 
 	/**
@@ -957,7 +984,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 								((MethodCallBindingPathElement) pathElement).method, args);
 						if (function != null) {
 							FunctionPathElement newPathElement = dataBinding.getOwner().getBindingFactory().makeFunctionPathElement(current,
-									function, args);
+									function, null, args);
 							if (newPathElement != null) {
 								if (!newPathElement.isActivated()) {
 									newPathElement.activate();
@@ -1011,24 +1038,34 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					else if (pathElement instanceof NewInstanceBindingPathElement) {
 						NewInstanceBindingPathElement newInstanceCall = (NewInstanceBindingPathElement) pathElement;
 						List<DataBinding<?>> newInstanceArgs = buildArgs(newInstanceCall.args);
-
-						System.out.println("Hop, je suis la avec " + newInstanceArgs);
-
-						Function constructor = dataBinding.getOwner().getBindingFactory().retrieveConstructor(newInstanceCall.type,
-								newInstanceCall.constructorName, newInstanceArgs);
-						System.out.println("constructor=" + constructor);
+						Function constructor;
+						FunctionPathElement<?> newPathElement;
+						if (getBindingVariable() != null || bindingPath.size() > 0) {
+							// There is a inner access
+							DataBinding<?> innerAccess = makeSubBindingValue(bindingPath.size());
+							// System.out.println("Inner access: " + innerAccess);
+							// System.out.println("valid: " + innerAccess.isValid());
+							// System.out.println("type: " + innerAccess.getAnalyzedType());
+							constructor = dataBinding.getOwner().getBindingFactory().retrieveConstructor(newInstanceCall.type, innerAccess,
+									newInstanceCall.constructorName, newInstanceArgs);
+							newPathElement = dataBinding.getOwner().getBindingFactory().makeFunctionPathElement(current, constructor,
+									innerAccess, newInstanceArgs);
+						}
+						else {
+							constructor = dataBinding.getOwner().getBindingFactory().retrieveConstructor(newInstanceCall.type,
+									newInstanceCall.constructorName, newInstanceArgs);
+							newPathElement = dataBinding.getOwner().getBindingFactory().makeFunctionPathElement(current, constructor, null,
+									newInstanceArgs);
+						}
+						// System.out.println("constructor=" + constructor);
 
 						if (constructor != null) {
-							FunctionPathElement<?> newPathElement = dataBinding.getOwner().getBindingFactory()
-									.makeFunctionPathElement(current, constructor, newInstanceArgs);
 							if (newPathElement != null) {
 								if (!newPathElement.isActivated()) {
 									newPathElement.activate();
 								}
 								bindingPath.add(newPathElement);
 								current = newPathElement;
-								// System.out.println("> FUNCTION " +
-								// pathElement);
 							}
 							else {
 								invalidBindingReason = "cannot find constructor " + newInstanceCall.constructorName + " for type "

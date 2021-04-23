@@ -71,14 +71,32 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<Constr
 
 	static final Logger LOGGER = Logger.getLogger(JavaNewInstanceMethodPathElement.class.getPackage().getName());
 
-	public JavaNewInstanceMethodPathElement(IBindingPathElement parent, ConstructorDefinition constructor, List<DataBinding<?>> args) {
+	private DataBinding<?> innerAccess;
+
+	public JavaNewInstanceMethodPathElement(IBindingPathElement parent, ConstructorDefinition constructor, DataBinding<?> innerAccess,
+			List<DataBinding<?>> args) {
 		super(parent, constructor, args);
+		this.innerAccess = innerAccess;
 		if (getConstructorDefinition() != null) {
+			int i = 0;
+			if (innerAccess != null) {
+				for (FunctionArgument arg : getConstructorDefinition().getArguments()) {
+					if (i == 0) {
+						setParameter(arg, innerAccess);
+					}
+					else {
+						setParameter(arg, args.get(i - 1));
+					}
+					i++;
+				}
+			}
+
 			for (FunctionArgument arg : getConstructorDefinition().getArguments()) {
 				DataBinding<?> argValue = getParameter(arg);
 				if (argValue != null) {
 					argValue.setDeclaredType(arg.getArgumentType());
 				}
+				// System.out.println(">>>" + arg.getArgumentName() + "/" + arg.getArgumentType() + " = " + argValue);
 			}
 		}
 		setType(getConstructorDefinition().getReturnType());
@@ -131,14 +149,16 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<Constr
 
 		System.out.println("evaluate " + getConstructorDefinition().getSignature() + " for " + target);
 
-		Object[] args = new Object[getFunction().getArguments().size()];
+		Object[] args = new Object[getFunction().getArguments().size() /*+ (innerAccess != null ? 1 : 0)*/];
 		int i = 0;
 
 		for (Function.FunctionArgument a : getFunction().getArguments()) {
 			try {
-				if (getParameter(a) != null)
+				if (getParameter(a) != null) {
 					args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
 							getConstructorDefinition().getConstructor().getGenericParameterTypes()[i]);
+				}
+				// System.out.println("Argument " + a.getArgumentName() + " / " + a.getArgumentType()+" values: " + args[i]);
 			} catch (ReflectiveOperationException e) {
 				throw new InvocationTargetTransformException(e);
 			}
@@ -257,11 +277,29 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<Constr
 			}
 		}
 
+		DataBinding<?> transformedInnerAccess = null;
+
+		if (innerAccess != null && innerAccess.isValid()) {
+			Expression innerAccessExpression = innerAccess.getExpression();
+			if (innerAccessExpression != null) {
+				Expression transformedInnerAccessExpression = innerAccessExpression.transform(transformer);
+				if (!transformedInnerAccessExpression.equals(innerAccessExpression)) {
+					hasBeenTransformed = true;
+					transformedInnerAccess = new DataBinding<>(innerAccess.getOwner(), innerAccess.getDeclaredType(),
+							innerAccess.getBindingDefinitionType(), false);
+					transformedInnerAccess.setExpression(transformedInnerAccessExpression);
+					// TODO: better to do i think
+					transformedInnerAccess.isValid();
+					hasBeenTransformed = true;
+				}
+			}
+		}
+
 		if (!hasBeenTransformed) {
 			return this;
 		}
 
-		return new JavaNewInstanceMethodPathElement(getParent(), getConstructorDefinition(), transformedArgs);
+		return new JavaNewInstanceMethodPathElement(getParent(), getConstructorDefinition(), transformedInnerAccess, transformedArgs);
 	}
 
 	private JavaNewInstanceMethodPathElement updateTransformedPathElement(JavaNewInstanceMethodPathElement transformedPathElement,

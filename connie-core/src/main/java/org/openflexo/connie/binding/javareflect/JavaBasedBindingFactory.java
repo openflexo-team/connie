@@ -162,7 +162,8 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args) {
+	public FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, Function function, DataBinding<?> innerAccess,
+			List<DataBinding<?>> args) {
 		if (function instanceof InstanceMethodDefinition) {
 			return new JavaInstanceMethodPathElement(father, (InstanceMethodDefinition) function, args);
 		}
@@ -170,7 +171,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			return new JavaStaticMethodPathElement(father, (StaticMethodDefinition) function, args);
 		}
 		if (function instanceof ConstructorDefinition) {
-			return new JavaNewInstanceMethodPathElement(father, (ConstructorDefinition) function, args);
+			return new JavaNewInstanceMethodPathElement(father, (ConstructorDefinition) function, innerAccess, args);
 		}
 		return null;
 	}
@@ -259,16 +260,22 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		}
 	}
 
-	// Note: in java, we don't care about functionName (which is the name of the declaring type)
 	@Override
 	public ConstructorDefinition retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args) {
+		return retrieveConstructor(declaringType, null, functionName, args);
+	}
+
+	// Note: in java, we don't care about functionName (which is the name of the declaring type)
+	@Override
+	public ConstructorDefinition retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName,
+			List<DataBinding<?>> arguments) {
 		Map<String, ConstructorDefinition> mapForType = storedConstructors.get(declaringType);
 		if (mapForType == null) {
 			mapForType = new HashMap<>();
 			storedConstructors.put(declaringType, mapForType);
 		}
 
-		String signature = getSignature(TypeUtils.fullQualifiedRepresentation(declaringType), args);
+		String signature = getSignature(TypeUtils.fullQualifiedRepresentation(declaringType), arguments);
 		ConstructorDefinition returned = mapForType.get(signature);
 		if (returned != null) {
 			return returned;
@@ -280,10 +287,26 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			System.out.println("Cannot find typeClass for " + declaringType);
 			return null;
 		}
+
+		List<DataBinding<?>> args;
+		if (innerAccess != null) {
+			// This is an inner type
+			args = new ArrayList<>(arguments);
+			args.add(0, innerAccess);
+		}
+		else {
+			args = arguments;
+		}
+
 		// System.out.println("On cherche la methode " + functionName + " pour " + args);
 		Constructor<?>[] allConstructors = typeClass.getConstructors();
 		// First attempt: we perform type checking on parameters
 		for (Constructor<?> constructor : allConstructors) {
+			/*Thread.dumpStack();
+			System.out.println("constructor: " + constructor);
+			for (Type type : constructor.getGenericParameterTypes()) {
+				System.out.println("> type: " + type);
+			}*/
 			if (constructor.getGenericParameterTypes().length == args.size()) {
 				boolean lookupFails = false;
 				for (int i = 0; i < args.size(); i++) {
