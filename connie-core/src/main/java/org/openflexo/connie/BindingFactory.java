@@ -68,19 +68,92 @@ public interface BindingFactory {
 	 */
 	Expression parseExpression(String expressionAsString, Bindable bindable) throws ParseException;
 
+	/**
+	 * Return the list of accessible {@link SimplePathElement} which are accessible from supplied parent {@link IBindingPathElement}
+	 * 
+	 * @param parent
+	 * @return
+	 */
 	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
 
+	/**
+	 * Return the list of accessible {@link FunctionPathElement} which are accessible from supplied parent {@link IBindingPathElement}
+	 * 
+	 * @param parent
+	 * @return
+	 */
 	List<? extends FunctionPathElement<?>> getAccessibleFunctionPathElements(IBindingPathElement parent);
 
-	SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName);
+	/**
+	 * Build a new {@link SimplePathElement} with supplied parent and property name
+	 * 
+	 * @param parent
+	 * @param propertyName
+	 * @return
+	 */
+	SimplePathElement makeSimplePathElement(IBindingPathElement parent, String propertyName);
 
-	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
+	/**
+	 * Build a new {@link FunctionPathElement} with supplied parent, function and arguments
+	 * 
+	 * @param father
+	 * @param function
+	 * @param args
+	 * @return
+	 */
+	FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, Function function, DataBinding<?> innerAccess,
+			List<DataBinding<?>> args);
 
+	/**
+	 * Lookup and return {@link Function} denoted by functionName and list of arguments, for declaring Type
+	 * 
+	 * @param parentType
+	 * @param functionName
+	 * @param args
+	 * @return
+	 */
+	Function retrieveFunction(Type declaringType, String functionName, List<DataBinding<?>> args);
+
+	/**
+	 * Lookup and return a valid constructor for declaring type, functionName, and a list of arguments
+	 * 
+	 * @param declaringType
+	 *            Type of object beeing created by returned constructor
+	 * @param functionName
+	 *            name of constructor, might be null for anonymous-constructors languages (eg java)
+	 * @param args
+	 *            list of arguments
+	 * @return a {@link Function} usable as a constructor for declaringType
+	 */
 	Function retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args);
 
-	FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
+	/**
+	 * Lookup and return a valid constructor for declaring type, inner access, functionName, and a list of arguments
+	 * 
+	 * @param declaringType
+	 *            Type of object beeing created by returned constructor
+	 * @param innerAccess
+	 *            Defines the context in which this new instance should be created (parent object for inner access)
+	 * @param functionName
+	 *            name of constructor, might be null for anonymous-constructors languages (eg java)
+	 * @param args
+	 *            list of arguments
+	 * @return
+	 */
+	Function retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName, List<DataBinding<?>> args);
 
+	/**
+	 * Return Type for supplied object
+	 * 
+	 * @param object
+	 * @return
+	 */
 	Type getTypeForObject(Object object);
 
+	/**
+	 * Make null expression (language dependant)
+	 * 
+	 * @return
+	 */
 	Constant<?> getNullExpression();
 }
