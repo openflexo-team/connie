@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2012-2012, AgileBirds
+ * Copyright (c) 2011-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,44 +37,38 @@
  * 
  */
 
-package org.openflexo.connie.binding;
+package org.openflexo.connie.binding.javareflect;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
-final public class ReflectionUtils {
+public final class StaticMethodDefinition extends AbstractMethodDefinition {
 
-	private ReflectionUtils() {
+	private static Map<Method, Map<Type, StaticMethodDefinition>> cache = new HashMap<>();
+
+	public static StaticMethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
+		Map<Type, StaticMethodDefinition> mapForMethod = cache.get(method);
+		if (mapForMethod == null) {
+			mapForMethod = new HashMap<>();
+			cache.put(method, mapForMethod);
+		}
+
+		StaticMethodDefinition returned = mapForMethod.get(aDeclaringType);
+		if (returned == null) {
+			returned = new StaticMethodDefinition(aDeclaringType, method);
+			mapForMethod.put(aDeclaringType, returned);
+		}
+		return returned;
 	}
 
-	/**
-	 * Returns all methods that are overridden by the specified method. If no method is overridden, it returns an empty list.
-	 * 
-	 * @param method
-	 *            the method to check for.
-	 * @return all methods that are overridden by the specified method
-	 */
-	public static List<Method> getOverridenMethods(Method method) {
-		return appendOverriddenMethods(new ArrayList<Method>(), method.getDeclaringClass(), method);
+	protected StaticMethodDefinition(Type aDeclaringType, Method method) {
+		super(aDeclaringType, method);
 	}
 
-	private static List<Method> appendOverriddenMethods(List<Method> methods, Class<?> klass, Method method) {
-		if (klass == null) {
-			return methods;
-		}
-		if (klass != method.getDeclaringClass()) {
-			try {
-				Method m = klass.getMethod(method.getName(), method.getParameterTypes());
-				methods.add(m);
-			} catch (SecurityException e) {
-			} catch (NoSuchMethodException e) {
-			}
-		}
-		appendOverriddenMethods(methods, klass.getSuperclass(), method);
-		for (Class<?> superInterface : klass.getInterfaces()) {
-			appendOverriddenMethods(methods, superInterface, method);
-		}
-		return methods;
+	@Override
+	public String toString() {
+		return "InstanceMethodDefinition[" + getSimplifiedSignature() + "]";
 	}
 }

@@ -1,7 +1,6 @@
 /**
  * 
- * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2014, Openflexo
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,42 +36,36 @@
  * 
  */
 
-package org.openflexo.connie.exception;
-
-import java.lang.reflect.InvocationTargetException;
+package org.openflexo.connie.binding.javareflect;
 
 /**
- * This exception is thrown when an exception occcured during the execution of transformation
+ * <p>
+ * Exception thrown when trying to handle invalid key-value properties. This exception is raised in following cases:
+ * <ul>
+ * <li>trying to instanciate a property which doesn't exist (no field or no get/set pair accessing methods)</li>
+ * <li>trying to get or set a value from/to an invalid type</li>
+ * </ul>
+ * The 'message' (see {@link #getMessage()}) contains the error description.
  * 
- * @author sylvain
- * 
+ * @see KeyValueProperty
  */
-@SuppressWarnings("serial")
-public class InvocationTargetTransformException extends TransformException {
+public class InvalidKeyValuePropertyException extends RuntimeException {
 
-	private ReflectiveOperationException exception;
-
-	private String message;
-
-	public InvocationTargetTransformException(InvocationTargetException e) {
+	/**
+	 * Creates a new {@code InvalidKeyValuePropertyException} instance.
+	 * 
+	 */
+	public InvalidKeyValuePropertyException() {
 		super();
-		exception = e;
-		message = "InvocationTargetException: " + e.getTargetException().getMessage();
 	}
 
-	public InvocationTargetTransformException(ReflectiveOperationException e) {
-		super();
-		exception = e;
-		message = e.getClass().getSimpleName() + " : " + e.getMessage();
+	/**
+	 * Creates a new {@code InvalidKeyValuePropertyException} instance, given a message {@code aMessage}
+	 * 
+	 * @param aMessage
+	 *            a {@code String} message
+	 */
+	public InvalidKeyValuePropertyException(String aMessage) {
+		super(aMessage);
 	}
-
-	public ReflectiveOperationException getException() {
-		return exception;
-	}
-
-	@Override
-	public String getMessage() {
-		return message;
-	}
-
 }

@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.kvc;
+package org.openflexo.connie.binding.javareflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

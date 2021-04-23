@@ -42,11 +42,11 @@ package org.openflexo.connie.del;
 import java.lang.reflect.InvocationTargetException;
 
 import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.del.DELBindingFactory;
 import org.openflexo.connie.del.util.DELBindingEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 import junit.framework.TestCase;
 

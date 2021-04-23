@@ -105,14 +105,6 @@ public class TestBindingEvaluator extends EvaluatorTestCase {
 		assertTrue(object.methodWasCalled);
 	}
 
-	public void testInstanceof() throws ClassNotFoundException {
-		TestObject object = new TestObject();
-		System.out.println("Hop: " + TestObject.class);
-		System.out.println("Class: " + Class.forName("org.openflexo.connie.java.TestBindingEvaluator$TestObject"));
-		genericTest("object instanceof org.openflexo.connie.java.TestBindingEvaluator$TestObject", object, true);
-		// genericTest("object instanceof org.openflexo.connie.java.TestObject2", object, false);
-	}
-
 	public static class TestObject {
 
 		private int value = 0;

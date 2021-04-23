@@ -44,7 +44,7 @@ import java.lang.reflect.Type;
 
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.toolbox.HasPropertyChangeSupport;
+import org.openflexo.connie.type.TypeUtils;
 
 /**
  * Model a simple path element in a binding path, represented by a simple get/set access through a property
@@ -52,54 +52,15 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  * @author sylvain
  * 
  */
-public abstract class SimplePathElement implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
+public abstract class SimplePathElement extends AbstractPathElement implements SettableBindingPathElement {
 
-	private IBindingPathElement parent;
 	private String propertyName;
 	private Type type;
-	private PropertyChangeSupport pcSupport;
-	private boolean activated = false;
-
-	public static final String NAME_PROPERTY = "propertyName";
-	public static final String TYPE_PROPERTY = "type";
-	public static final String DELETED_PROPERTY = "deleted";
 
 	public SimplePathElement(IBindingPathElement parent, String propertyName, Type type) {
-		this.parent = parent;
+		super(parent);
 		this.propertyName = propertyName;
 		this.type = type;
-		pcSupport = new PropertyChangeSupport(this);
-	}
-
-	/**
-	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
-	 */
-	@Override
-	public void activate() {
-		this.activated = true;
-	}
-
-	/**
-	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
-	 */
-	@Override
-	public void desactivate() {
-		this.activated = false;
-	}
-
-	/**
-	 * Return boolean indicating if this {@link BindingPathElement} is activated
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isActivated() {
-		return activated;
-	}
-
-	@Override
-	public IBindingPathElement getParent() {
-		return parent;
 	}
 
 	public String getPropertyName() {
@@ -132,14 +93,19 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		return true;
 	}
 
+	/**
+	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
+	 * 
+	 * @return false in this case
+	 */
 	@Override
-	public String getSerializationRepresentation() {
-		return getPropertyName();
+	public boolean supportsNullValues() {
+		return false;
 	}
 
 	@Override
-	public PropertyChangeSupport getPropertyChangeSupport() {
-		return pcSupport;
+	public String getSerializationRepresentation() {
+		return getPropertyName();
 	}
 
 	@Override
@@ -151,7 +117,7 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+		result = prime * result + ((getParent() == null) ? 0 : getParent().hashCode());
 		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
 		return result;
 	}
@@ -165,11 +131,11 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 		if (getClass() != obj.getClass())
 			return false;
 		SimplePathElement other = (SimplePathElement) obj;
-		if (parent == null) {
-			if (other.parent != null)
+		if (getParent() == null) {
+			if (other.getParent() != null)
 				return false;
 		}
-		else if (!parent.equals(other.parent))
+		else if (!getParent().equals(other.getParent()))
 			return false;
 		if (propertyName == null) {
 			if (other.propertyName != null)
@@ -179,20 +145,6 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 			return false;
 		return true;
 	}
-
-	/*@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SimplePathElement) {
-			return getParent().equals(((SimplePathElement) obj).getParent())
-					&& getPropertyName().equals(((SimplePathElement) obj).getPropertyName());
-		}
-		return super.equals(obj);
-	}
-	
-	@Override
-	public int hashCode() {
-		return getPropertyName().hashCode();
-	}*/
 
 	@Override
 	public boolean isNotifyingBindingPathChanged() {
@@ -223,4 +175,15 @@ public abstract class SimplePathElement implements BindingPathElement, SettableB
 	public boolean isNotificationSafe() {
 		return true;
 	}
+
+	@Override
+	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType) {
+
+		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
+
+		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
+		check.valid = true;
+		return check;
+	}
+
 }

@@ -41,7 +41,7 @@ package org.openflexo.connie.binding;
 
 import java.lang.reflect.Method;
 
-import org.openflexo.kvc.KeyValueProperty;
+import org.openflexo.connie.binding.javareflect.KeyValueProperty;
 
 /**
  * <p>

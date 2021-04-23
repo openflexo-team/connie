@@ -37,7 +37,7 @@
  * 
  */
 
-package org.openflexo.connie.binding;
+package org.openflexo.connie.binding.javareflect;
 
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.InvocationTargetException;
@@ -52,7 +52,11 @@ import java.util.logging.Logger;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.annotations.NotificationUnsafe;
+import org.openflexo.connie.binding.BindingPathElement;
+import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
+import org.openflexo.connie.binding.FunctionPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
@@ -67,11 +71,11 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaMethodPathElement extends FunctionPathElement {
+public class JavaStaticMethodPathElement extends FunctionPathElement<StaticMethodDefinition> {
 
-	static final Logger LOGGER = Logger.getLogger(JavaMethodPathElement.class.getPackage().getName());
+	static final Logger LOGGER = Logger.getLogger(JavaStaticMethodPathElement.class.getPackage().getName());
 
-	public JavaMethodPathElement(IBindingPathElement parent, MethodDefinition method, List<DataBinding<?>> args) {
+	public JavaStaticMethodPathElement(IBindingPathElement parent, StaticMethodDefinition method, List<DataBinding<?>> args) {
 		super(parent, method, args);
 		if (getMethodDefinition() != null) {
 			for (FunctionArgument arg : getMethodDefinition().getArguments()) {
@@ -84,13 +88,8 @@ public class JavaMethodPathElement extends FunctionPathElement {
 		setType(getMethodDefinition().getMethod().getGenericReturnType());
 	}
 
-	final public MethodDefinition getMethodDefinition() {
+	final public StaticMethodDefinition getMethodDefinition() {
 		return getFunction();
-	}
-
-	@Override
-	public MethodDefinition getFunction() {
-		return (MethodDefinition) super.getFunction();
 	}
 
 	public String getMethodName() {
@@ -139,6 +138,11 @@ public class JavaMethodPathElement extends FunctionPathElement {
 	}
 
 	@Override
+	public boolean supportsNullValues() {
+		return true;
+	}
+
+	@Override
 	public String getLabel() {
 		return getMethodDefinition().getLabel();
 	}
@@ -162,7 +166,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 				if (getParameter(a) != null)
 					args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
 							getMethodDefinition().getMethod().getGenericParameterTypes()[i]);
-			} catch (InvocationTargetException e) {
+			} catch (ReflectiveOperationException e) {
 				throw new InvocationTargetTransformException(e);
 			}
 			i++;
@@ -200,11 +204,11 @@ public class JavaMethodPathElement extends FunctionPathElement {
 
 	}
 
-	private final Map<ExpressionTransformer, JavaMethodPathElement> transformedPathElements = new HashMap<>();
+	private final Map<ExpressionTransformer, JavaStaticMethodPathElement> transformedPathElements = new HashMap<>();
 
 	@Override
-	public JavaMethodPathElement transform(ExpressionTransformer transformer) throws TransformException {
-		JavaMethodPathElement returned = transformedPathElements.get(transformer);
+	public JavaStaticMethodPathElement transform(ExpressionTransformer transformer) throws TransformException {
+		JavaStaticMethodPathElement returned = transformedPathElements.get(transformer);
 		if (returned == null) {
 			System.out.println("On recalcule un JavaMethodPathElement pour " + this + " transformer=" + transformer);
 			returned = makeTransformedPathElement(transformer);
@@ -233,7 +237,7 @@ public class JavaMethodPathElement extends FunctionPathElement {
 		return sb.toString();
 	}
 
-	private JavaMethodPathElement makeTransformedPathElement(ExpressionTransformer transformer) throws TransformException {
+	private JavaStaticMethodPathElement makeTransformedPathElement(ExpressionTransformer transformer) throws TransformException {
 
 		boolean hasBeenTransformed = false;
 		List<DataBinding<?>> transformedArgs = new ArrayList<>();
@@ -270,10 +274,10 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			return this;
 		}
 
-		return new JavaMethodPathElement(getParent(), getMethodDefinition(), transformedArgs);
+		return new JavaStaticMethodPathElement(getParent(), getMethodDefinition(), transformedArgs);
 	}
 
-	private JavaMethodPathElement updateTransformedPathElement(JavaMethodPathElement transformedPathElement,
+	private JavaStaticMethodPathElement updateTransformedPathElement(JavaStaticMethodPathElement transformedPathElement,
 			ExpressionTransformer transformer) throws TransformException {
 
 		for (FunctionArgument arg : getArguments()) {
@@ -302,5 +306,15 @@ public class JavaMethodPathElement extends FunctionPathElement {
 			db.delete();
 		}
 	}*/
+
+	@Override
+	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement currentElement, Type currentType) {
+
+		BindingPathCheck check = new BindingPathCheck();
+
+		check.invalidBindingReason = "J'aime pas les static methods";
+		check.valid = false;
+		return check;
+	}
 
 }

@@ -1,6 +1,7 @@
 /**
  * 
- * Copyright (c) 2014, Openflexo
+ * Copyright (c) 2013-2014, Openflexo
+ * Copyright (c) 2011-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -36,36 +37,26 @@
  * 
  */
 
-package org.openflexo.kvc;
+package org.openflexo.connie.type;
+
+import java.util.List;
 
 /**
- * <p>
- * Exception thrown when trying to handle invalid key-value properties. This exception is raised in following cases:
- * <ul>
- * <li>trying to instanciate a property which doesn't exist (no field or no get/set pair accessing methods)</li>
- * <li>trying to get or set a value from/to an invalid type</li>
- * </ul>
- * The 'message' (see {@link #getMessage()}) contains the error description.
+ * Interface implemented by classes taking their values in a set of possible values
  * 
- * @see KeyValueProperty
+ * NOTE: All classes inplementing this interface MUST define a static method called public static Vector availableValues();
+ * 
+ * @author sylvain
+ * 
  */
-public class InvalidKeyValuePropertyException extends RuntimeException {
+@Deprecated
+public interface ChoiceList<T> {
 
 	/**
-	 * Creates a new {@code InvalidKeyValuePropertyException} instance.
+	 * Return a Vector of possible values (which must be of the same type as the one declared as class implemented this interface)
 	 * 
+	 * @return a Vector of ChoiceList
 	 */
-	public InvalidKeyValuePropertyException() {
-		super();
-	}
+	public List<T> getAvailableValues();
 
-	/**
-	 * Creates a new {@code InvalidKeyValuePropertyException} instance, given a message {@code aMessage}
-	 * 
-	 * @param aMessage
-	 *            a {@code String} message
-	 */
-	public InvalidKeyValuePropertyException(String aMessage) {
-		super(aMessage);
-	}
 }

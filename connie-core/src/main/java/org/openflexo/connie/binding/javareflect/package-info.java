@@ -3,4 +3,4 @@
  * 
  * @author sylvain
  */
-package org.openflexo.kvc;
+package org.openflexo.connie.binding.javareflect;

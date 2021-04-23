@@ -47,11 +47,11 @@ import java.util.Map;
 
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.MultipleParametersBindingEvaluator;
+import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.del.expr.DELExpressionEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.ExpressionEvaluator;
-import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 /**
  * Utility class allowing to compute binding value over an expression and a given set of objects.<br>

@@ -47,11 +47,11 @@ import java.util.Map;
 
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.MultipleParametersBindingEvaluator;
+import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.ExpressionEvaluator;
 import org.openflexo.connie.java.expr.JavaExpressionEvaluator;
-import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 /**
  * Utility class allowing to compute binding value over an expression and a given set of objects in the context of Java expression
@@ -99,7 +99,7 @@ final public class JavaMultipleParametersBindingEvaluator extends MultipleParame
 	 * @throws InvocationTargetException
 	 */
 	public static Object evaluateBinding(String bindingPath, BindingFactory bindingFactory, Object receiver, Object... args)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
 		Map<String, Object> objects = new HashMap<>();
 

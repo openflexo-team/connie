@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.kvc;
+package org.openflexo.connie.binding.javareflect;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -48,7 +48,7 @@ import java.lang.reflect.InvocationTargetException;
  * {@link #getTargetException()})
  * 
  * @author sylvain
- * @see org.openflexo.kvc.KeyValueProperty
+ * @see org.openflexo.connie.binding.javareflect.KeyValueProperty
  */
 public class AccessorInvocationException extends RuntimeException {
 

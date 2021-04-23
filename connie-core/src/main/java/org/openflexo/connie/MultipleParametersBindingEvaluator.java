@@ -39,10 +39,10 @@
 
 package org.openflexo.connie;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
+import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
@@ -50,7 +50,6 @@ import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
-import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 /**
  * Utility class allowing to compute binding value over an expression and a given set of objects.<br>
@@ -181,7 +180,7 @@ public abstract class MultipleParametersBindingEvaluator extends DefaultBindable
 	}
 
 	protected Object evaluate(String aBindingPath)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		String normalizedBindingPath = aBindingPath;
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 		// FD redondant : binding.setDeclaredType(Object.class);

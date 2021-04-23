@@ -37,58 +37,59 @@
  * 
  */
 
-package org.openflexo.connie.del.util;
+package org.openflexo.connie;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-
-import org.openflexo.connie.BindingEvaluator;
-import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
-import org.openflexo.connie.del.expr.DELExpressionEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.ExpressionEvaluator;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
- * Utility class allowing to compute binding value over an expression and a given object.<br>
- * Expression must be expressed with or without supplied object (when mentioned, use "object." prefix).<br>
- * Considering we are passing a String, valid binding path are for example:
- * <ul>
- * <li>toString</li>
- * <li>toString()</li>
- * <li>toString()+' hash='+object.hashCode()</li>
- * <li>substring(6,11)</li>
- * <li>substring(3,length()-2)+' hash='+hashCode()</li>
+ * Abstract utility class allowing to compute binding value over an expression<br>
  * </ul>
  * 
  * @author sylvain
  * 
  */
-final public class DELBindingEvaluator extends BindingEvaluator {
+public abstract class AbstractBindingEvaluator extends DefaultContextualizedBindable implements BindingEvaluationContext {
 
-	private DELBindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
-		super(object, objectType, bindingFactory);
+	// private static final BindingFactory BINDING_FACTORY = new JavaBasedBindingFactory();
+
+	private BindingModel bindingModel;
+	private BindingFactory bindingFactory;
+
+	protected AbstractBindingEvaluator(BindingFactory bindingFactory, TypingSpace typingSpace) {
+		super(typingSpace);
+
+		this.bindingFactory = bindingFactory;
+
+		bindingModel = new BindingModel();
+	}
+
+	public void delete() {
+		bindingModel.delete();
+		bindingModel = null;
 	}
 
 	@Override
-	public ExpressionEvaluator getEvaluator() {
-		return new DELExpressionEvaluator(this);
+	public BindingModel getBindingModel() {
+		return bindingModel;
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object, Type objectType, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-
-		DELBindingEvaluator evaluator = new DELBindingEvaluator(object, objectType, bindingFactory);
-		Object returned = evaluator.evaluate(bindingPath);
-		evaluator.delete();
-		return returned;
+	@Override
+	public BindingFactory getBindingFactory() {
+		return bindingFactory;
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-
-		return evaluateBinding(bindingPath, object, object.getClass(), bindingFactory);
+	@Override
+	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
 	}
+
+	@Override
+	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
+	}
+
+	protected abstract Object evaluate(String bindingPath)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException;
 
 }

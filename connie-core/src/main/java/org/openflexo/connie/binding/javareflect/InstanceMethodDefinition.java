@@ -37,42 +37,38 @@
  * 
  */
 
-package org.openflexo.connie.exception;
+package org.openflexo.connie.binding.javareflect;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * This exception is thrown when an exception occcured during the execution of transformation
- * 
- * @author sylvain
- * 
- */
-@SuppressWarnings("serial")
-public class InvocationTargetTransformException extends TransformException {
+public final class InstanceMethodDefinition extends AbstractMethodDefinition {
 
-	private ReflectiveOperationException exception;
+	private static Map<Method, Map<Type, InstanceMethodDefinition>> cache = new HashMap<>();
 
-	private String message;
+	public static InstanceMethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
+		Map<Type, InstanceMethodDefinition> mapForMethod = cache.get(method);
+		if (mapForMethod == null) {
+			mapForMethod = new HashMap<>();
+			cache.put(method, mapForMethod);
+		}
 
-	public InvocationTargetTransformException(InvocationTargetException e) {
-		super();
-		exception = e;
-		message = "InvocationTargetException: " + e.getTargetException().getMessage();
+		InstanceMethodDefinition returned = mapForMethod.get(aDeclaringType);
+		if (returned == null) {
+			returned = new InstanceMethodDefinition(aDeclaringType, method);
+			mapForMethod.put(aDeclaringType, returned);
+		}
+		return returned;
 	}
 
-	public InvocationTargetTransformException(ReflectiveOperationException e) {
-		super();
-		exception = e;
-		message = e.getClass().getSimpleName() + " : " + e.getMessage();
-	}
-
-	public ReflectiveOperationException getException() {
-		return exception;
+	protected InstanceMethodDefinition(Type aDeclaringType, Method method) {
+		super(aDeclaringType, method);
 	}
 
 	@Override
-	public String getMessage() {
-		return message;
+	public String toString() {
+		return "InstanceMethodDefinition[" + getSimplifiedSignature() + "]";
 	}
-
 }

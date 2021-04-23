@@ -70,13 +70,15 @@ public interface BindingFactory {
 
 	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
 
-	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent);
+	List<? extends FunctionPathElement<?>> getAccessibleFunctionPathElements(IBindingPathElement parent);
 
 	SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName);
 
 	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
 
-	FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
+	Function retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args);
+
+	FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
 
 	Type getTypeForObject(Object object);
 

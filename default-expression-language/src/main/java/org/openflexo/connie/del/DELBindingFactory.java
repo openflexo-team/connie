@@ -46,8 +46,8 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingFactory;
-import org.openflexo.connie.JavaBasedBindingFactory;
 import org.openflexo.connie.ParseException;
+import org.openflexo.connie.binding.javareflect.JavaBasedBindingFactory;
 import org.openflexo.connie.del.expr.DELConstant.ObjectSymbolicConstant;
 import org.openflexo.connie.del.parser.ExpressionParser;
 import org.openflexo.connie.expr.Constant;

@@ -37,21 +37,21 @@
  * 
  */
 
-package org.openflexo.connie.del.util;
+package org.openflexo.connie.java.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
-
-import org.openflexo.connie.BindingEvaluator;
 import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.StaticBindingEvaluator;
 import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
-import org.openflexo.connie.del.expr.DELExpressionEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.ExpressionEvaluator;
+import org.openflexo.connie.java.JavaBindingFactory;
+import org.openflexo.connie.java.JavaTypingSpace;
+import org.openflexo.connie.java.expr.JavaExpressionEvaluator;
 
 /**
- * Utility class allowing to compute binding value over an expression and a given object.<br>
+ * Utility class allowing to compute binding value over an expression and a given object in the context of Java expression language.<br>
  * Expression must be expressed with or without supplied object (when mentioned, use "object." prefix).<br>
  * Considering we are passing a String, valid binding path are for example:
  * <ul>
@@ -65,30 +65,37 @@ import org.openflexo.connie.expr.ExpressionEvaluator;
  * @author sylvain
  * 
  */
-final public class DELBindingEvaluator extends BindingEvaluator {
+final public class JavaStaticBindingEvaluator extends StaticBindingEvaluator {
 
-	private DELBindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
-		super(object, objectType, bindingFactory);
+	private static JavaBindingFactory JAVA_BINDING_FACTORY = new JavaBindingFactory();
+	private static JavaTypingSpace JAVA_TYPING_SPACE = new JavaTypingSpace();
+
+	private JavaStaticBindingEvaluator(BindingFactory bindingFactory) {
+		super(bindingFactory, JAVA_TYPING_SPACE);
 	}
 
 	@Override
 	public ExpressionEvaluator getEvaluator() {
-		return new DELExpressionEvaluator(this);
+		return new JavaExpressionEvaluator(this);
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object, Type objectType, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+	public static Object evaluateBinding(String bindingPath, BindingFactory bindingFactory)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
-		DELBindingEvaluator evaluator = new DELBindingEvaluator(object, objectType, bindingFactory);
+		JavaStaticBindingEvaluator evaluator = new JavaStaticBindingEvaluator(bindingFactory);
 		Object returned = evaluator.evaluate(bindingPath);
 		evaluator.delete();
 		return returned;
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object object, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-
-		return evaluateBinding(bindingPath, object, object.getClass(), bindingFactory);
+	public static Object evaluateBinding(String bindingPath)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
+		return evaluateBinding(bindingPath, JAVA_BINDING_FACTORY);
 	}
 
+	@Override
+	public Object getValue(BindingVariable variable) {
+		// Useless
+		return null;
+	}
 }

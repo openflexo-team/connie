@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,25 +37,37 @@
  * 
  */
 
-package org.openflexo.kvc;
+package org.openflexo.connie;
 
-import java.util.List;
+import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
- * Interface implemented by classes taking their values in a set of possible values
- * 
- * NOTE: All classes inplementing this interface MUST define a static method called public static Vector availableValues();
+ * Utility class allowing to compute binding value over a static expression (no context given).<br>
+ * </ul>
  * 
  * @author sylvain
  * 
  */
-public interface ChoiceList<T> {
+public abstract class StaticBindingEvaluator extends AbstractBindingEvaluator {
 
-	/**
-	 * Return a Vector of possible values (which must be of the same type as the one declared as class implemented this interface)
-	 * 
-	 * @return a Vector of ChoiceList
-	 */
-	public List<T> getAvailableValues();
+	protected StaticBindingEvaluator(BindingFactory bindingFactory, TypingSpace typingSpace) {
+		super(bindingFactory, typingSpace);
+	}
+
+	@Override
+	protected Object evaluate(String bindingPath)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
+		DataBinding<?> binding = new DataBinding<>(bindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
+
+		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
+		if (!binding.isValid()) {
+			System.out.println("not valid: " + binding.invalidBindingReason());
+			throw new InvalidKeyValuePropertyException("Cannot interpret " + bindingPath);
+		}
+		return binding.getBindingValue(this);
+	}
 
 }

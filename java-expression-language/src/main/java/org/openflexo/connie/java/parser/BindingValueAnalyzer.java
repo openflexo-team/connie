@@ -333,7 +333,8 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		super.outABasicJavaInstanceCreationInvokation(node);
 		if (weAreDealingWithTheRightBinding()) {
 			Type type = TypeAnalyzer.makeType(node.getType(), expressionAnalyzer);
-			NewInstanceBindingPathElement returned = new NewInstanceBindingPathElement(type, makeArgs(node.getArgumentList()));
+			NewInstanceBindingPathElement returned = new NewInstanceBindingPathElement(type, null /* a java constructor has no name */,
+					makeArgs(node.getArgumentList()));
 			path.add(returned);
 		}
 	}
@@ -347,7 +348,8 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 				path.add(bindingPath.get(i));
 			}
 			Type type = TypeAnalyzer.makeType(node.getType(), expressionAnalyzer);
-			NewInstanceBindingPathElement returned = new NewInstanceBindingPathElement(type, makeArgs(node.getArgumentList()));
+			NewInstanceBindingPathElement returned = new NewInstanceBindingPathElement(type, null /* a java constructor has no name */,
+					makeArgs(node.getArgumentList()));
 			path.add(returned);
 		}
 	}

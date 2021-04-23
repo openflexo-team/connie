@@ -69,7 +69,7 @@ public abstract class Expression {
 	public abstract Expression transform(ExpressionTransformer transformer) throws TransformException;
 
 	public final Expression evaluate(BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		try {
 			return transform(context.getEvaluator());
 		} catch (TypeMismatchException e) {

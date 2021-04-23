@@ -42,80 +42,97 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
-import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * General API for an non-root element of a formal binding path, which has at least one parent
+ * Abstract base implementation for a path element
  * 
  * @author sylvain
  * 
  */
-public interface BindingPathElement extends IBindingPathElement {
+public abstract class AbstractPathElement implements BindingPathElement, HasPropertyChangeSupport {
 
-	/**
-	 * Return parent of this BindingPathElement
-	 * 
-	 * @return
-	 */
-	IBindingPathElement getParent();
+	private IBindingPathElement parent;
+	private PropertyChangeSupport pcSupport;
+	private boolean activated = false;
+
+	public static final String NAME_PROPERTY = "propertyName";
+	public static final String TYPE_PROPERTY = "type";
+	public static final String DELETED_PROPERTY = "deleted";
+
+	public AbstractPathElement(IBindingPathElement parent) {
+		this.parent = parent;
+		pcSupport = new PropertyChangeSupport(this);
+	}
 
 	/**
 	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
 	 */
-	public void activate();
+	@Override
+	public void activate() {
+		this.activated = true;
+	}
 
 	/**
 	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
 	 */
-	public void desactivate();
+	@Override
+	public void desactivate() {
+		this.activated = false;
+	}
 
 	/**
 	 * Return boolean indicating if this {@link BindingPathElement} is activated
 	 * 
 	 * @return
 	 */
-	public boolean isActivated();
-
-	/**
-	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
-	 * {@link PropertyChangeSupport} scheme)<br>
-	 * 
-	 * When tagged as unsafe, disable caching while evaluating related {@link DataBinding}.
-	 * 
-	 * Otherwise return true
-	 * 
-	 * @return
-	 */
-	public boolean isNotificationSafe();
-
-	/**
-	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
-	 * 
-	 * @return
-	 */
-	public boolean supportsNullValues();
-
-	/**
-	 * Carry the result of acceptability of to type checking of a {@link BindingPathElement} in the context of a parent
-	 *
-	 * @author sylvain
-	 */
-	public static class BindingPathCheck {
-		public Boolean valid = null;
-		public String invalidBindingReason;
-		public Type returnedType;
+	@Override
+	public boolean isActivated() {
+		return activated;
 	}
 
-	/**
-	 * Evaluate the acceptability relatively to type checking of this {@link BindingPathElement} in the context of a parent
-	 * {@link IBindingPathElement}
-	 * 
-	 * @param parentElement
-	 *            parent element of current {@link IBindingPathElement}
-	 * @param parentType
-	 *            resulting type for the parent {@link IBindingPathElement} in its context
-	 * @return
-	 */
-	public abstract BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType);
+	@Override
+	public IBindingPathElement getParent() {
+		return parent;
+	}
+
+	@Override
+	public PropertyChangeSupport getPropertyChangeSupport() {
+		return pcSupport;
+	}
+
+	@Override
+	public String getDeletedProperty() {
+		return DELETED_PROPERTY;
+	}
+
+	@Override
+	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType) {
+
+		BindingPathCheck check = new BindingPathCheck();
+
+		if (getParent() == null) {
+			check.invalidBindingReason = "No parent for: " + this;
+			check.valid = false;
+			return check;
+		}
+
+		if (getParent() != parentElement) {
+			check.invalidBindingReason = "Inconsistent parent for: " + this;
+			check.valid = false;
+			return check;
+		}
+
+		if (!TypeUtils.isTypeAssignableFrom(parentElement.getType(), getParent().getType(), true)) {
+			check.invalidBindingReason = "Mismatched: " + parentElement.getType() + " and " + getParent().getType();
+			check.valid = false;
+			return check;
+		}
+
+		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
+		check.valid = true;
+		return check;
+	}
 
 }

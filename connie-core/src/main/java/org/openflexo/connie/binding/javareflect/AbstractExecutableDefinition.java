@@ -37,46 +37,28 @@
  * 
  */
 
-package org.openflexo.connie.binding;
+package org.openflexo.connie.binding.javareflect;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Observable;
 
+import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
 
-public final class MethodDefinition extends Observable implements Function {
+public abstract class AbstractExecutableDefinition<E extends Executable> implements Function {
 	private final Type declaringType;
-	private final Method method;
+	private final E executable;
 	private final ArrayList<Function.FunctionArgument> arguments;
-	private static Map<Method, Map<Type, MethodDefinition>> cache = new HashMap<>();
 
-	public static MethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
-		Map<Type, MethodDefinition> mapForMethod = cache.get(method);
-		if (mapForMethod == null) {
-			mapForMethod = new HashMap<>();
-			cache.put(method, mapForMethod);
-		}
-
-		MethodDefinition returned = mapForMethod.get(aDeclaringType);
-		if (returned == null) {
-			returned = new MethodDefinition(aDeclaringType, method);
-			mapForMethod.put(aDeclaringType, returned);
-		}
-		return returned;
-	}
-
-	private MethodDefinition(Type aDeclaringType, Method method) {
-		this.method = method;
+	protected AbstractExecutableDefinition(Type aDeclaringType, E executable) {
+		this.executable = executable;
 		this.declaringType = aDeclaringType;
 		arguments = new ArrayList<>();
 		int i = 0;
-		for (Type t : method.getGenericParameterTypes()) {
+		for (Type t : executable.getGenericParameterTypes()) {
 			String argName = "arg" + i;
 			Type argType = TypeUtils.makeInstantiatedType(t, aDeclaringType);
 			arguments.add(new DefaultFunctionArgument(this, argName, argType));
@@ -84,57 +66,27 @@ public final class MethodDefinition extends Observable implements Function {
 		}
 	}
 
-	public Method getMethod() {
-		return method;
+	public Type getDeclaringType() {
+		return declaringType;
 	}
 
-	public String getMethodName() {
-		return method.getName();
+	public E getExecutable() {
+		return executable;
 	}
 
-	private String _signatureNFQ;
-	private String _signatureFQ;
+	public String getExecutableName() {
+		return executable.getName();
+	}
+
 	private String _parameterListAsStringFQ;
 	private String _parameterListAsString;
 
-	public String getSimplifiedSignature() {
-		if (_signatureNFQ == null) {
-			StringBuilder signature = new StringBuilder();
-			signature.append(method.getName());
-			signature.append("(");
-			signature.append(getParameterListAsString(false));
-			signature.append(")");
-			_signatureNFQ = signature.toString();
-		}
-		return _signatureNFQ;
-	}
-
-	public String getSignature() {
-		if (_signatureFQ == null) {
-			// try {
-			StringBuffer signature = new StringBuffer();
-			signature.append(method.getName());
-			signature.append("(");
-			signature.append(getParameterListAsString(true));
-			signature.append(")");
-			_signatureFQ = signature.toString();
-			/*}
-			catch (InvalidKeyValuePropertyException e) {
-				logger.warning("While computing getSignature() for "+method+" and "+declaringType+" message:"+e.getMessage());
-				e.printStackTrace();
-				return null;
-			}*/
-
-		}
-		return _signatureFQ;
-	}
-
-	private String getParameterListAsString(boolean fullyQualified) {
+	protected String getParameterListAsString(boolean fullyQualified) {
 		String _searched = fullyQualified ? _parameterListAsStringFQ : _parameterListAsString;
 		if (_searched == null) {
 			StringBuilder returned = new StringBuilder();
 			boolean isFirst = true;
-			for (Type p : method.getGenericParameterTypes()) {
+			for (Type p : executable.getGenericParameterTypes()) {
 				Type contextualParamType = TypeUtils.makeInstantiatedType(p, declaringType);
 				returned.append((isFirst ? "" : ",") + (fullyQualified ? TypeUtils.fullQualifiedRepresentation(contextualParamType)
 						: TypeUtils.simpleRepresentation(contextualParamType)));
@@ -150,10 +102,7 @@ public final class MethodDefinition extends Observable implements Function {
 		return fullyQualified ? _parameterListAsStringFQ : _parameterListAsString;
 	}
 
-	@Override
-	public String toString() {
-		return "MethodDefinition[" + getSimplifiedSignature() + "]";
-	}
+	public abstract String getSimplifiedSignature();
 
 	public String getLabel() {
 		return getSimplifiedSignature();
@@ -179,12 +128,7 @@ public final class MethodDefinition extends Observable implements Function {
 
 	@Override
 	public String getName() {
-		return method.getName();
-	}
-
-	@Override
-	public Type getReturnType() {
-		return method.getGenericReturnType();
+		return executable.getName();
 	}
 
 	@Override

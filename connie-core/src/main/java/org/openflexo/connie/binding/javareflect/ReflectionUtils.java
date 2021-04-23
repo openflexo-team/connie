@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,42 +37,44 @@
  * 
  */
 
-package org.openflexo.connie.exception;
+package org.openflexo.connie.binding.javareflect;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * This exception is thrown when an exception occcured during the execution of transformation
- * 
- * @author sylvain
- * 
- */
-@SuppressWarnings("serial")
-public class InvocationTargetTransformException extends TransformException {
+final public class ReflectionUtils {
 
-	private ReflectiveOperationException exception;
-
-	private String message;
-
-	public InvocationTargetTransformException(InvocationTargetException e) {
-		super();
-		exception = e;
-		message = "InvocationTargetException: " + e.getTargetException().getMessage();
+	private ReflectionUtils() {
 	}
 
-	public InvocationTargetTransformException(ReflectiveOperationException e) {
-		super();
-		exception = e;
-		message = e.getClass().getSimpleName() + " : " + e.getMessage();
+	/**
+	 * Returns all methods that are overridden by the specified method. If no method is overridden, it returns an empty list.
+	 * 
+	 * @param method
+	 *            the method to check for.
+	 * @return all methods that are overridden by the specified method
+	 */
+	public static List<Method> getOverridenMethods(Method method) {
+		return appendOverriddenMethods(new ArrayList<Method>(), method.getDeclaringClass(), method);
 	}
 
-	public ReflectiveOperationException getException() {
-		return exception;
+	private static List<Method> appendOverriddenMethods(List<Method> methods, Class<?> klass, Method method) {
+		if (klass == null) {
+			return methods;
+		}
+		if (klass != method.getDeclaringClass()) {
+			try {
+				Method m = klass.getMethod(method.getName(), method.getParameterTypes());
+				methods.add(m);
+			} catch (SecurityException e) {
+			} catch (NoSuchMethodException e) {
+			}
+		}
+		appendOverriddenMethods(methods, klass.getSuperclass(), method);
+		for (Class<?> superInterface : klass.getInterfaces()) {
+			appendOverriddenMethods(methods, superInterface, method);
+		}
+		return methods;
 	}
-
-	@Override
-	public String getMessage() {
-		return message;
-	}
-
 }

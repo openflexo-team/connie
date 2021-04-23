@@ -37,7 +37,7 @@
  * 
  */
 
-package org.openflexo.connie.binding;
+package org.openflexo.connie.binding.javareflect;
 
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Method;
@@ -47,10 +47,11 @@ import java.util.logging.Logger;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.annotations.NotificationUnsafe;
+import org.openflexo.connie.binding.BindingPathElement;
+import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.type.CustomType;
 import org.openflexo.connie.type.TypeUtils;
-import org.openflexo.kvc.KeyValueLibrary;
-import org.openflexo.kvc.KeyValueProperty;
 import org.openflexo.toolbox.ToolBox;
 
 /**

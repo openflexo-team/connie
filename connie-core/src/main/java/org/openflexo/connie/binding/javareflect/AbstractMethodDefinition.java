@@ -37,42 +37,64 @@
  * 
  */
 
-package org.openflexo.connie.exception;
+package org.openflexo.connie.binding.javareflect;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
-/**
- * This exception is thrown when an exception occcured during the execution of transformation
- * 
- * @author sylvain
- * 
- */
-@SuppressWarnings("serial")
-public class InvocationTargetTransformException extends TransformException {
+public abstract class AbstractMethodDefinition extends AbstractExecutableDefinition<Method> {
 
-	private ReflectiveOperationException exception;
+	private String _signatureNFQ;
+	private String _signatureFQ;
 
-	private String message;
-
-	public InvocationTargetTransformException(InvocationTargetException e) {
-		super();
-		exception = e;
-		message = "InvocationTargetException: " + e.getTargetException().getMessage();
+	protected AbstractMethodDefinition(Type aDeclaringType, Method method) {
+		super(aDeclaringType, method);
 	}
 
-	public InvocationTargetTransformException(ReflectiveOperationException e) {
-		super();
-		exception = e;
-		message = e.getClass().getSimpleName() + " : " + e.getMessage();
+	public Method getMethod() {
+		return getExecutable();
 	}
 
-	public ReflectiveOperationException getException() {
-		return exception;
+	public String getMethodName() {
+		return getExecutableName();
 	}
 
 	@Override
-	public String getMessage() {
-		return message;
+	public String getSimplifiedSignature() {
+		if (_signatureNFQ == null) {
+			StringBuilder signature = new StringBuilder();
+			signature.append(getMethod().getName());
+			signature.append("(");
+			signature.append(getParameterListAsString(false));
+			signature.append(")");
+			_signatureNFQ = signature.toString();
+		}
+		return _signatureNFQ;
+	}
+
+	public String getSignature() {
+		if (_signatureFQ == null) {
+			// try {
+			StringBuffer signature = new StringBuffer();
+			signature.append(getMethod().getName());
+			signature.append("(");
+			signature.append(getParameterListAsString(true));
+			signature.append(")");
+			_signatureFQ = signature.toString();
+			/*}
+			catch (InvalidKeyValuePropertyException e) {
+				logger.warning("While computing getSignature() for "+method+" and "+declaringType+" message:"+e.getMessage());
+				e.printStackTrace();
+				return null;
+			}*/
+
+		}
+		return _signatureFQ;
+	}
+
+	@Override
+	public Type getReturnType() {
+		return getMethod().getGenericReturnType();
 	}
 
 }

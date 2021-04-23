@@ -1,7 +1,5 @@
 package org.openflexo.connie.java.parser;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.BindingModel;
@@ -147,7 +145,7 @@ public abstract class ParserTestCase extends TestCase {
 				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
 			}
 			return null;
-		} catch (InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			fail();
 			return null;
 		}

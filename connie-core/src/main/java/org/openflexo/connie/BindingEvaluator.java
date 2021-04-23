@@ -39,9 +39,9 @@
 
 package org.openflexo.connie;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -50,7 +50,7 @@ import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
-import org.openflexo.kvc.InvalidKeyValuePropertyException;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Utility class allowing to compute binding value over an expression and a given object.<br>
@@ -67,26 +67,22 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
  * @author sylvain
  * 
  */
-public abstract class BindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
+public abstract class BindingEvaluator extends AbstractBindingEvaluator {
 
-	// private static final BindingFactory BINDING_FACTORY = new JavaBasedBindingFactory();
+	private static final String OBJECT = "object";
 
 	private Object object;
-	private BindingModel bindingModel;
-	private BindingFactory bindingFactory;
 
-	protected BindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
+	protected BindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory, TypingSpace typingSpace) {
+		super(bindingFactory, typingSpace);
 		this.object = object;
-		this.bindingFactory = bindingFactory;
-
-		bindingModel = new BindingModel();
-		bindingModel.addToBindingVariables(new BindingVariable("object", objectType));
+		getBindingModel().addToBindingVariables(new BindingVariable(OBJECT, objectType));
 	}
 
+	@Override
 	public void delete() {
 		object = null;
-		bindingModel.delete();
-		bindingModel = null;
+		super.delete();
 	}
 
 	String normalizeBindingPath(String bindingPath, BindingFactory bindingFactory) {
@@ -103,8 +99,8 @@ public abstract class BindingEvaluator extends DefaultBindable implements Bindin
 							if (bv.getParsedBindingPath().size() > 0) {
 								AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
 								if (!(firstPathElement instanceof NormalBindingPathElement)
-										|| !((NormalBindingPathElement) firstPathElement).property.equals("object")) {
-									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("object"));
+										|| !((NormalBindingPathElement) firstPathElement).property.equals(OBJECT)) {
+									bv.getParsedBindingPath().add(0, new NormalBindingPathElement(OBJECT));
 									bv.clearSerializationRepresentation();
 								}
 							}
@@ -124,36 +120,14 @@ public abstract class BindingEvaluator extends DefaultBindable implements Bindin
 	}
 
 	@Override
-	public BindingModel getBindingModel() {
-		return bindingModel;
-	}
-
-	@Override
-	public BindingFactory getBindingFactory() {
-		return bindingFactory;
-	}
-
-	@Override
 	public Object getValue(BindingVariable variable) {
 		return object;
 	}
 
 	@Override
-	public String getDeletedProperty() {
-		return null;
-	}
-
-	@Override
-	public void notifiedBindingChanged(DataBinding<?> dataBinding) {
-	}
-
-	@Override
-	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
-	}
-
 	protected Object evaluate(String bindingPath)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		String normalizedBindingPath = normalizeBindingPath(bindingPath, bindingFactory);
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
+		String normalizedBindingPath = normalizeBindingPath(bindingPath, getBindingFactory());
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 
 		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());

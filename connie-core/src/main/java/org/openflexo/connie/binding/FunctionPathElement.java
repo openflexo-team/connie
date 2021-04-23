@@ -42,7 +42,6 @@ package org.openflexo.connie.binding;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Observable;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
@@ -58,18 +57,16 @@ import org.openflexo.connie.expr.ExpressionTransformer;
  * @author sylvain
  * 
  */
-public abstract class FunctionPathElement extends Observable implements BindingPathElement {
+public abstract class FunctionPathElement<F extends Function> extends AbstractPathElement {
 
 	private static final Logger LOGGER = Logger.getLogger(FunctionPathElement.class.getPackage().getName());
 
-	private final IBindingPathElement parent;
-	private final Function function;
+	private final F function;
 	private Type type;
 	private final HashMap<Function.FunctionArgument, DataBinding<?>> parameters;
-	private boolean activated = false;
 
-	public FunctionPathElement(IBindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
-		this.parent = parent;
+	public FunctionPathElement(IBindingPathElement parent, F function, List<DataBinding<?>> paramValues) {
+		super(parent);
 		this.function = function;
 		parameters = new HashMap<>();
 		if (function == null) {
@@ -90,32 +87,6 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		}
 	}
 
-	/**
-	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
-	 */
-	@Override
-	public void activate() {
-		this.activated = true;
-	}
-
-	/**
-	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
-	 */
-	@Override
-	public void desactivate() {
-		this.activated = false;
-	}
-
-	/**
-	 * Return boolean indicating if this {@link BindingPathElement} is activated
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isActivated() {
-		return activated;
-	}
-
 	public void instanciateParameters(Bindable bindable) {
 		for (Function.FunctionArgument arg : function.getArguments()) {
 			DataBinding<?> parameter = getParameter(arg);
@@ -133,12 +104,7 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		}
 	}
 
-	@Override
-	public IBindingPathElement getParent() {
-		return parent;
-	}
-
-	public Function getFunction() {
+	public final F getFunction() {
 		return function;
 	}
 
@@ -213,6 +179,38 @@ public abstract class FunctionPathElement extends Observable implements BindingP
 		return false;
 	}
 
-	public abstract FunctionPathElement transform(ExpressionTransformer transformer) throws TransformException;
+	public abstract FunctionPathElement<?> transform(ExpressionTransformer transformer) throws TransformException;
+
+	@Override
+	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType) {
+
+		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
+
+		if (getFunction() == null) {
+			check.invalidBindingReason = "invalid null function";
+			check.valid = false;
+			return check;
+		}
+
+		for (FunctionArgument arg : getFunction().getArguments()) {
+			DataBinding<?> argValue = getParameter(arg);
+			// System.out.println("Checking " + argValue + " valid="
+			// + argValue.isValid());
+			if (argValue == null) {
+				check.invalidBindingReason = "Parameter value for function: " + getFunction() + " : " + "invalid null argument "
+						+ arg.getArgumentName();
+				check.valid = false;
+				return check;
+			}
+			if (!argValue.isValid()) {
+				check.invalidBindingReason = "Parameter value for function: " + getFunction() + " : " + "invalid argument "
+						+ arg.getArgumentName() + " reason=" + argValue.invalidBindingReason();
+				check.valid = false;
+				return check;
+			}
+		}
+
+		return check;
+	}
 
 }

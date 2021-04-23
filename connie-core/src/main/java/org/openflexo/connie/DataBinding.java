@@ -1066,7 +1066,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 */
 	@SuppressWarnings("unchecked")
 	public T getBindingValue(final BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
 		if (isGET() && ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE)
 				|| (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
@@ -1185,7 +1185,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				throw e1;
 			} catch (TypeMismatchException e1) {
 				throw e1;
-			} catch (InvocationTargetException e) {
+			} catch (ReflectiveOperationException e) {
 				throw e;
 			}
 		}
@@ -1203,7 +1203,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @throws NotSettableContextException
 	 */
 	public void setBindingValue(Object value, BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetException, NotSettableContextException {
+			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException, NotSettableContextException {
 		if (isValid() && isSettable()) {
 			if (isBindingValue()) {
 				// BindingValue is settable
@@ -1245,7 +1245,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @throws InvocationTargetException
 	 */
 	public void execute(final BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		getBindingValue(context);
 	}
 

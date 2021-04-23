@@ -39,17 +39,17 @@
 
 package org.openflexo.connie.java.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
 import org.openflexo.connie.BindingEvaluator;
 import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.ExpressionEvaluator;
 import org.openflexo.connie.java.JavaBindingFactory;
+import org.openflexo.connie.java.JavaTypingSpace;
 import org.openflexo.connie.java.expr.JavaExpressionEvaluator;
-import org.openflexo.kvc.InvalidKeyValuePropertyException;
 
 /**
  * Utility class allowing to compute binding value over an expression and a given object in the context of Java expression language.<br>
@@ -69,9 +69,10 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
 final public class JavaBindingEvaluator extends BindingEvaluator {
 
 	private static JavaBindingFactory JAVA_BINDING_FACTORY = new JavaBindingFactory();
+	private static JavaTypingSpace JAVA_TYPING_SPACE = new JavaTypingSpace();
 
 	private JavaBindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
-		super(object, objectType, bindingFactory);
+		super(object, objectType, bindingFactory, JAVA_TYPING_SPACE);
 	}
 
 	@Override
@@ -80,7 +81,7 @@ final public class JavaBindingEvaluator extends BindingEvaluator {
 	}
 
 	public static Object evaluateBinding(String bindingPath, Object object, Type objectType, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
 		JavaBindingEvaluator evaluator = new JavaBindingEvaluator(object, objectType, bindingFactory);
 		Object returned = evaluator.evaluate(bindingPath);
@@ -89,18 +90,18 @@ final public class JavaBindingEvaluator extends BindingEvaluator {
 	}
 
 	public static Object evaluateBinding(String bindingPath, Object object, Type objectType)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		return evaluateBinding(bindingPath, object, objectType, JAVA_BINDING_FACTORY);
 	}
 
 	public static Object evaluateBinding(String bindingPath, Object object, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
-		return evaluateBinding(bindingPath, object, object.getClass(), bindingFactory);
+		return evaluateBinding(bindingPath, object, object != null ? object.getClass() : null, bindingFactory);
 	}
 
 	public static Object evaluateBinding(String bindingPath, Object object)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		return evaluateBinding(bindingPath, object, JAVA_BINDING_FACTORY);
 	}
 
