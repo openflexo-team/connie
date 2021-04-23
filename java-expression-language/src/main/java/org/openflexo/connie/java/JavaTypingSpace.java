@@ -120,6 +120,11 @@ public class JavaTypingSpace implements TypingSpace {
 					// Silently continue
 				}
 			}
+			for (Class<?> aClass : importedClasses) {
+				if (aClass.getSimpleName().equals(typeAsString)) {
+					return aClass;
+				}
+			}
 			return new UnresolvedType(typeAsString);
 		}
 
