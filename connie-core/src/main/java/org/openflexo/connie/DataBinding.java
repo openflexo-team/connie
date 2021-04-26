@@ -435,6 +435,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					@Override
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
+							BindingValue bv = (BindingValue) e;
 							// System.out.println("A reanalyser: " + e);
 							((BindingValue) e).markedAsToBeReanalized();
 						}
@@ -546,11 +547,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					@Override
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
-							if (!((BindingValue) e).isValid(DataBinding.this)) {
+							if (!((BindingValue) e).isValid(/*DataBinding.this*/)) {
 								((BindingValue) e).markedAsToBeReanalized();
 							}
 							// TODO is it intentional to recompute isValid?
-							if (!((BindingValue) e).isValid(DataBinding.this)) {
+							if (!((BindingValue) e).isValid(/*DataBinding.this*/)) {
 								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
 							}
@@ -667,9 +668,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		// Make sure that validity has been computed
 		// Computes it and cache it during isValid() computation
-		isValid();
-
-		return analyzedType;
+		if (isValid()) {
+			return analyzedType;
+		}
+		else {
+			return UndefinedType.INSTANCE;
+		}
 	}
 
 	public boolean isSet() {
@@ -953,9 +957,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 							/*if (!bv.needsAnalysing()) {
 								bv.updateParsedBindingPathFromBindingPath();
 							}*/
-							if (bv.isValid()) {
+							/*if (bv.isValid()) {
 								bv.updateParsedBindingPathFromBindingPath();
-							}
+							}*/
+							System.err.println("######## TODO : y a-t-il un truc a faire la ????");
 						}
 					}
 				});
@@ -1027,7 +1032,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) {
 						if (e instanceof BindingValue) {
 							// System.out.println("> Analyse " + e);
-							((BindingValue) e).buildBindingPathFromParsedBindingPath(DataBinding.this);
+							((BindingValue) e).buildBindingPathFromParsedBindingPath(/*DataBinding.this*/);
 						}
 					}
 				});

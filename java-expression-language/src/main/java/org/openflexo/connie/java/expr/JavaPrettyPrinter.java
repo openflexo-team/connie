@@ -63,6 +63,7 @@ import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
 import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
 import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ObjectConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ObjectSymbolicConstant;
 import org.openflexo.connie.java.expr.JavaConstant.ShortConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperator.PostSettableUnaryOperator;
@@ -129,6 +130,9 @@ public class JavaPrettyPrinter extends ExpressionPrettyPrinter {
 		}
 		else if (constant instanceof ObjectConstant) {
 			return makeStringRepresentation((ObjectConstant) constant);
+		}
+		else if (constant == ObjectSymbolicConstant.NULL) {
+			return "null";
 		}
 		return "???";
 	}

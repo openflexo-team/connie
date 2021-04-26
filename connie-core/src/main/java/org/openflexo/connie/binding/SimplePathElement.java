@@ -44,6 +44,8 @@ import java.lang.reflect.Type;
 
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
+import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.type.TypeUtils;
 
 /**
@@ -184,6 +186,12 @@ public abstract class SimplePathElement extends AbstractPathElement implements S
 		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
 		check.valid = true;
 		return check;
+	}
+
+	@Override
+	public AbstractBindingPathElement makeUnparsed() {
+		return new NormalBindingPathElement(getPropertyName());
+
 	}
 
 }

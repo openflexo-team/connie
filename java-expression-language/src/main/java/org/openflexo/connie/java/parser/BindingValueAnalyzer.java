@@ -110,7 +110,7 @@ class BindingValueAnalyzer extends DepthFirstAdapter {
 		List<AbstractBindingPathElement> bindingPath = makeBindingPath(node, expressionAnalyzer);
 		// System.out.println("bindingPath = " + bindingPath);
 
-		return new BindingValue(bindingPath, JavaPrettyPrinter.getInstance());
+		return new BindingValue(bindingPath, expressionAnalyzer.getBindable(), JavaPrettyPrinter.getInstance());
 	}
 
 	private static List<AbstractBindingPathElement> makeBindingPath(Node node, ExpressionSemanticsAnalyzer expressionAnalyzer) {

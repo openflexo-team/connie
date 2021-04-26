@@ -88,7 +88,6 @@ public abstract class BindingEvaluator extends AbstractBindingEvaluator {
 	String normalizeBindingPath(String bindingPath, BindingFactory bindingFactory) {
 		Expression expression = null;
 		try {
-			// expression = ExpressionParser.parse(bindingPath);
 			expression = bindingFactory.parseExpression(bindingPath, this);
 			if (expression != null) {
 				expression = expression.transform(new ExpressionTransformer() {
@@ -129,8 +128,6 @@ public abstract class BindingEvaluator extends AbstractBindingEvaluator {
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		String normalizedBindingPath = normalizeBindingPath(bindingPath, getBindingFactory());
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
-
-		// System.out.println("Binding = " + binding + " valid=" + binding.isValid() + " as " + binding.getClass());
 		if (!binding.isValid()) {
 			System.out.println("not valid: " + binding.invalidBindingReason());
 			throw new InvalidKeyValuePropertyException(

@@ -40,6 +40,7 @@
 package org.openflexo.connie.binding;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -48,6 +49,9 @@ import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.TransformException;
+import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
+import org.openflexo.connie.expr.BindingValue.MethodCallBindingPathElement;
+import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 
 /**
@@ -213,4 +217,15 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 		return check;
 	}
 
+	@Override
+	public AbstractBindingPathElement makeUnparsed() {
+		List<Expression> argList = new ArrayList<>();
+		for (FunctionArgument fa : getArguments()) {
+			DataBinding<?> db = getParameter(fa);
+			if (db != null) {
+				argList.add(db.getExpression());
+			}
+		}
+		return new MethodCallBindingPathElement(getFunction().getName(), argList);
+	}
 }

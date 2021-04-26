@@ -42,6 +42,7 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
@@ -135,4 +136,9 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 		return check;
 	}
 
+	/**
+	 * Build a new {@link AbstractBindingPathElement} from this element
+	 */
+	@Override
+	public abstract AbstractBindingPathElement makeUnparsed();
 }

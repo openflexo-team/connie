@@ -61,6 +61,8 @@ import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
+import org.openflexo.connie.expr.BindingValue.StaticMethodCallBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
@@ -315,6 +317,18 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<StaticMetho
 		check.invalidBindingReason = "J'aime pas les static methods";
 		check.valid = false;
 		return check;
+	}
+
+	@Override
+	public AbstractBindingPathElement makeUnparsed() {
+		List<Expression> argList = new ArrayList<>();
+		for (FunctionArgument fa : getArguments()) {
+			DataBinding<?> db = getParameter(fa);
+			if (db != null) {
+				argList.add(db.getExpression());
+			}
+		}
+		return new StaticMethodCallBindingPathElement(getType(), getFunction().getName(), argList);
 	}
 
 }

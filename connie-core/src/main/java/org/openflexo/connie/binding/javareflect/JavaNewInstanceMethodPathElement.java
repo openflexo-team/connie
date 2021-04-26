@@ -57,6 +57,8 @@ import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
+import org.openflexo.connie.expr.BindingValue.NewInstanceBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
@@ -244,6 +246,31 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<Constr
 		return sb.toString();
 	}
 
+	@Override
+	public String getSerializationRepresentation() {
+		if (serializationRepresentation == null) {
+			StringBuffer returned = new StringBuffer();
+			if (getFunction() != null) {
+				returned.append("new " + TypeUtils.fullQualifiedRepresentation(getType()) + "(");
+				boolean isFirst = true;
+				int i = 0;
+				for (Function.FunctionArgument a : getFunction().getArguments()) {
+					if (innerAccess == null || i > 0) {
+						returned.append((isFirst ? "" : ",") + getParameter(a));
+						isFirst = false;
+					}
+					i++;
+				}
+				returned.append(")");
+			}
+			else {
+				returned.append("unknown_constructor()");
+			}
+			serializationRepresentation = returned.toString();
+		}
+		return serializationRepresentation;
+	}
+
 	private JavaNewInstanceMethodPathElement makeTransformedPathElement(ExpressionTransformer transformer) throws TransformException {
 
 		boolean hasBeenTransformed = false;
@@ -338,10 +365,24 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<Constr
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
 		// TODO: some checkings ???
-		System.out.println("Tiens faudrait verifier le new instance");
+		System.out.println("TODO: Tiens faudrait verifier le new instance");
+		// Thread.dumpStack();
 
 		check.returnedType = getType();
 		check.valid = true;
 		return check;
 	}
+
+	@Override
+	public AbstractBindingPathElement makeUnparsed() {
+		List<Expression> argList = new ArrayList<>();
+		for (FunctionArgument fa : getArguments()) {
+			DataBinding<?> db = getParameter(fa);
+			if (db != null) {
+				argList.add(db.getExpression());
+			}
+		}
+		return new NewInstanceBindingPathElement(getType(), getFunction().getName(), argList);
+	}
+
 }
