@@ -346,7 +346,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void setDeclaredType(Type aDeclaredType) {
 		declaredType = aDeclaredType;
-		markedAsToBeReanalized();
+		revalidate();
 	}
 
 	public boolean isExecutable() {
@@ -367,7 +367,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void setBindingDefinitionType(BindingDefinitionType aBDType) {
 		bdType = aBDType;
-		markedAsToBeReanalized();
+		revalidate();
 	}
 
 	private Type performComputeAnalyzedType() {
@@ -420,7 +420,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * changed<br>
 	 * Calling this method will force the next call of isValid() to force recompute the {@link DataBinding} validity status and message
 	 */
-	public void markedAsToBeReanalized() {
+	public void revalidate() {
 
 		if (debug) {
 			System.out.println("DEBUG -- Connie -- markedAsToBeReanalized for " + this);
@@ -436,8 +436,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
 							BindingValue bv = (BindingValue) e;
-							// System.out.println("A reanalyser: " + e);
-							((BindingValue) e).markedAsToBeReanalized();
+							((BindingValue) e).revalidate();
 						}
 					}
 				});
@@ -453,7 +452,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * {@link #performComputeValididy()} will be force called
 	 */
 	public boolean forceRevalidate() {
-		markedAsToBeReanalized();
+		revalidate();
 		return isValid();
 	}
 
@@ -547,11 +546,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					@Override
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
-							if (!((BindingValue) e).isValid(/*DataBinding.this*/)) {
-								((BindingValue) e).markedAsToBeReanalized();
+							if (!((BindingValue) e).isValid()) {
+								((BindingValue) e).revalidate();
 							}
 							// TODO is it intentional to recompute isValid?
-							if (!((BindingValue) e).isValid(/*DataBinding.this*/)) {
+							if (!((BindingValue) e).isValid()) {
 								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
 							}
@@ -734,7 +733,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		checkBindingModelListening();
 
-		markedAsToBeReanalized();
+		revalidate();
 	}
 
 	public Bindable getOwner() {
@@ -760,7 +759,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 			checkBindingModelListening();
 
-			markedAsToBeReanalized();
+			revalidate();
 		}
 	}
 
@@ -850,7 +849,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// Track BindingFactory changes
 		// We detect here that the owner of this DataBinding has changed its BindingFactory
 		if (evt.getSource() == owner && evt.getPropertyName() != null && evt.getPropertyName().equals(Bindable.BINDING_FACTORY_PROPERTY)) {
-			markedAsToBeReanalized();
+			revalidate();
 		}
 
 		// Track BindingModel changes
@@ -869,7 +868,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					((BindingModel) evt.getNewValue()).getPropertyChangeSupport().addPropertyChangeListener(this);
 				}
 			}
-			markedAsToBeReanalized();
+			revalidate();
 		}
 
 		// Track structural changes inside a BindingModel
@@ -885,7 +884,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					// A new BindingVariable was removed
 					((BindingVariable) evt.getOldValue()).getPropertyChangeSupport().removePropertyChangeListener(this);
 				}
-				markedAsToBeReanalized();
+				System.out.println("Hop on revalide le binding");
+				revalidate();
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_NAME_CHANGED)) {
 				// We detect here that a BindingVariable has changed its name,
@@ -901,7 +901,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
 				// We detect here that base BindingModel has changed
 				updateListenedBindingVariables();
-				markedAsToBeReanalized();
+				revalidate();
 			}
 		}
 
@@ -954,13 +954,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) throws VisitorException {
 						if (e instanceof BindingValue) {
 							BindingValue bv = (BindingValue) e;
-							/*if (!bv.needsAnalysing()) {
-								bv.updateParsedBindingPathFromBindingPath();
-							}*/
-							/*if (bv.isValid()) {
-								bv.updateParsedBindingPathFromBindingPath();
-							}*/
-							System.err.println("######## TODO : y a-t-il un truc a faire la ????");
+							bv.invalidate();
 						}
 					}
 				});
@@ -969,12 +963,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			}
 		}
 
-		markedAsToBeReanalized();
+		revalidate();
 
-		// Perform isValid() now to be sure that parsed and analyzed are in sync
+		// Perform isValid() now to be sure
 		isValid();
 
-		// System.out.println(">>>> STOP notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
 	}
 
 	private boolean isParsingExpression = false;
