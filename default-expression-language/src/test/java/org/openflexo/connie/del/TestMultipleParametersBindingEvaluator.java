@@ -43,7 +43,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
-import org.openflexo.connie.del.DELBindingFactory;
 import org.openflexo.connie.del.util.DELMultipleParametersBindingEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -52,7 +51,8 @@ import junit.framework.TestCase;
 
 public class TestMultipleParametersBindingEvaluator extends TestCase {
 
-	public void test1() throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+	public void test1()
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		String variable1 = "Hello";
 		String variable2 = "World";
 
@@ -62,7 +62,8 @@ public class TestMultipleParametersBindingEvaluator extends TestCase {
 
 	}
 
-	public void test2() throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+	public void test2()
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		String variable3 = "Hello World";
 
 		BindingFactory bindingFactory = new DELBindingFactory();
@@ -71,7 +72,8 @@ public class TestMultipleParametersBindingEvaluator extends TestCase {
 
 	}
 
-	public void test3() throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+	public void test3()
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		String variable4 = "Hello World";
 
 		try {

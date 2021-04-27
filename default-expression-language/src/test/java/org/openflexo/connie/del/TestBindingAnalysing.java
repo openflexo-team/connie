@@ -47,7 +47,6 @@ import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DefaultBindable;
-import org.openflexo.connie.del.DELBindingFactory;
 
 import com.google.common.reflect.TypeToken;
 
@@ -158,6 +157,8 @@ public class TestBindingAnalysing extends TestCase {
 		DataBinding<?> db = genericTest("aString+anInt+aBoolean", true, String.class);
 
 		BINDING_MODEL.aString.setVariableName("anOtherString");
+
+		System.err.println("*********** Hop, Binding " + Integer.toHexString(db.hashCode()) + " : " + db);
 
 		// Binding has been updated
 		assertEquals("((anOtherString + anInt) + aBoolean)", db.toString());

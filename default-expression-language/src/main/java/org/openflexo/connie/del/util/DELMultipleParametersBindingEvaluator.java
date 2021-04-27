@@ -98,7 +98,7 @@ final public class DELMultipleParametersBindingEvaluator extends MultipleParamet
 	 * @throws InvocationTargetException
 	 */
 	public static Object evaluateBinding(String bindingPath, BindingFactory bindingFactory, Object receiver, Object... args)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
 		Map<String, Object> objects = new HashMap<>();
 

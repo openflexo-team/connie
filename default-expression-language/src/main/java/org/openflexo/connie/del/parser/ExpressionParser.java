@@ -43,6 +43,7 @@ import java.io.PushbackReader;
 import java.io.StringReader;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.del.expr.DELArithmeticUnaryOperator;
 import org.openflexo.connie.del.expr.DELConstant.ArithmeticConstant;
@@ -74,7 +75,7 @@ public class ExpressionParser {
 	 * @throws ParseException
 	 *             if parsing expression lead to an error
 	 */
-	public static Expression parse(String anExpression) throws ParseException {
+	public static Expression parse(String anExpression, Bindable bindable) throws ParseException {
 		try {
 			// System.out.println("Parsing: " + anExpression);
 
@@ -85,7 +86,7 @@ public class ExpressionParser {
 			Start tree = p.parse();
 
 			// Apply the semantics analyzer.
-			ExpressionSemanticsAnalyzer t = new ExpressionSemanticsAnalyzer();
+			ExpressionSemanticsAnalyzer t = new ExpressionSemanticsAnalyzer(bindable);
 			tree.apply(t);
 
 			return postSemanticAnalysisReduction(t.getExpression());

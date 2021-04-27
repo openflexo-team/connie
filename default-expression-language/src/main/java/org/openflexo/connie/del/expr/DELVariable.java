@@ -42,6 +42,7 @@ package org.openflexo.connie.del.expr;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.expr.BindingValue;
 
 /**
@@ -52,8 +53,8 @@ import org.openflexo.connie.expr.BindingValue;
  * 
  */
 public class DELVariable extends BindingValue {
-	public DELVariable(String variableName) {
-		super(makeSingleton(variableName), DELPrettyPrinter.getInstance());
+	public DELVariable(String variableName, Bindable owner) {
+		super(makeSingleton(variableName), owner, DELPrettyPrinter.getInstance());
 	}
 
 	private static List<AbstractBindingPathElement> makeSingleton(String aVariableName) {

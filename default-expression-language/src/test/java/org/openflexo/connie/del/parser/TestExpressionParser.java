@@ -39,10 +39,13 @@
 
 package org.openflexo.connie.del.parser;
 
-import java.lang.reflect.InvocationTargetException;
-
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
+import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.DefaultBindable;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.del.expr.DELBinaryOperatorExpression;
 import org.openflexo.connie.del.expr.DELBooleanBinaryOperator;
@@ -81,7 +84,28 @@ public class TestExpressionParser extends TestCase {
 
 		try {
 			System.out.println("Parsing... " + anExpression);
-			Expression parsed = ExpressionParser.parse(anExpression);
+			Bindable bindable = new DefaultBindable() {
+				@Override
+				public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
+				}
+
+				@Override
+				public void notifiedBindingChanged(DataBinding<?> dataBinding) {
+				}
+
+				@Override
+				public BindingModel getBindingModel() {
+					return null;
+				}
+
+				@Override
+				public BindingFactory getBindingFactory() {
+					return null;
+				}
+
+			};
+
+			Expression parsed = ExpressionParser.parse(anExpression, bindable);
 			Expression evaluated = parsed.evaluate(new BindingEvaluationContext() {
 				@Override
 				public Object getValue(BindingVariable variable) {
@@ -148,7 +172,7 @@ public class TestExpressionParser extends TestCase {
 				System.out.println("Parsing " + anExpression + " has failed as expected: " + e.getMessage());
 			}
 			return null;
-		} catch (InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			fail();
 			return null;
 		}

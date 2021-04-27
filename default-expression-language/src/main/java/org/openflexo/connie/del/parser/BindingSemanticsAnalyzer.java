@@ -42,6 +42,7 @@ package org.openflexo.connie.del.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.parser.node.AAdditionalArg;
@@ -74,7 +75,8 @@ class BindingSemanticsAnalyzer extends ExpressionSemanticsAnalyzer {
 	 */
 	// private boolean weAreDealingWithTheRightBinding = true;
 
-	public BindingSemanticsAnalyzer(PBinding node) {
+	public BindingSemanticsAnalyzer(PBinding node, Bindable aBindable) {
+		super(aBindable);
 		path = new ArrayList<>();
 		// System.out.println(">>>> node=" + node + " of " + node.getClass());
 	}

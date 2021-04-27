@@ -212,16 +212,11 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<StaticMetho
 	public JavaStaticMethodPathElement transform(ExpressionTransformer transformer) throws TransformException {
 		JavaStaticMethodPathElement returned = transformedPathElements.get(transformer);
 		if (returned == null) {
-			System.out.println("On recalcule un JavaMethodPathElement pour " + this + " transformer=" + transformer);
 			returned = makeTransformedPathElement(transformer);
 			transformedPathElements.put(transformer, returned);
-			System.out.println("CREATE On transforme " + toString() + " en " + returned.toString());
 		}
 		else {
-			System.out.println("Pas la peine de refaire un JavaMethodPathElement pour " + this + " transformer=" + transformer);
-			System.out.println("On met a jour quand meme");
 			updateTransformedPathElement(returned, transformer);
-			System.out.println("UPDATE On transforme " + toString() + " en " + returned.toString());
 		}
 		return returned;
 	}

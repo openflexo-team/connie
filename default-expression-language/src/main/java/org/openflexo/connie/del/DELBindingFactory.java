@@ -65,7 +65,7 @@ public class DELBindingFactory extends JavaBasedBindingFactory {
 
 	@Override
 	public Expression parseExpression(String expressionAsString, Bindable bindable) throws ParseException {
-		return ExpressionParser.parse(expressionAsString);
+		return ExpressionParser.parse(expressionAsString, bindable);
 	}
 
 	@Override

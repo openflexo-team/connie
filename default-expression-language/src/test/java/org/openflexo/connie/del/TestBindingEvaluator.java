@@ -39,11 +39,12 @@
 
 package org.openflexo.connie.del;
 
-import java.lang.reflect.InvocationTargetException;
-
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.BindingModel;
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.DefaultBindable;
 import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
-import org.openflexo.connie.del.DELBindingFactory;
 import org.openflexo.connie.del.util.DELBindingEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -51,6 +52,30 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import junit.framework.TestCase;
 
 public class TestBindingEvaluator extends TestCase {
+
+	private static final BindingFactory BINDING_FACTORY = new DELBindingFactory();
+
+	private static final Bindable BINDABLE = new DefaultBindable() {
+
+		@Override
+		public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
+		}
+
+		@Override
+		public void notifiedBindingChanged(DataBinding<?> dataBinding) {
+		}
+
+		@Override
+		public BindingModel getBindingModel() {
+			return null;
+		}
+
+		@Override
+		public BindingFactory getBindingFactory() {
+			return BINDING_FACTORY;
+		}
+
+	};
 
 	public static void genericTest(String bindingPath, Object object, Object expectedResult) {
 
@@ -68,7 +93,7 @@ public class TestBindingEvaluator extends TestCase {
 			fail();
 		} catch (NullReferenceException e) {
 			fail();
-		} catch (InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			fail();
 		}
 		System.out.println("Evaluated as " + evaluatedResult);

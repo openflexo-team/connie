@@ -44,7 +44,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.openflexo.connie.Bindable;
-import org.openflexo.connie.ContextualizedBindable;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaArithmeticBinaryOperator;
 import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
@@ -140,9 +139,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 	public ExpressionSemanticsAnalyzer(Bindable aBindable) {
 		expressionNodes = new Hashtable<>();
-		if (aBindable instanceof ContextualizedBindable) {
-			this.bindable = aBindable;
-		}
+		this.bindable = aBindable;
 	}
 
 	public Expression getExpression() {

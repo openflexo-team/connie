@@ -39,7 +39,6 @@
 
 package org.openflexo.connie.del.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
 import org.openflexo.connie.BindingEvaluator;
@@ -68,7 +67,7 @@ import org.openflexo.connie.expr.ExpressionEvaluator;
 final public class DELBindingEvaluator extends BindingEvaluator {
 
 	private DELBindingEvaluator(Object object, Type objectType, BindingFactory bindingFactory) {
-		super(object, objectType, bindingFactory);
+		super(object, objectType, bindingFactory, null);
 	}
 
 	@Override
@@ -77,7 +76,7 @@ final public class DELBindingEvaluator extends BindingEvaluator {
 	}
 
 	public static Object evaluateBinding(String bindingPath, Object object, Type objectType, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
 		DELBindingEvaluator evaluator = new DELBindingEvaluator(object, objectType, bindingFactory);
 		Object returned = evaluator.evaluate(bindingPath);
@@ -86,7 +85,7 @@ final public class DELBindingEvaluator extends BindingEvaluator {
 	}
 
 	public static Object evaluateBinding(String bindingPath, Object object, BindingFactory bindingFactory)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
 		return evaluateBinding(bindingPath, object, object.getClass(), bindingFactory);
 	}

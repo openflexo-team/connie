@@ -39,7 +39,6 @@
 
 package org.openflexo.connie.del;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,6 @@ import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DefaultBindable;
-import org.openflexo.connie.del.DELBindingFactory;
 import org.openflexo.connie.del.expr.DELExpressionEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -292,7 +290,7 @@ public class TestBinding extends TestCase {
 			} catch (NullReferenceException e) {
 				e.printStackTrace();
 				fail();
-			} catch (InvocationTargetException e) {
+			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 				fail();
 			}

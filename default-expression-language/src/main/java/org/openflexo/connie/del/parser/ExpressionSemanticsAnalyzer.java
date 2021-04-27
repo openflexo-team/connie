@@ -44,6 +44,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.del.expr.DELArithmeticBinaryOperator;
 import org.openflexo.connie.del.expr.DELArithmeticUnaryOperator;
 import org.openflexo.connie.del.expr.DELBinaryOperatorExpression;
@@ -140,8 +141,11 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	private final Map<Node, Expression> expressionNodes;
 	private Node topLevel = null;
 
-	public ExpressionSemanticsAnalyzer() {
+	private Bindable bindable;
+
+	public ExpressionSemanticsAnalyzer(Bindable aBindable) {
 		expressionNodes = new Hashtable<>();
+		this.bindable = aBindable;
 	}
 
 	public Expression getExpression() {
@@ -172,7 +176,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 		// System.out.println("Make binding with " + node);
 
 		// Apply the translation.
-		BindingSemanticsAnalyzer bsa = new BindingSemanticsAnalyzer(node);
+		BindingSemanticsAnalyzer bsa = new BindingSemanticsAnalyzer(node, bindable);
 
 		// System.out.println("Built bsa as " + bsa.getPath());
 
@@ -180,7 +184,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 
 		// System.out.println("Make binding value with bsa as " + bsa.getPath());
 
-		BindingValue returned = new BindingValue(bsa.getPath(), DELPrettyPrinter.getInstance());
+		BindingValue returned = new BindingValue(bsa.getPath(), bindable, DELPrettyPrinter.getInstance());
 		// System.out.println("Made binding as " + bsa.getPath());
 
 		registerExpressionNode(node, returned);

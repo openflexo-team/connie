@@ -133,7 +133,7 @@ public abstract class MultipleParametersBindingEvaluator extends DefaultBindable
 										|| (!((NormalBindingPathElement) firstPathElement).property.equals("this"))
 												&& !parameters.contains(((NormalBindingPathElement) firstPathElement).property)) {
 									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("this"));
-									bv.markedAsToBeReanalized();
+									bv.revalidate();
 								}
 							}
 							return bv;
