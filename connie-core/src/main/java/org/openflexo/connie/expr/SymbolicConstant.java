@@ -37,17 +37,9 @@
  * 
  */
 
-package org.openflexo.connie.del.expr;
+package org.openflexo.connie.expr;
 
-import org.openflexo.connie.del.expr.DELConstant.DateSymbolicConstant;
-import org.openflexo.connie.del.expr.DELConstant.FloatSymbolicConstant;
-import org.openflexo.connie.del.expr.DELConstant.ObjectSymbolicConstant;
-import org.openflexo.connie.expr.SymbolicConstant;
-
-public interface DELSymbolicConstant extends SymbolicConstant {
-
-	public static final DELSymbolicConstant[] allKnownSymbolicConstants = { ObjectSymbolicConstant.NULL, ObjectSymbolicConstant.THIS,
-			DateSymbolicConstant.NOW, DateSymbolicConstant.TODAY, FloatSymbolicConstant.PI, FloatSymbolicConstant.E };
+public interface SymbolicConstant {
 
 	public String getSymbol();
 

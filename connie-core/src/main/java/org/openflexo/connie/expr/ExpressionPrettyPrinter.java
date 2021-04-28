@@ -53,6 +53,10 @@ public abstract class ExpressionPrettyPrinter {
 		this.grammar = grammar;
 	}
 
+	public ExpressionGrammar getGrammar() {
+		return grammar;
+	}
+
 	public void print(Expression expression, Bindable context, PrintStream out) {
 		out.print(getStringRepresentation(expression, context));
 	}

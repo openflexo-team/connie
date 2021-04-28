@@ -40,14 +40,20 @@
 package org.openflexo.connie.java;
 
 import org.openflexo.connie.expr.BinaryOperator;
+import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionGrammar;
 import org.openflexo.connie.expr.Operator;
 import org.openflexo.connie.expr.OperatorNotSupportedException;
 import org.openflexo.connie.expr.UnaryOperator;
 import org.openflexo.connie.java.expr.JavaArithmeticBinaryOperator;
 import org.openflexo.connie.java.expr.JavaArithmeticUnaryOperator;
+import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
 import org.openflexo.connie.java.expr.JavaBooleanBinaryOperator;
 import org.openflexo.connie.java.expr.JavaBooleanUnaryOperator;
+import org.openflexo.connie.java.expr.JavaConditionalExpression;
+import org.openflexo.connie.java.expr.JavaConstant;
+import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 
 /**
  * Represents Java expression language grammar
@@ -70,6 +76,15 @@ public class JavaGrammar implements ExpressionGrammar {
 			JavaArithmeticUnaryOperator.UNARY_PLUS, JavaArithmeticUnaryOperator.UNARY_MINUS, JavaArithmeticUnaryOperator.PRE_INCREMENT,
 			JavaArithmeticUnaryOperator.PRE_DECREMENT, JavaArithmeticUnaryOperator.POST_INCREMENT,
 			JavaArithmeticUnaryOperator.POST_DECREMENT, JavaArithmeticUnaryOperator.BITWISE_COMPLEMENT };
+
+	private static final Operator[] logicalOperators = { JavaBooleanBinaryOperator.AND, JavaBooleanBinaryOperator.OR,
+			JavaBooleanUnaryOperator.NOT };
+	private static final Operator[] comparisonOperators = { JavaBooleanBinaryOperator.EQUALS, JavaBooleanBinaryOperator.NOT_EQUALS,
+			JavaBooleanBinaryOperator.LESS_THAN, JavaBooleanBinaryOperator.LESS_THAN_OR_EQUALS, JavaBooleanBinaryOperator.GREATER_THAN,
+			JavaBooleanBinaryOperator.GREATER_THAN_OR_EQUALS };
+	private static final Operator[] arithmeticOperators = { JavaArithmeticBinaryOperator.ADDITION,
+			JavaArithmeticBinaryOperator.SUBSTRACTION, JavaArithmeticBinaryOperator.MULTIPLICATION, JavaArithmeticBinaryOperator.DIVISION,
+			JavaArithmeticUnaryOperator.UNARY_MINUS };
 
 	@Override
 	public BinaryOperator[] getAllSupportedBinaryOperators() {
@@ -181,6 +196,52 @@ public class JavaGrammar implements ExpressionGrammar {
 			return getSymbol((BinaryOperator) operator);
 		}
 		throw new OperatorNotSupportedException();
+	}
+
+	@Override
+	public Operator[] getLogicalOperators() {
+		return logicalOperators;
+	}
+
+	@Override
+	public Operator[] getComparisonOperators() {
+		return comparisonOperators;
+	}
+
+	@Override
+	public Operator[] getArithmeticOperators() {
+		return arithmeticOperators;
+	}
+
+	@Override
+	public Operator[] getScientificOperators() {
+		return null;
+	}
+
+	@Override
+	public Operator[] getTrigonometricOperators() {
+		return null;
+	}
+
+	@Override
+	public JavaBinaryOperatorExpression makeBinaryOperatorExpression(BinaryOperator operator, Expression leftArgument,
+			Expression rightArgument) {
+		return new JavaBinaryOperatorExpression(operator, leftArgument, rightArgument);
+	}
+
+	@Override
+	public JavaUnaryOperatorExpression makeUnaryOperatorExpression(UnaryOperator operator, Expression argument) {
+		return new JavaUnaryOperatorExpression(operator, argument);
+	}
+
+	@Override
+	public JavaConditionalExpression makeConditionalExpression(Expression condition, Expression thenExpression, Expression elseExpression) {
+		return new JavaConditionalExpression(condition, thenExpression, elseExpression);
+	}
+
+	@Override
+	public <O> Constant<O> getConstant(O value) {
+		return JavaConstant.makeConstant(value);
 	}
 
 }

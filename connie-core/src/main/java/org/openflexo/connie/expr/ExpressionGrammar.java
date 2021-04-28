@@ -39,14 +39,120 @@
 
 package org.openflexo.connie.expr;
 
+/**
+ * General API for an {@link ExpressionGrammar}
+ * 
+ * @author sylvain
+ *
+ */
 public interface ExpressionGrammar {
 
+	/**
+	 * Return an array of all support {@link UnaryOperator} for this grammar
+	 * 
+	 * @return
+	 */
 	UnaryOperator[] getAllSupportedUnaryOperators();
 
+	/**
+	 * Return an array of all support {@link BinaryOperator} for this grammar
+	 * 
+	 * @return
+	 */
 	BinaryOperator[] getAllSupportedBinaryOperators();
 
+	/**
+	 * Return {@link String} representation for supplied {@link Operator}
+	 * 
+	 * @param operator
+	 * @return
+	 * @throws OperatorNotSupportedException
+	 */
 	String getSymbol(Operator operator) throws OperatorNotSupportedException;
 
+	/**
+	 * Return alternative {@link String} representation for supplied {@link Operator}
+	 * 
+	 * @param operator
+	 * @return
+	 * @throws OperatorNotSupportedException
+	 */
+	@Deprecated
 	String getAlternativeSymbol(Operator operator) throws OperatorNotSupportedException;
+
+	/**
+	 * Return array of {@link Operator} classified as logical operators
+	 * 
+	 * @return
+	 */
+	public abstract Operator[] getLogicalOperators();
+
+	/**
+	 * Return array of {@link Operator} classified as comparison operators
+	 * 
+	 * @return
+	 */
+	public abstract Operator[] getComparisonOperators();
+
+	/**
+	 * Return array of {@link Operator} classified as arithmetic operators
+	 * 
+	 * @return
+	 */
+	public abstract Operator[] getArithmeticOperators();
+
+	/**
+	 * Return array of {@link Operator} classified as scientific operators
+	 * 
+	 * @return
+	 */
+	public abstract Operator[] getScientificOperators();
+
+	/**
+	 * Return array of {@link Operator} classified as trigonometric operators
+	 * 
+	 * @return
+	 */
+	public abstract Operator[] getTrigonometricOperators();
+
+	/**
+	 * Build a new {@link BinaryOperatorExpression} using supplied {@link BinaryOperator} and arguments
+	 * 
+	 * @param operator
+	 * @param leftArgument
+	 * @param rightArgument
+	 * @return
+	 */
+	public abstract BinaryOperatorExpression makeBinaryOperatorExpression(BinaryOperator operator, Expression leftArgument,
+			Expression rightArgument);
+
+	/**
+	 * Build a new {@link UnaryOperatorExpression} using supplied {@link UnaryOperator} and argument
+	 * 
+	 * @param operator
+	 * @param argument
+	 * @return
+	 */
+	public abstract UnaryOperatorExpression makeUnaryOperatorExpression(UnaryOperator operator, Expression argument);
+
+	/**
+	 * Build a new {@link ConditionalExpression} using supplied condition and arguments
+	 * 
+	 * @param condition
+	 * @param thenExpression
+	 * @param elseExpression
+	 * @return
+	 */
+	public abstract ConditionalExpression makeConditionalExpression(Expression condition, Expression thenExpression,
+			Expression elseExpression);
+
+	/**
+	 * Return a new {@link Constant} expression representing supplied value
+	 * 
+	 * @param <O>
+	 * @param value
+	 * @return
+	 */
+	public abstract <O> Constant<O> getConstant(O value);
 
 }

@@ -55,47 +55,48 @@ public abstract class DELConstant<V> extends Constant<V> {
 		return DELPrettyPrinter.getInstance();
 	}
 
-	public static DELConstant<?> makeConstant(Object value) {
+	@SuppressWarnings("unchecked")
+	public static <O> DELConstant<O> makeConstant(O value) {
 		if (value == null) {
-			return DELConstant.ObjectSymbolicConstant.NULL;
+			return (DELConstant<O>) DELConstant.ObjectSymbolicConstant.NULL;
 		}
 		if (value instanceof Boolean) {
 			if ((Boolean) value) {
-				return DELConstant.BooleanConstant.TRUE;
+				return (DELConstant<O>) DELConstant.BooleanConstant.TRUE;
 			}
-			return DELConstant.BooleanConstant.FALSE;
+			return (DELConstant<O>) DELConstant.BooleanConstant.FALSE;
 		}
 		else if (value instanceof Character) {
-			return new DELConstant.StringConstant(((Character) value).toString());
+			return (DELConstant<O>) new DELConstant.StringConstant(((Character) value).toString());
 		}
 		else if (value instanceof String) {
-			return new DELConstant.StringConstant((String) value);
+			return (DELConstant<O>) new DELConstant.StringConstant((String) value);
 		}
 		else if (value.getClass().isEnum()) {
-			return new DELConstant.EnumConstant<>(((Enum<?>) value));
+			return (DELConstant<O>) new DELConstant.EnumConstant<>(((Enum<?>) value));
 		}
 		else if (value instanceof Float) {
-			return new DELConstant.FloatConstant(((Float) value).doubleValue());
+			return (DELConstant<O>) new DELConstant.FloatConstant(((Float) value).doubleValue());
 		}
 		else if (value instanceof Double) {
-			return new DELConstant.FloatConstant(((Double) value).doubleValue());
+			return (DELConstant<O>) new DELConstant.FloatConstant(((Double) value).doubleValue());
 		}
 		else if (value instanceof Integer) {
-			return new DELConstant.IntegerConstant(((Integer) value).longValue());
+			return (DELConstant<O>) new DELConstant.IntegerConstant(((Integer) value).longValue());
 		}
 		else if (value instanceof Short) {
-			return new DELConstant.IntegerConstant(((Short) value).longValue());
+			return (DELConstant<O>) new DELConstant.IntegerConstant(((Short) value).longValue());
 		}
 		else if (value instanceof Long) {
-			return new DELConstant.IntegerConstant(((Long) value).longValue());
+			return (DELConstant<O>) new DELConstant.IntegerConstant(((Long) value).longValue());
 		}
 		else if (value instanceof Byte) {
-			return new DELConstant.IntegerConstant(((Byte) value).longValue());
+			return (DELConstant<O>) new DELConstant.IntegerConstant(((Byte) value).longValue());
 		}
 		else if (value instanceof Date) {
-			return new DELConstant.DateConstant((Date) value);
+			return (DELConstant<O>) new DELConstant.DateConstant((Date) value);
 		}
-		return new DELConstant.ObjectConstant(value);
+		return (DELConstant<O>) new DELConstant.ObjectConstant(value);
 	}
 
 	public static abstract class BooleanConstant extends DELConstant<Boolean> {

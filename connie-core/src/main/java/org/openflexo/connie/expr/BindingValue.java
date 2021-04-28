@@ -898,7 +898,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return new DataBinding<>(sb.toString(), getOwner(), Object.class, BindingDefinitionType.GET);
 	}
 
-	private void updateParsedBindingPathFromBindingPath() {
+	// TODO: deprecated as public, turns it to private
+	@Deprecated
+	public void updateParsedBindingPathFromBindingPath() {
 
 		// System.out.println("updateParsedBindingPathFromBindingPath() called from " + buildSerializationRepresentationFromBindingPath());
 

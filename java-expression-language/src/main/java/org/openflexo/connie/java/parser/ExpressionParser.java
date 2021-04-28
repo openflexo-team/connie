@@ -86,9 +86,11 @@ public class ExpressionParser {
 
 			// return postSemanticAnalysisReduction(t.getExpression());
 
+			// System.out.println("return " + t.getExpression() + " of " + t.getExpression().getClass());
+
 			return t.getExpression();
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			throw new ParseException(e.getMessage() + " while parsing " + anExpression);
 		}
 	}

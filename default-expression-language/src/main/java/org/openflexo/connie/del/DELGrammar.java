@@ -41,9 +41,15 @@ package org.openflexo.connie.del;
 
 import org.openflexo.connie.del.expr.DELArithmeticBinaryOperator;
 import org.openflexo.connie.del.expr.DELArithmeticUnaryOperator;
+import org.openflexo.connie.del.expr.DELBinaryOperatorExpression;
 import org.openflexo.connie.del.expr.DELBooleanBinaryOperator;
 import org.openflexo.connie.del.expr.DELBooleanUnaryOperator;
+import org.openflexo.connie.del.expr.DELConditionalExpression;
+import org.openflexo.connie.del.expr.DELConstant;
+import org.openflexo.connie.del.expr.DELUnaryOperatorExpression;
 import org.openflexo.connie.expr.BinaryOperator;
+import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionGrammar;
 import org.openflexo.connie.expr.Operator;
 import org.openflexo.connie.expr.OperatorNotSupportedException;
@@ -67,6 +73,19 @@ public class DELGrammar implements ExpressionGrammar {
 			DELArithmeticUnaryOperator.SIN, DELArithmeticUnaryOperator.ASIN, DELArithmeticUnaryOperator.COS,
 			DELArithmeticUnaryOperator.ACOS, DELArithmeticUnaryOperator.TAN, DELArithmeticUnaryOperator.ATAN,
 			DELArithmeticUnaryOperator.EXP, DELArithmeticUnaryOperator.LOG, DELArithmeticUnaryOperator.SQRT };
+
+	private static final Operator[] logicalOperators = { DELBooleanBinaryOperator.AND, DELBooleanBinaryOperator.OR,
+			DELBooleanUnaryOperator.NOT };
+	private static final Operator[] comparisonOperators = { DELBooleanBinaryOperator.EQUALS, DELBooleanBinaryOperator.NOT_EQUALS,
+			DELBooleanBinaryOperator.LESS_THAN, DELBooleanBinaryOperator.LESS_THAN_OR_EQUALS, DELBooleanBinaryOperator.GREATER_THAN,
+			DELBooleanBinaryOperator.GREATER_THAN_OR_EQUALS };
+	private static final Operator[] arithmeticOperators = { DELArithmeticBinaryOperator.ADDITION, DELArithmeticBinaryOperator.SUBSTRACTION,
+			DELArithmeticBinaryOperator.MULTIPLICATION, DELArithmeticBinaryOperator.DIVISION, DELArithmeticUnaryOperator.UNARY_MINUS };
+	private static final Operator[] scientificOperators = { DELArithmeticBinaryOperator.POWER, DELArithmeticUnaryOperator.SQRT,
+			DELArithmeticUnaryOperator.EXP, DELArithmeticUnaryOperator.LOG };
+	private static final Operator[] trigonometricOperators = { DELArithmeticUnaryOperator.SIN, DELArithmeticUnaryOperator.ASIN,
+			DELArithmeticUnaryOperator.COS, DELArithmeticUnaryOperator.ACOS, DELArithmeticUnaryOperator.TAN,
+			DELArithmeticUnaryOperator.ATAN };
 
 	@Override
 	public BinaryOperator[] getAllSupportedBinaryOperators() {
@@ -198,6 +217,52 @@ public class DELGrammar implements ExpressionGrammar {
 			return getSymbol((BinaryOperator) operator);
 		}
 		throw new OperatorNotSupportedException();
+	}
+
+	@Override
+	public Operator[] getLogicalOperators() {
+		return logicalOperators;
+	}
+
+	@Override
+	public Operator[] getComparisonOperators() {
+		return comparisonOperators;
+	}
+
+	@Override
+	public Operator[] getArithmeticOperators() {
+		return arithmeticOperators;
+	}
+
+	@Override
+	public Operator[] getScientificOperators() {
+		return scientificOperators;
+	}
+
+	@Override
+	public Operator[] getTrigonometricOperators() {
+		return trigonometricOperators;
+	}
+
+	@Override
+	public DELBinaryOperatorExpression makeBinaryOperatorExpression(BinaryOperator operator, Expression leftArgument,
+			Expression rightArgument) {
+		return new DELBinaryOperatorExpression(operator, leftArgument, rightArgument);
+	}
+
+	@Override
+	public DELUnaryOperatorExpression makeUnaryOperatorExpression(UnaryOperator operator, Expression argument) {
+		return new DELUnaryOperatorExpression(operator, argument);
+	}
+
+	@Override
+	public DELConditionalExpression makeConditionalExpression(Expression condition, Expression thenExpression, Expression elseExpression) {
+		return new DELConditionalExpression(condition, thenExpression, elseExpression);
+	}
+
+	@Override
+	public <O> Constant<O> getConstant(O value) {
+		return DELConstant.makeConstant(value);
 	}
 
 }

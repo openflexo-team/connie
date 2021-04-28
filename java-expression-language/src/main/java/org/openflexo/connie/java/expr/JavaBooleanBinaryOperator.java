@@ -163,8 +163,8 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 
 		@Override
 		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException {
-			// System.out.println("leftArg="+leftArg+" of "+leftArg.getEvaluationType());
-			// System.out.println("rightArg="+rightArg+" of "+rightArg.getEvaluationType());
+			System.out.println("leftArg=" + leftArg + " of " + leftArg.getEvaluationType());
+			System.out.println("rightArg=" + rightArg + " of " + rightArg.getEvaluationType());
 			if (leftArg instanceof ObjectConstant && rightArg instanceof ObjectConstant) {
 				return ((ObjectConstant) leftArg).getValue().equals(((ObjectConstant) rightArg).getValue()) ? BooleanConstant.TRUE
 						: BooleanConstant.FALSE;
@@ -174,9 +174,17 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 						: BooleanConstant.FALSE;
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getArithmeticValue() == ((ArithmeticConstant<?>) rightArg).getArithmeticValue()
-						? BooleanConstant.TRUE
-						: BooleanConstant.FALSE;
+				// TODO: we may work with all primitive types
+				if (!((ArithmeticConstant) leftArg).isFloatingPointType() && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+					return ((ArithmeticConstant) leftArg).getLongValue() == ((ArithmeticConstant) rightArg).getLongValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
+				else {
+					return ((ArithmeticConstant) leftArg).getDoubleValue() == ((ArithmeticConstant) rightArg).getDoubleValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
 			}
 			if (leftArg instanceof StringConstant && rightArg instanceof StringConstant) {
 				return ((StringConstant) leftArg).getValue().equals(((StringConstant) rightArg).getValue()) ? BooleanConstant.TRUE
@@ -284,9 +292,16 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 				throw new NullReferenceException(this);
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getDoubleValue() < ((ArithmeticConstant<?>) rightArg).getDoubleValue()
-						? BooleanConstant.TRUE
-						: BooleanConstant.FALSE;
+				if (!((ArithmeticConstant) leftArg).isFloatingPointType() && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+					return ((ArithmeticConstant) leftArg).getLongValue() < ((ArithmeticConstant) rightArg).getLongValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
+				else {
+					return ((ArithmeticConstant) leftArg).getDoubleValue() < ((ArithmeticConstant) rightArg).getDoubleValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
 			}
 			// System.out.println("leftArg=" + leftArg + " of " + leftArg.getClass().getSimpleName() + " of " +
 			// leftArg.getEvaluationType());
@@ -314,9 +329,16 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 				throw new NullReferenceException(this);
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getDoubleValue() <= ((ArithmeticConstant<?>) rightArg).getDoubleValue()
-						? BooleanConstant.TRUE
-						: BooleanConstant.FALSE;
+				if (!((ArithmeticConstant) leftArg).isFloatingPointType() && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+					return ((ArithmeticConstant) leftArg).getLongValue() <= ((ArithmeticConstant) rightArg).getLongValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
+				else {
+					return ((ArithmeticConstant) leftArg).getDoubleValue() <= ((ArithmeticConstant) rightArg).getDoubleValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER, EvaluationType.DATE, EvaluationType.DURATION);
@@ -340,9 +362,16 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 				throw new NullReferenceException(this);
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getDoubleValue() > ((ArithmeticConstant<?>) rightArg).getDoubleValue()
-						? BooleanConstant.TRUE
-						: BooleanConstant.FALSE;
+				if (!((ArithmeticConstant) leftArg).isFloatingPointType() && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+					return ((ArithmeticConstant) leftArg).getLongValue() > ((ArithmeticConstant) rightArg).getLongValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
+				else {
+					return ((ArithmeticConstant) leftArg).getDoubleValue() > ((ArithmeticConstant) rightArg).getDoubleValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
 			}
 			// System.out.println("leftArg=" + leftArg + " of " + leftArg.getClass());
 			// System.out.println("rightArg=" + rightArg);
@@ -368,9 +397,16 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 				throw new NullReferenceException(this);
 			}
 			if (leftArg instanceof ArithmeticConstant && rightArg instanceof ArithmeticConstant) {
-				return ((ArithmeticConstant<?>) leftArg).getDoubleValue() >= ((ArithmeticConstant<?>) rightArg).getDoubleValue()
-						? BooleanConstant.TRUE
-						: BooleanConstant.FALSE;
+				if (!((ArithmeticConstant) leftArg).isFloatingPointType() && !((ArithmeticConstant) rightArg).isFloatingPointType()) {
+					return ((ArithmeticConstant) leftArg).getLongValue() >= ((ArithmeticConstant) rightArg).getLongValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
+				else {
+					return ((ArithmeticConstant) leftArg).getDoubleValue() >= ((ArithmeticConstant) rightArg).getDoubleValue()
+							? BooleanConstant.TRUE
+							: BooleanConstant.FALSE;
+				}
 			}
 			throw new TypeMismatchException(this, leftArg.getEvaluationType(), rightArg.getEvaluationType(),
 					EvaluationType.ARITHMETIC_FLOAT, EvaluationType.ARITHMETIC_INTEGER, EvaluationType.DATE, EvaluationType.DURATION);

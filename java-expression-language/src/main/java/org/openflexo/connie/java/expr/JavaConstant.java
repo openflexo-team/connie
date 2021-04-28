@@ -61,44 +61,45 @@ public abstract class JavaConstant<V> extends Constant<V> {
 		return JavaPrettyPrinter.getInstance();
 	}
 
-	public static JavaConstant<?> makeConstant(Object value) {
+	@SuppressWarnings("unchecked")
+	public static <O> JavaConstant<O> makeConstant(O value) {
 		if (value == null) {
-			return JavaConstant.ObjectSymbolicConstant.NULL;
+			return (JavaConstant<O>) JavaConstant.ObjectSymbolicConstant.NULL;
 		}
 		if (value instanceof Boolean) {
 			if ((Boolean) value) {
-				return JavaConstant.BooleanConstant.TRUE;
+				return (JavaConstant<O>) JavaConstant.BooleanConstant.TRUE;
 			}
-			return JavaConstant.BooleanConstant.FALSE;
+			return (JavaConstant<O>) JavaConstant.BooleanConstant.FALSE;
 		}
 		else if (value instanceof Character) {
-			return new JavaConstant.CharConstant((Character) value);
+			return (JavaConstant<O>) new JavaConstant.CharConstant((Character) value);
 		}
 		else if (value instanceof String) {
-			return new JavaConstant.StringConstant((String) value);
+			return (JavaConstant<O>) new JavaConstant.StringConstant((String) value);
 		}
 		else if (value.getClass().isEnum()) {
-			return new JavaConstant.EnumConstant<>((Enum<?>) value);
+			return (JavaConstant<O>) new JavaConstant.EnumConstant<>((Enum<?>) value);
 		}
 		else if (value instanceof Float) {
-			return new JavaConstant.FloatConstant((Float) value);
+			return (JavaConstant<O>) new JavaConstant.FloatConstant((Float) value);
 		}
 		else if (value instanceof Double) {
-			return new JavaConstant.DoubleConstant((Double) value);
+			return (JavaConstant<O>) new JavaConstant.DoubleConstant((Double) value);
 		}
 		else if (value instanceof Integer) {
-			return new JavaConstant.IntegerConstant((Integer) value);
+			return (JavaConstant<O>) new JavaConstant.IntegerConstant((Integer) value);
 		}
 		else if (value instanceof Short) {
-			return new JavaConstant.ShortConstant((Short) value);
+			return (JavaConstant<O>) new JavaConstant.ShortConstant((Short) value);
 		}
 		else if (value instanceof Long) {
-			return new JavaConstant.LongConstant((Long) value);
+			return (JavaConstant<O>) new JavaConstant.LongConstant((Long) value);
 		}
 		else if (value instanceof Byte) {
-			return new JavaConstant.IntegerConstant((Byte) value);
+			return (JavaConstant<O>) new JavaConstant.IntegerConstant((Byte) value);
 		}
-		return new JavaConstant.ObjectConstant(value);
+		return (JavaConstant<O>) new JavaConstant.ObjectConstant(value);
 	}
 
 	/**
