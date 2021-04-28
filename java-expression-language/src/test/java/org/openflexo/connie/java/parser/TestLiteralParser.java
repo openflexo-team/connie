@@ -6,10 +6,15 @@ import org.openflexo.connie.java.expr.JavaConstant.DoubleConstant;
 import org.openflexo.connie.java.expr.JavaConstant.FloatConstant;
 import org.openflexo.connie.java.expr.JavaConstant.IntegerConstant;
 import org.openflexo.connie.java.expr.JavaConstant.LongConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ObjectSymbolicConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
 
 public class TestLiteralParser extends ParserTestCase {
+
+	public void testNull() {
+		tryToParse("null", "null", ObjectSymbolicConstant.class, null, false);
+	}
 
 	public void testTrue() {
 		tryToParse("true", "true", BooleanConstant.class, true, false);

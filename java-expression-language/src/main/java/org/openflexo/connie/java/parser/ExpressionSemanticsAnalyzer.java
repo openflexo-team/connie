@@ -55,6 +55,7 @@ import org.openflexo.connie.java.expr.JavaConditionalExpression;
 import org.openflexo.connie.java.expr.JavaConstant;
 import org.openflexo.connie.java.expr.JavaConstant.BooleanConstant;
 import org.openflexo.connie.java.expr.JavaConstant.CharConstant;
+import org.openflexo.connie.java.expr.JavaConstant.ObjectSymbolicConstant;
 import org.openflexo.connie.java.expr.JavaConstant.StringConstant;
 import org.openflexo.connie.java.expr.JavaInstanceOfExpression;
 import org.openflexo.connie.java.expr.JavaUnaryOperatorExpression;
@@ -86,6 +87,7 @@ import org.openflexo.connie.java.parser.node.AMethodPrimaryNoId;
 import org.openflexo.connie.java.parser.node.AMinusAddExp;
 import org.openflexo.connie.java.parser.node.AMinusUnaryExp;
 import org.openflexo.connie.java.parser.node.ANeqEqualityExp;
+import org.openflexo.connie.java.parser.node.ANullLiteral;
 import org.openflexo.connie.java.parser.node.APercentMultExp;
 import org.openflexo.connie.java.parser.node.APlusAddExp;
 import org.openflexo.connie.java.parser.node.APlusUnaryExp;
@@ -307,6 +309,12 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	public void outAJavaInstanceCreationPrimaryNoId(AJavaInstanceCreationPrimaryNoId node) {
 		super.outAJavaInstanceCreationPrimaryNoId(node);
 		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+	}
+
+	@Override
+	public void outANullLiteral(ANullLiteral node) {
+		super.outANullLiteral(node);
+		registerExpressionNode(node, ObjectSymbolicConstant.NULL);
 	}
 
 	@Override
