@@ -163,8 +163,8 @@ public abstract class JavaBooleanBinaryOperator extends JavaBinaryOperator {
 
 		@Override
 		public Constant<?> evaluate(Constant<?> leftArg, Constant<?> rightArg) throws TypeMismatchException {
-			System.out.println("leftArg=" + leftArg + " of " + leftArg.getEvaluationType());
-			System.out.println("rightArg=" + rightArg + " of " + rightArg.getEvaluationType());
+			//System.out.println("leftArg=" + leftArg + " of " + leftArg.getEvaluationType());
+			//System.out.println("rightArg=" + rightArg + " of " + rightArg.getEvaluationType());
 			if (leftArg instanceof ObjectConstant && rightArg instanceof ObjectConstant) {
 				return ((ObjectConstant) leftArg).getValue().equals(((ObjectConstant) rightArg).getValue()) ? BooleanConstant.TRUE
 						: BooleanConstant.FALSE;
