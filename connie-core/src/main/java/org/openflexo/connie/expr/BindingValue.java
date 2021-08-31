@@ -1032,11 +1032,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					else if (pathElement instanceof StaticMethodCallBindingPathElement) {
 						StaticMethodCallBindingPathElement staticMethodCall = (StaticMethodCallBindingPathElement) pathElement;
 						List<DataBinding<?>> args = buildArgs(staticMethodCall.args);
-						/*Function staticFunction = dataBinding.getOwner().getBindingFactory().retrieveFunction(current.getType(),
-								((MethodCallBindingPathElement) pathElement).method, args);
+						Function staticFunction = getOwner().getBindingFactory().retrieveFunction(staticMethodCall.getType(),
+								((StaticMethodCallBindingPathElement) pathElement).method, args);
 						if (staticFunction != null) {
-							FunctionPathElement newPathElement = dataBinding.getOwner().getBindingFactory().makeFunctionPathElement(current,
-									staticFunction, args);
+							FunctionPathElement newPathElement = getOwner().getBindingFactory().makeFunctionPathElement(current,
+									staticFunction, null, args);
 							if (newPathElement != null) {
 								if (!newPathElement.isActivated()) {
 									newPathElement.activate();
@@ -1049,18 +1049,17 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 							else {
 								invalidBindingReason = "(2) cannot find static method "
 										+ ((StaticMethodCallBindingPathElement) pathElement).method + " for type "
-										+ TypeUtils.simpleRepresentation(current.getType()) + " and args=" + staticArgs;
-								analysingSuccessfull = false;
+										+ TypeUtils.simpleRepresentation(current.getType()) + " and args=" + args;
+								// analysingSuccessfull = false;
 								return false;
 							}
 						}
 						else {
 							invalidBindingReason = "(1) cannot find static method "
 									+ ((StaticMethodCallBindingPathElement) pathElement).method + " for type "
-									+ TypeUtils.simpleRepresentation(current.getType()) + " and args=" + staticArgs;
-							analysingSuccessfull = false;
+									+ TypeUtils.simpleRepresentation(current.getType()) + " and args=" + args;
 							return false;
-						}*/
+						}
 					}
 					else if (pathElement instanceof NewInstanceBindingPathElement) {
 						NewInstanceBindingPathElement newInstanceCall = (NewInstanceBindingPathElement) pathElement;
@@ -1563,6 +1562,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			type = aType;
 			method = aMethod;
 			args = someArgs;
+		}
+
+		public Type getType() {
+			return type;
 		}
 
 		@Override

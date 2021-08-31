@@ -53,7 +53,7 @@ import org.openflexo.connie.expr.VisitorException;
 
 public class JavaInstanceOfExpression extends Expression {
 
-	private final Type type;
+	private Type type;
 	private Expression argument;
 
 	public JavaInstanceOfExpression(Expression argument, Type type) {
@@ -81,8 +81,16 @@ public class JavaInstanceOfExpression extends Expression {
 		return type;
 	}
 
+	public void setType(Type type) {
+		this.type = type;
+	}
+
 	public Expression getArgument() {
 		return argument;
+	}
+
+	public void setArgument(Expression argument) {
+		this.argument = argument;
 	}
 
 	@Override

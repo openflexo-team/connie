@@ -48,7 +48,7 @@ import org.openflexo.connie.type.TypeUtils;
 public abstract class CastExpression extends Expression {
 
 	// private final TypeReference castType;
-	private final Type castType;
+	private Type castType;
 	private Expression argument;
 
 	public CastExpression(Type castType, Expression argument) {
@@ -64,6 +64,10 @@ public abstract class CastExpression extends Expression {
 
 	public Type getCastType() {
 		return castType;
+	}
+
+	public void setCastType(Type castType) {
+		this.castType = castType;
 	}
 
 	public Expression getArgument() {
