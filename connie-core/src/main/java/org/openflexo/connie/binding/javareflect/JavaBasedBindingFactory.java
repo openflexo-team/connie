@@ -190,7 +190,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public AbstractMethodDefinition retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args) {
+	public Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args) {
 
 		Map<String, AbstractMethodDefinition> mapForType = storedFunctions.get(parentType);
 		if (mapForType == null) {
