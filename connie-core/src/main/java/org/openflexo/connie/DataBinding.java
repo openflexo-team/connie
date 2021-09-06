@@ -107,14 +107,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public enum CachingStrategy {
 		NO_CACHING, /* Do not cache, execute unconditionally */
 		OPTIMIST_CACHE, /*
-		 * Always cache executed value, fully rely on
-		 * notification schemes
-		 */
+						* Always cache executed value, fully rely on
+						* notification schemes
+						*/
 		PRAGMATIC_CACHE /*
-		 * Do no cache when a property is declared as not safe
-		 * according to notification schemes, see
-		 * NotificationUnsafe annotation
-		 */
+						* Do no cache when a property is declared as not safe
+						* according to notification schemes, see
+						* NotificationUnsafe annotation
+						*/
 	}
 
 	private static CachingStrategy defaultCachingStrategy = CachingStrategy.NO_CACHING;
@@ -991,7 +991,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					expression = getOwner().getBindingFactory().parseExpression(getUnparsedBinding(), getOwner());
 				}
 				else {
-					LOGGER.warning("Unexpected BindingFactory for " + getOwner());
+					LOGGER.warning("Unexpected null BindingFactory for " + getOwner());
 					expression = null;
 					return null;
 				}
