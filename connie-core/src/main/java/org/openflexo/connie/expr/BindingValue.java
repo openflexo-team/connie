@@ -1341,7 +1341,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		ArrayList<TargetObject> returned = new ArrayList<>();
 
 		Object current = context.getValue(getBindingVariable());
-		returned.add(new TargetObject(context, getBindingVariable().getVariableName()));
+		if (getBindingVariable() != null) {
+			returned.add(new TargetObject(context, getBindingVariable().getVariableName()));
+		}
 
 		if (debug) {
 			LOGGER.info("Computing getTargetObjects(), current=" + current);
