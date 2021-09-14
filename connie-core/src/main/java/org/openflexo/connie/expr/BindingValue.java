@@ -1502,6 +1502,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			args = someArgs;
 		}
 
+		public Type getType() {
+			return type;
+		}
+
 		@Override
 		public String toString() {
 			return "NewInstance[" + type + "(" + args + ")" + "]";
