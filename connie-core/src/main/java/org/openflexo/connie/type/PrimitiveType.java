@@ -92,4 +92,32 @@ public enum PrimitiveType {
 
 	public abstract Type getType();
 
+	public static PrimitiveType toPrimitiveType(Type type) {
+		if (TypeUtils.isBoolean(type)) {
+			return Boolean;
+		}
+		if (TypeUtils.isDouble(type)) {
+			return Double;
+		}
+		if (TypeUtils.isFloat(type)) {
+			return Float;
+		}
+		if (TypeUtils.isLong(type)) {
+			return Long;
+		}
+		if (TypeUtils.isInteger(type)) {
+			return Integer;
+		}
+		if (TypeUtils.isString(type)) {
+			return String;
+		}
+		if (TypeUtils.isDate(type)) {
+			return Date;
+		}
+		return null;
+	}
+
+	public static boolean isPrimitiveType(Type type) {
+		return toPrimitiveType(type) != null;
+	}
 }
