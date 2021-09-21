@@ -557,9 +557,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			else if (e instanceof MethodCallBindingPathElement) {
 				ArrayList<Expression> newArgs = new ArrayList<>();
-				for (Expression arg : ((MethodCallBindingPathElement) e).args) {
-					Expression transformedExpression = arg.transform(transformer);
-					newArgs.add(transformedExpression);
+				if (((MethodCallBindingPathElement) e).args != null) {
+					for (Expression arg : ((MethodCallBindingPathElement) e).args) {
+						Expression transformedExpression = arg.transform(transformer);
+						newArgs.add(transformedExpression);
+					}
 				}
 				newBindingPath.add(new MethodCallBindingPathElement(((MethodCallBindingPathElement) e).method, newArgs));
 			}
@@ -574,7 +576,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	public boolean containsMethodCallWithParameters() {
 		for (AbstractBindingPathElement e : new ArrayList<>(getParsedBindingPath())) {
-			if (e instanceof MethodCallBindingPathElement && ((MethodCallBindingPathElement) e).args.size() > 0) {
+			if (e instanceof MethodCallBindingPathElement && ((MethodCallBindingPathElement) e).args != null
+					&& ((MethodCallBindingPathElement) e).args.size() > 0) {
 				return true;
 			}
 		}
@@ -1132,6 +1135,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	private List<DataBinding<?>> buildArgs(List<Expression> argExpressions) {
 
 		List<DataBinding<?>> returned = new ArrayList<>();
+
+		if (argExpressions == null) {
+			return returned;
+		}
+
 		int argIndex = 0;
 		for (Expression arg : argExpressions) {
 			// System.out.println("--- Ici dans buildArgs, arg=" + arg);
@@ -1455,7 +1463,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		@Override
 		public String toString() {
-			return "Call[" + method + "(" + args + ")" + "]";
+			return "Call[" + method + "(" + (args != null ? args : "") + ")" + "]";
 		}
 
 		@Override
@@ -1463,9 +1471,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			StringBuffer sb = new StringBuffer();
 			sb.append(method + "(");
 			boolean isFirst = true;
-			for (Expression arg : args) {
-				sb.append((isFirst ? "" : ",") + arg);
-				isFirst = false;
+			if (args != null) {
+				for (Expression arg : args) {
+					sb.append((isFirst ? "" : ",") + arg);
+					isFirst = false;
+				}
 			}
 			sb.append(")");
 			return sb.toString();
@@ -1516,9 +1526,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			StringBuffer sb = new StringBuffer();
 			sb.append("new " + TypeUtils.simpleRepresentation(type) + "(");
 			boolean isFirst = true;
-			for (Expression arg : args) {
-				sb.append((isFirst ? "" : ",") + arg);
-				isFirst = false;
+			if (args != null) {
+				for (Expression arg : args) {
+					sb.append((isFirst ? "" : ",") + arg);
+					isFirst = false;
+				}
 			}
 			sb.append(")");
 			return sb.toString();
