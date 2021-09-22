@@ -962,6 +962,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		clearBindingPathAndBindingVariable();
 
+		// for (AbstractBindingPathElement element : getParsedBindingPath()) {
+		// System.out.println(" >> " + element);
+		// }
+
 		if (getOwner() != null && getParsedBindingPath().size() > 0) {
 
 			IBindingPathElement current = null;
@@ -974,8 +978,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				// System.out.println("Found binding variable " + bindingVariable);
 				if (bindingVariable == null) {
 					invalidBindingReason = "cannot find binding variable "
-							+ ((NormalBindingPathElement) getParsedBindingPath().get(0)).property + " BindingModel=";// +
-					// dataBinding.getOwner().getBindingModel();
+							+ ((NormalBindingPathElement) getParsedBindingPath().get(0)).property + " BindingModel="
+							+ getOwner().getBindingModel();
 					return false;
 				}
 			}
