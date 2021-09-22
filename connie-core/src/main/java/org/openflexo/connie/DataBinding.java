@@ -277,7 +277,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void decode() {
-		if (needsParsing) {
+		if (needsParsing && !isParsingExpression) {
 			parseExpression();
 		}
 	}
@@ -532,7 +532,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		analyzedType = UndefinedType.INSTANCE;
 
 		if (isPerformingValidity) {
-			System.err.println("Stackoverflow prevented while performing validity for " + this);
+			System.err.println("Stackoverflow prevented while performing validity for " + getUnparsedBinding());
+			Thread.dumpStack();
 			return false;
 		}
 
