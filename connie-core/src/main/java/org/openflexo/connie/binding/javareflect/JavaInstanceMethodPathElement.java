@@ -71,11 +71,11 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaInstanceMethodPathElement extends FunctionPathElement<InstanceMethodDefinition> {
+public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInstanceMethodDefinition> {
 
 	static final Logger LOGGER = Logger.getLogger(JavaInstanceMethodPathElement.class.getPackage().getName());
 
-	public JavaInstanceMethodPathElement(IBindingPathElement parent, InstanceMethodDefinition method, List<DataBinding<?>> args) {
+	public JavaInstanceMethodPathElement(IBindingPathElement parent, JavaInstanceMethodDefinition method, List<DataBinding<?>> args) {
 		super(parent, method, args);
 		if (getMethodDefinition() != null) {
 			for (FunctionArgument arg : getMethodDefinition().getArguments()) {
@@ -88,7 +88,7 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<InstanceM
 		setType(getMethodDefinition().getMethod().getGenericReturnType());
 	}
 
-	final public InstanceMethodDefinition getMethodDefinition() {
+	final public JavaInstanceMethodDefinition getMethodDefinition() {
 		return getFunction();
 	}
 
@@ -306,6 +306,11 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<InstanceM
 		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
 		check.valid = true;
 		return check;
+	}
+
+	@Override
+	public boolean requiresContext() {
+		return true;
 	}
 
 	/*@Override

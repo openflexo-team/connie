@@ -73,11 +73,11 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaStaticMethodPathElement extends FunctionPathElement<StaticMethodDefinition> {
+public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticMethodDefinition> {
 
 	static final Logger LOGGER = Logger.getLogger(JavaStaticMethodPathElement.class.getPackage().getName());
 
-	public JavaStaticMethodPathElement(IBindingPathElement parent, StaticMethodDefinition method, List<DataBinding<?>> args) {
+	public JavaStaticMethodPathElement(IBindingPathElement parent, JavaStaticMethodDefinition method, List<DataBinding<?>> args) {
 		super(parent, method, args);
 		if (getMethodDefinition() != null) {
 			for (FunctionArgument arg : getMethodDefinition().getArguments()) {
@@ -90,7 +90,7 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<StaticMetho
 		setType(getMethodDefinition().getMethod().getGenericReturnType());
 	}
 
-	final public StaticMethodDefinition getMethodDefinition() {
+	final public JavaStaticMethodDefinition getMethodDefinition() {
 		return getFunction();
 	}
 
@@ -324,6 +324,11 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<StaticMetho
 			}
 		}
 		return new StaticMethodCallBindingPathElement(getType(), getFunction().getName(), argList);
+	}
+
+	@Override
+	public boolean requiresContext() {
+		return false;
 	}
 
 }

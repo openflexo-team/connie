@@ -44,26 +44,26 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class InstanceMethodDefinition extends AbstractMethodDefinition {
+public final class JavaStaticMethodDefinition extends AbstractJavaMethodDefinition {
 
-	private static Map<Method, Map<Type, InstanceMethodDefinition>> cache = new HashMap<>();
+	private static Map<Method, Map<Type, JavaStaticMethodDefinition>> cache = new HashMap<>();
 
-	public static InstanceMethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
-		Map<Type, InstanceMethodDefinition> mapForMethod = cache.get(method);
+	public static JavaStaticMethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
+		Map<Type, JavaStaticMethodDefinition> mapForMethod = cache.get(method);
 		if (mapForMethod == null) {
 			mapForMethod = new HashMap<>();
 			cache.put(method, mapForMethod);
 		}
 
-		InstanceMethodDefinition returned = mapForMethod.get(aDeclaringType);
+		JavaStaticMethodDefinition returned = mapForMethod.get(aDeclaringType);
 		if (returned == null) {
-			returned = new InstanceMethodDefinition(aDeclaringType, method);
+			returned = new JavaStaticMethodDefinition(aDeclaringType, method);
 			mapForMethod.put(aDeclaringType, returned);
 		}
 		return returned;
 	}
 
-	protected InstanceMethodDefinition(Type aDeclaringType, Method method) {
+	protected JavaStaticMethodDefinition(Type aDeclaringType, Method method) {
 		super(aDeclaringType, method);
 	}
 

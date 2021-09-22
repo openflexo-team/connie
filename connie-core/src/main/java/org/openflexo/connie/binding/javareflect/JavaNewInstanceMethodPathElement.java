@@ -69,13 +69,13 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaNewInstanceMethodPathElement extends FunctionPathElement<ConstructorDefinition> {
+public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaConstructorDefinition> {
 
 	static final Logger LOGGER = Logger.getLogger(JavaNewInstanceMethodPathElement.class.getPackage().getName());
 
 	private DataBinding<?> innerAccess;
 
-	public JavaNewInstanceMethodPathElement(IBindingPathElement parent, ConstructorDefinition constructor, DataBinding<?> innerAccess,
+	public JavaNewInstanceMethodPathElement(IBindingPathElement parent, JavaConstructorDefinition constructor, DataBinding<?> innerAccess,
 			List<DataBinding<?>> args) {
 		super(parent, constructor, args);
 		this.innerAccess = innerAccess;
@@ -104,7 +104,7 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<Constr
 		setType(getConstructorDefinition().getReturnType());
 	}
 
-	final public ConstructorDefinition getConstructorDefinition() {
+	final public JavaConstructorDefinition getConstructorDefinition() {
 		return getFunction();
 	}
 
@@ -383,6 +383,11 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<Constr
 			}
 		}
 		return new NewInstanceBindingPathElement(getType(), getFunction().getName(), argList);
+	}
+
+	@Override
+	public boolean requiresContext() {
+		return false;
 	}
 
 }

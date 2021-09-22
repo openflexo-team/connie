@@ -125,14 +125,14 @@ public class KeyValueLibrary {
 	}
 
 	/**
-	 * Retrieve in the cache (compute when not existent) a Vector containing all methods (see {@link InstanceMethodDefinition}) accessible from
+	 * Retrieve in the cache (compute when not existent) a Vector containing all methods (see {@link JavaInstanceMethodDefinition}) accessible from
 	 * supplied declaringType. Note that it return all inherited methods according to Java inheritance semantics
 	 * 
 	 * @param declaringType
 	 * @return
 	 */
-	public static Vector<InstanceMethodDefinition> getAccessibleMethods(Type declaringType) {
-		Vector<InstanceMethodDefinition> returned = ACCESSIBLE_METHODS.get(declaringType);
+	public static Vector<JavaInstanceMethodDefinition> getAccessibleMethods(Type declaringType) {
+		Vector<JavaInstanceMethodDefinition> returned = ACCESSIBLE_METHODS.get(declaringType);
 		if (returned == null) {
 			returned = new Vector<>();
 			Type current = declaringType;
@@ -141,10 +141,10 @@ public class KeyValueLibrary {
 				current = TypeUtils.getSuperType(current);
 				// current = current.getSuperclass();
 			}
-			Collections.sort(returned, new Comparator<InstanceMethodDefinition>() {
+			Collections.sort(returned, new Comparator<JavaInstanceMethodDefinition>() {
 
 				@Override
-				public int compare(InstanceMethodDefinition o1, InstanceMethodDefinition o2) {
+				public int compare(JavaInstanceMethodDefinition o1, JavaInstanceMethodDefinition o2) {
 					return o1.getSignature().compareTo(o2.getSignature());
 				}
 			});
@@ -170,11 +170,11 @@ public class KeyValueLibrary {
 
 	private static final Map<Type, Vector<KeyValueProperty>> DECLARED_KEY_VALUE_PROPERTIES = new Hashtable<>();
 
-	private static final Map<Type, Vector<InstanceMethodDefinition>> DECLARED_METHODS = new Hashtable<>();
+	private static final Map<Type, Vector<JavaInstanceMethodDefinition>> DECLARED_METHODS = new Hashtable<>();
 
 	private static final Map<Type, Vector<KeyValueProperty>> ACCESSIBLE_KEY_VALUE_PROPERTIES = new Hashtable<>();
 
-	private static final Map<Type, Vector<InstanceMethodDefinition>> ACCESSIBLE_METHODS = new Hashtable<>();
+	private static final Map<Type, Vector<JavaInstanceMethodDefinition>> ACCESSIBLE_METHODS = new Hashtable<>();
 
 	private static Vector<KeyValueProperty> getDeclaredProperties(Type declaringType) {
 		Vector<KeyValueProperty> returned = DECLARED_KEY_VALUE_PROPERTIES.get(declaringType);
@@ -185,14 +185,14 @@ public class KeyValueLibrary {
 			Vector<String> excludedSignatures = new Vector<>();
 			returned = searchForProperties(declaringType, true, excludedSignatures);
 			DECLARED_KEY_VALUE_PROPERTIES.put(declaringType, returned);
-			Vector<InstanceMethodDefinition> methods = searchForMethods(declaringType, excludedSignatures);
+			Vector<JavaInstanceMethodDefinition> methods = searchForMethods(declaringType, excludedSignatures);
 			DECLARED_METHODS.put(declaringType, methods);
 		}
 		return returned;
 	}
 
-	private static Vector<InstanceMethodDefinition> getDeclaredMethods(Type declaringType) {
-		Vector<InstanceMethodDefinition> returned = DECLARED_METHODS.get(declaringType);
+	private static Vector<JavaInstanceMethodDefinition> getDeclaredMethods(Type declaringType) {
+		Vector<JavaInstanceMethodDefinition> returned = DECLARED_METHODS.get(declaringType);
 		if (returned == null) {
 			LOGGER.fine("build declaredMethods() for " + declaringType);
 			Vector<String> excludedSignatures = new Vector<>();
@@ -237,8 +237,8 @@ public class KeyValueLibrary {
 		}
 	}
 
-	private static Vector<InstanceMethodDefinition> searchForMethods(Type declaringType, Vector<String> excludedSignatures) {
-		Vector<InstanceMethodDefinition> returned = new Vector<>();
+	private static Vector<JavaInstanceMethodDefinition> searchForMethods(Type declaringType, Vector<String> excludedSignatures) {
+		Vector<JavaInstanceMethodDefinition> returned = new Vector<>();
 
 		if (LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.fine("searchForMethods()");
@@ -260,7 +260,7 @@ public class KeyValueLibrary {
 			for (int i = 0; i < declaredMethods.length; i++) {
 				Method method = declaredMethods[i];
 				if (!Modifier.isStatic(method.getModifiers())) {
-					InstanceMethodDefinition methodDefinition = InstanceMethodDefinition.getMethodDefinition(declaringType, method);
+					JavaInstanceMethodDefinition methodDefinition = JavaInstanceMethodDefinition.getMethodDefinition(declaringType, method);
 					if (!excludedSignatures.contains(methodDefinition.getSignature())) {
 						returned.add(methodDefinition);
 					}
@@ -276,10 +276,10 @@ public class KeyValueLibrary {
 			}
 			e.printStackTrace();
 		}
-		Collections.sort(returned, new Comparator<InstanceMethodDefinition>() {
+		Collections.sort(returned, new Comparator<JavaInstanceMethodDefinition>() {
 
 			@Override
-			public int compare(InstanceMethodDefinition o1, InstanceMethodDefinition o2) {
+			public int compare(JavaInstanceMethodDefinition o1, JavaInstanceMethodDefinition o2) {
 				return o1.getSignature().compareTo(o2.getSignature());
 			}
 		});
@@ -365,7 +365,7 @@ public class KeyValueLibrary {
 
 			// Exclude it from methods
 			if (excludedSignatures != null) {
-				excludedSignatures.add(InstanceMethodDefinition.getMethodDefinition(declaringType, method).getSignature());
+				excludedSignatures.add(JavaInstanceMethodDefinition.getMethodDefinition(declaringType, method).getSignature());
 			}
 
 			// Beautify property name
@@ -384,7 +384,7 @@ public class KeyValueLibrary {
 			Method setMethod = searchMatchingSetMethod(declaringType, propertyName, returnType);
 			boolean isSettable = setMethod != null;
 			if (setMethod != null && excludedSignatures != null) {
-				excludedSignatures.add(InstanceMethodDefinition.getMethodDefinition(declaringType, setMethod).getSignature());
+				excludedSignatures.add(JavaInstanceMethodDefinition.getMethodDefinition(declaringType, setMethod).getSignature());
 			}
 
 			// Creates and register the property

@@ -45,6 +45,7 @@ package org.openflexo.connie;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.openflexo.connie.binding.AbstractConstructor;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
@@ -123,9 +124,9 @@ public interface BindingFactory {
 	 *            name of constructor, might be null for anonymous-constructors languages (eg java)
 	 * @param args
 	 *            list of arguments
-	 * @return a {@link Function} usable as a constructor for declaringType
+	 * @return a {@link AbstractConstructor} usable as a constructor for declaringType
 	 */
-	Function retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args);
+	AbstractConstructor retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args);
 
 	/**
 	 * Lookup and return a valid constructor for declaring type, inner access, functionName, and a list of arguments
@@ -138,9 +139,9 @@ public interface BindingFactory {
 	 *            name of constructor, might be null for anonymous-constructors languages (eg java)
 	 * @param args
 	 *            list of arguments
-	 * @return
+	 * @return a {@link AbstractConstructor} usable as a constructor for declaringType
 	 */
-	Function retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName, List<DataBinding<?>> args);
+	AbstractConstructor retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName, List<DataBinding<?>> args);
 
 	/**
 	 * Return Type for supplied object

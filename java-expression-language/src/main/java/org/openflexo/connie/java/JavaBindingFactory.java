@@ -42,12 +42,16 @@
 
 package org.openflexo.connie.java;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingFactory;
+import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.binding.javareflect.JavaBasedBindingFactory;
+import org.openflexo.connie.binding.javareflect.JavaConstructorDefinition;
 import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaConstant.ObjectSymbolicConstant;
@@ -71,6 +75,17 @@ public class JavaBindingFactory extends JavaBasedBindingFactory {
 	@Override
 	public Constant<?> getNullExpression() {
 		return ObjectSymbolicConstant.NULL;
+	}
+
+	@Override
+	public JavaConstructorDefinition retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName,
+			List<DataBinding<?>> arguments) {
+		return (JavaConstructorDefinition) super.retrieveConstructor(declaringType, innerAccess, functionName, arguments);
+	}
+
+	@Override
+	public JavaConstructorDefinition retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args) {
+		return (JavaConstructorDefinition) super.retrieveConstructor(declaringType, functionName, args);
 	}
 
 }

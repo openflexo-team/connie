@@ -113,28 +113,32 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 
 		BindingPathCheck check = new BindingPathCheck();
 
-		if (getParent() == null) {
-			check.invalidBindingReason = "No parent for: " + this;
-			check.valid = false;
-			return check;
+		if (requiresContext()) {
+			if (getParent() == null) {
+				check.invalidBindingReason = "No parent for: " + this;
+				check.valid = false;
+				return check;
+			}
+
+			if (getParent() != parentElement) {
+				check.invalidBindingReason = "Inconsistent parent for: " + this;
+				check.valid = false;
+				return check;
+			}
+
+			if (!TypeUtils.isTypeAssignableFrom(parentElement.getType(), getParent().getType(), true)) {
+				check.invalidBindingReason = "Mismatched: " + parentElement.getType() + " and " + getParent().getType();
+				check.valid = false;
+				return check;
+			}
+			check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
 		}
 
-		if (getParent() != parentElement) {
-			check.invalidBindingReason = "Inconsistent parent for: " + this;
-			check.valid = false;
-			return check;
-		}
-
-		if (!TypeUtils.isTypeAssignableFrom(parentElement.getType(), getParent().getType(), true)) {
-			check.invalidBindingReason = "Mismatched: " + parentElement.getType() + " and " + getParent().getType();
-			check.valid = false;
-			return check;
-		}
-
-		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
 		check.valid = true;
 		return check;
 	}
+
+	public abstract boolean requiresContext();
 
 	/**
 	 * Build a new {@link AbstractBindingPathElement} from this element

@@ -41,60 +41,34 @@ package org.openflexo.connie.binding.javareflect;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class AbstractMethodDefinition extends AbstractExecutableDefinition<Method> {
+public final class JavaInstanceMethodDefinition extends AbstractJavaMethodDefinition {
 
-	private String _signatureNFQ;
-	private String _signatureFQ;
+	private static Map<Method, Map<Type, JavaInstanceMethodDefinition>> cache = new HashMap<>();
 
-	protected AbstractMethodDefinition(Type aDeclaringType, Method method) {
+	public static JavaInstanceMethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
+		Map<Type, JavaInstanceMethodDefinition> mapForMethod = cache.get(method);
+		if (mapForMethod == null) {
+			mapForMethod = new HashMap<>();
+			cache.put(method, mapForMethod);
+		}
+
+		JavaInstanceMethodDefinition returned = mapForMethod.get(aDeclaringType);
+		if (returned == null) {
+			returned = new JavaInstanceMethodDefinition(aDeclaringType, method);
+			mapForMethod.put(aDeclaringType, returned);
+		}
+		return returned;
+	}
+
+	protected JavaInstanceMethodDefinition(Type aDeclaringType, Method method) {
 		super(aDeclaringType, method);
 	}
 
-	public Method getMethod() {
-		return getExecutable();
-	}
-
-	public String getMethodName() {
-		return getExecutableName();
-	}
-
 	@Override
-	public String getSimplifiedSignature() {
-		if (_signatureNFQ == null) {
-			StringBuilder signature = new StringBuilder();
-			signature.append(getMethod().getName());
-			signature.append("(");
-			signature.append(getParameterListAsString(false));
-			signature.append(")");
-			_signatureNFQ = signature.toString();
-		}
-		return _signatureNFQ;
+	public String toString() {
+		return "InstanceMethodDefinition[" + getSimplifiedSignature() + "]";
 	}
-
-	public String getSignature() {
-		if (_signatureFQ == null) {
-			// try {
-			StringBuffer signature = new StringBuffer();
-			signature.append(getMethod().getName());
-			signature.append("(");
-			signature.append(getParameterListAsString(true));
-			signature.append(")");
-			_signatureFQ = signature.toString();
-			/*}
-			catch (InvalidKeyValuePropertyException e) {
-				logger.warning("While computing getSignature() for "+method+" and "+declaringType+" message:"+e.getMessage());
-				e.printStackTrace();
-				return null;
-			}*/
-
-		}
-		return _signatureFQ;
-	}
-
-	@Override
-	public Type getReturnType() {
-		return getMethod().getGenericReturnType();
-	}
-
 }

@@ -48,12 +48,12 @@ import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
 
-public abstract class AbstractExecutableDefinition<E extends Executable> implements Function {
+public abstract class AbstractJavaExecutableDefinition<E extends Executable> implements Function {
 	private final Type declaringType;
 	private final E executable;
 	private final ArrayList<Function.FunctionArgument> arguments;
 
-	protected AbstractExecutableDefinition(Type aDeclaringType, E executable) {
+	protected AbstractJavaExecutableDefinition(Type aDeclaringType, E executable) {
 		this.executable = executable;
 		this.declaringType = aDeclaringType;
 		arguments = new ArrayList<>();

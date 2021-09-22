@@ -44,25 +44,26 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openflexo.connie.binding.AbstractConstructor;
 import org.openflexo.connie.type.TypeUtils;
 
-public class ConstructorDefinition extends AbstractExecutableDefinition<Constructor<?>> {
+public class JavaConstructorDefinition extends AbstractJavaExecutableDefinition<Constructor<?>> implements AbstractConstructor {
 
 	private String _signatureNFQ;
 	private String _signatureFQ;
 
-	private static Map<Constructor<?>, ConstructorDefinition> cache = new HashMap<>();
+	private static Map<Constructor<?>, JavaConstructorDefinition> cache = new HashMap<>();
 
-	public static ConstructorDefinition getConstructorDefinition(Type aDeclaringType, Constructor<?> constructor) {
-		ConstructorDefinition returned = cache.get(constructor);
+	public static JavaConstructorDefinition getConstructorDefinition(Type aDeclaringType, Constructor<?> constructor) {
+		JavaConstructorDefinition returned = cache.get(constructor);
 		if (returned == null) {
-			returned = new ConstructorDefinition(aDeclaringType, constructor);
+			returned = new JavaConstructorDefinition(aDeclaringType, constructor);
 			cache.put(constructor, returned);
 		}
 		return returned;
 	}
 
-	private ConstructorDefinition(Type aDeclaringType, Constructor<?> constructor) {
+	private JavaConstructorDefinition(Type aDeclaringType, Constructor<?> constructor) {
 		super(aDeclaringType, constructor);
 	}
 

@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,38 +37,14 @@
  * 
  */
 
-package org.openflexo.connie.binding.javareflect;
+package org.openflexo.connie.binding;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
+/**
+ * Implemented by all classes which defines a an abstract constructor in the context of data binding
+ * 
+ * @author sylvain
+ * 
+ */
+public interface AbstractConstructor extends Function {
 
-public final class StaticMethodDefinition extends AbstractMethodDefinition {
-
-	private static Map<Method, Map<Type, StaticMethodDefinition>> cache = new HashMap<>();
-
-	public static StaticMethodDefinition getMethodDefinition(Type aDeclaringType, Method method) {
-		Map<Type, StaticMethodDefinition> mapForMethod = cache.get(method);
-		if (mapForMethod == null) {
-			mapForMethod = new HashMap<>();
-			cache.put(method, mapForMethod);
-		}
-
-		StaticMethodDefinition returned = mapForMethod.get(aDeclaringType);
-		if (returned == null) {
-			returned = new StaticMethodDefinition(aDeclaringType, method);
-			mapForMethod.put(aDeclaringType, returned);
-		}
-		return returned;
-	}
-
-	protected StaticMethodDefinition(Type aDeclaringType, Method method) {
-		super(aDeclaringType, method);
-	}
-
-	@Override
-	public String toString() {
-		return "InstanceMethodDefinition[" + getSimplifiedSignature() + "]";
-	}
 }

@@ -191,7 +191,10 @@ public abstract class SimplePathElement extends AbstractPathElement implements S
 	@Override
 	public AbstractBindingPathElement makeUnparsed() {
 		return new NormalBindingPathElement(getPropertyName());
-
 	}
 
+	@Override
+	public boolean requiresContext() {
+		return true;
+	}
 }

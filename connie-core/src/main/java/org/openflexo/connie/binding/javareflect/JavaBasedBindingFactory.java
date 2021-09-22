@@ -54,6 +54,7 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.binding.AbstractConstructor;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
@@ -74,8 +75,8 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 
 	private Map<Type, List<? extends SimplePathElement>> accessibleSimplePathElements = new HashMap<>();
 	private Map<Type, List<? extends FunctionPathElement<?>>> accessibleFunctionPathElements = new HashMap<>();
-	private Map<Type, Map<String, AbstractMethodDefinition>> storedFunctions = new HashMap<>();
-	private Map<Type, Map<String, ConstructorDefinition>> storedConstructors = new HashMap<>();
+	private Map<Type, Map<String, AbstractJavaMethodDefinition>> storedFunctions = new HashMap<>();
+	private Map<Type, Map<String, JavaConstructorDefinition>> storedConstructors = new HashMap<>();
 
 	@Override
 	public Type getTypeForObject(Object object) {
@@ -137,7 +138,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 				currentType = TypeUtils.fromPrimitive((Class<?>) currentType);
 			}
 			List<JavaInstanceMethodPathElement> newComputedList = new ArrayList<>();
-			for (InstanceMethodDefinition m : KeyValueLibrary.getAccessibleMethods(currentType)) {
+			for (JavaInstanceMethodDefinition m : KeyValueLibrary.getAccessibleMethods(currentType)) {
 				// System.out.println("on construit JavaMethodPathElement pour " + m);
 				newComputedList.add(new JavaInstanceMethodPathElement(parent, m, null));
 			}
@@ -164,14 +165,14 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	@Override
 	public FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, Function function, DataBinding<?> innerAccess,
 			List<DataBinding<?>> args) {
-		if (function instanceof InstanceMethodDefinition) {
-			return new JavaInstanceMethodPathElement(father, (InstanceMethodDefinition) function, args);
+		if (function instanceof JavaInstanceMethodDefinition) {
+			return new JavaInstanceMethodPathElement(father, (JavaInstanceMethodDefinition) function, args);
 		}
-		if (function instanceof StaticMethodDefinition) {
-			return new JavaStaticMethodPathElement(father, (StaticMethodDefinition) function, args);
+		if (function instanceof JavaStaticMethodDefinition) {
+			return new JavaStaticMethodPathElement(father, (JavaStaticMethodDefinition) function, args);
 		}
-		if (function instanceof ConstructorDefinition) {
-			return new JavaNewInstanceMethodPathElement(father, (ConstructorDefinition) function, innerAccess, args);
+		if (function instanceof JavaConstructorDefinition) {
+			return new JavaNewInstanceMethodPathElement(father, (JavaConstructorDefinition) function, innerAccess, args);
 		}
 		return null;
 	}
@@ -192,14 +193,14 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	@Override
 	public Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args) {
 
-		Map<String, AbstractMethodDefinition> mapForType = storedFunctions.get(parentType);
+		Map<String, AbstractJavaMethodDefinition> mapForType = storedFunctions.get(parentType);
 		if (mapForType == null) {
 			mapForType = new HashMap<>();
 			storedFunctions.put(parentType, mapForType);
 		}
 
 		String signature = getSignature(functionName, args);
-		AbstractMethodDefinition returned = mapForType.get(signature);
+		AbstractJavaMethodDefinition returned = mapForType.get(signature);
 		if (returned != null) {
 			return returned;
 		}
@@ -243,12 +244,12 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			}*/
 			// Return the first one
 			// TODO: try to find the best one
-			returned = InstanceMethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			returned = JavaInstanceMethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
 			mapForType.put(signature, returned);
 			return returned;
 		}
 		else if (possiblyMatchingMethods.size() == 1) {
-			returned = InstanceMethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			returned = JavaInstanceMethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
 			mapForType.put(signature, returned);
 			return returned;
 		}
@@ -261,22 +262,22 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public ConstructorDefinition retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args) {
+	public AbstractConstructor retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args) {
 		return retrieveConstructor(declaringType, null, functionName, args);
 	}
 
 	// Note: in java, we don't care about functionName (which is the name of the declaring type)
 	@Override
-	public ConstructorDefinition retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName,
+	public AbstractConstructor retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName,
 			List<DataBinding<?>> arguments) {
-		Map<String, ConstructorDefinition> mapForType = storedConstructors.get(declaringType);
+		Map<String, JavaConstructorDefinition> mapForType = storedConstructors.get(declaringType);
 		if (mapForType == null) {
 			mapForType = new HashMap<>();
 			storedConstructors.put(declaringType, mapForType);
 		}
 
 		String signature = getSignature(TypeUtils.fullQualifiedRepresentation(declaringType), arguments);
-		ConstructorDefinition returned = mapForType.get(signature);
+		JavaConstructorDefinition returned = mapForType.get(signature);
 		if (returned != null) {
 			return returned;
 		}
@@ -336,12 +337,12 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			}*/
 			// Return the first one
 			// TODO: try to find the best one
-			returned = ConstructorDefinition.getConstructorDefinition(declaringType, possiblyMatchingConstructors.get(0));
+			returned = JavaConstructorDefinition.getConstructorDefinition(declaringType, possiblyMatchingConstructors.get(0));
 			mapForType.put(signature, returned);
 			return returned;
 		}
 		else if (possiblyMatchingConstructors.size() == 1) {
-			returned = ConstructorDefinition.getConstructorDefinition(declaringType, possiblyMatchingConstructors.get(0));
+			returned = JavaConstructorDefinition.getConstructorDefinition(declaringType, possiblyMatchingConstructors.get(0));
 			mapForType.put(signature, returned);
 			return returned;
 		}
