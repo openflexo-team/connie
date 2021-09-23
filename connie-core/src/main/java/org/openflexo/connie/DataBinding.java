@@ -140,6 +140,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	private Type analyzedType;
 	private String invalidBindingReason;
 	private boolean needReanalysing = true;
+	private boolean isParsingExpression = false;
+	private boolean isPerformingValidity = false;
 
 	private boolean trackBindingModelChanges = true;
 
@@ -209,14 +211,17 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void debug() {
 		System.out.println("DEBUG DataBinding ");
-		System.out.println("valid=" + valid);
-		System.out.println("reason=" + invalidBindingReason);
-		System.out.println("expression=" + expression);
-		System.out.println("unparsedBinding=" + unparsedBinding);
-		System.out.println("needReanalysing=" + needReanalysing);
-		System.out.println("needsParsing=" + needsParsing);
-		System.out.println("analyzedType=" + analyzedType);
-		System.out.println("owner=" + owner);
+		System.out.println("> valid=" + valid);
+		System.out.println("> reason=" + invalidBindingReason);
+		System.out.println("> expression=" + expression);
+		System.out.println("> unparsedBinding=" + unparsedBinding);
+		System.out.println("> needReanalysing=" + needReanalysing);
+		System.out.println("> needsParsing=" + needsParsing);
+		System.out.println("> isParsingExpression=" + isParsingExpression);
+		System.out.println("> isPerformingValidity=" + isPerformingValidity);
+		System.out.println("> analyzedType=" + analyzedType);
+		System.out.println("> owner=" + owner);
+		System.out.println("> bindingFactory=" + (owner != null ? owner.getBindingFactory() : null));
 	}
 
 	private void deleteContainedBindingValues() {
@@ -277,6 +282,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void decode() {
+		if (debug) {
+			System.out.println("DEBUG -- Connie -- decode for " + this + " needsParsing=" + needsParsing + " isParsingExpression="
+					+ isParsingExpression);
+		}
 		if (needsParsing && !isParsingExpression) {
 			parseExpression();
 		}
@@ -474,7 +483,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				System.out.println("DEBUG -- Connie -- DONE performComputeValididy for " + this);
 				debug();
 			}
-			needReanalysing = false;
+			if (getOwner().getBindingFactory() != null) {
+				needReanalysing = false;
+			}
 		}
 
 		/*if (!valid && isSet()) {
@@ -485,8 +496,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		return valid;
 	}
-
-	private boolean isPerformingValidity = false;
 
 	/**
 	 * Internally compute validity<br>
@@ -971,8 +980,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	}
 
-	private boolean isParsingExpression = false;
-
 	/**
 	 * This method is called whenever we need to parse the binding using string encoded in unparsedBinding field.<br>
 	 * Syntaxic checking of the binding is performed here. This phase is followed by the semantics analysis as performed by
@@ -992,7 +999,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					expression = getOwner().getBindingFactory().parseExpression(getUnparsedBinding(), getOwner());
 				}
 				else {
-					LOGGER.warning("Unexpected null BindingFactory for " + getOwner());
+					// LOGGER.warning("Unexpected null BindingFactory for " + getOwner());
 					expression = null;
 					return null;
 				}
@@ -1002,6 +1009,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				expression = null;
 				// logger.warning(e.getMessage());
 				return null;
+			} finally {
+				isParsingExpression = false;
 			}
 			needsParsing = false;
 			analyseExpressionAfterParsing();
