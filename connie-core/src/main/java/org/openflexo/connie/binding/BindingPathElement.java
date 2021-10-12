@@ -43,7 +43,6 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 
 /**
  * General API for an non-root element of a formal binding path, which has at least one parent
@@ -119,5 +118,4 @@ public interface BindingPathElement extends IBindingPathElement {
 	 */
 	public abstract BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType);
 
-	public abstract AbstractBindingPathElement makeUnparsed();
 }

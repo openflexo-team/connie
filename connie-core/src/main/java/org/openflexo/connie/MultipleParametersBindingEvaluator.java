@@ -39,17 +39,18 @@
 
 package org.openflexo.connie;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
-import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
+import org.openflexo.connie.expr.UnresolvedBindingVariable;
 
 /**
  * Utility class allowing to compute binding value over an expression and a given set of objects.<br>
@@ -126,17 +127,22 @@ public abstract class MultipleParametersBindingEvaluator extends DefaultBindable
 					@Override
 					public Expression performTransformation(Expression e) throws org.openflexo.connie.exception.TransformException {
 						if (e instanceof BindingValue) {
-							BindingValue bv = (BindingValue) e;
-							if (bv.getParsedBindingPath().size() > 0) {
-								AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
-								if (!(firstPathElement instanceof NormalBindingPathElement)
-										|| (!((NormalBindingPathElement) firstPathElement).property.equals("this"))
-												&& !parameters.contains(((NormalBindingPathElement) firstPathElement).property)) {
-									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("this"));
-									bv.revalidate();
-								}
+							BindingValue bindingPath = (BindingValue) e;
+							if (bindingPath.getBindingVariable() == null) {
+								UnresolvedBindingVariable objectBV = new UnresolvedBindingVariable("this");
+								bindingPath.setBindingVariable(objectBV);
+								return bindingPath;
 							}
-							return bv;
+							else if (!bindingPath.getBindingVariable().getVariableName().equals("this")
+									&& !parameters.contains(bindingPath.getBindingVariable().getVariableName())) {
+								UnresolvedBindingVariable objectBV = new UnresolvedBindingVariable("this");
+								List<BindingPathElement> bp2 = new ArrayList<>(bindingPath.getBindingPath());
+								bp2.add(0,
+										bindingFactory.makeSimplePathElement(objectBV, bindingPath.getBindingVariable().getVariableName()));
+								bindingPath.setBindingVariable(objectBV);
+								bindingPath.setBindingPath(bp2);
+							}
+							return bindingPath;
 						}
 						return e;
 					}

@@ -42,7 +42,6 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
@@ -58,13 +57,25 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 	private PropertyChangeSupport pcSupport;
 	private boolean activated = false;
 
+	private String parsed;
+
 	public static final String NAME_PROPERTY = "propertyName";
 	public static final String TYPE_PROPERTY = "type";
 	public static final String DELETED_PROPERTY = "deleted";
 
-	public AbstractPathElement(IBindingPathElement parent) {
+	public AbstractPathElement(IBindingPathElement parent, String parsed) {
 		this.parent = parent;
+		this.parsed = parsed;
 		pcSupport = new PropertyChangeSupport(this);
+	}
+
+	/**
+	 * Return original parsed String
+	 * 
+	 * @return
+	 */
+	public String getParsed() {
+		return parsed;
 	}
 
 	/**
@@ -93,6 +104,11 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 		return activated;
 	}
 
+	/**
+	 * Return parent of this BindingPathElement
+	 * 
+	 * @return
+	 */
 	@Override
 	public IBindingPathElement getParent() {
 		return parent;
@@ -108,6 +124,16 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 		return DELETED_PROPERTY;
 	}
 
+	/**
+	 * Evaluate the acceptability relatively to type checking of this {@link BindingPathElement} in the context of a parent
+	 * {@link IBindingPathElement}
+	 * 
+	 * @param parentElement
+	 *            parent element of current {@link IBindingPathElement}
+	 * @param parentType
+	 *            resulting type for the parent {@link IBindingPathElement} in its context
+	 * @return
+	 */
 	@Override
 	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType) {
 
@@ -138,11 +164,11 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 		return check;
 	}
 
+	/**
+	 * Return boolean indicating if this path element requires a context (a parent path element)
+	 * 
+	 * @return
+	 */
 	public abstract boolean requiresContext();
 
-	/**
-	 * Build a new {@link AbstractBindingPathElement} from this element
-	 */
-	@Override
-	public abstract AbstractBindingPathElement makeUnparsed();
 }

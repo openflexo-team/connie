@@ -722,7 +722,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}*/
 
 	public boolean isCompoundBinding() {
-		return isBindingValue() && ((BindingValue) getExpression()).isCompoundBinding();
+		return isBindingValue() && ((BindingValue) getExpression()).containsAMethodCall();
 	}
 
 	public String getUnparsedBinding() {
@@ -1013,6 +1013,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				isParsingExpression = false;
 			}
 			needsParsing = false;
+			// TODO: i think this is not usefull
 			analyseExpressionAfterParsing();
 		}
 		checkBindingModelListening();
@@ -1032,6 +1033,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return expression;
 	}
 
+	// TODO : is this still usefull ? guess no
 	private Expression analyseExpressionAfterParsing() {
 		if (getOwner() != null && expression != null) {
 			// System.out.println("Analysing " + this + " unparsedBinding=" +
@@ -1042,7 +1044,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) {
 						if (e instanceof BindingValue) {
 							// System.out.println("> Analyse " + e);
-							((BindingValue) e).buildBindingPathFromParsedBindingPath(/*DataBinding.this*/);
+							// ((BindingValue) e).buildBindingPathFromParsedBindingPath(/*DataBinding.this*/);
 						}
 					}
 				});

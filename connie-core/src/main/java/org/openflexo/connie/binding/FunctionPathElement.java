@@ -41,17 +41,14 @@ package org.openflexo.connie.binding;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
-import org.openflexo.connie.expr.BindingValue.MethodCallBindingPathElement;
-import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 
 /**
@@ -65,40 +62,30 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 
 	private static final Logger LOGGER = Logger.getLogger(FunctionPathElement.class.getPackage().getName());
 
-	private final F function;
+	private F function;
 	private Type type;
-	private final HashMap<Function.FunctionArgument, DataBinding<?>> parameters;
+	private final List<DataBinding<?>> arguments;
 
-	public FunctionPathElement(IBindingPathElement parent, F function, List<DataBinding<?>> paramValues) {
-		super(parent);
+	public FunctionPathElement(IBindingPathElement parent, String parsed, F function, List<DataBinding<?>> someArguments) {
+		super(parent, parsed);
 		this.function = function;
-		parameters = new HashMap<>();
-		if (function == null) {
-			LOGGER.warning("FunctionPathElement called with null function");
+		arguments = new ArrayList<>();
+		if (someArguments != null) {
+			arguments.addAll(someArguments);
 		}
-		else {
-			this.type = function.getReturnType();
-			if (paramValues != null) {
-				int i = 0;
-				for (Function.FunctionArgument arg : function.getArguments()) {
-					if (i < paramValues.size()) {
-						DataBinding<?> paramValue = paramValues.get(i);
-						setParameter(arg, paramValue);
-					}
-					i++;
-				}
-			}
+		if (function != null) {
+			setFunction(function);
 		}
 	}
 
 	public void instanciateParameters(Bindable bindable) {
 		for (Function.FunctionArgument arg : function.getArguments()) {
-			DataBinding<?> parameter = getParameter(arg);
+			DataBinding<?> parameter = getArgumentValue(arg);
 			if (parameter == null) {
 				parameter = new DataBinding<>(bindable, arg.getArgumentType(), DataBinding.BindingDefinitionType.GET);
 				parameter.setBindingName(arg.getArgumentName());
 				parameter.setUnparsedBinding("");
-				setParameter(arg, parameter);
+				setArgumentValue(arg, parameter);
 			}
 			else {
 				parameter.setOwner(bindable);
@@ -112,8 +99,25 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 		return function;
 	}
 
+	public void setFunction(F function) {
+		this.function = function;
+		if (function != null) {
+			for (FunctionArgument arg : function.getArguments()) {
+				DataBinding<?> argValue = getArgumentValue(arg);
+				if (argValue != null) {
+					argValue.setDeclaredType(arg.getArgumentType());
+				}
+			}
+			setType(function.getReturnType());
+		}
+		clearSerializationRepresentation();
+	}
+
 	@Override
 	public Type getType() {
+		if (getFunction() != null) {
+			return getFunction().getReturnType();
+		}
 		return type;
 	}
 
@@ -121,28 +125,46 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 		this.type = type;
 	}
 
-	protected String serializationRepresentation = null;
+	private String serializationRepresentation = null;
 
+	// TODO
+	// It's better not to cache serialization representation
+	// See TestBindingEvaluator, test9
 	@Override
 	public String getSerializationRepresentation() {
-		if (serializationRepresentation == null) {
-			StringBuffer returned = new StringBuffer();
-			if (getFunction() != null) {
-				returned.append(getFunction().getName());
-				returned.append("(");
-				boolean isFirst = true;
-				for (Function.FunctionArgument a : getFunction().getArguments()) {
-					returned.append((isFirst ? "" : ",") + getParameter(a));
-					isFirst = false;
-				}
-				returned.append(")");
-			}
-			else {
-				returned.append("unknown_function()");
-			}
-			serializationRepresentation = returned.toString();
+		// if (serializationRepresentation == null) {
+		StringBuffer returned = new StringBuffer();
+		if (getFunction() != null) {
+			returned.append(getFunction().getName());
 		}
-		return serializationRepresentation;
+		else {
+			returned.append(getParsed());
+		}
+		returned.append("(");
+		boolean isFirst = true;
+		for (DataBinding<?> arg : getArguments()) {
+			returned.append((isFirst ? "" : ",") + arg);
+			isFirst = false;
+		}
+		returned.append(")");
+
+		// TODO: keep this commented code for test purposes
+		/*if (serializationRepresentation != null && !serializationRepresentation.equals(returned.toString())) {
+			System.out.println("C'est la qu'il y a un probleme");
+			System.out.println("On avait: " + serializationRepresentation);
+			System.out.println("Et maintenant: " + returned.toString());
+			Thread.dumpStack();
+			System.exit(-1);
+		}*/
+
+		serializationRepresentation = returned.toString();
+		// }
+		// return serializationRepresentation;
+		return returned.toString();
+	}
+
+	public void clearSerializationRepresentation() {
+		serializationRepresentation = null;
 	}
 
 	@Override
@@ -150,32 +172,102 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 		return false;
 	}
 
-	public List<? extends FunctionArgument> getArguments() {
-		return function.getArguments();
-	}
-
-	public DataBinding<?> getParameter(String argumentName) {
-		for (FunctionArgument arg : getArguments()) {
-			if (arg.getArgumentName().equals(argumentName)) {
-				return parameters.get(arg);
-			}
+	public List<? extends FunctionArgument> getFunctionArguments() {
+		if (function != null) {
+			return function.getArguments();
 		}
 		return null;
 	}
 
-	public DataBinding<?> getParameter(Function.FunctionArgument argument) {
-		return parameters.get(argument);
+	public List<DataBinding<?>> getArguments() {
+		return arguments;
 	}
 
-	public void setParameter(Function.FunctionArgument argument, DataBinding<?> value) {
+	public DataBinding<?> getArgumentValue(String argumentName) {
+		if (getFunction() == null) {
+			return null;
+		}
+		int i = 0;
+		for (FunctionArgument arg : getFunctionArguments()) {
+			if (arg.getArgumentName().equals(argumentName) && i < arguments.size()) {
+				return arguments.get(i);
+			}
+			i++;
+		}
+		return null;
+	}
+
+	public DataBinding<?> getArgumentValue(Function.FunctionArgument argument) {
+		if (getFunction() == null) {
+			return null;
+		}
+		int index = getFunctionArguments().indexOf(argument);
+		if (index > -1 && index < arguments.size()) {
+			return arguments.get(index);
+		}
+		return null;
+	}
+
+	public void setArgumentValue(Function.FunctionArgument argument, DataBinding<?> value) {
+
+		if (getFunction() == null) {
+			return;
+		}
+		int index = getFunctionArguments().indexOf(argument);
+		if (index == -1) {
+			LOGGER.warning("Unexpected argument: " + argument);
+			return;
+		}
+		if (index < arguments.size()) {
+			arguments.remove(index);
+			arguments.add(index, value);
+		}
+		else {
+			for (int i = arguments.size(); i < index; i++) {
+				arguments.add(i, null);
+			}
+			arguments.add(index, value);
+		}
 		serializationRepresentation = null;
-		// System.out.println("setParameter " + argument + " for " + this + " with " + value);
-		parameters.put(argument, value);
 	}
 
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + "/" + getSerializationRepresentation();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		if (isResolved()) {
+			result = prime * result + Objects.hash(getFunction());
+		}
+		else {
+			result = prime * result + Objects.hash(getParsed());
+		}
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		FunctionPathElement<?> other = (FunctionPathElement<?>) obj;
+		if (!Objects.equals(getArguments(), other.getArguments())) {
+			return false;
+		}
+		if (isResolved() != other.isResolved()) {
+			return false;
+		}
+		if (isResolved()) {
+			return Objects.equals(getFunction(), other.getFunction());
+		}
+		else {
+			return Objects.equals(getParsed(), other.getParsed());
+		}
 	}
 
 	@Override
@@ -197,7 +289,7 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 		}
 
 		for (FunctionArgument arg : getFunction().getArguments()) {
-			DataBinding<?> argValue = getParameter(arg);
+			DataBinding<?> argValue = getArgumentValue(arg);
 			// System.out.println("Checking " + argValue + " valid="
 			// + argValue.isValid());
 			if (argValue == null) {
@@ -217,15 +309,4 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 		return check;
 	}
 
-	@Override
-	public AbstractBindingPathElement makeUnparsed() {
-		List<Expression> argList = new ArrayList<>();
-		for (FunctionArgument fa : getArguments()) {
-			DataBinding<?> db = getParameter(fa);
-			if (db != null) {
-				argList.add(db.getExpression());
-			}
-		}
-		return new MethodCallBindingPathElement(getFunction().getName(), argList);
-	}
 }

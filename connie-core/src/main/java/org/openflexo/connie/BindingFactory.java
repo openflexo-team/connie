@@ -45,8 +45,6 @@ package org.openflexo.connie;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import org.openflexo.connie.binding.AbstractConstructor;
-import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
@@ -95,53 +93,46 @@ public interface BindingFactory {
 	SimplePathElement makeSimplePathElement(IBindingPathElement parent, String propertyName);
 
 	/**
-	 * Build a new {@link FunctionPathElement} with supplied parent, function and arguments
+	 * Build a new {@link FunctionPathElement} with supplied parent, function name and arguments
 	 * 
-	 * @param father
-	 * @param function
+	 * @param parent
+	 *            The parent path element
+	 * @param functionName
+	 *            The name of the function to retrieve
 	 * @param args
+	 *            The arguments of the function path element
 	 * @return
 	 */
-	FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, Function function, DataBinding<?> innerAccess,
+	FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement parent, String functionName, List<DataBinding<?>> args);
+
+	/**
+	 * Build a new static {@link FunctionPathElement} with supplied type, function name and arguments
+	 * 
+	 * @param type
+	 *            The type of which static function is defined
+	 * @param functionName
+	 *            The name of the function to retrieve
+	 * @param args
+	 *            The arguments of the function path element
+	 * @return
+	 */
+	FunctionPathElement<?> makeStaticFunctionPathElement(Type type, String functionName, List<DataBinding<?>> args);
+
+	/**
+	 * Build a new {@link FunctionPathElement} (new instance creation) with supplied type, parent, function name and arguments
+	 * 
+	 * @param type
+	 *            The type to instantiate
+	 * @param parent
+	 *            The parent path element: might be null or specifiates a inner access
+	 * @param functionName
+	 *            The name of the function to retrieve, might be null when type is sufficient
+	 * @param args
+	 *            The arguments of the function path element
+	 * @return
+	 */
+	FunctionPathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
 			List<DataBinding<?>> args);
-
-	/**
-	 * Lookup and return {@link Function} denoted by functionName and list of arguments, for declaring Type
-	 * 
-	 * @param parentType
-	 * @param functionName
-	 * @param args
-	 * @return
-	 */
-	Function retrieveFunction(Type declaringType, String functionName, List<DataBinding<?>> args);
-
-	/**
-	 * Lookup and return a valid constructor for declaring type, functionName, and a list of arguments
-	 * 
-	 * @param declaringType
-	 *            Type of object beeing created by returned constructor
-	 * @param functionName
-	 *            name of constructor, might be null for anonymous-constructors languages (eg java)
-	 * @param args
-	 *            list of arguments
-	 * @return a {@link AbstractConstructor} usable as a constructor for declaringType
-	 */
-	AbstractConstructor retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args);
-
-	/**
-	 * Lookup and return a valid constructor for declaring type, inner access, functionName, and a list of arguments
-	 * 
-	 * @param declaringType
-	 *            Type of object beeing created by returned constructor
-	 * @param innerAccess
-	 *            Defines the context in which this new instance should be created (parent object for inner access)
-	 * @param functionName
-	 *            name of constructor, might be null for anonymous-constructors languages (eg java)
-	 * @param args
-	 *            list of arguments
-	 * @return a {@link AbstractConstructor} usable as a constructor for declaringType
-	 */
-	AbstractConstructor retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName, List<DataBinding<?>> args);
 
 	/**
 	 * Return Type for supplied object

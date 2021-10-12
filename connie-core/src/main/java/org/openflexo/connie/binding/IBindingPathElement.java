@@ -75,13 +75,46 @@ public interface IBindingPathElement extends Typed {
 		}
 	};
 
+	/**
+	 * Return boolean indicating if this path element is resolved
+	 * 
+	 * @return
+	 */
+	public boolean isResolved();
+
+	/**
+	 * Try to resolve this binding path element assuming this element is not resolved yet
+	 * 
+	 */
+	public void resolve();
+
+	/**
+	 * Return accessed type for this {@link IBindingPathElement}
+	 * 
+	 * @return
+	 */
 	@Override
 	Type getType();
 
+	/**
+	 * Return serialized representation for this {@link IBindingPathElement}
+	 * 
+	 * @return
+	 */
 	String getSerializationRepresentation();
 
+	/**
+	 * Returns label of this {@link IBindingPathElement}
+	 * 
+	 * @return
+	 */
 	String getLabel();
 
+	/**
+	 * Returns toolip text of this {@link IBindingPathElement}
+	 * 
+	 * @return
+	 */
 	String getTooltipText(Type resultingType);
 
 	/**

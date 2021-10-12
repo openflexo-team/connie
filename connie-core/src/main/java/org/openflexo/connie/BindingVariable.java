@@ -120,6 +120,15 @@ public class BindingVariable implements SettableBindingPathElement, HasPropertyC
 	}
 
 	@Override
+	public boolean isResolved() {
+		return true;
+	}
+
+	@Override
+	public void resolve() {
+	}
+
+	@Override
 	public String toString() {
 		return getVariableName() /* + "/" + TypeUtils.simpleRepresentation(getType())*/;
 	}

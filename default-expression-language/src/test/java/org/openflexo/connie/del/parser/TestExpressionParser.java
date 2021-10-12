@@ -47,6 +47,7 @@ import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DefaultBindable;
 import org.openflexo.connie.ParseException;
+import org.openflexo.connie.del.DELBindingFactory;
 import org.openflexo.connie.del.expr.DELBinaryOperatorExpression;
 import org.openflexo.connie.del.expr.DELBooleanBinaryOperator;
 import org.openflexo.connie.del.expr.DELCastExpression;
@@ -71,6 +72,7 @@ import junit.framework.TestCase;
 
 public class TestExpressionParser extends TestCase {
 
+	private final BindingFactory BINDING_FACTORY = new DELBindingFactory();
 	private DELPrettyPrinter prettyPrinter;
 
 	@Override
@@ -100,7 +102,7 @@ public class TestExpressionParser extends TestCase {
 
 				@Override
 				public BindingFactory getBindingFactory() {
-					return null;
+					return BINDING_FACTORY;
 				}
 
 			};

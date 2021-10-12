@@ -61,8 +61,6 @@ import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
-import org.openflexo.connie.expr.BindingValue.StaticMethodCallBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
@@ -75,19 +73,23 @@ import org.openflexo.connie.type.TypeUtils;
  */
 public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticMethodDefinition> {
 
-	static final Logger LOGGER = Logger.getLogger(JavaStaticMethodPathElement.class.getPackage().getName());
+	static final Logger logger = Logger.getLogger(JavaStaticMethodPathElement.class.getPackage().getName());
 
-	public JavaStaticMethodPathElement(IBindingPathElement parent, JavaStaticMethodDefinition method, List<DataBinding<?>> args) {
-		super(parent, method, args);
-		if (getMethodDefinition() != null) {
-			for (FunctionArgument arg : getMethodDefinition().getArguments()) {
-				DataBinding<?> argValue = getParameter(arg);
-				if (argValue != null) {
-					argValue.setDeclaredType(arg.getArgumentType());
-				}
-			}
-		}
-		setType(getMethodDefinition().getMethod().getGenericReturnType());
+	private JavaBasedBindingFactory bindingFactory;
+	private Type type;
+
+	public JavaStaticMethodPathElement(Type type, String methodName, List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
+		super(null, methodName, null, args);
+		this.bindingFactory = bindingFactory;
+		this.type = type;
+	}
+
+	public JavaStaticMethodPathElement(Type type, JavaStaticMethodDefinition method, List<DataBinding<?>> args,
+			JavaBasedBindingFactory bindingFactory) {
+		super(null, method.getName(), method, args);
+		this.bindingFactory = bindingFactory;
+		this.type = type;
+		setFunction(method);
 	}
 
 	final public JavaStaticMethodDefinition getMethodDefinition() {
@@ -95,28 +97,26 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 	}
 
 	public String getMethodName() {
-		return getMethodDefinition().getMethod().getName();
+		if (getMethodDefinition() != null) {
+			return getMethodDefinition().getMethod().getName();
+		}
+		return getParsed();
+	}
+
+	@Override
+	public void setFunction(JavaStaticMethodDefinition function) {
+		super.setFunction(function);
+		if (function != null) {
+			setType(function.getMethod().getGenericReturnType());
+		}
 	}
 
 	@Override
 	public Type getType() {
-		if (customType != null) {
-			if (TypeUtils.isGeneric(customType)) {
-				return TypeUtils.makeInstantiatedType(customType, getParent().getType());
-			}
-			return customType;
-		}
 		if (getMethodDefinition() != null) {
-			return TypeUtils.makeInstantiatedType(getMethodDefinition().getMethod().getGenericReturnType(), getParent().getType());
+			return getMethodDefinition().getReturnType();
 		}
-		return super.getType();
-	}
-
-	private Type customType = null;
-
-	@Override
-	public void setType(Type type) {
-		customType = type;
+		return type;
 	}
 
 	/**
@@ -165,8 +165,8 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 
 		for (Function.FunctionArgument a : getFunction().getArguments()) {
 			try {
-				if (getParameter(a) != null)
-					args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
+				if (getArgumentValue(a) != null)
+					args[i] = TypeUtils.castTo(getArgumentValue(a).getBindingValue(context),
 							getMethodDefinition().getMethod().getGenericParameterTypes()[i]);
 			} catch (ReflectiveOperationException e) {
 				throw new InvocationTargetTransformException(e);
@@ -182,7 +182,7 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 			for (i = 0; i < getFunction().getArguments().size(); i++) {
 				warningMessage.append(", arg[" + i + "] = " + args[i]);
 			}
-			LOGGER.warning(warningMessage.toString());
+			logger.warning(warningMessage.toString());
 			// e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
@@ -195,7 +195,7 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 			for (int j = 0; j < args.length; j++) {
 				sb.append("arg " + j + " = " + args[j] + " ");
 			}
-			LOGGER.warning(sb.toString());
+			logger.warning(sb.toString());
 			/*e.printStackTrace();
 			logger.info("Caused by:");
 			e.getTargetException().printStackTrace();*/
@@ -224,14 +224,41 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(getMethodName() + "(");
+		sb.append(TypeUtils.simpleRepresentation(getType()) + "." + getMethodName() + "(");
 		boolean isFirst = true;
-		for (FunctionArgument arg : getArguments()) {
-			sb.append((isFirst ? "" : ",") + getParameter(arg));
-			isFirst = false;
+		if (getFunctionArguments() != null) {
+			for (FunctionArgument arg : getFunctionArguments()) {
+				sb.append((isFirst ? "" : ",") + getArgumentValue(arg));
+				isFirst = false;
+			}
 		}
 		sb.append(")");
 		return sb.toString();
+	}
+
+	@Override
+	public String getSerializationRepresentation() {
+		// if (serializationRepresentation == null) {
+		StringBuffer returned = new StringBuffer();
+		returned.append(TypeUtils.simpleRepresentation(getType()) + ".");
+		if (getFunction() != null) {
+			returned.append(getFunction().getName());
+		}
+		else {
+			returned.append(getParsed());
+		}
+		returned.append("(");
+		boolean isFirst = true;
+		for (DataBinding<?> arg : getArguments()) {
+			returned.append((isFirst ? "" : ",") + arg);
+			isFirst = false;
+		}
+		returned.append(")");
+
+		// serializationRepresentation = returned.toString();
+		// }
+		// return serializationRepresentation;
+		return returned.toString();
 	}
 
 	private JavaStaticMethodPathElement makeTransformedPathElement(ExpressionTransformer transformer) throws TransformException {
@@ -239,9 +266,8 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 		boolean hasBeenTransformed = false;
 		List<DataBinding<?>> transformedArgs = new ArrayList<>();
 
-		for (FunctionArgument arg : getArguments()) {
-			DataBinding<?> argValue = getParameter(arg);
-			if (argValue != null && argValue.isValid()) {
+		for (DataBinding<?> argValue : getArguments()) {
+			if (argValue != null /*&& argValue.isValid()*/) {
 				Expression currentExpression = argValue.getExpression();
 				if (currentExpression != null) {
 					Expression transformedExpression = currentExpression.transform(transformer);
@@ -262,29 +288,34 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 					}
 				}
 			}
-			else {
-				transformedArgs.add(argValue);
-			}
 		}
 
 		if (!hasBeenTransformed) {
 			return this;
 		}
 
-		return new JavaStaticMethodPathElement(getParent(), getMethodDefinition(), transformedArgs);
+		// TODO : getParsed() might be transformed, too
+		// return new JavaStaticMethodPathElement(getParent(), getParsed(), getMethodDefinition(), transformedArgs);
+
+		if (getMethodDefinition() != null) {
+			return new JavaStaticMethodPathElement(getType(), getMethodDefinition(), transformedArgs, bindingFactory);
+		}
+		else {
+			return new JavaStaticMethodPathElement(getType(), getParsed(), transformedArgs, bindingFactory);
+		}
 	}
 
 	private JavaStaticMethodPathElement updateTransformedPathElement(JavaStaticMethodPathElement transformedPathElement,
 			ExpressionTransformer transformer) throws TransformException {
 
-		for (FunctionArgument arg : getArguments()) {
-			DataBinding<?> argValue = getParameter(arg);
+		for (FunctionArgument arg : getFunctionArguments()) {
+			DataBinding<?> argValue = getArgumentValue(arg);
 			if (argValue != null && argValue.isValid()) {
 				Expression currentExpression = argValue.getExpression();
 				if (currentExpression != null) {
 					Expression transformedExpression = currentExpression.transform(transformer);
 					if (!transformedExpression.equals(currentExpression)) {
-						DataBinding<?> transformedBinding = transformedPathElement.getParameter(arg.getArgumentName());
+						DataBinding<?> transformedBinding = transformedPathElement.getArgumentValue(arg.getArgumentName());
 						transformedBinding.setExpression(transformedExpression);
 						// TODO: better to do i think
 						transformedBinding.isValid();
@@ -315,20 +346,23 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 	}
 
 	@Override
-	public AbstractBindingPathElement makeUnparsed() {
-		List<Expression> argList = new ArrayList<>();
-		for (FunctionArgument fa : getArguments()) {
-			DataBinding<?> db = getParameter(fa);
-			if (db != null) {
-				argList.add(db.getExpression());
-			}
-		}
-		return new StaticMethodCallBindingPathElement(getType(), getFunction().getName(), argList);
+	public boolean requiresContext() {
+		return false;
 	}
 
 	@Override
-	public boolean requiresContext() {
-		return false;
+	public boolean isResolved() {
+		return getMethodDefinition() != null;
+	}
+
+	@Override
+	public void resolve() {
+		JavaStaticMethodDefinition function = (JavaStaticMethodDefinition) bindingFactory.retrieveFunction(getType(), getParsed(),
+				getArguments());
+		setFunction(function);
+		if (function == null) {
+			logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
+		}
 	}
 
 }

@@ -58,7 +58,6 @@ import org.openflexo.connie.del.expr.DELConstant.FloatSymbolicConstant;
 import org.openflexo.connie.del.expr.DELConstant.IntegerConstant;
 import org.openflexo.connie.del.expr.DELConstant.ObjectSymbolicConstant;
 import org.openflexo.connie.del.expr.DELConstant.StringConstant;
-import org.openflexo.connie.del.expr.DELPrettyPrinter;
 import org.openflexo.connie.del.expr.DELUnaryOperatorExpression;
 import org.openflexo.connie.del.expr.TypeReference;
 import org.openflexo.connie.expr.BindingValue;
@@ -130,22 +129,26 @@ import org.openflexo.connie.expr.parser.node.TScientificNotationNumber;
 import org.openflexo.connie.expr.parser.node.TStringValue;
 
 /**
- * This class implements the semantics analyzer for a parsed AnTAR expression.<br>
+ * This class implements the semantics analyzer for a parsed expression.<br>
  * Its main purpose is to build a syntax tree with AnTAR expression model from a parsed AST.
  * 
  * @author sylvain
  * 
  */
-class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
+class ExpressionFactory extends DepthFirstAdapter {
 
 	private final Map<Node, Expression> expressionNodes;
 	private Node topLevel = null;
 
 	private Bindable bindable;
 
-	public ExpressionSemanticsAnalyzer(Bindable aBindable) {
+	public ExpressionFactory(Bindable aBindable) {
 		expressionNodes = new Hashtable<>();
 		this.bindable = aBindable;
+	}
+
+	public Bindable getBindable() {
+		return bindable;
 	}
 
 	public Expression getExpression() {
@@ -173,20 +176,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	}
 
 	private BindingValue makeBinding(PBinding node) {
-		// System.out.println("Make binding with " + node);
-
-		// Apply the translation.
-		BindingSemanticsAnalyzer bsa = new BindingSemanticsAnalyzer(node, bindable);
-
-		// System.out.println("Built bsa as " + bsa.getPath());
-
-		node.apply(bsa);
-
-		// System.out.println("Make binding value with bsa as " + bsa.getPath());
-
-		BindingValue returned = new BindingValue(bsa.getPath(), bindable, DELPrettyPrinter.getInstance());
-		// System.out.println("Made binding as " + bsa.getPath());
-
+		BindingValue returned = BindingPathFactory.makeBindingPath(node, this);
 		registerExpressionNode(node, returned);
 		return returned;
 	}

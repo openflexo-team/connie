@@ -37,38 +37,25 @@
  * 
  */
 
-package org.openflexo.connie.del.expr;
+package org.openflexo.connie.expr;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openflexo.connie.Bindable;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.BindingVariable;
 
 /**
- * Represents a basic access to a variable<br>
- * An instance of Variable is a specialized {@link BindingValue} with a BindingVariable and an empty BindingPath.
+ * Represents an unresolved {@link BindingVariable}
  * 
  * @author sylvain
- * 
+ *
  */
-public class DELVariable extends BindingValue {
-	public DELVariable(String variableName, Bindable owner) {
-		super(makeSingleton(variableName), owner, DELPrettyPrinter.getInstance());
-	}
+public class UnresolvedBindingVariable extends BindingVariable {
 
-	private static List<AbstractBindingPathElement> makeSingleton(String aVariableName) {
-		List<AbstractBindingPathElement> returned = new ArrayList<>();
-		returned.add(new NormalBindingPathElement(aVariableName));
-		return returned;
-	}
-
-	public String getName() {
-		return getVariableName();
+	public UnresolvedBindingVariable(String variableName) {
+		super(variableName, Object.class, false);
 	}
 
 	@Override
-	public boolean isSimpleVariable() {
-		return true;
+	public boolean isResolved() {
+		return false;
 	}
+
 }

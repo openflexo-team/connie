@@ -57,8 +57,6 @@ import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
-import org.openflexo.connie.expr.BindingValue.NewInstanceBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
@@ -71,37 +69,24 @@ import org.openflexo.connie.type.TypeUtils;
  */
 public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaConstructorDefinition> {
 
-	static final Logger LOGGER = Logger.getLogger(JavaNewInstanceMethodPathElement.class.getPackage().getName());
+	static final Logger logger = Logger.getLogger(JavaNewInstanceMethodPathElement.class.getPackage().getName());
 
-	private DataBinding<?> innerAccess;
+	private JavaBasedBindingFactory bindingFactory;
+	private Type type;
 
-	public JavaNewInstanceMethodPathElement(IBindingPathElement parent, JavaConstructorDefinition constructor, DataBinding<?> innerAccess,
-			List<DataBinding<?>> args) {
-		super(parent, constructor, args);
-		this.innerAccess = innerAccess;
-		if (getConstructorDefinition() != null) {
-			int i = 0;
-			if (innerAccess != null) {
-				for (FunctionArgument arg : getConstructorDefinition().getArguments()) {
-					if (i == 0) {
-						setParameter(arg, innerAccess);
-					}
-					else {
-						setParameter(arg, args.get(i - 1));
-					}
-					i++;
-				}
-			}
+	public JavaNewInstanceMethodPathElement(Type type, IBindingPathElement parent, String constructorName, List<DataBinding<?>> args,
+			JavaBasedBindingFactory bindingFactory) {
+		super(parent, constructorName, null, args);
+		this.bindingFactory = bindingFactory;
+		this.type = type;
+	}
 
-			for (FunctionArgument arg : getConstructorDefinition().getArguments()) {
-				DataBinding<?> argValue = getParameter(arg);
-				if (argValue != null) {
-					argValue.setDeclaredType(arg.getArgumentType());
-				}
-				// System.out.println(">>>" + arg.getArgumentName() + "/" + arg.getArgumentType() + " = " + argValue);
-			}
-		}
-		setType(getConstructorDefinition().getReturnType());
+	public JavaNewInstanceMethodPathElement(Type type, IBindingPathElement parent, JavaConstructorDefinition constructor,
+			/*DataBinding<?> innerAccess,*/ List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
+		super(parent, constructor.getName(), constructor, args);
+		this.bindingFactory = bindingFactory;
+		this.type = type;
+		setFunction(constructor);
 	}
 
 	final public JavaConstructorDefinition getConstructorDefinition() {
@@ -109,15 +94,36 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 	}
 
 	@Override
+	public void setFunction(JavaConstructorDefinition function) {
+		super.setFunction(function);
+		if (function != null) {
+			setType(function.getReturnType());
+		}
+		if (hasInnerAccess()) {
+			getArguments().add(0, null);
+			if (function != null) {
+				// We have to force the declared type again, because a new hidden argument representing inner access was added
+				for (FunctionArgument arg : function.getArguments()) {
+					DataBinding<?> argValue = getArgumentValue(arg);
+					if (argValue != null) {
+						argValue.setDeclaredType(arg.getArgumentType());
+					}
+				}
+				setType(function.getReturnType());
+			}
+		}
+	}
+
+	@Override
 	public Type getType() {
 		if (getConstructorDefinition() != null) {
 			return getConstructorDefinition().getReturnType();
 		}
-		return null;
+		return type;
 	}
 
-	@Override
-	public void setType(Type type) {
+	public boolean hasInnerAccess() {
+		return getParent() != null;
 	}
 
 	/**
@@ -149,25 +155,38 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 	public Object getBindingValue(Object target, BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
 
-		System.out.println("evaluate " + getConstructorDefinition().getSignature() + " for " + target);
+		// System.out.println("evaluate " + getConstructorDefinition().getSignature() + " for " + target);
 
-		Object[] args = new Object[getFunction().getArguments().size() /*+ (innerAccess != null ? 1 : 0)*/];
+		Object[] args = new Object[getFunction().getArguments().size() /*+ (target != null ? 1 : 0)*/];
 		int i = 0;
+
+		/*if (target != null) {
+			args[0] = target;
+			i = 1;
+		}*/
 
 		for (Function.FunctionArgument a : getFunction().getArguments()) {
 			try {
-				if (getParameter(a) != null) {
-					args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
+				if (getArgumentValue(a) != null) {
+					DataBinding<?> valueBinding = getArgumentValue(a);
+					args[i] = TypeUtils.castTo(valueBinding.getBindingValue(context),
 							getConstructorDefinition().getConstructor().getGenericParameterTypes()[i]);
+					/*System.out.println("Argument " + a.getArgumentName() + " / " + a.getArgumentType() + " values: " + valueBinding);
+					System.out.println("BindingValue: " + valueBinding + " = " + valueBinding.getBindingValue(context));
+					System.out.println("Valid: " + valueBinding);
+					System.out.println("Reason: " + valueBinding.invalidBindingReason());*/
 				}
-				// System.out.println("Argument " + a.getArgumentName() + " / " + a.getArgumentType()+" values: " + args[i]);
 			} catch (ReflectiveOperationException e) {
 				throw new InvocationTargetTransformException(e);
 			}
 			i++;
 		}
+
+		if (hasInnerAccess()) {
+			args[0] = target;
+		}
+
 		try {
-			// return getConstructorDefinition().getConstructor().invoke(target, args);
 			return getConstructorDefinition().getConstructor().newInstance(args);
 		} catch (IllegalArgumentException e) {
 			StringBuffer warningMessage = new StringBuffer(
@@ -176,7 +195,7 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 			for (i = 0; i < getFunction().getArguments().size(); i++) {
 				warningMessage.append(", arg[" + i + "] = " + args[i]);
 			}
-			LOGGER.warning(warningMessage.toString());
+			logger.warning(warningMessage.toString());
 			// e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
@@ -189,7 +208,7 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 			for (int j = 0; j < args.length; j++) {
 				sb.append("arg " + j + " = " + args[j] + " ");
 			}
-			LOGGER.warning(sb.toString());
+			logger.warning(sb.toString());
 			/*e.printStackTrace();
 			logger.info("Caused by:");
 			e.getTargetException().printStackTrace();*/
@@ -203,7 +222,7 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 			for (int j = 0; j < args.length; j++) {
 				sb.append("arg " + j + " = " + args[j] + " ");
 			}
-			LOGGER.warning(sb.toString());
+			logger.warning(sb.toString());
 			/*e.printStackTrace();
 			logger.info("Caused by:");
 			e.getTargetException().printStackTrace();*/
@@ -219,16 +238,16 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 	public JavaNewInstanceMethodPathElement transform(ExpressionTransformer transformer) throws TransformException {
 		JavaNewInstanceMethodPathElement returned = transformedPathElements.get(transformer);
 		if (returned == null) {
-			System.out.println("On recalcule un JavaMethodPathElement pour " + this + " transformer=" + transformer);
+			// System.out.println("On recalcule un JavaMethodPathElement pour " + this + " transformer=" + transformer);
 			returned = makeTransformedPathElement(transformer);
 			transformedPathElements.put(transformer, returned);
-			System.out.println("CREATE On transforme " + toString() + " en " + returned.toString());
+			// System.out.println("CREATE On transforme " + toString() + " en " + returned.toString());
 		}
 		else {
-			System.out.println("Pas la peine de refaire un JavaMethodPathElement pour " + this + " transformer=" + transformer);
-			System.out.println("On met a jour quand meme");
+			// System.out.println("Pas la peine de refaire un JavaMethodPathElement pour " + this + " transformer=" + transformer);
+			// System.out.println("On met a jour quand meme");
 			updateTransformedPathElement(returned, transformer);
-			System.out.println("UPDATE On transforme " + toString() + " en " + returned.toString());
+			// System.out.println("UPDATE On transforme " + toString() + " en " + returned.toString());
 		}
 		return returned;
 	}
@@ -238,9 +257,11 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 		StringBuffer sb = new StringBuffer();
 		sb.append("new " + TypeUtils.simpleRepresentation(getType()) + "(");
 		boolean isFirst = true;
-		for (FunctionArgument arg : getArguments()) {
-			sb.append((isFirst ? "" : ",") + getParameter(arg));
-			isFirst = false;
+		if (getFunctionArguments() != null) {
+			for (FunctionArgument arg : getFunctionArguments()) {
+				sb.append((isFirst ? "" : ",") + getArgumentValue(arg));
+				isFirst = false;
+			}
 		}
 		sb.append(")");
 		return sb.toString();
@@ -248,27 +269,20 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 
 	@Override
 	public String getSerializationRepresentation() {
-		if (serializationRepresentation == null) {
-			StringBuffer returned = new StringBuffer();
-			if (getFunction() != null) {
-				returned.append("new " + TypeUtils.fullQualifiedRepresentation(getType()) + "(");
-				boolean isFirst = true;
-				int i = 0;
-				for (Function.FunctionArgument a : getFunction().getArguments()) {
-					if (innerAccess == null || i > 0) {
-						returned.append((isFirst ? "" : ",") + getParameter(a));
-						isFirst = false;
-					}
-					i++;
-				}
-				returned.append(")");
-			}
-			else {
-				returned.append("unknown_constructor()");
-			}
-			serializationRepresentation = returned.toString();
+		// if (serializationRepresentation == null) {
+		StringBuffer returned = new StringBuffer();
+		returned.append("new " + TypeUtils.simpleRepresentation(getType()) + "(");
+		boolean isFirst = true;
+		for (DataBinding<?> arg : getArguments()) {
+			returned.append((isFirst ? "" : ",") + arg);
+			isFirst = false;
 		}
-		return serializationRepresentation;
+		returned.append(")");
+
+		// serializationRepresentation = returned.toString();
+		// }
+		// return serializationRepresentation;
+		return returned.toString();
 	}
 
 	private JavaNewInstanceMethodPathElement makeTransformedPathElement(ExpressionTransformer transformer) throws TransformException {
@@ -276,9 +290,8 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 		boolean hasBeenTransformed = false;
 		List<DataBinding<?>> transformedArgs = new ArrayList<>();
 
-		for (FunctionArgument arg : getArguments()) {
-			DataBinding<?> argValue = getParameter(arg);
-			if (argValue != null && argValue.isValid()) {
+		for (DataBinding<?> argValue : getArguments()) {
+			if (argValue != null /*&& argValue.isValid()*/) {
 				Expression currentExpression = argValue.getExpression();
 				if (currentExpression != null) {
 					Expression transformedExpression = currentExpression.transform(transformer);
@@ -299,47 +312,33 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 					}
 				}
 			}
-			else {
-				transformedArgs.add(argValue);
-			}
-		}
-
-		DataBinding<?> transformedInnerAccess = null;
-
-		if (innerAccess != null && innerAccess.isValid()) {
-			Expression innerAccessExpression = innerAccess.getExpression();
-			if (innerAccessExpression != null) {
-				Expression transformedInnerAccessExpression = innerAccessExpression.transform(transformer);
-				if (!transformedInnerAccessExpression.equals(innerAccessExpression)) {
-					hasBeenTransformed = true;
-					transformedInnerAccess = new DataBinding<>(innerAccess.getOwner(), innerAccess.getDeclaredType(),
-							innerAccess.getBindingDefinitionType(), false);
-					transformedInnerAccess.setExpression(transformedInnerAccessExpression);
-					// TODO: better to do i think
-					transformedInnerAccess.isValid();
-					hasBeenTransformed = true;
-				}
-			}
 		}
 
 		if (!hasBeenTransformed) {
 			return this;
 		}
 
-		return new JavaNewInstanceMethodPathElement(getParent(), getConstructorDefinition(), transformedInnerAccess, transformedArgs);
+		if (getConstructorDefinition() != null) {
+			return new JavaNewInstanceMethodPathElement(getType(), getParent(), getConstructorDefinition(), transformedArgs,
+					bindingFactory);
+		}
+		else {
+			return new JavaNewInstanceMethodPathElement(getType(), getParent(), getParsed(), transformedArgs, bindingFactory);
+		}
+
 	}
 
 	private JavaNewInstanceMethodPathElement updateTransformedPathElement(JavaNewInstanceMethodPathElement transformedPathElement,
 			ExpressionTransformer transformer) throws TransformException {
 
-		for (FunctionArgument arg : getArguments()) {
-			DataBinding<?> argValue = getParameter(arg);
+		for (FunctionArgument arg : getFunctionArguments()) {
+			DataBinding<?> argValue = getArgumentValue(arg);
 			if (argValue != null && argValue.isValid()) {
 				Expression currentExpression = argValue.getExpression();
 				if (currentExpression != null) {
 					Expression transformedExpression = currentExpression.transform(transformer);
 					if (!transformedExpression.equals(currentExpression)) {
-						DataBinding<?> transformedBinding = transformedPathElement.getParameter(arg.getArgumentName());
+						DataBinding<?> transformedBinding = transformedPathElement.getArgumentValue(arg.getArgumentName());
 						transformedBinding.setExpression(transformedExpression);
 						// TODO: better to do i think
 						transformedBinding.isValid();
@@ -374,20 +373,23 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 	}
 
 	@Override
-	public AbstractBindingPathElement makeUnparsed() {
-		List<Expression> argList = new ArrayList<>();
-		for (FunctionArgument fa : getArguments()) {
-			DataBinding<?> db = getParameter(fa);
-			if (db != null) {
-				argList.add(db.getExpression());
-			}
-		}
-		return new NewInstanceBindingPathElement(getType(), getFunction().getName(), argList);
+	public boolean requiresContext() {
+		return false;
 	}
 
 	@Override
-	public boolean requiresContext() {
-		return false;
+	public boolean isResolved() {
+		return getConstructorDefinition() != null;
+	}
+
+	@Override
+	public void resolve() {
+		JavaConstructorDefinition function = (JavaConstructorDefinition) bindingFactory.retrieveConstructor(getType(),
+				getParent() != null ? getParent().getType() : null, getParsed(), getArguments());
+		setFunction(function);
+		if (function == null) {
+			logger.warning("cannot find constructor " + getParsed() + " for type " + getType() + " with arguments " + getArguments());
+		}
 	}
 
 }

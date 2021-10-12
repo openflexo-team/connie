@@ -44,8 +44,6 @@ import java.lang.reflect.Type;
 
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
-import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.type.TypeUtils;
 
 /**
@@ -60,7 +58,7 @@ public abstract class SimplePathElement extends AbstractPathElement implements S
 	private Type type;
 
 	public SimplePathElement(IBindingPathElement parent, String propertyName, Type type) {
-		super(parent);
+		super(parent, propertyName);
 		this.propertyName = propertyName;
 		this.type = type;
 	}
@@ -115,16 +113,16 @@ public abstract class SimplePathElement extends AbstractPathElement implements S
 		return DELETED_PROPERTY;
 	}
 
-	@Override
+	/*@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((getParent() == null) ? 0 : getParent().hashCode());
 		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
 		return result;
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -146,7 +144,7 @@ public abstract class SimplePathElement extends AbstractPathElement implements S
 		else if (!propertyName.equals(other.propertyName))
 			return false;
 		return true;
-	}
+	}*/
 
 	@Override
 	public boolean isNotifyingBindingPathChanged() {
@@ -186,11 +184,6 @@ public abstract class SimplePathElement extends AbstractPathElement implements S
 		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
 		check.valid = true;
 		return check;
-	}
-
-	@Override
-	public AbstractBindingPathElement makeUnparsed() {
-		return new NormalBindingPathElement(getPropertyName());
 	}
 
 	@Override

@@ -71,7 +71,7 @@ import org.openflexo.connie.type.TypeUtils;
  *
  */
 public abstract class JavaBasedBindingFactory implements BindingFactory {
-	static final Logger LOGGER = Logger.getLogger(JavaBasedBindingFactory.class.getPackage().getName());
+	static final Logger logger = Logger.getLogger(JavaBasedBindingFactory.class.getPackage().getName());
 
 	private Map<Type, List<? extends SimplePathElement>> accessibleSimplePathElements = new HashMap<>();
 	private Map<Type, List<? extends FunctionPathElement<?>>> accessibleFunctionPathElements = new HashMap<>();
@@ -140,7 +140,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			List<JavaInstanceMethodPathElement> newComputedList = new ArrayList<>();
 			for (JavaInstanceMethodDefinition m : KeyValueLibrary.getAccessibleMethods(currentType)) {
 				// System.out.println("on construit JavaMethodPathElement pour " + m);
-				newComputedList.add(new JavaInstanceMethodPathElement(parent, m, null));
+				newComputedList.add(new JavaInstanceMethodPathElement(parent, m, null, this));
 			}
 			accessibleFunctionPathElements.put(parent.getType(), newComputedList);
 
@@ -159,22 +159,26 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		if (keyValueProperty != null) {
 			return new JavaPropertyPathElement(father, keyValueProperty);
 		}
-		return null;
+		else {
+			// Unresolved
+			return new JavaPropertyPathElement(father, propertyName);
+		}
 	}
 
 	@Override
-	public FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, Function function, DataBinding<?> innerAccess,
+	public FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, String functionName, List<DataBinding<?>> args) {
+		return new JavaInstanceMethodPathElement(father, functionName, args, this);
+	}
+
+	@Override
+	public FunctionPathElement<?> makeStaticFunctionPathElement(Type type, String functionName, List<DataBinding<?>> args) {
+		return new JavaStaticMethodPathElement(type, functionName, args, this);
+	}
+
+	@Override
+	public FunctionPathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
 			List<DataBinding<?>> args) {
-		if (function instanceof JavaInstanceMethodDefinition) {
-			return new JavaInstanceMethodPathElement(father, (JavaInstanceMethodDefinition) function, args);
-		}
-		if (function instanceof JavaStaticMethodDefinition) {
-			return new JavaStaticMethodPathElement(father, (JavaStaticMethodDefinition) function, args);
-		}
-		if (function instanceof JavaConstructorDefinition) {
-			return new JavaNewInstanceMethodPathElement(father, (JavaConstructorDefinition) function, innerAccess, args);
-		}
-		return null;
+		return new JavaNewInstanceMethodPathElement(type, parent, functionName, args, this);
 	}
 
 	private static String getSignature(String functionName, List<DataBinding<?>> args) {
@@ -190,7 +194,6 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		return sb.toString();
 	}
 
-	@Override
 	public Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args) {
 
 		Map<String, AbstractJavaMethodDefinition> mapForType = storedFunctions.get(parentType);
@@ -211,7 +214,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			System.out.println("Cannot find typeClass for " + parentType);
 			return null;
 		}
-		// System.out.println("On cherche la methode " + functionName + " pour " + args);
+		// System.out.println("Looking-up method " + functionName + " for type "+type+" and args " + args);
 		Method[] allMethods = typeClass.getMethods();
 		// First attempt: we perform type checking on parameters
 		for (Method method : allMethods) {
@@ -238,7 +241,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			}
 		}
 		if (possiblyMatchingMethods.size() > 1) {
-			LOGGER.warning("Please implement disambiguity here");
+			logger.warning("Please implement disambiguity here");
 			/*for (DataBinding<?> arg : args) {
 				System.out.println("arg " + arg + " of " + arg.getDeclaredType() + " / " + arg.getAnalyzedType());
 			}*/
@@ -261,15 +264,10 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		}
 	}
 
-	@Override
-	public AbstractConstructor retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args) {
-		return retrieveConstructor(declaringType, null, functionName, args);
-	}
-
 	// Note: in java, we don't care about functionName (which is the name of the declaring type)
-	@Override
-	public AbstractConstructor retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName,
-			List<DataBinding<?>> arguments) {
+	public AbstractConstructor retrieveConstructor(Type declaringType, Type innerAccessType,
+			/*DataBinding<?> innerAccess,*/ String functionName, List<DataBinding<?>> arguments) {
+
 		Map<String, JavaConstructorDefinition> mapForType = storedConstructors.get(declaringType);
 		if (mapForType == null) {
 			mapForType = new HashMap<>();
@@ -289,31 +287,24 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			return null;
 		}
 
-		List<DataBinding<?>> args;
-		if (innerAccess != null) {
-			// This is an inner type
-			args = new ArrayList<>(arguments);
-			args.add(0, innerAccess);
+		List<Type> argTypes = new ArrayList<>();
+		if (innerAccessType != null) {
+			argTypes.add(innerAccessType);
 		}
-		else {
-			args = arguments;
+		for (DataBinding<?> arg : arguments) {
+			argTypes.add(arg.getAnalyzedType());
 		}
 
-		// System.out.println("On cherche la methode " + functionName + " pour " + args);
+		// System.out.println("Looking-up constructor for " + type + " with " + args);
 		Constructor<?>[] allConstructors = typeClass.getConstructors();
 		// First attempt: we perform type checking on parameters
 		for (Constructor<?> constructor : allConstructors) {
-			/*Thread.dumpStack();
-			System.out.println("constructor: " + constructor);
-			for (Type type : constructor.getGenericParameterTypes()) {
-				System.out.println("> type: " + type);
-			}*/
-			if (constructor.getGenericParameterTypes().length == args.size()) {
+			if (constructor.getGenericParameterTypes().length == argTypes.size()) {
 				boolean lookupFails = false;
-				for (int i = 0; i < args.size(); i++) {
-					DataBinding<?> suppliedArg = args.get(i);
+				for (int i = 0; i < argTypes.size(); i++) {
+					// DataBinding<?> suppliedArg = arguments.get(i);
 					Type argType = constructor.getGenericParameterTypes()[i];
-					if (!TypeUtils.isTypeAssignableFrom(argType, suppliedArg.getDeclaredType())) {
+					if (!TypeUtils.isTypeAssignableFrom(argType, argTypes.get(i))) {
 						lookupFails = true;
 					}
 				}
@@ -322,16 +313,18 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 				}
 			}
 		}
+		// System.out.println("possiblyMatchingConstructors=" + possiblyMatchingConstructors);
+
 		// Second attempt: we don't check the types of parameters
 		if (possiblyMatchingConstructors.size() == 0) {
 			for (Constructor<?> constructor : allConstructors) {
-				if (constructor.getGenericParameterTypes().length == args.size()) {
+				if (constructor.getGenericParameterTypes().length == arguments.size()) {
 					possiblyMatchingConstructors.add(constructor);
 				}
 			}
 		}
 		if (possiblyMatchingConstructors.size() > 1) {
-			LOGGER.warning("Please implement disambiguity here");
+			logger.warning("Please implement disambiguity here");
 			/*for (DataBinding<?> arg : args) {
 				System.out.println("arg " + arg + " of " + arg.getDeclaredType() + " / " + arg.getAnalyzedType());
 			}*/
@@ -348,8 +341,8 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		}
 		else {
 			// We dont log it inconditionnaly, because this may happen (while for example inspectors are merged)
-			// LOGGER.warning(
-			// "Cannot find method named " + functionName + " with args=" + args + "(" + args.size() + ") for type " + parentType);
+			logger.warning("Cannot find constructor named " + functionName + " with args=" + arguments + "(" + arguments.size()
+					+ ") for type " + declaringType);
 			return null;
 		}
 	}

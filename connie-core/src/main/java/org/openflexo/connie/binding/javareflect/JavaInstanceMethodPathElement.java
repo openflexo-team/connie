@@ -73,19 +73,21 @@ import org.openflexo.connie.type.TypeUtils;
  */
 public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInstanceMethodDefinition> {
 
-	static final Logger LOGGER = Logger.getLogger(JavaInstanceMethodPathElement.class.getPackage().getName());
+	static final Logger logger = Logger.getLogger(JavaInstanceMethodPathElement.class.getPackage().getName());
 
-	public JavaInstanceMethodPathElement(IBindingPathElement parent, JavaInstanceMethodDefinition method, List<DataBinding<?>> args) {
-		super(parent, method, args);
-		if (getMethodDefinition() != null) {
-			for (FunctionArgument arg : getMethodDefinition().getArguments()) {
-				DataBinding<?> argValue = getParameter(arg);
-				if (argValue != null) {
-					argValue.setDeclaredType(arg.getArgumentType());
-				}
-			}
-		}
-		setType(getMethodDefinition().getMethod().getGenericReturnType());
+	private JavaBasedBindingFactory bindingFactory;
+
+	public JavaInstanceMethodPathElement(IBindingPathElement parent, String methodName /*, JavaInstanceMethodDefinition method*/,
+			List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
+		super(parent, methodName, null, args);
+		this.bindingFactory = bindingFactory;
+	}
+
+	public JavaInstanceMethodPathElement(IBindingPathElement parent, JavaInstanceMethodDefinition method, List<DataBinding<?>> args,
+			JavaBasedBindingFactory bindingFactory) {
+		super(parent, method.getName(), method, args);
+		this.bindingFactory = bindingFactory;
+		setFunction(method);
 	}
 
 	final public JavaInstanceMethodDefinition getMethodDefinition() {
@@ -93,7 +95,18 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 	}
 
 	public String getMethodName() {
-		return getMethodDefinition().getMethod().getName();
+		if (getMethodDefinition() != null) {
+			return getMethodDefinition().getMethod().getName();
+		}
+		return getParsed();
+	}
+
+	@Override
+	public void setFunction(JavaInstanceMethodDefinition function) {
+		super.setFunction(function);
+		if (function != null) {
+			setType(function.getMethod().getGenericReturnType());
+		}
 	}
 
 	@Override
@@ -168,8 +181,8 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 
 		for (Function.FunctionArgument a : getFunction().getArguments()) {
 			try {
-				if (getParameter(a) != null)
-					args[i] = TypeUtils.castTo(getParameter(a).getBindingValue(context),
+				if (getArgumentValue(a) != null)
+					args[i] = TypeUtils.castTo(getArgumentValue(a).getBindingValue(context),
 							getMethodDefinition().getMethod().getGenericParameterTypes()[i]);
 			} catch (ReflectiveOperationException e) {
 				throw new InvocationTargetTransformException(e);
@@ -185,7 +198,7 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 			for (i = 0; i < getFunction().getArguments().size(); i++) {
 				warningMessage.append(", arg[" + i + "] = " + args[i]);
 			}
-			LOGGER.warning(warningMessage.toString());
+			logger.warning(warningMessage.toString());
 			// e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
@@ -198,7 +211,7 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 			for (int j = 0; j < args.length; j++) {
 				sb.append("arg " + j + " = " + args[j] + " ");
 			}
-			LOGGER.warning(sb.toString());
+			logger.warning(sb.toString());
 			/*e.printStackTrace();
 			logger.info("Caused by:");
 			e.getTargetException().printStackTrace();*/
@@ -229,9 +242,11 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 		StringBuffer sb = new StringBuffer();
 		sb.append(getMethodName() + "(");
 		boolean isFirst = true;
-		for (FunctionArgument arg : getArguments()) {
-			sb.append((isFirst ? "" : ",") + getParameter(arg));
-			isFirst = false;
+		if (getFunctionArguments() != null) {
+			for (FunctionArgument arg : getFunctionArguments()) {
+				sb.append((isFirst ? "" : ",") + getArgumentValue(arg));
+				isFirst = false;
+			}
 		}
 		sb.append(")");
 		return sb.toString();
@@ -242,9 +257,8 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 		boolean hasBeenTransformed = false;
 		List<DataBinding<?>> transformedArgs = new ArrayList<>();
 
-		for (FunctionArgument arg : getArguments()) {
-			DataBinding<?> argValue = getParameter(arg);
-			if (argValue != null && argValue.isValid()) {
+		for (DataBinding<?> argValue : getArguments()) {
+			if (argValue != null /*&& argValue.isValid()*/) {
 				Expression currentExpression = argValue.getExpression();
 				if (currentExpression != null) {
 					Expression transformedExpression = currentExpression.transform(transformer);
@@ -265,29 +279,31 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 					}
 				}
 			}
-			else {
-				transformedArgs.add(argValue);
-			}
 		}
 
 		if (!hasBeenTransformed) {
 			return this;
 		}
 
-		return new JavaInstanceMethodPathElement(getParent(), getMethodDefinition(), transformedArgs);
+		if (getMethodDefinition() != null) {
+			return new JavaInstanceMethodPathElement(getParent(), getMethodDefinition(), transformedArgs, bindingFactory);
+		}
+		else {
+			return new JavaInstanceMethodPathElement(getParent(), getParsed(), transformedArgs, bindingFactory);
+		}
 	}
 
 	private JavaInstanceMethodPathElement updateTransformedPathElement(JavaInstanceMethodPathElement transformedPathElement,
 			ExpressionTransformer transformer) throws TransformException {
 
-		for (FunctionArgument arg : getArguments()) {
-			DataBinding<?> argValue = getParameter(arg);
+		for (FunctionArgument arg : getFunctionArguments()) {
+			DataBinding<?> argValue = getArgumentValue(arg);
 			if (argValue != null && argValue.isValid()) {
 				Expression currentExpression = argValue.getExpression();
 				if (currentExpression != null) {
 					Expression transformedExpression = currentExpression.transform(transformer);
 					if (!transformedExpression.equals(currentExpression)) {
-						DataBinding<?> transformedBinding = transformedPathElement.getParameter(arg.getArgumentName());
+						DataBinding<?> transformedBinding = transformedPathElement.getArgumentValue(arg.getArgumentName());
 						transformedBinding.setExpression(transformedExpression);
 						// TODO: better to do i think
 						transformedBinding.isValid();
@@ -313,6 +329,61 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 		return true;
 	}
 
+	@Override
+	public boolean isResolved() {
+		return getMethodDefinition() != null;
+	}
+
+	@Override
+	public void resolve() {
+		if (getParent() != null) {
+			JavaInstanceMethodDefinition function = (JavaInstanceMethodDefinition) bindingFactory.retrieveFunction(getParent().getType(),
+					getParsed(), getArguments());
+			setFunction(function);
+			if (function == null) {
+				logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
+			}
+		}
+		else {
+			logger.warning("cannot find parent for " + this);
+			// Thread.dumpStack();
+			// System.exit(-1);
+		}
+	}
+
+	/*@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		if (isResolved()) {
+			result = prime * result + Objects.hash(getMethodDefinition());
+		}
+		else {
+			result = prime * result + Objects.hash(getParsed());
+		}
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		JavaInstanceMethodPathElement other = (JavaInstanceMethodPathElement) obj;
+		if (isResolved() != other.isResolved()) {
+			return false;
+		}
+		if (isResolved()) {
+			return Objects.equals(getMethodDefinition(), other.getMethodDefinition());
+		}
+		else {
+			return Objects.equals(getParsed(), other.getParsed());
+		}
+	}*:
+	
 	/*@Override
 	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement currentElement, Type currentType) {
 	

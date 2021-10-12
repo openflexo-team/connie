@@ -1,9 +1,8 @@
 /**
  * 
- * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2019, Openflexo
  * 
- * This file is part of Connie-core, a component of the software infrastructure 
+ * This file is part of FML-parser, a component of the software infrastructure 
  * developed at Openflexo.
  * 
  * 
@@ -37,22 +36,42 @@
  * 
  */
 
-package org.openflexo.connie.type;
+package org.openflexo.connie.java.parser;
 
-import java.lang.reflect.Type;
+import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
+import org.openflexo.connie.java.parser.node.Node;
+import org.openflexo.toolbox.StringUtils;
 
 /**
- * Implemented by all classes that are typed (access to a type)
+ * Utility class used to debug an AST
  * 
- * @author sylvainguerin
- *
+ * @author sylvain
+ * 
  */
-public interface Typed {
+public class ASTDebugger extends DepthFirstAdapter {
 
-	/**
-	 * Return type of this {@link Typed}
-	 * 
-	 * @return
-	 */
-	Type getType();
+	public static void debug(Node tree) {
+		new ASTDebugger(tree);
+	}
+
+	private ASTDebugger(Node tree) {
+		super();
+		tree.apply(this);
+	}
+
+	int indent = 0;
+
+	@Override
+	public void defaultIn(Node node) {
+		super.defaultIn(node);
+		System.out.println(StringUtils.buildWhiteSpaceIndentation(indent * 2) + "> " + node.getClass().getSimpleName() + " " + node);
+		indent++;
+	}
+
+	@Override
+	public void defaultOut(Node node) {
+		super.defaultOut(node);
+		indent--;
+	}
+
 }

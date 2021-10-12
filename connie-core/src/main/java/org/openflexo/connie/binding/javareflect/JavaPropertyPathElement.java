@@ -42,6 +42,7 @@ package org.openflexo.connie.binding.javareflect;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.BindingEvaluationContext;
@@ -63,9 +64,9 @@ import org.openflexo.toolbox.ToolBox;
  */
 public class JavaPropertyPathElement extends SimplePathElement {
 
-	private static final Logger LOGGER = Logger.getLogger(DataBinding.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(DataBinding.class.getPackage().getName());
 
-	private final KeyValueProperty keyValueProperty;
+	private KeyValueProperty keyValueProperty;
 
 	public JavaPropertyPathElement(IBindingPathElement parent, String propertyName) {
 		super(parent, propertyName, Object.class);
@@ -73,42 +74,38 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 		if (keyValueProperty != null) {
 			setType(keyValueProperty.getType());
-			warnWhenInconsistentData(parent, propertyName);
-		}
-		else {
-			LOGGER.warning("cannot find property " + propertyName + " for " + parent + " which type is " + parent.getType());
 		}
 	}
 
 	public JavaPropertyPathElement(IBindingPathElement parent, KeyValueProperty property) {
 		super(parent, property.getName(), property.getType());
 		keyValueProperty = property;
-
-		warnWhenInconsistentData(parent, property.getName());
+		if (keyValueProperty != null) {
+			setType(keyValueProperty.getType());
+		}
 	}
 
-	private void warnWhenInconsistentData(IBindingPathElement parent, String propertyName) {
+	@Override
+	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType) {
 
-		if (keyValueProperty.getGetMethod() != null) {
-			Type declaringType = keyValueProperty.getGetMethod().getDeclaringClass();
-			Type parentType = getParent().getType();
-			if (!(TypeUtils.isTypeAssignableFrom(declaringType, parentType))) {
-				LOGGER.warning("Inconsistent data: " + getParent().getType() + " is not an instance of "
-						+ keyValueProperty.getGetMethod().getDeclaringClass());
-				/*System.out.println("propertyName=" + propertyName);
-				System.out.println("parent=" + parent);
-				System.out.println("parent type=" + parent.getType());
-				System.out.println("bc = " + TypeUtils.getBaseClass(parent.getType()));
-				System.out.println("keyValueProperty=" + keyValueProperty);
-				System.out.println("keyValueProperty.getGetMethod()=" + keyValueProperty.getGetMethod());
-				System.out.println("keyValueProperty.getType()=" + keyValueProperty.getType());
-				System.out.println("keyValueProperty.getDeclaringClass()=" + keyValueProperty.getDeclaringClass());
-				System.out.println("keyValueProperty.getDeclaringType()=" + keyValueProperty.getDeclaringType());
-				System.out.println("Types incompatibles:");
-				System.out.println("declaringType=" + declaringType);
-				System.out.println("parentType=" + parentType);*/
+		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
+
+		if (keyValueProperty != null) {
+			if (keyValueProperty.getGetMethod() != null) {
+				Type declaringType = keyValueProperty.getGetMethod().getDeclaringClass();
+				if (!(TypeUtils.isTypeAssignableFrom(declaringType, parentType))) {
+					check.invalidBindingReason = "Inconsistent data: " + getParent().getType() + " is not an instance of "
+							+ keyValueProperty.getGetMethod().getDeclaringClass();
+					check.valid = false;
+				}
 			}
 		}
+		else {
+			check.invalidBindingReason = "Unresolved path element: " + getParsed();
+			check.valid = false;
+		}
+
+		return check;
 	}
 
 	@Override
@@ -192,4 +189,62 @@ public class JavaPropertyPathElement extends SimplePathElement {
 	public String toString() {
 		return "JavaPropertyPathElement " + getParent().getType() + "#" + getPropertyName();
 	}
+
+	@Override
+	public boolean isResolved() {
+		return getKeyValueProperty() != null;
+	}
+
+	@Override
+	public void resolve() {
+		if (getParent() != null) {
+			keyValueProperty = KeyValueLibrary.getKeyValueProperty(getParent().getType(), getParsed());
+			if (keyValueProperty != null) {
+				setType(keyValueProperty.getType());
+				// warnWhenInconsistentData(getParent(), getParsed());
+			}
+			else {
+				logger.warning("cannot find property " + getParsed() + " for " + getParent() + " which type is " + getParent().getType());
+			}
+		}
+		else {
+			logger.warning("cannot find parent for " + this);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		if (isResolved()) {
+			result = prime * result + Objects.hash(getKeyValueProperty());
+		}
+		else {
+			result = prime * result + Objects.hash(getParsed());
+		}
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		JavaPropertyPathElement other = (JavaPropertyPathElement) obj;
+		if (isResolved() != other.isResolved()) {
+			return false;
+		}
+		if (isResolved()) {
+			if (!Objects.equals(getKeyValueProperty(), other.getKeyValueProperty())) {
+			}
+			return Objects.equals(getKeyValueProperty(), other.getKeyValueProperty());
+		}
+		else {
+			if (!Objects.equals(getParsed(), other.getParsed())) {
+			}
+			return Objects.equals(getParsed(), other.getParsed());
+		}
+	}
+
 }
