@@ -132,14 +132,14 @@ import org.openflexo.connie.java.parser.node.Node;
  * @author sylvain
  * 
  */
-class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
+class ExpressionFactory extends DepthFirstAdapter {
 
 	private final Map<Node, Expression> expressionNodes;
 	private Node topLevel = null;
 
 	private Bindable bindable;
 
-	public ExpressionSemanticsAnalyzer(Bindable aBindable) {
+	public ExpressionFactory(Bindable aBindable) {
 		expressionNodes = new Hashtable<>();
 		this.bindable = aBindable;
 	}
@@ -290,25 +290,25 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	public void outAIdentifierPrimary(AIdentifierPrimary node) {
 		super.outAIdentifierPrimary(node);
 		// System.out.println("<< On sort de primary/{identifier} avec " + node + " of " + node.getClass().getSimpleName());
-		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+		registerExpressionNode(node, BindingPathFactory.makeBindingPath(node, this));
 	}
 
 	@Override
 	public void outAMethodPrimaryNoId(AMethodPrimaryNoId node) {
 		super.outAMethodPrimaryNoId(node);
-		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+		registerExpressionNode(node, BindingPathFactory.makeBindingPath(node, this));
 	}
 
 	@Override
 	public void outAFieldPrimaryNoId(AFieldPrimaryNoId node) {
 		super.outAFieldPrimaryNoId(node);
-		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+		registerExpressionNode(node, BindingPathFactory.makeBindingPath(node, this));
 	}
 
 	@Override
 	public void outAJavaInstanceCreationPrimaryNoId(AJavaInstanceCreationPrimaryNoId node) {
 		super.outAJavaInstanceCreationPrimaryNoId(node);
-		registerExpressionNode(node, BindingValueAnalyzer.makeBindingValue(node, this));
+		registerExpressionNode(node, BindingPathFactory.makeBindingPath(node, this));
 	}
 
 	@Override
@@ -546,7 +546,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outAInstanceofRelationalExp(AInstanceofRelationalExp node) {
 		super.outAInstanceofRelationalExp(node);
-		Type type = TypeAnalyzer.makeType(node.getType(), this);
+		Type type = TypeFactory.makeType(node.getType(), this);
 		registerExpressionNode(node, new JavaInstanceOfExpression(getExpression(node.getShiftExp()), type));
 	}
 
@@ -688,7 +688,7 @@ class ExpressionSemanticsAnalyzer extends DepthFirstAdapter {
 	@Override
 	public void outACastUnaryExpNotPlusMinus(ACastUnaryExpNotPlusMinus node) {
 		super.outACastUnaryExpNotPlusMinus(node);
-		Type type = TypeAnalyzer.makeType(node.getType(), this);
+		Type type = TypeFactory.makeType(node.getType(), this);
 		registerExpressionNode(node, new JavaCastExpression(type, getExpression(node.getUnaryExp())));
 	}
 

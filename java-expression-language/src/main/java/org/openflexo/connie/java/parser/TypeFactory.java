@@ -47,7 +47,6 @@ import java.util.Map;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.ContextualizedBindable;
-import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.java.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.java.parser.node.ABooleanPrimitiveType;
 import org.openflexo.connie.java.parser.node.ABytePrimitiveType;
@@ -85,16 +84,16 @@ import org.openflexo.connie.type.UnresolvedType;
 import org.openflexo.connie.type.WildcardTypeImpl;
 
 /**
- * This class implements the semantics analyzer for a parsed {@link BindingValue}<br>
- * Its main purpose is to structurally build a binding from a parsed AST (an instance of PPrimary).<br>
+ * This class implements the semantics analyzer for a parsed {@link Type}<br>
+ * Its main purpose is to structurally build a binding from a parsed AST (an instance of {@link PType}).<br>
  * No semantics nor type checking is performed at this stage
  * 
  * @author sylvain
  * 
  */
-class TypeAnalyzer extends DepthFirstAdapter {
+class TypeFactory extends DepthFirstAdapter {
 
-	private final ExpressionSemanticsAnalyzer expressionAnalyzer;
+	private final ExpressionFactory expressionAnalyzer;
 
 	private final Map<Node, Type> typeNodes;
 	private PType rootNode = null;
@@ -107,10 +106,10 @@ class TypeAnalyzer extends DepthFirstAdapter {
 		return depth == 0;
 	}*/
 
-	public static Type makeType(PType node, ExpressionSemanticsAnalyzer expressionAnalyzer) {
+	public static Type makeType(PType node, ExpressionFactory expressionAnalyzer) {
 
 		// System.out.println("Resolving type for node " + node + " of " + node.getClass());
-		TypeAnalyzer bsa = new TypeAnalyzer(node, expressionAnalyzer);
+		TypeFactory bsa = new TypeFactory(node, expressionAnalyzer);
 		node.apply(bsa);
 
 		/*for (Node n : bsa.typeNodes.keySet()) {
@@ -121,7 +120,7 @@ class TypeAnalyzer extends DepthFirstAdapter {
 		return bsa.getType(node);
 	}
 
-	private TypeAnalyzer(PType node, ExpressionSemanticsAnalyzer expressionAnalyzer) {
+	private TypeFactory(PType node, ExpressionFactory expressionAnalyzer) {
 		this.expressionAnalyzer = expressionAnalyzer;
 		this.rootNode = node;
 		typeNodes = new Hashtable<>();
@@ -177,41 +176,10 @@ class TypeAnalyzer extends DepthFirstAdapter {
 		ident--;
 	}
 
-	/*@Override
-	public void inAPrimitiveType(APrimitiveType node) {
-		super.inAPrimitiveType(node);
-		depth++;
-	}
-	
-	@Override
-	public void outAPrimitiveType(APrimitiveType node) {
-		super.outAPrimitiveType(node);
-		depth--;
-	}
-	
-	@Override
-	public void inAComplexType(AComplexType node) {
-		super.inAComplexType(node);
-		depth++;
-	}
-	
-	@Override
-	public void outAComplexType(AComplexType node) {
-		super.outAComplexType(node);
-		depth--;
-	}
-	
-	@Override
-	public void inAVoidType(AVoidType node) {
-		super.inAVoidType(node);
-		depth++;
-	}*/
-
 	@Override
 	public void outAVoidType(AVoidType node) {
 		super.outAVoidType(node);
 		registerTypeNode(node, Void.TYPE);
-		// depth--;
 	}
 
 	@Override

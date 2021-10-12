@@ -81,7 +81,7 @@ public class ExpressionParser {
 			Start tree = p.parse();
 
 			// Apply the semantics analyzer.
-			ExpressionSemanticsAnalyzer t = new ExpressionSemanticsAnalyzer(bindable);
+			ExpressionFactory t = new ExpressionFactory(bindable);
 			tree.apply(t);
 
 			// return postSemanticAnalysisReduction(t.getExpression());
@@ -90,7 +90,7 @@ public class ExpressionParser {
 
 			return t.getExpression();
 		} catch (Exception e) {
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new ParseException(e.getMessage() + " while parsing " + anExpression);
 		}
 	}

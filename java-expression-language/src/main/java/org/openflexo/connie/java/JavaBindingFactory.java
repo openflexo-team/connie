@@ -65,7 +65,7 @@ import org.openflexo.connie.java.parser.ExpressionParser;
  *
  */
 public class JavaBindingFactory extends JavaBasedBindingFactory {
-	static final Logger LOGGER = Logger.getLogger(JavaBindingFactory.class.getPackage().getName());
+	static final Logger logger = Logger.getLogger(JavaBindingFactory.class.getPackage().getName());
 
 	@Override
 	public Expression parseExpression(String expressionAsString, Bindable bindable) throws ParseException {
@@ -78,14 +78,9 @@ public class JavaBindingFactory extends JavaBasedBindingFactory {
 	}
 
 	@Override
-	public JavaConstructorDefinition retrieveConstructor(Type declaringType, DataBinding<?> innerAccess, String functionName,
+	public JavaConstructorDefinition retrieveConstructor(Type declaringType, Type innerAccessType, String functionName,
 			List<DataBinding<?>> arguments) {
-		return (JavaConstructorDefinition) super.retrieveConstructor(declaringType, innerAccess, functionName, arguments);
-	}
-
-	@Override
-	public JavaConstructorDefinition retrieveConstructor(Type declaringType, String functionName, List<DataBinding<?>> args) {
-		return (JavaConstructorDefinition) super.retrieveConstructor(declaringType, functionName, args);
+		return (JavaConstructorDefinition) super.retrieveConstructor(declaringType, innerAccessType, functionName, arguments);
 	}
 
 }
