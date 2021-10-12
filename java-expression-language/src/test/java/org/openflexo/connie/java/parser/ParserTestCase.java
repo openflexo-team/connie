@@ -13,6 +13,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionEvaluator;
+import org.openflexo.connie.java.JavaBindingFactory;
 import org.openflexo.connie.java.JavaTypingSpace;
 import org.openflexo.connie.java.expr.JavaExpressionEvaluator;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
@@ -20,6 +21,8 @@ import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import junit.framework.TestCase;
 
 public abstract class ParserTestCase extends TestCase {
+
+	private final BindingFactory BINDING_FACTORY = new JavaBindingFactory();
 
 	private JavaPrettyPrinter prettyPrinter;
 	private JavaTypingSpace typingSpace;
@@ -70,7 +73,7 @@ public abstract class ParserTestCase extends TestCase {
 
 				@Override
 				public BindingFactory getBindingFactory() {
-					return null;
+					return BINDING_FACTORY;
 				}
 
 			};

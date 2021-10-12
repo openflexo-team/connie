@@ -563,7 +563,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		isValid();
 	}
 
-	private void clearBindingPathElements() {
+	public void clearBindingPathElements() {
 		if (bindingPath != null) {
 			for (BindingPathElement e : bindingPath) {
 				if (e.isActivated()) {
@@ -578,7 +578,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	}
 
-	private void clear() {
+	public void clear() {
 		clearBindingPathElements();
 		bindingVariable = null;
 		invalidate();
