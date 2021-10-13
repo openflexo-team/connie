@@ -113,6 +113,13 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 		clearSerializationRepresentation();
 	}
 
+	public String getMethodName() {
+		if (getFunction() != null) {
+			return getFunction().getName();
+		}
+		return getParsed();
+	}
+
 	@Override
 	public Type getType() {
 		if (getFunction() != null) {

@@ -62,27 +62,17 @@ import org.openflexo.toolbox.ToolBox;
  * @author sylvain
  * 
  */
-public class JavaPropertyPathElement extends SimplePathElement {
+public class JavaPropertyPathElement extends SimplePathElement<KeyValueProperty> {
 
 	private static final Logger logger = Logger.getLogger(DataBinding.class.getPackage().getName());
 
-	private KeyValueProperty keyValueProperty;
-
 	public JavaPropertyPathElement(IBindingPathElement parent, String propertyName) {
 		super(parent, propertyName, Object.class);
-		keyValueProperty = KeyValueLibrary.getKeyValueProperty(parent.getType(), propertyName);
-
-		if (keyValueProperty != null) {
-			setType(keyValueProperty.getType());
-		}
 	}
 
 	public JavaPropertyPathElement(IBindingPathElement parent, KeyValueProperty property) {
 		super(parent, property.getName(), property.getType());
-		keyValueProperty = property;
-		if (keyValueProperty != null) {
-			setType(keyValueProperty.getType());
-		}
+		setProperty(property);
 	}
 
 	@Override
@@ -90,12 +80,12 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
-		if (keyValueProperty != null) {
-			if (keyValueProperty.getGetMethod() != null) {
-				Type declaringType = keyValueProperty.getGetMethod().getDeclaringClass();
+		if (getProperty() != null) {
+			if (getProperty().getGetMethod() != null) {
+				Type declaringType = getProperty().getGetMethod().getDeclaringClass();
 				if (!(TypeUtils.isTypeAssignableFrom(declaringType, parentType))) {
 					check.invalidBindingReason = "Inconsistent data: " + getParent().getType() + " is not an instance of "
-							+ keyValueProperty.getGetMethod().getDeclaringClass();
+							+ getProperty().getGetMethod().getDeclaringClass();
 					check.valid = false;
 				}
 			}
@@ -113,8 +103,8 @@ public class JavaPropertyPathElement extends SimplePathElement {
 		// IMPORTANT:
 		// If declared type is a CustomType, don't try to instanciate the one from the keyValueProperty
 		// which can also shadow a more specialized type encoded by a CustomType
-		if (!(super.getType() instanceof CustomType) && keyValueProperty != null) {
-			return TypeUtils.makeInstantiatedType(keyValueProperty.getType(), getParent().getType());
+		if (!(super.getType() instanceof CustomType) && getProperty() != null) {
+			return TypeUtils.makeInstantiatedType(getProperty().getType(), getParent().getType());
 		}
 		return super.getType();
 	}
@@ -122,10 +112,6 @@ public class JavaPropertyPathElement extends SimplePathElement {
 	@Override
 	public String getLabel() {
 		return getPropertyName();
-	}
-
-	public KeyValueProperty getKeyValueProperty() {
-		return keyValueProperty;
 	}
 
 	/**
@@ -142,7 +128,7 @@ public class JavaPropertyPathElement extends SimplePathElement {
 	@Override
 	public boolean isNotificationSafe() {
 
-		KeyValueProperty kvProperty = getKeyValueProperty();
+		KeyValueProperty kvProperty = getProperty();
 		Method m = kvProperty.getGetMethod();
 		if (m == null || m.getAnnotation(NotificationUnsafe.class) != null) {
 			return false;
@@ -152,7 +138,7 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	@Override
 	public boolean isSettable() {
-		return keyValueProperty != null && keyValueProperty.isSettable();
+		return getProperty() != null && getProperty().isSettable();
 	}
 
 	@Override
@@ -176,13 +162,13 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	@Override
 	public Object getBindingValue(Object target, BindingEvaluationContext context) {
-		Object obj = keyValueProperty.getObjectValue(target);
+		Object obj = getProperty().getObjectValue(target);
 		return obj;
 	}
 
 	@Override
 	public void setBindingValue(Object value, Object target, BindingEvaluationContext context) {
-		keyValueProperty.setObjectValue(value, target);
+		getProperty().setObjectValue(value, target);
 	}
 
 	@Override
@@ -192,16 +178,17 @@ public class JavaPropertyPathElement extends SimplePathElement {
 
 	@Override
 	public boolean isResolved() {
-		return getKeyValueProperty() != null;
+		return getProperty() != null;
 	}
 
 	@Override
 	public void resolve() {
 		if (getParent() != null) {
-			keyValueProperty = KeyValueLibrary.getKeyValueProperty(getParent().getType(), getParsed());
+			KeyValueProperty keyValueProperty = KeyValueLibrary.getKeyValueProperty(getParent().getType(), getParsed());
 			if (keyValueProperty != null) {
-				setType(keyValueProperty.getType());
+				// setType(keyValueProperty.getType());
 				// warnWhenInconsistentData(getParent(), getParsed());
+				setProperty(keyValueProperty);
 			}
 			else {
 				logger.warning("cannot find property " + getParsed() + " for " + getParent() + " which type is " + getParent().getType());
@@ -217,7 +204,7 @@ public class JavaPropertyPathElement extends SimplePathElement {
 		final int prime = 31;
 		int result = super.hashCode();
 		if (isResolved()) {
-			result = prime * result + Objects.hash(getKeyValueProperty());
+			result = prime * result + Objects.hash(getProperty());
 		}
 		else {
 			result = prime * result + Objects.hash(getParsed());
@@ -236,9 +223,9 @@ public class JavaPropertyPathElement extends SimplePathElement {
 			return false;
 		}
 		if (isResolved()) {
-			if (!Objects.equals(getKeyValueProperty(), other.getKeyValueProperty())) {
+			if (!Objects.equals(getProperty(), other.getProperty())) {
 			}
-			return Objects.equals(getKeyValueProperty(), other.getKeyValueProperty());
+			return Objects.equals(getProperty(), other.getProperty());
 		}
 		else {
 			if (!Objects.equals(getParsed(), other.getParsed())) {

@@ -52,26 +52,40 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public abstract class SimplePathElement extends AbstractPathElement implements SettableBindingPathElement {
+public abstract class SimplePathElement<P extends Property> extends AbstractPathElement implements SettableBindingPathElement {
 
-	private String propertyName;
+	private P property;
 	private Type type;
 
 	public SimplePathElement(IBindingPathElement parent, String propertyName, Type type) {
 		super(parent, propertyName);
-		this.propertyName = propertyName;
 		this.type = type;
 	}
 
 	public String getPropertyName() {
-		return propertyName;
+		if (getProperty() != null) {
+			return getProperty().getName();
+		}
+		return getParsed();
 	}
 
-	public void setPropertyName(String propertyName) {
-		String oldValue = getPropertyName();
-		if (propertyName != null && !propertyName.equals(oldValue)) {
-			this.propertyName = propertyName;
-			getPropertyChangeSupport().firePropertyChange(NAME_PROPERTY, oldValue, propertyName);
+	public P getProperty() {
+		return property;
+	}
+
+	public void setProperty(P property) {
+		if ((property == null && this.property != null) || (property != null && !property.equals(this.property))) {
+			P oldValue = this.property;
+			this.property = property;
+			getPropertyChangeSupport().firePropertyChange("property", oldValue, property);
+			getPropertyChangeSupport().firePropertyChange(NAME_PROPERTY, oldValue != null ? oldValue.getName() : null,
+					property != null ? property.getName() : null);
+			if (property != null) {
+				setType(property.getType());
+			}
+			else {
+				setType(Object.class);
+			}
 		}
 	}
 

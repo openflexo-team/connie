@@ -49,6 +49,7 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.binding.AccessorMethod;
+import org.openflexo.connie.binding.Property;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
 
@@ -72,7 +73,7 @@ import org.openflexo.toolbox.ToolBox;
  * @see KeyValueLibrary
  *
  */
-public class KeyValueProperty extends Observable {
+public class KeyValueProperty extends Observable implements Property {
 	static final Logger LOGGER = Logger.getLogger(KeyValueProperty.class.getPackage().getName());
 
 	/** Stores property's name */
@@ -401,6 +402,7 @@ public class KeyValueProperty extends Observable {
 	/**
 	 * Returns name of this property
 	 */
+	@Override
 	public String getName() {
 
 		return name;
@@ -429,6 +431,7 @@ public class KeyValueProperty extends Observable {
 	/**
 	 * Returns related type
 	 */
+	@Override
 	public Type getType() {
 		return type;
 	}
