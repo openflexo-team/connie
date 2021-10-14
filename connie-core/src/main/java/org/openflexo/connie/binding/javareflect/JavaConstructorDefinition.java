@@ -76,6 +76,11 @@ public class JavaConstructorDefinition extends AbstractJavaExecutableDefinition<
 	}
 
 	@Override
+	public Type getNewInstanceType() {
+		return getReturnType();
+	}
+
+	@Override
 	public String getSimplifiedSignature() {
 		if (_signatureNFQ == null) {
 			StringBuilder signature = new StringBuilder();

@@ -40,14 +40,45 @@
 package org.openflexo.connie.binding;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.openflexo.connie.DataBinding;
 
 /**
- * Implemented by all classes which defines a an abstract constructor in the context of data binding
+ * Model a java call which is a static call (no context) to a method and with some arguments
  * 
  * @author sylvain
  * 
  */
-public interface AbstractConstructor extends Function {
+public abstract class StaticMethodPathElement<F extends Function> extends FunctionPathElement<F> {
 
-	public Type getNewInstanceType();
+	static final Logger logger = Logger.getLogger(StaticMethodPathElement.class.getPackage().getName());
+
+	private Type type;
+
+	public StaticMethodPathElement(Type type, String methodName, List<DataBinding<?>> args) {
+		super(null, methodName, null, args);
+		this.type = type;
+	}
+
+	public StaticMethodPathElement(Type type, F method, List<DataBinding<?>> args) {
+		super(null, method.getName(), method, args);
+		this.type = type;
+		setFunction(method);
+	}
+
+	@Override
+	public Type getType() {
+		if (getFunction() != null) {
+			return getFunction().getReturnType();
+		}
+		return type;
+	}
+
+	@Override
+	public boolean supportsNullValues() {
+		return true;
+	}
+
 }

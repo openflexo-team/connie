@@ -51,8 +51,8 @@ import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
-import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.NewInstancePathElement;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
@@ -67,78 +67,26 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaConstructorDefinition> {
+public class JavaNewInstanceMethodPathElement extends NewInstancePathElement<JavaConstructorDefinition> {
 
 	static final Logger logger = Logger.getLogger(JavaNewInstanceMethodPathElement.class.getPackage().getName());
 
 	private JavaBasedBindingFactory bindingFactory;
-	private Type type;
 
 	public JavaNewInstanceMethodPathElement(Type type, IBindingPathElement parent, String constructorName, List<DataBinding<?>> args,
 			JavaBasedBindingFactory bindingFactory) {
-		super(parent, constructorName, null, args);
+		super(type, parent, constructorName, args);
 		this.bindingFactory = bindingFactory;
-		this.type = type;
 	}
 
 	public JavaNewInstanceMethodPathElement(Type type, IBindingPathElement parent, JavaConstructorDefinition constructor,
-			/*DataBinding<?> innerAccess,*/ List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
-		super(parent, constructor.getName(), constructor, args);
+			List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
+		super(type, parent, constructor, args);
 		this.bindingFactory = bindingFactory;
-		this.type = type;
-		setFunction(constructor);
 	}
 
 	final public JavaConstructorDefinition getConstructorDefinition() {
 		return getFunction();
-	}
-
-	@Override
-	public void setFunction(JavaConstructorDefinition function) {
-		super.setFunction(function);
-		if (function != null) {
-			setType(function.getReturnType());
-		}
-		if (hasInnerAccess()) {
-			getArguments().add(0, null);
-			if (function != null) {
-				// We have to force the declared type again, because a new hidden argument representing inner access was added
-				for (FunctionArgument arg : function.getArguments()) {
-					DataBinding<?> argValue = getArgumentValue(arg);
-					if (argValue != null) {
-						argValue.setDeclaredType(arg.getArgumentType());
-					}
-				}
-				setType(function.getReturnType());
-			}
-		}
-	}
-
-	@Override
-	public Type getType() {
-		if (getConstructorDefinition() != null) {
-			return getConstructorDefinition().getReturnType();
-		}
-		return type;
-	}
-
-	public boolean hasInnerAccess() {
-		return getParent() != null;
-	}
-
-	/**
-	 * Always return false
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isNotificationSafe() {
-		return false;
-	}
-
-	@Override
-	public boolean supportsNullValues() {
-		return true;
 	}
 
 	@Override
@@ -157,13 +105,8 @@ public class JavaNewInstanceMethodPathElement extends FunctionPathElement<JavaCo
 
 		// System.out.println("evaluate " + getConstructorDefinition().getSignature() + " for " + target);
 
-		Object[] args = new Object[getFunction().getArguments().size() /*+ (target != null ? 1 : 0)*/];
+		Object[] args = new Object[getFunction().getArguments().size()];
 		int i = 0;
-
-		/*if (target != null) {
-			args[0] = target;
-			i = 1;
-		}*/
 
 		for (Function.FunctionArgument a : getFunction().getArguments()) {
 			try {

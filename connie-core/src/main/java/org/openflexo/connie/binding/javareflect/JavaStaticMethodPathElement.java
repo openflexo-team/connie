@@ -55,8 +55,8 @@ import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
-import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.StaticMethodPathElement;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
@@ -71,52 +71,26 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticMethodDefinition> {
+public class JavaStaticMethodPathElement extends StaticMethodPathElement<JavaStaticMethodDefinition> {
 
 	static final Logger logger = Logger.getLogger(JavaStaticMethodPathElement.class.getPackage().getName());
 
 	private JavaBasedBindingFactory bindingFactory;
-	private Type type;
 
 	public JavaStaticMethodPathElement(Type type, String methodName, List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
-		super(null, methodName, null, args);
+		super(type, methodName, args);
 		this.bindingFactory = bindingFactory;
-		this.type = type;
 	}
 
 	public JavaStaticMethodPathElement(Type type, JavaStaticMethodDefinition method, List<DataBinding<?>> args,
 			JavaBasedBindingFactory bindingFactory) {
-		super(null, method.getName(), method, args);
+		super(type, method, args);
 		this.bindingFactory = bindingFactory;
-		this.type = type;
 		setFunction(method);
 	}
 
 	final public JavaStaticMethodDefinition getMethodDefinition() {
 		return getFunction();
-	}
-
-	public String getMethodName() {
-		if (getMethodDefinition() != null) {
-			return getMethodDefinition().getMethod().getName();
-		}
-		return getParsed();
-	}
-
-	@Override
-	public void setFunction(JavaStaticMethodDefinition function) {
-		super.setFunction(function);
-		if (function != null) {
-			setType(function.getMethod().getGenericReturnType());
-		}
-	}
-
-	@Override
-	public Type getType() {
-		if (getMethodDefinition() != null) {
-			return getMethodDefinition().getReturnType();
-		}
-		return type;
 	}
 
 	/**
@@ -136,11 +110,6 @@ public class JavaStaticMethodPathElement extends FunctionPathElement<JavaStaticM
 		if (m == null || m.getAnnotation(NotificationUnsafe.class) != null) {
 			return false;
 		}
-		return true;
-	}
-
-	@Override
-	public boolean supportsNullValues() {
 		return true;
 	}
 

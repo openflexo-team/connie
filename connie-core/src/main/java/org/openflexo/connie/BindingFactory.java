@@ -90,7 +90,7 @@ public interface BindingFactory {
 	 * @param propertyName
 	 * @return
 	 */
-	SimplePathElement makeSimplePathElement(IBindingPathElement parent, String propertyName);
+	SimplePathElement<?> makeSimplePathElement(IBindingPathElement parent, String propertyName);
 
 	/**
 	 * Build a new {@link FunctionPathElement} with supplied parent, function name and arguments

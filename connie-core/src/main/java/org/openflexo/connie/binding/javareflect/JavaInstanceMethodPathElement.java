@@ -55,8 +55,8 @@ import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
-import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
@@ -71,29 +71,29 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInstanceMethodDefinition> {
+public class JavaInstanceMethodPathElement extends SimpleMethodPathElement<JavaInstanceMethodDefinition> {
 
 	static final Logger logger = Logger.getLogger(JavaInstanceMethodPathElement.class.getPackage().getName());
 
 	private JavaBasedBindingFactory bindingFactory;
 
-	public JavaInstanceMethodPathElement(IBindingPathElement parent, String methodName /*, JavaInstanceMethodDefinition method*/,
-			List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
-		super(parent, methodName, null, args);
+	public JavaInstanceMethodPathElement(IBindingPathElement parent, String methodName, List<DataBinding<?>> args,
+			JavaBasedBindingFactory bindingFactory) {
+		super(parent, methodName, args);
 		this.bindingFactory = bindingFactory;
 	}
 
 	public JavaInstanceMethodPathElement(IBindingPathElement parent, JavaInstanceMethodDefinition method, List<DataBinding<?>> args,
 			JavaBasedBindingFactory bindingFactory) {
-		super(parent, method.getName(), method, args);
+		super(parent, method, args);
 		this.bindingFactory = bindingFactory;
-		setFunction(method);
 	}
 
 	final public JavaInstanceMethodDefinition getMethodDefinition() {
 		return getFunction();
 	}
 
+	@Override
 	public String getMethodName() {
 		if (getMethodDefinition() != null) {
 			return getMethodDefinition().getMethod().getName();
@@ -148,16 +148,6 @@ public class JavaInstanceMethodPathElement extends FunctionPathElement<JavaInsta
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
-	 * 
-	 * @return false in this case
-	 */
-	@Override
-	public boolean supportsNullValues() {
-		return false;
 	}
 
 	@Override

@@ -52,8 +52,8 @@ import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.expr.ExpressionTransformer;
 
 /**
- * Modelize a compound path element in a binding path, which is the symbolic representation of a call to a function and with a given amount
- * of arguments
+ * Modelize a parameterized path element in a binding path, which is the symbolic representation of a call to a function and with a given
+ * amount of arguments
  * 
  * @author sylvain
  * 
