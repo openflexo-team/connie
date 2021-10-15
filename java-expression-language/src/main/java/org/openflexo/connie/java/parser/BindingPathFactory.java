@@ -320,7 +320,7 @@ public class BindingPathFactory {
 		}
 
 		FunctionPathElement<?> pathElement = null;
-		pathElement = getBindable().getBindingFactory().makeFunctionPathElement(parent, methodName, args);
+		pathElement = getBindable().getBindingFactory().makeSimpleMethodPathElement(parent, methodName, args);
 		bindingPathElements.add(pathElement);
 
 		return pathElement;
@@ -344,7 +344,7 @@ public class BindingPathFactory {
 
 	private FunctionPathElement<?> appendClassInstanceInvocation(Type type, String methodName, List<DataBinding<?>> args) {
 		FunctionPathElement<?> pathElement = null;
-		pathElement = getBindable().getBindingFactory().makeStaticFunctionPathElement(type, methodName, args);
+		pathElement = getBindable().getBindingFactory().makeStaticMethodPathElement(type, methodName, args);
 		bindingPathElements.add(pathElement);
 
 		return pathElement;

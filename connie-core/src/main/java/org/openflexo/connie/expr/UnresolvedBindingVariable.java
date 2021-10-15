@@ -49,13 +49,26 @@ import org.openflexo.connie.BindingVariable;
  */
 public class UnresolvedBindingVariable extends BindingVariable {
 
-	public UnresolvedBindingVariable(String variableName) {
+	// private BindingValue bindingValue;
+
+	public UnresolvedBindingVariable(String variableName/*, BindingValue bindingValue*/) {
 		super(variableName, Object.class, false);
+		// this.bindingValue = bindingValue;
 	}
 
 	@Override
 	public boolean isResolved() {
 		return false;
+	}
+
+	@Override
+	public void resolve() {
+		/*BindingVariable resolvedBindingVariable = bindingValue.getOwner().getBindingModel().bindingVariableNamed(getVariableName());
+		if (resolvedBindingVariable != null) {
+			System.out.println("En resolvant: " + this + " > OK on resout la BindingVariable " + getVariableName() + " qui devient "
+					+ resolvedBindingVariable.getType());
+			bindingValue.setBindingVariable(resolvedBindingVariable);
+		}*/
 	}
 
 }

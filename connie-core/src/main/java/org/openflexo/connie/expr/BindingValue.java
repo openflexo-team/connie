@@ -243,6 +243,44 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		invalidate();
 	}
 
+	/**
+	 * @param element
+	 * @param i
+	 */
+	public void replaceBindingPathElementAtIndex(BindingPathElement element, int i) {
+
+		if (i >= bindingPath.size()) {
+			if (LOGGER.isLoggable(Level.WARNING)) {
+				LOGGER.warning("Could not replaceBindingPathElementAtIndex " + i);
+			}
+			return;
+		}
+		if (bindingPath.get(i) == element) {
+			// nothing to do
+			return;
+		}
+		if (LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.fine("Replace property " + element + " at index " + i);
+		}
+
+		BindingPathElement existing = bindingPath.get(i);
+		if (existing.isActivated()) {
+			existing.desactivate();
+		}
+		bindingPath.remove(i);
+		bindingPath.add(i, element);
+
+		if (!element.isActivated()) {
+			element.activate();
+		}
+		if (i < bindingPath.size() - 1) {
+			BindingPathElement successor = bindingPath.get(i + 1);
+			successor.setParent(element);
+		}
+
+		invalidate();
+	}
+
 	public BindingPathElement getBindingPathElementAtIndex(int i) {
 		if (i < bindingPath.size()) {
 			return bindingPath.get(i);
@@ -328,6 +366,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
 				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
 				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
+			}
+			if (getBindingPath().size() > 0) {
+				getBindingPath().get(0).setParent(bindingVariable);
 			}
 			invalidate();
 		}
@@ -666,8 +707,16 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 		if (getBindingVariable() != null) {
 			if (getBindingVariable() instanceof UnresolvedBindingVariable) {
-				invalidBindingReason = "BindingVariable " + getBindingVariable().getVariableName() + " does not exist";
-				return false;
+				BindingVariable resolvedBindingVariable = getOwner().getBindingModel().bindingVariableNamed(getVariableName());
+				if (resolvedBindingVariable != null) {
+					//System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
+					setBindingVariable(resolvedBindingVariable);
+					resolvedBindingVariable.hasBeenResolved(this);
+				}
+				else {
+					invalidBindingReason = "BindingVariable " + getBindingVariable().getVariableName() + " does not exist";
+					return false;
+				}
 			}
 			currentType = getBindingVariable().getType();
 			currentElement = getBindingVariable();
@@ -701,6 +750,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					invalidBindingReason = "unresolved path element " + element;
 					return false;
 				}
+			}
+
+			if (!element.isActivated()) {
+				element.activate();
 			}
 
 			BindingPathCheck check = element.checkBindingPathIsValid(currentElement, currentType);

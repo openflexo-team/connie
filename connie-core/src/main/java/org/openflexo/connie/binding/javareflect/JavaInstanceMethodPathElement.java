@@ -227,7 +227,7 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElement<JavaI
 		return returned;
 	}
 
-	@Override
+	/*@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(getMethodName() + "(");
@@ -240,7 +240,7 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElement<JavaI
 		}
 		sb.append(")");
 		return sb.toString();
-	}
+	}*/
 
 	private JavaInstanceMethodPathElement makeTransformedPathElement(ExpressionTransformer transformer) throws TransformException {
 

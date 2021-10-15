@@ -114,6 +114,16 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 		return parent;
 	}
 
+	/**
+	 * Sets parent of this {@link BindingPathElement}
+	 * 
+	 * @param parent
+	 */
+	@Override
+	public void setParent(IBindingPathElement parent) {
+		this.parent = parent;
+	}
+
 	@Override
 	public PropertyChangeSupport getPropertyChangeSupport() {
 		return pcSupport;

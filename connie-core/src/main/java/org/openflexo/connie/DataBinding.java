@@ -853,7 +853,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		// if (debug) {
-		// System.out.println("> Received propertyName=" + evt.getPropertyName() + " source=" + evt.getSource() + " evt=" + evt);
+		// System.out.println(">>>>>>>>>>> For " + this + " Received propertyName=" + evt.getPropertyName() + " source=" + evt.getSource()
+		// + " evt=" + evt);
 		// }
 
 		// Track BindingFactory changes

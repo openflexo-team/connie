@@ -190,7 +190,7 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElement<JavaSta
 		return returned;
 	}
 
-	@Override
+	/*@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(TypeUtils.simpleRepresentation(getType()) + "." + getMethodName() + "(");
@@ -203,7 +203,7 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElement<JavaSta
 		}
 		sb.append(")");
 		return sb.toString();
-	}
+	}*/
 
 	@Override
 	public String getSerializationRepresentation() {

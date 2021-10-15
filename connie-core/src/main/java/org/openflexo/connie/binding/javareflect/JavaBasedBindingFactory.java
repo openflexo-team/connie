@@ -58,7 +58,10 @@ import org.openflexo.connie.binding.AbstractConstructor;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.NewInstancePathElement;
+import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.binding.StaticMethodPathElement;
 import org.openflexo.connie.type.TypeUtils;
 
 /**
@@ -73,7 +76,7 @@ import org.openflexo.connie.type.TypeUtils;
 public abstract class JavaBasedBindingFactory implements BindingFactory {
 	static final Logger logger = Logger.getLogger(JavaBasedBindingFactory.class.getPackage().getName());
 
-	private Map<Type, List<? extends SimplePathElement>> accessibleSimplePathElements = new HashMap<>();
+	private Map<Type, List<? extends SimplePathElement<?>>> accessibleSimplePathElements = new HashMap<>();
 	private Map<Type, List<? extends FunctionPathElement<?>>> accessibleFunctionPathElements = new HashMap<>();
 	private Map<Type, Map<String, AbstractJavaMethodDefinition>> storedFunctions = new HashMap<>();
 	private Map<Type, Map<String, JavaConstructorDefinition>> storedConstructors = new HashMap<>();
@@ -87,11 +90,11 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent) {
+	public List<? extends SimplePathElement<?>> getAccessibleSimplePathElements(IBindingPathElement parent) {
 
 		if (parent.getType() != null) {
 
-			List<? extends SimplePathElement> returned = accessibleSimplePathElements.get(parent.getType());
+			List<? extends SimplePathElement<?>> returned = accessibleSimplePathElements.get(parent.getType());
 			if (returned != null) {
 				return returned;
 			}
@@ -150,7 +153,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName) {
+	public SimplePathElement<?> makeSimplePathElement(IBindingPathElement father, String propertyName) {
 		Type fatherType = father.getType();
 		if (fatherType instanceof Class && ((Class<?>) fatherType).isPrimitive()) {
 			fatherType = TypeUtils.fromPrimitive((Class<?>) fatherType);
@@ -166,17 +169,18 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement father, String functionName, List<DataBinding<?>> args) {
+	public SimpleMethodPathElement<?> makeSimpleMethodPathElement(IBindingPathElement father, String functionName,
+			List<DataBinding<?>> args) {
 		return new JavaInstanceMethodPathElement(father, functionName, args, this);
 	}
 
 	@Override
-	public FunctionPathElement<?> makeStaticFunctionPathElement(Type type, String functionName, List<DataBinding<?>> args) {
+	public StaticMethodPathElement<?> makeStaticMethodPathElement(Type type, String functionName, List<DataBinding<?>> args) {
 		return new JavaStaticMethodPathElement(type, functionName, args, this);
 	}
 
 	@Override
-	public FunctionPathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
+	public NewInstancePathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
 			List<DataBinding<?>> args) {
 		return new JavaNewInstanceMethodPathElement(type, parent, functionName, args, this);
 	}
@@ -265,8 +269,8 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	// Note: in java, we don't care about functionName (which is the name of the declaring type)
-	public AbstractConstructor retrieveConstructor(Type declaringType, Type innerAccessType,
-			/*DataBinding<?> innerAccess,*/ String functionName, List<DataBinding<?>> arguments) {
+	public AbstractConstructor retrieveConstructor(Type declaringType, Type innerAccessType, String constructorName,
+			List<DataBinding<?>> arguments) {
 
 		Map<String, JavaConstructorDefinition> mapForType = storedConstructors.get(declaringType);
 		if (mapForType == null) {
@@ -341,7 +345,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		}
 		else {
 			// We dont log it inconditionnaly, because this may happen (while for example inspectors are merged)
-			logger.warning("Cannot find constructor named " + functionName + " with args=" + arguments + "(" + arguments.size()
+			logger.warning("Cannot find constructor named " + constructorName + " with args=" + arguments + "(" + arguments.size()
 					+ ") for type " + declaringType);
 			return null;
 		}

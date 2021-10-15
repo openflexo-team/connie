@@ -85,6 +85,26 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElement<Jav
 		this.bindingFactory = bindingFactory;
 	}
 
+	@Override
+	public void setFunction(JavaConstructorDefinition function) {
+		super.setFunction(function);
+		if (hasInnerAccess()) {
+			// If we have inner access, we add a new null element at the beginning of the arguments list
+			// (this is the hidden argument used by java reflection)
+			getArguments().add(0, null);
+			if (function != null) {
+				// We have to force the declared type again, because a new hidden argument representing inner access was added
+				for (FunctionArgument arg : function.getArguments()) {
+					DataBinding<?> argValue = getArgumentValue(arg);
+					if (argValue != null) {
+						argValue.setDeclaredType(arg.getArgumentType());
+					}
+				}
+				setType(function.getReturnType());
+			}
+		}
+	}
+
 	final public JavaConstructorDefinition getConstructorDefinition() {
 		return getFunction();
 	}
@@ -195,7 +215,7 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElement<Jav
 		return returned;
 	}
 
-	@Override
+	/*@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("new " + TypeUtils.simpleRepresentation(getType()) + "(");
@@ -208,7 +228,7 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElement<Jav
 		}
 		sb.append(")");
 		return sb.toString();
-	}
+	}*/
 
 	@Override
 	public String getSerializationRepresentation() {

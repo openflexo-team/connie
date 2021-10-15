@@ -250,4 +250,9 @@ public class BindingVariable implements SettableBindingPathElement, HasPropertyC
 		variableName = null;
 		type = null;
 	}
+
+	@Deprecated
+	// Caused by parameters management: change this !!!
+	public void hasBeenResolved(BindingValue bindingValue) {
+	}
 }

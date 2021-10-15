@@ -53,11 +53,18 @@ import org.openflexo.connie.DataBinding;
 public interface BindingPathElement extends IBindingPathElement {
 
 	/**
-	 * Return parent of this BindingPathElement
+	 * Return parent of this {@link BindingPathElement}
 	 * 
 	 * @return
 	 */
-	IBindingPathElement getParent();
+	public IBindingPathElement getParent();
+
+	/**
+	 * Sets parent of this {@link BindingPathElement}
+	 * 
+	 * @param parent
+	 */
+	public void setParent(IBindingPathElement parent);
 
 	/**
 	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required

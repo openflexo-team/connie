@@ -47,7 +47,10 @@ import java.util.List;
 
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.NewInstancePathElement;
+import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.binding.StaticMethodPathElement;
 import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 
@@ -93,7 +96,7 @@ public interface BindingFactory {
 	SimplePathElement<?> makeSimplePathElement(IBindingPathElement parent, String propertyName);
 
 	/**
-	 * Build a new {@link FunctionPathElement} with supplied parent, function name and arguments
+	 * Build a new {@link SimpleMethodPathElement} with supplied parent, function name and arguments
 	 * 
 	 * @param parent
 	 *            The parent path element
@@ -103,10 +106,10 @@ public interface BindingFactory {
 	 *            The arguments of the function path element
 	 * @return
 	 */
-	FunctionPathElement<?> makeFunctionPathElement(IBindingPathElement parent, String functionName, List<DataBinding<?>> args);
+	SimpleMethodPathElement<?> makeSimpleMethodPathElement(IBindingPathElement parent, String functionName, List<DataBinding<?>> args);
 
 	/**
-	 * Build a new static {@link FunctionPathElement} with supplied type, function name and arguments
+	 * Build a new static {@link StaticMethodPathElement} with supplied type, function name and arguments
 	 * 
 	 * @param type
 	 *            The type of which static function is defined
@@ -116,10 +119,10 @@ public interface BindingFactory {
 	 *            The arguments of the function path element
 	 * @return
 	 */
-	FunctionPathElement<?> makeStaticFunctionPathElement(Type type, String functionName, List<DataBinding<?>> args);
+	StaticMethodPathElement<?> makeStaticMethodPathElement(Type type, String functionName, List<DataBinding<?>> args);
 
 	/**
-	 * Build a new {@link FunctionPathElement} (new instance creation) with supplied type, parent, function name and arguments
+	 * Build a new {@link NewInstancePathElement} (new instance creation) with supplied type, parent, function name and arguments
 	 * 
 	 * @param type
 	 *            The type to instantiate
@@ -131,7 +134,7 @@ public interface BindingFactory {
 	 *            The arguments of the function path element
 	 * @return
 	 */
-	FunctionPathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
+	NewInstancePathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
 			List<DataBinding<?>> args);
 
 	/**

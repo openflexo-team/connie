@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.binding.Function.FunctionArgument;
 
 /**
  * Model a java call which is a call to a method and with some arguments
@@ -75,7 +74,7 @@ public abstract class NewInstancePathElement<C extends AbstractConstructor> exte
 		if (function != null) {
 			setType(function.getNewInstanceType());
 		}
-		if (hasInnerAccess()) {
+		/*if (hasInnerAccess()) {
 			// If we have inner access, we add a new null element at the beginning of the arguments list
 			// (this is the hidden argument used by java reflection)
 			getArguments().add(0, null);
@@ -89,7 +88,7 @@ public abstract class NewInstancePathElement<C extends AbstractConstructor> exte
 				}
 				setType(function.getReturnType());
 			}
-		}
+		}*/
 	}
 
 	@Override

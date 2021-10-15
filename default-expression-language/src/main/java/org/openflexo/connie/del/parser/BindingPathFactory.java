@@ -187,7 +187,7 @@ class BindingPathFactory extends ExpressionFactory {
 			}
 
 			FunctionPathElement<?> pathElement = null;
-			pathElement = getBindable().getBindingFactory().makeFunctionPathElement(parent, ((ACall) node).getIdentifier().getText(), args);
+			pathElement = getBindable().getBindingFactory().makeSimpleMethodPathElement(parent, ((ACall) node).getIdentifier().getText(), args);
 			bindingPathElements.add(pathElement);
 			return pathElement;
 		}
