@@ -171,10 +171,11 @@ public class JavaPropertyPathElement extends SimplePathElement<KeyValueProperty>
 		getProperty().setObjectValue(value, target);
 	}
 
-	@Override
+	/*@Override
 	public String toString() {
-		return "JavaPropertyPathElement " + getParent().getType() + "#" + getPropertyName();
-	}
+		return getSerializationRepresentation();
+		// return "JavaPropertyPathElement " + getParent().getType() + "#" + getPropertyName();
+	}*/
 
 	@Override
 	public boolean isResolved() {

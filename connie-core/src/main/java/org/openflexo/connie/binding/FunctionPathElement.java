@@ -238,10 +238,10 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 		serializationRepresentation = null;
 	}
 
-	@Override
+	/*@Override
 	public final String toString() {
 		return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + "/" + getSerializationRepresentation();
-	}
+	}*/
 
 	@Override
 	public int hashCode() {

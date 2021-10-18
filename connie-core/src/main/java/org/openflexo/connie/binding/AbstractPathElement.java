@@ -181,4 +181,9 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 	 */
 	public abstract boolean requiresContext();
 
+	@Override
+	public final String toString() {
+		return getClass().getSimpleName() + ":" + getSerializationRepresentation();
+	}
+
 }
