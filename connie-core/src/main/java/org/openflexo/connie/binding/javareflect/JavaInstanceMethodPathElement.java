@@ -152,7 +152,10 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElement<JavaI
 
 	@Override
 	public String getLabel() {
-		return getMethodDefinition().getLabel();
+		if (getMethodDefinition() != null) {
+			return getMethodDefinition().getLabel();
+		}
+		return getParsed();
 	}
 
 	@Override
