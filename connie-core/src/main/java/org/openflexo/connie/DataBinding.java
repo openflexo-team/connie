@@ -366,7 +366,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void setBindingDefinitionType(BindingDefinitionType aBDType) {
 		bdType = aBDType;
-		revalidate();
+		invalidate();
 	}
 
 	private Type performComputeAnalyzedType() {
@@ -469,7 +469,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public boolean isValid() {
 
 		if (needsParsing) {
-			setExpression(parseExpression(unparsedBinding));
+			if (!isParsing) {
+				setExpression(parseExpression(unparsedBinding));
+			}
+			else {
+				invalidBindingReason = "Cannot analyze due to infinite-loop";
+				isValid = false;
+				return isValid;
+			}
 		}
 
 		if (!validated) {
@@ -691,7 +698,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public boolean isSet() {
-		return getExpression() != null;
+		return getExpression() != null || needsParsing;
 	}
 
 	public boolean isUnset() {
@@ -871,7 +878,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		// Track BindingFactory changes
 		// We detect here that the owner of this DataBinding has changed its BindingFactory
 		if (evt.getSource() == owner && evt.getPropertyName() != null && evt.getPropertyName().equals(Bindable.BINDING_FACTORY_PROPERTY)) {
-			revalidate();
+			invalidate();
 		}
 
 		// Track BindingModel changes
@@ -890,7 +897,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					((BindingModel) evt.getNewValue()).getPropertyChangeSupport().addPropertyChangeListener(this);
 				}
 			}
-			revalidate();
+			invalidate();
 		}
 
 		// Track structural changes inside a BindingModel
@@ -907,24 +914,23 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					// A new BindingVariable was removed
 					((BindingVariable) evt.getOldValue()).getPropertyChangeSupport().removePropertyChangeListener(this);
 				}
-				System.out.println("Hop on revalide le binding");
-				revalidate();
+				invalidate();
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_NAME_CHANGED)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				invalidate();
 
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_TYPE_CHANGED)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				invalidate();
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
 				// We detect here that base BindingModel has changed
 				updateListenedBindingVariables();
-				revalidate();
+				invalidate();
 			}
 		}
 
@@ -934,12 +940,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				invalidate();
 			}
 			else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				invalidate();
 			}
 			/*else if (evt.getPropertyName().equals(BindingVariable.DELETED_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
@@ -950,44 +956,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	}
 
-	/**
-	 * Called when a modification has been performed on a BindingModel (variable changed name or type, or path element changed name or type,
-	 * or something else...)
-	 * 
-	 * @return
-	 */
-	private void notifiedBindingModelStructurallyModified() {
 
-		if (!isSet()) {
-			return;
-		}
-
-		// System.out.println(">>>> START notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
-
-		// Thread.dumpStack();
-
-		if (getExpression() != null && isValid()) {
-			try {
-				getExpression().visit(new ExpressionVisitor() {
-					@Override
-					public void visit(Expression e) throws VisitorException {
-						if (e instanceof BindingValue) {
-							BindingValue bv = (BindingValue) e;
-							bv.invalidate();
-						}
-					}
-				});
-			} catch (VisitorException e) {
-				e.printStackTrace();
-			}
-		}
-
-		revalidate();
-
-		// Perform isValid() now to be sure
-		isValid();
-
-	}
+	private boolean isParsing = false;
 
 	/**
 	 * This method is called whenever we need to parse the binding using string encoded in unparsedBinding field.<br>
@@ -998,22 +968,27 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 */
 	private Expression parseExpression(String unparsed) {
 
-		if (getOwner() != null && getOwner().getBindingFactory() != null) {
-			try {
-				Expression returned = getOwner().getBindingFactory().parseExpression(unparsed, getOwner());
-				needsParsing = false;
-				this.unparsedBinding = null;
-				return returned;
-			} catch (ParseException e) {
-				// parse error
-				LOGGER.warning(e.getMessage());
+		try {
+			isParsing = true;
+			if (getOwner() != null && getOwner().getBindingFactory() != null) {
+				try {
+					Expression returned = getOwner().getBindingFactory().parseExpression(unparsed, getOwner());
+					needsParsing = false;
+					this.unparsedBinding = null;
+					return returned;
+				} catch (ParseException e) {
+					// parse error
+					LOGGER.warning(e.getMessage() + " while parsing " + unparsed);
+					return null;
+				}
+			}
+			else {
+				this.unparsedBinding = unparsed;
+				needsParsing = true;
 				return null;
 			}
-		}
-		else {
-			this.unparsedBinding = unparsed;
-			needsParsing = true;
-			return null;
+		} finally {
+			isParsing = false;
 		}
 
 	}
