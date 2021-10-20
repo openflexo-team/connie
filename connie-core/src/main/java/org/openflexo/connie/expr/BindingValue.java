@@ -654,9 +654,12 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			invalidBindingReason = "valid binding value";
 		}
 
-		validated = true;
+		// We mark the BindingPath as validated if and only if both owner and BindingFactory are not null
+		if (getOwner() != null && getOwner().getBindingFactory() != null) {
+			validated = true;
+		}
 
-		return true;
+		return isValid;
 	}
 
 	private String serializationRepresentation = null;
@@ -709,7 +712,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			if (getBindingVariable() instanceof UnresolvedBindingVariable) {
 				BindingVariable resolvedBindingVariable = getOwner().getBindingModel().bindingVariableNamed(getVariableName());
 				if (resolvedBindingVariable != null) {
-					//System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
+					// System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
 					setBindingVariable(resolvedBindingVariable);
 					resolvedBindingVariable.hasBeenResolved(this);
 				}
@@ -730,6 +733,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			// Check that the BindingVariable is the right one
 			BindingVariable checkedBV = getOwner().getBindingModel().bindingVariableNamed(getBindingVariable().getVariableName());
+
 			if (checkedBV == null) {
 				invalidBindingReason = "BindingVariable " + getBindingVariable().getVariableName() + " does not exist";
 				return false;

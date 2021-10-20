@@ -119,7 +119,7 @@ public class TestBindingAnalysing extends TestCase {
 			return dataBinding;
 
 		}
-		System.out.println("Could not Parse " + dataBinding + " defined as " + dataBinding.getUnparsedBinding());
+		System.out.println("Could not Parse " + dataBinding + " defined as " + dataBinding.toString());
 		fail("Unparseable binding");
 		return null;
 	}

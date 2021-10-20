@@ -302,7 +302,7 @@ public class TestBinding extends TestCase {
 			assertEquals(expectedResult, TypeUtils.castTo(evaluation, expectedType));
 		}
 		else {
-			System.out.println("Could not Parse " + dataBinding + " defined as " + dataBinding.getUnparsedBinding());
+			System.out.println("Could not Parse " + dataBinding + " defined as " + dataBinding.toString());
 			fail("Unparseable binding");
 
 		}

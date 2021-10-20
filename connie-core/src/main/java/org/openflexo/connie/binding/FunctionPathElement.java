@@ -84,7 +84,6 @@ public abstract class FunctionPathElement<F extends Function> extends AbstractPa
 			if (parameter == null) {
 				parameter = new DataBinding<>(bindable, arg.getArgumentType(), DataBinding.BindingDefinitionType.GET);
 				parameter.setBindingName(arg.getArgumentName());
-				parameter.setUnparsedBinding("");
 				setArgumentValue(arg, parameter);
 			}
 			else {
