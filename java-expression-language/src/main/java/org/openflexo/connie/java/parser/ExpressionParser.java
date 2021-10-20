@@ -90,7 +90,7 @@ public class ExpressionParser {
 
 			return t.getExpression();
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			throw new ParseException(e.getMessage() + " while parsing " + anExpression);
 		}
 	}
