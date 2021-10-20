@@ -66,6 +66,7 @@ import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
+import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.TargetObject;
 import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
@@ -183,6 +184,29 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		return 0;
 	}
 
+	public BindingVariable getBindingVariable() {
+		return bindingVariable;
+	}
+
+	public void setBindingVariable(BindingVariable aBindingVariable) {
+		if (bindingVariable != aBindingVariable) {
+			clearSerializationRepresentation();
+			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
+				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
+				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
+			}
+			bindingVariable = aBindingVariable;
+			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
+				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
+				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
+			}
+			if (getBindingPath().size() > 0) {
+				propagateBindingElementChanged(bindingVariable, 0);
+			}
+			invalidate();
+		}
+	}
+
 	public List<BindingPathElement> getBindingPath() {
 		return bindingPath;
 	}
@@ -273,12 +297,58 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		if (!element.isActivated()) {
 			element.activate();
 		}
-		if (i < bindingPath.size() - 1) {
+		/*if (i < bindingPath.size() - 1) {
 			BindingPathElement successor = bindingPath.get(i + 1);
 			successor.setParent(element);
+		}*/
+
+		if (i < bindingPath.size() - 1) {
+			propagateBindingElementChanged(element, i + 1);
 		}
 
 		invalidate();
+	}
+
+	/**
+	 * Called when parent has changed, update element according to new parent
+	 * 
+	 * @param parent
+	 * @param element
+	 */
+	private void propagateBindingElementChanged(IBindingPathElement parent, int index) {
+		if (index >= getBindingPath().size()) {
+			LOGGER.warning("Inconsistent data: cannot propagate BindingElement change for index " + index);
+		}
+
+		BindingPathElement element = getBindingPath().get(index);
+
+		// Sets the parent
+		element.setParent(parent);
+
+		if (element instanceof SimplePathElement) {
+			SimplePathElement<?> simplePathElement = (SimplePathElement<?>) element;
+			SimplePathElement<?> newSimplePathElement = (SimplePathElement<?>) getOwner().getBindingFactory().makeSimplePathElement(parent,
+					simplePathElement.getLabel());
+			if (simplePathElement.getClass() != newSimplePathElement.getClass()) {
+				replaceBindingPathElementAtIndex(newSimplePathElement, index);
+				if (simplePathElement.getBindingPathElementOwner() != null) {
+					simplePathElement.getBindingPathElementOwner().bindingPathElementChanged(newSimplePathElement);
+				}
+			}
+		}
+
+		if (element instanceof SimpleMethodPathElement) {
+			SimpleMethodPathElement<?> methodPathElement = (SimpleMethodPathElement<?>) element;
+			SimpleMethodPathElement<?> newMethodPathElement = (SimpleMethodPathElement<?>) getOwner().getBindingFactory()
+					.makeSimpleMethodPathElement(parent, methodPathElement.getMethodName(), methodPathElement.getArguments());
+			if (methodPathElement.getClass() != newMethodPathElement.getClass()) {
+				replaceBindingPathElementAtIndex(newMethodPathElement, index);
+				if (methodPathElement.getBindingPathElementOwner() != null) {
+					methodPathElement.getBindingPathElementOwner().bindingPathElementChanged(newMethodPathElement);
+				}
+			}
+		}
+
 	}
 
 	public BindingPathElement getBindingPathElementAtIndex(int i) {
@@ -349,29 +419,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return getBindingPath().get(0);
 		}
 		return null;
-	}
-
-	public BindingVariable getBindingVariable() {
-		return bindingVariable;
-	}
-
-	public void setBindingVariable(BindingVariable aBindingVariable) {
-		if (bindingVariable != aBindingVariable) {
-			clearSerializationRepresentation();
-			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
-				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
-				bindingVariable.getPropertyChangeSupport().removePropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
-			}
-			bindingVariable = aBindingVariable;
-			if (bindingVariable != null && bindingVariable.getPropertyChangeSupport() != null) {
-				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
-				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
-			}
-			if (getBindingPath().size() > 0) {
-				getBindingPath().get(0).setParent(bindingVariable);
-			}
-			invalidate();
-		}
 	}
 
 	@Override
@@ -712,7 +759,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			if (getBindingVariable() instanceof UnresolvedBindingVariable) {
 				BindingVariable resolvedBindingVariable = getOwner().getBindingModel().bindingVariableNamed(getVariableName());
 				if (resolvedBindingVariable != null) {
-					// System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
+					System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
 					setBindingVariable(resolvedBindingVariable);
 					resolvedBindingVariable.hasBeenResolved(this);
 				}

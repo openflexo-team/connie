@@ -53,6 +53,17 @@ import org.openflexo.connie.DataBinding;
 public interface BindingPathElement extends IBindingPathElement {
 
 	/**
+	 * An "owner" of a {@link BindingPathElement}
+	 * 
+	 * @author sylvainguerin
+	 *
+	 */
+	public interface BindingPathElementOwner {
+
+		public void bindingPathElementChanged(BindingPathElement newElement);
+	}
+
+	/**
 	 * Return parent of this {@link BindingPathElement}
 	 * 
 	 * @return
@@ -101,6 +112,8 @@ public interface BindingPathElement extends IBindingPathElement {
 	 * @return
 	 */
 	public boolean supportsNullValues();
+
+	public BindingPathElementOwner getBindingPathElementOwner();
 
 	/**
 	 * Carry the result of acceptability of to type checking of a {@link BindingPathElement} in the context of a parent

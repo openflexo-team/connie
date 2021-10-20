@@ -59,6 +59,8 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 
 	private String parsed;
 
+	private BindingPathElementOwner bindingPathElementOwner;
+
 	public static final String NAME_PROPERTY = "propertyName";
 	public static final String TYPE_PROPERTY = "type";
 	public static final String DELETED_PROPERTY = "deleted";
@@ -67,6 +69,19 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 		this.parent = parent;
 		this.parsed = parsed;
 		pcSupport = new PropertyChangeSupport(this);
+	}
+
+	@Override
+	public BindingPathElementOwner getBindingPathElementOwner() {
+		return bindingPathElementOwner;
+	}
+
+	public void setBindingPathElementOwner(BindingPathElementOwner owner) {
+		if ((owner == null && this.bindingPathElementOwner != null) || (owner != null && !owner.equals(this.bindingPathElementOwner))) {
+			BindingPathElementOwner oldValue = this.bindingPathElementOwner;
+			this.bindingPathElementOwner = owner;
+			getPropertyChangeSupport().firePropertyChange("bindingPathElementOwner", oldValue, owner);
+		}
 	}
 
 	/**
