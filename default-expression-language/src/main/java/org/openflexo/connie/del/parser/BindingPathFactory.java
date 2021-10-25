@@ -137,13 +137,13 @@ class BindingPathFactory extends ExpressionFactory {
 			return bindingVariable;
 		}
 		else if (bindingPathElements.size() == 0) {
-			SimplePathElement pathElement = getBindable().getBindingFactory().makeSimplePathElement(bindingVariable, identifierAsString);
+			SimplePathElement<?> pathElement = getBindable().getBindingFactory().makeSimplePathElement(bindingVariable, identifierAsString);
 			bindingPathElements.add(pathElement);
 			// System.out.println(" > PE: " + pathElement);
 			return pathElement;
 		}
 		else {
-			SimplePathElement pathElement = getBindable().getBindingFactory()
+			SimplePathElement<?> pathElement = getBindable().getBindingFactory()
 					.makeSimplePathElement(bindingPathElements.get(bindingPathElements.size() - 1), identifierAsString);
 			bindingPathElements.add(pathElement);
 			// System.out.println(" > PE: " + pathElement);
@@ -187,7 +187,8 @@ class BindingPathFactory extends ExpressionFactory {
 			}
 
 			FunctionPathElement<?> pathElement = null;
-			pathElement = getBindable().getBindingFactory().makeSimpleMethodPathElement(parent, ((ACall) node).getIdentifier().getText(), args);
+			pathElement = getBindable().getBindingFactory().makeSimpleMethodPathElement(parent, ((ACall) node).getIdentifier().getText(),
+					args);
 			bindingPathElements.add(pathElement);
 			return pathElement;
 		}

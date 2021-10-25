@@ -485,7 +485,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	private boolean containsMethodCallWithArguments() {
 		for (BindingPathElement bindingPathElement : getBindingPath()) {
 			if (bindingPathElement instanceof FunctionPathElement) {
-				if (((FunctionPathElement) bindingPathElement).getArguments().size() > 0) {
+				if (((FunctionPathElement<?>) bindingPathElement).getArguments().size() > 0) {
 					return true;
 				}
 			}
@@ -593,7 +593,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 			else if (bpe instanceof FunctionPathElement) {
 				// TODO: instantiate a new FunctionPathElement
-				bv.bindingPath.add(((FunctionPathElement) bpe).transform(transformer));
+				bv.bindingPath.add(((FunctionPathElement<?>) bpe).transform(transformer));
 			}
 		}
 		return bv;
@@ -724,6 +724,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			isFirst = false;
 		}
 		for (BindingPathElement e : getBindingPath()) {
+			System.out.println("e=" + e);
 			sb.append((isFirst ? "" : ".") + e.getSerializationRepresentation());
 			isFirst = false;
 		}

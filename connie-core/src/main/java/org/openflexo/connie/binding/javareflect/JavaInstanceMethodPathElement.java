@@ -56,7 +56,7 @@ import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.binding.IBindingPathElement;
-import org.openflexo.connie.binding.SimpleMethodPathElement;
+import org.openflexo.connie.binding.SimpleMethodPathElementImpl;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
@@ -71,7 +71,7 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaInstanceMethodPathElement extends SimpleMethodPathElement<JavaInstanceMethodDefinition> {
+public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<JavaInstanceMethodDefinition> {
 
 	static final Logger logger = Logger.getLogger(JavaInstanceMethodPathElement.class.getPackage().getName());
 

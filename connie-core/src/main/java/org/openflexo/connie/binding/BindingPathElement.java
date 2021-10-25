@@ -115,6 +115,8 @@ public interface BindingPathElement extends IBindingPathElement {
 
 	public BindingPathElementOwner getBindingPathElementOwner();
 
+	public void setBindingPathElementOwner(BindingPathElementOwner owner);
+
 	/**
 	 * Carry the result of acceptability of to type checking of a {@link BindingPathElement} in the context of a parent
 	 *

@@ -40,82 +40,26 @@
 package org.openflexo.connie.binding;
 
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.openflexo.connie.DataBinding;
 
 /**
- * Model a java call which is a call to a method and with some arguments
+ * Model a new instance call with a constructor-like function and some arguments
  * 
  * @author sylvain
  * 
  */
-public abstract class NewInstancePathElement<C extends AbstractConstructor> extends FunctionPathElement<C> {
-
-	static final Logger logger = Logger.getLogger(NewInstancePathElement.class.getPackage().getName());
-
-	private Type type;
-
-	public NewInstancePathElement(Type type, IBindingPathElement parent, String constructorName, List<DataBinding<?>> args) {
-		super(parent, constructorName, null, args);
-		this.type = type;
-	}
-
-	public NewInstancePathElement(Type type, IBindingPathElement parent, C constructor, List<DataBinding<?>> args) {
-		super(parent, constructor.getName(), constructor, args);
-		this.type = type;
-		setFunction(constructor);
-	}
-
-	@Override
-	public void setFunction(C function) {
-		super.setFunction(function);
-		if (function != null) {
-			setType(function.getNewInstanceType());
-		}
-		/*if (hasInnerAccess()) {
-			// If we have inner access, we add a new null element at the beginning of the arguments list
-			// (this is the hidden argument used by java reflection)
-			getArguments().add(0, null);
-			if (function != null) {
-				// We have to force the declared type again, because a new hidden argument representing inner access was added
-				for (FunctionArgument arg : function.getArguments()) {
-					DataBinding<?> argValue = getArgumentValue(arg);
-					if (argValue != null) {
-						argValue.setDeclaredType(arg.getArgumentType());
-					}
-				}
-				setType(function.getReturnType());
-			}
-		}*/
-	}
-
-	@Override
-	public Type getType() {
-		if (getFunction() != null) {
-			return getFunction().getReturnType();
-		}
-		return type;
-	}
-
-	public final boolean hasInnerAccess() {
-		return getParent() != null;
-	}
+public interface NewInstancePathElement<C extends AbstractConstructor> extends FunctionPathElement<C> {
 
 	/**
-	 * Always return false
+	 * Return built type
+	 */
+	@Override
+	public Type getType();
+
+	/**
+	 * Return boolean indicating if inner access is defined for this {@link NewInstancePathElement}
 	 * 
 	 * @return
 	 */
-	@Override
-	public final boolean isNotificationSafe() {
-		return false;
-	}
-
-	@Override
-	public final boolean supportsNullValues() {
-		return true;
-	}
+	public boolean hasInnerAccess();
 
 }

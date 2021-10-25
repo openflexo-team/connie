@@ -39,12 +39,39 @@
 
 package org.openflexo.connie.binding;
 
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.openflexo.connie.DataBinding;
+
 /**
- * Model a method call which is a call to a method in a given context (the object on which this "method" is called) with some arguments
+ * Default implementation for a {@link SimpleMethodPathElement}
  * 
  * @author sylvain
  * 
  */
-public interface SimpleMethodPathElement<F extends Function> extends FunctionPathElement<F> {
+public abstract class SimpleMethodPathElementImpl<F extends Function> extends FunctionPathElementImpl<F>
+		implements SimpleMethodPathElement<F> {
+
+	static final Logger logger = Logger.getLogger(SimpleMethodPathElementImpl.class.getPackage().getName());
+
+	public SimpleMethodPathElementImpl(IBindingPathElement parent, String methodName, List<DataBinding<?>> args) {
+		super(parent, methodName, null, args);
+	}
+
+	public SimpleMethodPathElementImpl(IBindingPathElement parent, F method, List<DataBinding<?>> args) {
+		super(parent, method.getName(), method, args);
+		setFunction(method);
+	}
+
+	/**
+	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
+	 * 
+	 * @return false in this case
+	 */
+	@Override
+	public final boolean supportsNullValues() {
+		return false;
+	}
 
 }

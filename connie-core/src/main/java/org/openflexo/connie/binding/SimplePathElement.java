@@ -39,12 +39,7 @@
 
 package org.openflexo.connie.binding;
 
-import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
-
-import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.type.TypeUtils;
 
 /**
  * Model a simple path element in a binding path, represented by a simple get/set access through a property
@@ -52,156 +47,19 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public abstract class SimplePathElement<P extends Property> extends AbstractPathElement implements SettableBindingPathElement {
+public interface SimplePathElement<P extends Property> extends BindingPathElement, SettableBindingPathElement {
 
-	private P property;
-	private Type type;
+	public String getPropertyName();
 
-	public SimplePathElement(IBindingPathElement parent, String propertyName, Type type) {
-		super(parent, propertyName);
-		this.type = type;
-	}
+	public void setPropertyName(String propertyName);
 
-	public String getPropertyName() {
-		if (getProperty() != null) {
-			return getProperty().getName();
-		}
-		return getParsed();
-	}
+	public P getProperty();
 
-	public P getProperty() {
-		return property;
-	}
-
-	public void setProperty(P property) {
-		if ((property == null && this.property != null) || (property != null && !property.equals(this.property))) {
-			P oldValue = this.property;
-			this.property = property;
-			getPropertyChangeSupport().firePropertyChange("property", oldValue, property);
-			getPropertyChangeSupport().firePropertyChange(NAME_PROPERTY, oldValue != null ? oldValue.getName() : null,
-					property != null ? property.getName() : null);
-			if (property != null) {
-				setType(property.getType());
-			}
-			else {
-				setType(Object.class);
-			}
-		}
-	}
+	public void setProperty(P property);
 
 	@Override
-	public Type getType() {
-		return type;
-	}
+	public Type getType();
 
-	public final void setType(Type type) {
-		Type oldType = getType();
-		if (type != null && !type.equals(oldType)) {
-			this.type = type;
-			getPropertyChangeSupport().firePropertyChange(TYPE_PROPERTY, oldType, type);
-		}
-	}
+	public void setType(Type type);
 
-	@Override
-	public boolean isSettable() {
-		return true;
-	}
-
-	/**
-	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
-	 * 
-	 * @return false in this case
-	 */
-	@Override
-	public boolean supportsNullValues() {
-		return false;
-	}
-
-	@Override
-	public String getSerializationRepresentation() {
-		return getPropertyName();
-	}
-
-	@Override
-	public String getDeletedProperty() {
-		return DELETED_PROPERTY;
-	}
-
-	/*@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((getParent() == null) ? 0 : getParent().hashCode());
-		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
-		return result;
-	}*/
-
-	/*@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		SimplePathElement other = (SimplePathElement) obj;
-		if (getParent() == null) {
-			if (other.getParent() != null)
-				return false;
-		}
-		else if (!getParent().equals(other.getParent()))
-			return false;
-		if (propertyName == null) {
-			if (other.propertyName != null)
-				return false;
-		}
-		else if (!propertyName.equals(other.propertyName))
-			return false;
-		return true;
-	}*/
-
-	@Override
-	public boolean isNotifyingBindingPathChanged() {
-		return false;
-	}
-
-	public String getBindingPath() {
-		if (getParent() instanceof SimplePathElement) {
-			return ((SimplePathElement) getParent()).getBindingPath() + "." + getLabel();
-		}
-		if (getParent() instanceof BindingVariable) {
-			return ((BindingVariable) getParent()).getVariableName() + "." + getLabel();
-		}
-		return getLabel();
-	}
-
-	/**
-	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
-	 * {@link PropertyChangeSupport} scheme)<br>
-	 * 
-	 * When tagged as unsafe, disable caching while evaluating related {@link DataBinding}.
-	 * 
-	 * Otherwise return true
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isNotificationSafe() {
-		return true;
-	}
-
-	@Override
-	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType) {
-
-		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
-
-		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
-		check.valid = true;
-		return check;
-	}
-
-	@Override
-	public boolean requiresContext() {
-		return true;
-	}
 }

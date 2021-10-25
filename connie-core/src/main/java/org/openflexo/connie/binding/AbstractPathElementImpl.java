@@ -51,7 +51,7 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  * @author sylvain
  * 
  */
-public abstract class AbstractPathElement implements BindingPathElement, HasPropertyChangeSupport {
+public abstract class AbstractPathElementImpl implements BindingPathElement, HasPropertyChangeSupport {
 
 	private IBindingPathElement parent;
 	private PropertyChangeSupport pcSupport;
@@ -65,10 +65,10 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 	public static final String TYPE_PROPERTY = "type";
 	public static final String DELETED_PROPERTY = "deleted";
 
-	public AbstractPathElement(IBindingPathElement parent, String parsed) {
-		this.parent = parent;
-		this.parsed = parsed;
+	public AbstractPathElementImpl(IBindingPathElement parent, String parsed) {
 		pcSupport = new PropertyChangeSupport(this);
+		setParent(parent);
+		setParsed(parsed);
 	}
 
 	@Override
@@ -91,6 +91,14 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 	 */
 	public String getParsed() {
 		return parsed;
+	}
+
+	public void setParsed(String parsed) {
+		if ((parsed == null && this.parsed != null) || (parsed != null && !parsed.equals(this.parsed))) {
+			String oldValue = this.parsed;
+			this.parsed = parsed;
+			getPropertyChangeSupport().firePropertyChange("parsed", oldValue, parsed);
+		}
 	}
 
 	/**
@@ -136,7 +144,11 @@ public abstract class AbstractPathElement implements BindingPathElement, HasProp
 	 */
 	@Override
 	public void setParent(IBindingPathElement parent) {
-		this.parent = parent;
+		if ((parent == null && this.parent != null) || (parent != null && !parent.equals(this.parent))) {
+			IBindingPathElement oldValue = this.parent;
+			this.parent = parent;
+			getPropertyChangeSupport().firePropertyChange("parent", oldValue, parent);
+		}
 	}
 
 	@Override

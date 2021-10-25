@@ -48,9 +48,11 @@ import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.binding.BindingPathElement;
-import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.NewInstancePathElement;
+import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.binding.StaticMethodPathElement;
 import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.UnresolvedBindingVariable;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
@@ -296,13 +298,13 @@ public class BindingPathFactory {
 			return bindingVariable;
 		}
 		else if (bindingPathElements.size() == 0) {
-			SimplePathElement pathElement = getBindable().getBindingFactory().makeSimplePathElement(bindingVariable, identifier);
+			SimplePathElement<?> pathElement = getBindable().getBindingFactory().makeSimplePathElement(bindingVariable, identifier);
 			bindingPathElements.add(pathElement);
 			// System.out.println(" > PE: " + pathElement);
 			return pathElement;
 		}
 		else {
-			SimplePathElement pathElement = getBindable().getBindingFactory()
+			SimplePathElement<?> pathElement = getBindable().getBindingFactory()
 					.makeSimplePathElement(bindingPathElements.get(bindingPathElements.size() - 1), identifier);
 			bindingPathElements.add(pathElement);
 			// System.out.println(" > PE: " + pathElement);
@@ -310,7 +312,7 @@ public class BindingPathFactory {
 		}
 	}
 
-	private FunctionPathElement<?> appendMethodInvocation(String methodName, List<DataBinding<?>> args) {
+	private SimpleMethodPathElement<?> appendMethodInvocation(String methodName, List<DataBinding<?>> args) {
 		IBindingPathElement parent = null;
 		if (bindingPathElements.size() == 0) {
 			parent = bindingVariable;
@@ -319,14 +321,14 @@ public class BindingPathFactory {
 			parent = bindingPathElements.get(bindingPathElements.size() - 1);
 		}
 
-		FunctionPathElement<?> pathElement = null;
+		SimpleMethodPathElement<?> pathElement = null;
 		pathElement = getBindable().getBindingFactory().makeSimpleMethodPathElement(parent, methodName, args);
 		bindingPathElements.add(pathElement);
 
 		return pathElement;
 	}
 
-	private FunctionPathElement<?> appendNewInstanceInvocation(Type type, String methodName, List<DataBinding<?>> args) {
+	private NewInstancePathElement<?> appendNewInstanceInvocation(Type type, String methodName, List<DataBinding<?>> args) {
 		IBindingPathElement parent = null;
 		if (bindingPathElements.size() == 0) {
 			parent = bindingVariable;
@@ -335,15 +337,15 @@ public class BindingPathFactory {
 			parent = bindingPathElements.get(bindingPathElements.size() - 1);
 		}
 
-		FunctionPathElement<?> pathElement = null;
+		NewInstancePathElement<?> pathElement = null;
 		pathElement = getBindable().getBindingFactory().makeNewInstancePathElement(type, parent, null, args);
 		bindingPathElements.add(pathElement);
 
 		return pathElement;
 	}
 
-	private FunctionPathElement<?> appendClassInstanceInvocation(Type type, String methodName, List<DataBinding<?>> args) {
-		FunctionPathElement<?> pathElement = null;
+	private StaticMethodPathElement<?> appendClassInstanceInvocation(Type type, String methodName, List<DataBinding<?>> args) {
+		StaticMethodPathElement<?> pathElement = null;
 		pathElement = getBindable().getBindingFactory().makeStaticMethodPathElement(type, methodName, args);
 		bindingPathElements.add(pathElement);
 

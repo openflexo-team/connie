@@ -52,7 +52,7 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.binding.IBindingPathElement;
-import org.openflexo.connie.binding.NewInstancePathElement;
+import org.openflexo.connie.binding.NewInstancePathElementImpl;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
@@ -67,7 +67,7 @@ import org.openflexo.connie.type.TypeUtils;
  * @author sylvain
  * 
  */
-public class JavaNewInstanceMethodPathElement extends NewInstancePathElement<JavaConstructorDefinition> {
+public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl<JavaConstructorDefinition> {
 
 	static final Logger logger = Logger.getLogger(JavaNewInstanceMethodPathElement.class.getPackage().getName());
 

@@ -50,7 +50,7 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.annotations.NotificationUnsafe;
 import org.openflexo.connie.binding.BindingPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
-import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.binding.SimplePathElementImpl;
 import org.openflexo.connie.type.CustomType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.ToolBox;
@@ -62,7 +62,7 @@ import org.openflexo.toolbox.ToolBox;
  * @author sylvain
  * 
  */
-public class JavaPropertyPathElement extends SimplePathElement<KeyValueProperty> {
+public class JavaPropertyPathElement extends SimplePathElementImpl<KeyValueProperty> {
 
 	private static final Logger logger = Logger.getLogger(DataBinding.class.getPackage().getName());
 
@@ -217,6 +217,8 @@ public class JavaPropertyPathElement extends SimplePathElement<KeyValueProperty>
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
+		if (obj == null)
+			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		JavaPropertyPathElement other = (JavaPropertyPathElement) obj;

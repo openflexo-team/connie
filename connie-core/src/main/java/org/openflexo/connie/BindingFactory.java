@@ -76,7 +76,7 @@ public interface BindingFactory {
 	 * @param parent
 	 * @return
 	 */
-	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
+	List<? extends SimplePathElement<?>> getAccessibleSimplePathElements(IBindingPathElement parent);
 
 	/**
 	 * Return the list of accessible {@link FunctionPathElement} which are accessible from supplied parent {@link IBindingPathElement}
