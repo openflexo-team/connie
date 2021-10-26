@@ -298,14 +298,15 @@ public class BindingPathFactory {
 			return bindingVariable;
 		}
 		else if (bindingPathElements.size() == 0) {
-			SimplePathElement<?> pathElement = getBindable().getBindingFactory().makeSimplePathElement(bindingVariable, identifier);
+			SimplePathElement<?> pathElement = getBindable().getBindingFactory().makeSimplePathElement(bindingVariable, identifier,
+					getBindable());
 			bindingPathElements.add(pathElement);
 			// System.out.println(" > PE: " + pathElement);
 			return pathElement;
 		}
 		else {
 			SimplePathElement<?> pathElement = getBindable().getBindingFactory()
-					.makeSimplePathElement(bindingPathElements.get(bindingPathElements.size() - 1), identifier);
+					.makeSimplePathElement(bindingPathElements.get(bindingPathElements.size() - 1), identifier, getBindable());
 			bindingPathElements.add(pathElement);
 			// System.out.println(" > PE: " + pathElement);
 			return pathElement;
@@ -322,7 +323,7 @@ public class BindingPathFactory {
 		}
 
 		SimpleMethodPathElement<?> pathElement = null;
-		pathElement = getBindable().getBindingFactory().makeSimpleMethodPathElement(parent, methodName, args);
+		pathElement = getBindable().getBindingFactory().makeSimpleMethodPathElement(parent, methodName, args, getBindable());
 		bindingPathElements.add(pathElement);
 
 		return pathElement;
@@ -338,7 +339,7 @@ public class BindingPathFactory {
 		}
 
 		NewInstancePathElement<?> pathElement = null;
-		pathElement = getBindable().getBindingFactory().makeNewInstancePathElement(type, parent, null, args);
+		pathElement = getBindable().getBindingFactory().makeNewInstancePathElement(type, parent, null, args, getBindable());
 		bindingPathElements.add(pathElement);
 
 		return pathElement;
@@ -346,7 +347,7 @@ public class BindingPathFactory {
 
 	private StaticMethodPathElement<?> appendClassInstanceInvocation(Type type, String methodName, List<DataBinding<?>> args) {
 		StaticMethodPathElement<?> pathElement = null;
-		pathElement = getBindable().getBindingFactory().makeStaticMethodPathElement(type, methodName, args);
+		pathElement = getBindable().getBindingFactory().makeStaticMethodPathElement(type, methodName, args, getBindable());
 		bindingPathElements.add(pathElement);
 
 		return pathElement;

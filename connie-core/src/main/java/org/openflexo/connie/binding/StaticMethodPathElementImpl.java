@@ -43,6 +43,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 
 /**
@@ -58,13 +59,13 @@ public abstract class StaticMethodPathElementImpl<F extends Function> extends Fu
 
 	private Type type;
 
-	public StaticMethodPathElementImpl(Type type, String methodName, List<DataBinding<?>> args) {
-		super(null, methodName, null, args);
+	public StaticMethodPathElementImpl(Type type, String methodName, List<DataBinding<?>> args, Bindable bindable) {
+		super(null, methodName, null, args, bindable);
 		this.type = type;
 	}
 
-	public StaticMethodPathElementImpl(Type type, F method, List<DataBinding<?>> args) {
-		super(null, method.getName(), method, args);
+	public StaticMethodPathElementImpl(Type type, F method, List<DataBinding<?>> args, Bindable bindable) {
+		super(null, method.getName(), method, args, bindable);
 		this.type = type;
 		setFunction(method);
 	}

@@ -43,6 +43,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 
 /**
@@ -58,13 +59,14 @@ public abstract class NewInstancePathElementImpl<C extends AbstractConstructor> 
 
 	private Type type;
 
-	public NewInstancePathElementImpl(Type type, IBindingPathElement parent, String constructorName, List<DataBinding<?>> args) {
-		super(parent, constructorName, null, args);
+	public NewInstancePathElementImpl(Type type, IBindingPathElement parent, String constructorName, List<DataBinding<?>> args,
+			Bindable bindable) {
+		super(parent, constructorName, null, args, bindable);
 		this.type = type;
 	}
 
-	public NewInstancePathElementImpl(Type type, IBindingPathElement parent, C constructor, List<DataBinding<?>> args) {
-		super(parent, constructor.getName(), constructor, args);
+	public NewInstancePathElementImpl(Type type, IBindingPathElement parent, C constructor, List<DataBinding<?>> args, Bindable bindable) {
+		super(parent, constructor.getName(), constructor, args, bindable);
 		this.type = type;
 		setFunction(constructor);
 	}

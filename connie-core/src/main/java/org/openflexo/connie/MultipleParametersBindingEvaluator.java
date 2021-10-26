@@ -117,7 +117,7 @@ public abstract class MultipleParametersBindingEvaluator extends DefaultBindable
 		return returned;
 	}
 
-	protected String normalizeBindingPath(String bindingPath, List<String> parameters, BindingFactory bindingFactory) {
+	protected String normalizeBindingPath(String bindingPath, List<String> parameters) {
 		Expression expression = null;
 		try {
 			expression = bindingFactory.parseExpression(bindingPath, this);
@@ -137,8 +137,8 @@ public abstract class MultipleParametersBindingEvaluator extends DefaultBindable
 									&& !parameters.contains(bindingPath.getBindingVariable().getVariableName())) {
 								UnresolvedBindingVariable objectBV = new UnresolvedBindingVariable("this");
 								List<BindingPathElement> bp2 = new ArrayList<>(bindingPath.getBindingPath());
-								bp2.add(0,
-										bindingFactory.makeSimplePathElement(objectBV, bindingPath.getBindingVariable().getVariableName()));
+								bp2.add(0, bindingFactory.makeSimplePathElement(objectBV,
+										bindingPath.getBindingVariable().getVariableName(), MultipleParametersBindingEvaluator.this));
 								bindingPath.setBindingVariable(objectBV);
 								bindingPath.setBindingPath(bp2);
 							}

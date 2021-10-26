@@ -328,7 +328,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		if (element instanceof SimplePathElement) {
 			SimplePathElement<?> simplePathElement = (SimplePathElement<?>) element;
 			SimplePathElement<?> newSimplePathElement = (SimplePathElement<?>) getOwner().getBindingFactory().makeSimplePathElement(parent,
-					simplePathElement.getLabel());
+					simplePathElement.getLabel(), getOwner());
 			if (simplePathElement.getClass() != newSimplePathElement.getClass()) {
 				replaceBindingPathElementAtIndex(newSimplePathElement, index);
 				if (simplePathElement.getBindingPathElementOwner() != null) {
@@ -340,7 +340,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		if (element instanceof SimpleMethodPathElement) {
 			SimpleMethodPathElement<?> methodPathElement = (SimpleMethodPathElement<?>) element;
 			SimpleMethodPathElement<?> newMethodPathElement = (SimpleMethodPathElement<?>) getOwner().getBindingFactory()
-					.makeSimpleMethodPathElement(parent, methodPathElement.getMethodName(), methodPathElement.getArguments());
+					.makeSimpleMethodPathElement(parent, methodPathElement.getMethodName(), methodPathElement.getArguments(), getOwner());
 			if (methodPathElement.getClass() != newMethodPathElement.getClass()) {
 				replaceBindingPathElementAtIndex(newMethodPathElement, index);
 				if (methodPathElement.getBindingPathElementOwner() != null) {

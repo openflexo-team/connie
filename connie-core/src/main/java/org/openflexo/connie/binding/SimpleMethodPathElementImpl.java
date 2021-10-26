@@ -42,6 +42,7 @@ package org.openflexo.connie.binding;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 
 /**
@@ -55,12 +56,12 @@ public abstract class SimpleMethodPathElementImpl<F extends Function> extends Fu
 
 	static final Logger logger = Logger.getLogger(SimpleMethodPathElementImpl.class.getPackage().getName());
 
-	public SimpleMethodPathElementImpl(IBindingPathElement parent, String methodName, List<DataBinding<?>> args) {
-		super(parent, methodName, null, args);
+	public SimpleMethodPathElementImpl(IBindingPathElement parent, String methodName, List<DataBinding<?>> args, Bindable bindable) {
+		super(parent, methodName, null, args, bindable);
 	}
 
-	public SimpleMethodPathElementImpl(IBindingPathElement parent, F method, List<DataBinding<?>> args) {
-		super(parent, method.getName(), method, args);
+	public SimpleMethodPathElementImpl(IBindingPathElement parent, F method, List<DataBinding<?>> args, Bindable bindable) {
+		super(parent, method.getName(), method, args, bindable);
 		setFunction(method);
 	}
 

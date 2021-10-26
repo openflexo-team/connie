@@ -42,6 +42,7 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 
 /**
@@ -62,6 +63,20 @@ public interface BindingPathElement extends IBindingPathElement {
 
 		public void bindingPathElementChanged(BindingPathElement newElement);
 	}
+
+	/**
+	 * Return {@link Bindable} for this {@link IBindingPathElement}
+	 * 
+	 * @return
+	 */
+	public Bindable getBindable();
+
+	/**
+	 * Sets {@link Bindable} for this {@link IBindingPathElement}
+	 * 
+	 * @param bindable
+	 */
+	public void setBindable(Bindable bindable);
 
 	/**
 	 * Return parent of this {@link BindingPathElement}

@@ -87,10 +87,10 @@ public abstract class BindingEvaluator extends AbstractBindingEvaluator {
 		super.delete();
 	}
 
-	String normalizeBindingPath(String bindingPath, BindingFactory bindingFactory) {
+	String normalizeBindingPath(String bindingPath) {
 		Expression expression = null;
 		try {
-			expression = bindingFactory.parseExpression(bindingPath, this);
+			expression = getBindingFactory().parseExpression(bindingPath, this);
 			if (expression != null) {
 				expression = expression.transform(new ExpressionTransformer() {
 					@Override
@@ -105,8 +105,8 @@ public abstract class BindingEvaluator extends AbstractBindingEvaluator {
 							else if (!bindingPath.getBindingVariable().getVariableName().equals(OBJECT)) {
 								UnresolvedBindingVariable objectBV = new UnresolvedBindingVariable(OBJECT);
 								List<BindingPathElement> bp2 = new ArrayList<>(bindingPath.getBindingPath());
-								bp2.add(0,
-										bindingFactory.makeSimplePathElement(objectBV, bindingPath.getBindingVariable().getVariableName()));
+								bp2.add(0, getBindingFactory().makeSimplePathElement(objectBV,
+										bindingPath.getBindingVariable().getVariableName(), BindingEvaluator.this));
 								bindingPath.setBindingVariable(objectBV);
 								bindingPath.setBindingPath(bp2);
 							}
@@ -133,7 +133,7 @@ public abstract class BindingEvaluator extends AbstractBindingEvaluator {
 	@Override
 	protected Object evaluate(String bindingPath)
 			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
-		String normalizedBindingPath = normalizeBindingPath(bindingPath, getBindingFactory());
+		String normalizedBindingPath = normalizeBindingPath(bindingPath);
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 		if (!binding.isValid()) {
 			System.out.println("not valid: " + binding.invalidBindingReason());

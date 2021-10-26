@@ -42,6 +42,7 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
@@ -56,6 +57,7 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 	private IBindingPathElement parent;
 	private PropertyChangeSupport pcSupport;
 	private boolean activated = false;
+	private Bindable bindable;
 
 	private String parsed;
 
@@ -65,10 +67,23 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 	public static final String TYPE_PROPERTY = "type";
 	public static final String DELETED_PROPERTY = "deleted";
 
-	public AbstractPathElementImpl(IBindingPathElement parent, String parsed) {
+	public AbstractPathElementImpl(IBindingPathElement parent, String parsed, Bindable bindable) {
 		pcSupport = new PropertyChangeSupport(this);
 		setParent(parent);
 		setParsed(parsed);
+		setBindable(bindable);
+	}
+
+	public Bindable getBindable() {
+		return bindable;
+	}
+
+	public void setBindable(Bindable bindable) {
+		if ((bindable == null && this.bindable != null) || (bindable != null && !bindable.equals(this.bindable))) {
+			Bindable oldValue = this.bindable;
+			this.bindable = bindable;
+			getPropertyChangeSupport().firePropertyChange("bindable", oldValue, bindable);
+		}
 	}
 
 	@Override
@@ -76,6 +91,7 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 		return bindingPathElementOwner;
 	}
 
+	@Override
 	public void setBindingPathElementOwner(BindingPathElementOwner owner) {
 		if ((owner == null && this.bindingPathElementOwner != null) || (owner != null && !owner.equals(this.bindingPathElementOwner))) {
 			BindingPathElementOwner oldValue = this.bindingPathElementOwner;

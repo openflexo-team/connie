@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.AbstractConstructor;
@@ -90,7 +91,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public List<? extends SimplePathElement<?>> getAccessibleSimplePathElements(IBindingPathElement parent) {
+	public List<? extends SimplePathElement<?>> getAccessibleSimplePathElements(IBindingPathElement parent, Bindable bindable) {
 
 		if (parent.getType() != null) {
 
@@ -115,7 +116,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			List<JavaPropertyPathElement> newComputedList = new ArrayList<>();
 			for (KeyValueProperty p : KeyValueLibrary.getAccessibleProperties(currentType)) {
 				// System.out.println("on construit JavaPropertyPathElement pour " + p + " type=" + parent.getType());
-				newComputedList.add(new JavaPropertyPathElement(parent, p));
+				newComputedList.add(new JavaPropertyPathElement(parent, p, bindable));
 			}
 			accessibleSimplePathElements.put(parent.getType(), newComputedList);
 
@@ -125,7 +126,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public List<? extends FunctionPathElement<?>> getAccessibleFunctionPathElements(IBindingPathElement parent) {
+	public List<? extends FunctionPathElement<?>> getAccessibleFunctionPathElements(IBindingPathElement parent, Bindable bindable) {
 		if (parent.getType() != null) {
 
 			List<? extends FunctionPathElement<?>> returned = accessibleFunctionPathElements.get(parent.getType());
@@ -143,7 +144,7 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			List<JavaInstanceMethodPathElement> newComputedList = new ArrayList<>();
 			for (JavaInstanceMethodDefinition m : KeyValueLibrary.getAccessibleMethods(currentType)) {
 				// System.out.println("on construit JavaMethodPathElement pour " + m);
-				newComputedList.add(new JavaInstanceMethodPathElement(parent, m, null, this));
+				newComputedList.add(new JavaInstanceMethodPathElement(parent, m, null, bindable));
 			}
 			accessibleFunctionPathElements.put(parent.getType(), newComputedList);
 
@@ -153,36 +154,37 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	}
 
 	@Override
-	public SimplePathElement<?> makeSimplePathElement(IBindingPathElement father, String propertyName) {
+	public SimplePathElement<?> makeSimplePathElement(IBindingPathElement father, String propertyName, Bindable bindable) {
 		Type fatherType = father.getType();
 		if (fatherType instanceof Class && ((Class<?>) fatherType).isPrimitive()) {
 			fatherType = TypeUtils.fromPrimitive((Class<?>) fatherType);
 		}
 		KeyValueProperty keyValueProperty = KeyValueLibrary.getKeyValueProperty(fatherType, propertyName);
 		if (keyValueProperty != null) {
-			return new JavaPropertyPathElement(father, keyValueProperty);
+			return new JavaPropertyPathElement(father, keyValueProperty, bindable);
 		}
 		else {
 			// Unresolved
-			return new JavaPropertyPathElement(father, propertyName);
+			return new JavaPropertyPathElement(father, propertyName, bindable);
 		}
 	}
 
 	@Override
 	public SimpleMethodPathElement<?> makeSimpleMethodPathElement(IBindingPathElement father, String functionName,
-			List<DataBinding<?>> args) {
-		return new JavaInstanceMethodPathElement(father, functionName, args, this);
+			List<DataBinding<?>> args, Bindable bindable) {
+		return new JavaInstanceMethodPathElement(father, functionName, args, bindable);
 	}
 
 	@Override
-	public StaticMethodPathElement<?> makeStaticMethodPathElement(Type type, String functionName, List<DataBinding<?>> args) {
-		return new JavaStaticMethodPathElement(type, functionName, args, this);
+	public StaticMethodPathElement<?> makeStaticMethodPathElement(Type type, String functionName, List<DataBinding<?>> args,
+			Bindable bindable) {
+		return new JavaStaticMethodPathElement(type, functionName, args, bindable);
 	}
 
 	@Override
 	public NewInstancePathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
-			List<DataBinding<?>> args) {
-		return new JavaNewInstanceMethodPathElement(type, parent, functionName, args, this);
+			List<DataBinding<?>> args, Bindable bindable) {
+		return new JavaNewInstanceMethodPathElement(type, parent, functionName, args, bindable);
 	}
 
 	private static String getSignature(String functionName, List<DataBinding<?>> args) {

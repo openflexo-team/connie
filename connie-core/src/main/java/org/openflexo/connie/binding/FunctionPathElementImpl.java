@@ -65,8 +65,9 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 	private Type type;
 	private final List<DataBinding<?>> arguments;
 
-	public FunctionPathElementImpl(IBindingPathElement parent, String parsed, F function, List<DataBinding<?>> someArguments) {
-		super(parent, parsed);
+	public FunctionPathElementImpl(IBindingPathElement parent, String parsed, F function, List<DataBinding<?>> someArguments,
+			Bindable bindable) {
+		super(parent, parsed, bindable);
 		this.function = function;
 		arguments = new ArrayList<>();
 		if (someArguments != null) {

@@ -117,7 +117,7 @@ final public class JavaMultipleParametersBindingEvaluator extends MultipleParame
 
 		JavaMultipleParametersBindingEvaluator evaluator = new JavaMultipleParametersBindingEvaluator(objects, bindingFactory);
 
-		String normalizedBindingPath = evaluator.normalizeBindingPath(extractedBindingPath, parameters, bindingFactory);
+		String normalizedBindingPath = evaluator.normalizeBindingPath(extractedBindingPath, parameters);
 		// System.out.println("normalizedBindingPath=" + normalizedBindingPath);
 
 		Object returned = evaluator.evaluate(normalizedBindingPath);

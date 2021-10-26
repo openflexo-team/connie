@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function;
@@ -74,15 +75,15 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 	private JavaBasedBindingFactory bindingFactory;
 
 	public JavaNewInstanceMethodPathElement(Type type, IBindingPathElement parent, String constructorName, List<DataBinding<?>> args,
-			JavaBasedBindingFactory bindingFactory) {
-		super(type, parent, constructorName, args);
-		this.bindingFactory = bindingFactory;
+			Bindable bindable) {
+		super(type, parent, constructorName, args, bindable);
+		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
 	}
 
 	public JavaNewInstanceMethodPathElement(Type type, IBindingPathElement parent, JavaConstructorDefinition constructor,
-			List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
-		super(type, parent, constructor, args);
-		this.bindingFactory = bindingFactory;
+			List<DataBinding<?>> args, Bindable bindable) {
+		super(type, parent, constructor, args, bindable);
+		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
 	}
 
 	@Override
@@ -282,11 +283,10 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 		}
 
 		if (getConstructorDefinition() != null) {
-			return new JavaNewInstanceMethodPathElement(getType(), getParent(), getConstructorDefinition(), transformedArgs,
-					bindingFactory);
+			return new JavaNewInstanceMethodPathElement(getType(), getParent(), getConstructorDefinition(), transformedArgs, getBindable());
 		}
 		else {
-			return new JavaNewInstanceMethodPathElement(getType(), getParent(), getParsed(), transformedArgs, bindingFactory);
+			return new JavaNewInstanceMethodPathElement(getType(), getParent(), getParsed(), transformedArgs, getBindable());
 		}
 
 	}

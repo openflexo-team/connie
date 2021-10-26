@@ -42,6 +42,7 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.type.TypeUtils;
@@ -57,8 +58,8 @@ public abstract class SimplePathElementImpl<P extends Property> extends Abstract
 	private P property;
 	private Type type;
 
-	public SimplePathElementImpl(IBindingPathElement parent, String propertyName, Type type) {
-		super(parent, propertyName);
+	public SimplePathElementImpl(IBindingPathElement parent, String propertyName, Type type, Bindable bindable) {
+		super(parent, propertyName, bindable);
 		setType(type);
 	}
 

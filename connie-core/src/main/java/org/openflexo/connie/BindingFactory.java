@@ -74,39 +74,52 @@ public interface BindingFactory {
 	 * Return the list of accessible {@link SimplePathElement} which are accessible from supplied parent {@link IBindingPathElement}
 	 * 
 	 * @param parent
+	 *            Parent {@link IBindingPathElement}
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
 	 * @return
 	 */
-	List<? extends SimplePathElement<?>> getAccessibleSimplePathElements(IBindingPathElement parent);
+	List<? extends SimplePathElement<?>> getAccessibleSimplePathElements(IBindingPathElement parent, Bindable bindable);
 
 	/**
 	 * Return the list of accessible {@link FunctionPathElement} which are accessible from supplied parent {@link IBindingPathElement}
 	 * 
 	 * @param parent
+	 *            Parent {@link IBindingPathElement}
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement are defined
 	 * @return
 	 */
-	List<? extends FunctionPathElement<?>> getAccessibleFunctionPathElements(IBindingPathElement parent);
+	List<? extends FunctionPathElement<?>> getAccessibleFunctionPathElements(IBindingPathElement parent, Bindable bindable);
 
 	/**
 	 * Build a new {@link SimplePathElement} with supplied parent and property name
 	 * 
 	 * @param parent
+	 *            Parent {@link IBindingPathElement}
 	 * @param propertyName
+	 *            The name of property
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
 	 * @return
 	 */
-	SimplePathElement<?> makeSimplePathElement(IBindingPathElement parent, String propertyName);
+	SimplePathElement<?> makeSimplePathElement(IBindingPathElement parent, String propertyName, Bindable bindable);
 
 	/**
 	 * Build a new {@link SimpleMethodPathElement} with supplied parent, function name and arguments
 	 * 
 	 * @param parent
-	 *            The parent path element
+	 *            Parent {@link IBindingPathElement}
 	 * @param functionName
 	 *            The name of the function to retrieve
 	 * @param args
 	 *            The arguments of the function path element
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
 	 * @return
 	 */
-	SimpleMethodPathElement<?> makeSimpleMethodPathElement(IBindingPathElement parent, String functionName, List<DataBinding<?>> args);
+	SimpleMethodPathElement<?> makeSimpleMethodPathElement(IBindingPathElement parent, String functionName, List<DataBinding<?>> args,
+			Bindable bindable);
 
 	/**
 	 * Build a new static {@link StaticMethodPathElement} with supplied type, function name and arguments
@@ -117,9 +130,11 @@ public interface BindingFactory {
 	 *            The name of the function to retrieve
 	 * @param args
 	 *            The arguments of the function path element
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
 	 * @return
 	 */
-	StaticMethodPathElement<?> makeStaticMethodPathElement(Type type, String functionName, List<DataBinding<?>> args);
+	StaticMethodPathElement<?> makeStaticMethodPathElement(Type type, String functionName, List<DataBinding<?>> args, Bindable bindable);
 
 	/**
 	 * Build a new {@link NewInstancePathElement} (new instance creation) with supplied type, parent, function name and arguments
@@ -132,10 +147,12 @@ public interface BindingFactory {
 	 *            The name of the function to retrieve, might be null when type is sufficient
 	 * @param args
 	 *            The arguments of the function path element
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
 	 * @return
 	 */
 	NewInstancePathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
-			List<DataBinding<?>> args);
+			List<DataBinding<?>> args, Bindable bindable);
 
 	/**
 	 * Return Type for supplied object

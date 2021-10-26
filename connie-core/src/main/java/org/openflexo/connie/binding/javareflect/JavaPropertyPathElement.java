@@ -45,6 +45,7 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.annotations.NotificationUnsafe;
@@ -66,12 +67,12 @@ public class JavaPropertyPathElement extends SimplePathElementImpl<KeyValuePrope
 
 	private static final Logger logger = Logger.getLogger(DataBinding.class.getPackage().getName());
 
-	public JavaPropertyPathElement(IBindingPathElement parent, String propertyName) {
-		super(parent, propertyName, Object.class);
+	public JavaPropertyPathElement(IBindingPathElement parent, String propertyName, Bindable bindable) {
+		super(parent, propertyName, Object.class, bindable);
 	}
 
-	public JavaPropertyPathElement(IBindingPathElement parent, KeyValueProperty property) {
-		super(parent, property.getName(), property.getType());
+	public JavaPropertyPathElement(IBindingPathElement parent, KeyValueProperty property, Bindable bindable) {
+		super(parent, property.getName(), property.getType(), bindable);
 		setProperty(property);
 	}
 

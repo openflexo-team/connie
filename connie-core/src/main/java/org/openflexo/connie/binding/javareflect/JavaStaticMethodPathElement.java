@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.annotations.NotificationUnsafe;
@@ -77,15 +78,14 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 
 	private JavaBasedBindingFactory bindingFactory;
 
-	public JavaStaticMethodPathElement(Type type, String methodName, List<DataBinding<?>> args, JavaBasedBindingFactory bindingFactory) {
-		super(type, methodName, args);
-		this.bindingFactory = bindingFactory;
+	public JavaStaticMethodPathElement(Type type, String methodName, List<DataBinding<?>> args, Bindable bindable) {
+		super(type, methodName, args, bindable);
+		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
 	}
 
-	public JavaStaticMethodPathElement(Type type, JavaStaticMethodDefinition method, List<DataBinding<?>> args,
-			JavaBasedBindingFactory bindingFactory) {
-		super(type, method, args);
-		this.bindingFactory = bindingFactory;
+	public JavaStaticMethodPathElement(Type type, JavaStaticMethodDefinition method, List<DataBinding<?>> args, Bindable bindable) {
+		super(type, method, args, bindable);
+		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
 		setFunction(method);
 	}
 
@@ -267,10 +267,10 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 		// return new JavaStaticMethodPathElement(getParent(), getParsed(), getMethodDefinition(), transformedArgs);
 
 		if (getMethodDefinition() != null) {
-			return new JavaStaticMethodPathElement(getType(), getMethodDefinition(), transformedArgs, bindingFactory);
+			return new JavaStaticMethodPathElement(getType(), getMethodDefinition(), transformedArgs, getBindable());
 		}
 		else {
-			return new JavaStaticMethodPathElement(getType(), getParsed(), transformedArgs, bindingFactory);
+			return new JavaStaticMethodPathElement(getType(), getParsed(), transformedArgs, getBindable());
 		}
 	}
 

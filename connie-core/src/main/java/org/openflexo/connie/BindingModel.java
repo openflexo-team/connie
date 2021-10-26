@@ -326,20 +326,20 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 				BindingValue bv = (BindingValue) db.getExpression();
 				IBindingPathElement lastElement = bv.getLastBindingPathElement();
 				if (StringUtils.isEmpty(toBeCompleted.trim())) {
-					for (SimplePathElement<?> simplePathElement : factory.getAccessibleSimplePathElements(lastElement)) {
+					for (SimplePathElement<?> simplePathElement : factory.getAccessibleSimplePathElements(lastElement, bindable)) {
 						returned.add(startBindingValue + "." + simplePathElement.getPropertyName());
 					}
-					for (FunctionPathElement<?> functionPathElement : factory.getAccessibleFunctionPathElements(lastElement)) {
+					for (FunctionPathElement<?> functionPathElement : factory.getAccessibleFunctionPathElements(lastElement, bindable)) {
 						returned.add(startBindingValue + "." + functionPathElement.getLabel());
 					}
 				}
 				else {
-					for (SimplePathElement<?> simplePathElement : factory.getAccessibleSimplePathElements(lastElement)) {
+					for (SimplePathElement<?> simplePathElement : factory.getAccessibleSimplePathElements(lastElement, bindable)) {
 						if (simplePathElement.getPropertyName().startsWith(toBeCompleted)) {
 							returned.add(startBindingValue + "." + simplePathElement.getPropertyName());
 						}
 					}
-					for (FunctionPathElement<?> functionPathElement : factory.getAccessibleFunctionPathElements(lastElement)) {
+					for (FunctionPathElement<?> functionPathElement : factory.getAccessibleFunctionPathElements(lastElement, bindable)) {
 						if (functionPathElement.getLabel().startsWith(toBeCompleted)) {
 							returned.add(startBindingValue + "." + functionPathElement.getLabel());
 						}
