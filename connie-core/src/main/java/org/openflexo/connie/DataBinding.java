@@ -68,6 +68,7 @@ import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionVisitor;
+import org.openflexo.connie.expr.UnresolvedBindingVariable;
 import org.openflexo.connie.expr.VisitorException;
 import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
@@ -719,6 +720,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return getExpression() != null && getExpression() instanceof BindingValue;
 	}
 
+	public boolean isNewVariableDeclaration() {
+		if (isBindingValue()) {
+			BindingValue bindingPath = (BindingValue) getExpression();
+			return bindingPath.getBindingVariable() instanceof UnresolvedBindingVariable && bindingPath.getBindingPath().size() == 0;
+		}
+		return false;
+	}
+
 	public boolean isConstant() {
 		return getExpression() != null && getExpression() instanceof Constant;
 	}
@@ -955,7 +964,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 
 	}
-
 
 	private boolean isParsing = false;
 
