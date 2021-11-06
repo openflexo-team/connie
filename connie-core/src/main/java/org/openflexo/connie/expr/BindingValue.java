@@ -724,7 +724,6 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			isFirst = false;
 		}
 		for (BindingPathElement e : getBindingPath()) {
-			System.out.println("e=" + e);
 			sb.append((isFirst ? "" : ".") + e.getSerializationRepresentation());
 			isFirst = false;
 		}
