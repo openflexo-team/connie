@@ -759,7 +759,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			if (getBindingVariable() instanceof UnresolvedBindingVariable) {
 				BindingVariable resolvedBindingVariable = getOwner().getBindingModel().bindingVariableNamed(getVariableName());
 				if (resolvedBindingVariable != null) {
-					System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
+					//System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
 					setBindingVariable(resolvedBindingVariable);
 					resolvedBindingVariable.hasBeenResolved(this);
 				}
