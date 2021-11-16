@@ -745,6 +745,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return isBindingValue() && ((BindingValue) getExpression()).containsAMethodCall();
 	}
 
+	public String getUnparsedBinding() {
+		return unparsedBinding;
+	}
+
 	public void setUnparsedBinding(String unparsedBinding) {
 		setExpression(parseExpression(unparsedBinding));
 	}
@@ -1303,8 +1307,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	@Override
 	public DataBinding<T> clone() {
 		DataBinding<T> returned = new DataBinding<>(getOwner(), getDeclaredType(), this.bdType);
-		if (isSet()) {
+		if (getExpression() != null) {
 			returned.setExpression(parseExpression(getExpression().toString()));
+		}
+		else if (getUnparsedBinding() != null) {
+			returned.setUnparsedBinding(getUnparsedBinding());
 		}
 		return returned;
 	}
