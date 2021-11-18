@@ -49,6 +49,7 @@ import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.parser.lexer.Lexer;
 import org.openflexo.connie.java.parser.node.Start;
 import org.openflexo.connie.java.parser.parser.Parser;
+import org.openflexo.toolbox.StringUtils;
 
 /**
  * This class provides the parsing service for Connie expressions and bindings. This includes syntactic and semantics analyzer.<br>
@@ -73,6 +74,10 @@ public class ExpressionParser {
 	public static Expression parse(String anExpression, Bindable bindable) throws ParseException {
 		try {
 			// System.out.println("Parsing: " + anExpression);
+
+			if (StringUtils.isEmpty(anExpression)) {
+				return null;
+			}
 
 			// Create a Parser instance.
 			Parser p = new Parser(new Lexer(new PushbackReader(new StringReader(anExpression))));

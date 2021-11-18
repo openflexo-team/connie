@@ -74,6 +74,7 @@ import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.UndefinedType;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
+import org.openflexo.toolbox.StringUtils;
 
 /**
  * Representation of a data binding.<br>
@@ -980,6 +981,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 */
 	private Expression parseExpression(String unparsed) {
 
+		if (StringUtils.isEmpty(unparsed)) {
+			return null;
+		}
+
 		try {
 			isParsing = true;
 			if (getOwner() != null && getOwner().getBindingFactory() != null) {
@@ -990,6 +995,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					return returned;
 				} catch (ParseException e) {
 					// parse error
+					e.printStackTrace();
 					LOGGER.warning(e.getMessage() + " while parsing " + unparsed);
 					return null;
 				}
