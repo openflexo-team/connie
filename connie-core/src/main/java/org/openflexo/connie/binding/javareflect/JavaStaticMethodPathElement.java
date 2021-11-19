@@ -326,11 +326,13 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 
 	@Override
 	public void resolve() {
-		JavaStaticMethodDefinition function = (JavaStaticMethodDefinition) bindingFactory.retrieveFunction(getType(), getParsed(),
-				getArguments());
-		setFunction(function);
-		if (function == null) {
-			logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
+		if (bindingFactory != null) {
+			JavaStaticMethodDefinition function = (JavaStaticMethodDefinition) bindingFactory.retrieveFunction(getType(), getParsed(),
+					getArguments());
+			setFunction(function);
+			if (function == null) {
+				logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
+			}
 		}
 	}
 

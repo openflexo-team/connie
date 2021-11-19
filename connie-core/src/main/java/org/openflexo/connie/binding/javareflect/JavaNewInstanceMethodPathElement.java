@@ -347,11 +347,13 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 
 	@Override
 	public void resolve() {
-		JavaConstructorDefinition function = (JavaConstructorDefinition) bindingFactory.retrieveConstructor(getType(),
-				getParent() != null ? getParent().getType() : null, getParsed(), getArguments());
-		setFunction(function);
-		if (function == null) {
-			logger.warning("cannot find constructor " + getParsed() + " for type " + getType() + " with arguments " + getArguments());
+		if (bindingFactory != null) {
+			JavaConstructorDefinition function = (JavaConstructorDefinition) bindingFactory.retrieveConstructor(getType(),
+					getParent() != null ? getParent().getType() : null, getParsed(), getArguments());
+			setFunction(function);
+			if (function == null) {
+				logger.warning("cannot find constructor " + getParsed() + " for type " + getType() + " with arguments " + getArguments());
+			}
 		}
 	}
 
