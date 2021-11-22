@@ -176,7 +176,7 @@ public class FileUtils {
 	 */
 	public static File copyResourceToDir(Resource src, File dest, CopyStrategy strategy) throws IOException {
 		if (src instanceof FileResourceImpl && ((FileResourceImpl) src).getFile() != null) {
-			return copyDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
+			copyContentDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
 		}
 		else if (src instanceof InJarResourceImpl) {
 			for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"), false)) {
@@ -193,7 +193,7 @@ public class FileUtils {
 			LOGGER.severe("Unable to copy resource: " + src.toString());
 			return null;
 		}
-		return null;
+		return dest;
 
 	}
 
