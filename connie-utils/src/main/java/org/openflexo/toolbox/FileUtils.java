@@ -175,17 +175,23 @@ public class FileUtils {
 	 * @throws IOException
 	 */
 	public static File copyResourceToDir(Resource src, File dest, CopyStrategy strategy) throws IOException {
+		// System.out.println("Copy " + src + " to " + dest);
 		if (src instanceof FileResourceImpl && ((FileResourceImpl) src).getFile() != null) {
 			copyContentDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
 		}
 		else if (src instanceof InJarResourceImpl) {
-			for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"), false)) {
+			// System.out.println("contents=" + src.getContents());
+			// System.out.println("pattern: " + ".*" + src.getRelativePath() + "/.*");
+
+			for (Resource rsc : src.getContents()) {
+				// for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"), false)) {
+				// System.out.println("rsc: " + rsc);
 				if (!rsc.isContainer()) {
 					copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
 				}
 				else {
 					File destinationDir = new File(dest, ((InJarResourceImpl) src).getName());
-					copyResourceToDir(rsc, new File(destinationDir, ((InJarResourceImpl) rsc).getName()), strategy);
+					copyResourceToDir(rsc, destinationDir/*new File(destinationDir, ((InJarResourceImpl) rsc).getName())*/, strategy);
 				}
 			}
 		}
@@ -196,6 +202,19 @@ public class FileUtils {
 		return dest;
 
 	}
+
+	/*public static void main(String[] args) throws IOException {
+		File jarFile = new File("/Users/sylvainguerin/Temp/flexo-foundation-test-2.0.1-SNAPSHOT.jar");
+		File tempDir = new File("/Users/sylvainguerin/Temp/Prout");
+		tempDir.mkdirs();
+	
+		FileSystemResourceLocatorImpl FS_RESOURCE_LOCATOR = new FileSystemResourceLocatorImpl();
+		JarResourceImpl jarResource = new JarResourceImpl(FS_RESOURCE_LOCATOR, jarFile.getAbsolutePath());
+	
+		System.out.println("jarResource=" + jarResource);
+		System.out.println("rootEntry=" + jarResource.getRootEntry());
+		copyResourceToDir(jarResource.getRootEntry(), tempDir, CopyStrategy.REPLACE);
+	}*/
 
 	public static void copyResourceToDir(Resource locateResource, File file) throws IOException {
 		copyResourceToDir(locateResource, file, CopyStrategy.REPLACE);
