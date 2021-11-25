@@ -190,7 +190,12 @@ public class FileUtils {
 					copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
 				}
 				else {
-					File destinationDir = new File(dest, ((InJarResourceImpl) src).getName());
+					// System.out
+					// .println("OK on copie le container " + ((InJarResourceImpl) rsc).getName() + " dans " + dest.getAbsolutePath());
+					File destinationDir = new File(dest, ((InJarResourceImpl) rsc).getName());
+					if (!destinationDir.exists()) {
+						destinationDir.mkdirs();
+					}
 					copyResourceToDir(rsc, destinationDir/*new File(destinationDir, ((InJarResourceImpl) rsc).getName())*/, strategy);
 				}
 			}
