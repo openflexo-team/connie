@@ -721,6 +721,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return getExpression() != null && getExpression() instanceof BindingValue;
 	}
 
+	public boolean isSimpleVariable() {
+		if (isBindingValue()) {
+			BindingValue bindingPath = (BindingValue) getExpression();
+			return bindingPath.getBindingVariable() != null && bindingPath.getBindingPath().size() == 0;
+		}
+		return false;
+	}
+
 	public boolean isNewVariableDeclaration() {
 		if (isBindingValue()) {
 			BindingValue bindingPath = (BindingValue) getExpression();
