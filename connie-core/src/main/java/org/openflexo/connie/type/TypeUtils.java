@@ -691,6 +691,9 @@ public class TypeUtils {
 			return ((CustomType) aType).simpleRepresentation();
 		}
 		if (aType instanceof Class) {
+			if (((Class<?>) aType).isAnonymousClass()) {
+				return ((Class<?>) aType).getSuperclass().getSimpleName();
+			}
 			return ((Class<?>) aType).getSimpleName();
 		}
 		else if (aType instanceof ParameterizedType) {
