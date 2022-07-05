@@ -763,6 +763,14 @@ public class FileUtils {
 	}
 	*/
 
+	/**
+	 * Indicates if supplied file is contained in supplied directory
+	 * 
+	 * @param directory
+	 * @param file
+	 * @param recursive
+	 * @return
+	 */
 	public static boolean directoryContainsFile(File directory, File file, boolean recursive) {
 		if (file == null) {
 			return false;
