@@ -326,12 +326,16 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
-		// TODO: some checkings ???
-		System.out.println("TODO: Tiens faudrait verifier le new instance");
-		// Thread.dumpStack();
-
+		// TODO: some other checks ???
 		check.returnedType = getType();
-		check.valid = true;
+		if (!TypeUtils.isResolved(getType())) {
+			check.valid = false;
+			check.invalidBindingReason = "Unresolved type : " + getType();
+		}
+		else {
+			check.valid = true;
+		}
+
 		return check;
 	}
 
