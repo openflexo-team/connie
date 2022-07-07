@@ -76,17 +76,20 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 
 	static final Logger logger = Logger.getLogger(JavaInstanceMethodPathElement.class.getPackage().getName());
 
-	private JavaBasedBindingFactory bindingFactory;
-
 	public JavaInstanceMethodPathElement(IBindingPathElement parent, String methodName, List<DataBinding<?>> args, Bindable bindable) {
 		super(parent, methodName, args, bindable);
-		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
 	}
 
 	public JavaInstanceMethodPathElement(IBindingPathElement parent, JavaInstanceMethodDefinition method, List<DataBinding<?>> args,
 			Bindable bindable) {
 		super(parent, method, args, bindable);
-		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
+	}
+
+	public JavaBasedBindingFactory getBindingFactory() {
+		if (getBindable() != null && getBindable().getBindingFactory() instanceof JavaBasedBindingFactory) {
+			return (JavaBasedBindingFactory) getBindable().getBindingFactory();
+		}
+		return null;
 	}
 
 	final public JavaInstanceMethodDefinition getMethodDefinition() {
@@ -329,10 +332,12 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 
 	@Override
 	public void resolve() {
-		if (bindingFactory != null) {
+
+		if (getBindingFactory() != null) {
 			if (getParent() != null) {
-				JavaInstanceMethodDefinition function = (JavaInstanceMethodDefinition) bindingFactory
+				JavaInstanceMethodDefinition function = (JavaInstanceMethodDefinition) getBindingFactory()
 						.retrieveFunction(getParent().getType(), getParsed(), getArguments());
+				System.out.println("Je trouve " + function);
 				setFunction(function);
 				if (function == null) {
 					logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());

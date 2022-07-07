@@ -76,17 +76,20 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 
 	static final Logger logger = Logger.getLogger(JavaStaticMethodPathElement.class.getPackage().getName());
 
-	private JavaBasedBindingFactory bindingFactory;
-
 	public JavaStaticMethodPathElement(Type type, String methodName, List<DataBinding<?>> args, Bindable bindable) {
 		super(type, methodName, args, bindable);
-		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
 	}
 
 	public JavaStaticMethodPathElement(Type type, JavaStaticMethodDefinition method, List<DataBinding<?>> args, Bindable bindable) {
 		super(type, method, args, bindable);
-		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
 		setFunction(method);
+	}
+
+	public JavaBasedBindingFactory getBindingFactory() {
+		if (getBindable() != null && getBindable().getBindingFactory() instanceof JavaBasedBindingFactory) {
+			return (JavaBasedBindingFactory) getBindable().getBindingFactory();
+		}
+		return null;
 	}
 
 	final public JavaStaticMethodDefinition getMethodDefinition() {
@@ -326,8 +329,8 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 
 	@Override
 	public void resolve() {
-		if (bindingFactory != null) {
-			JavaStaticMethodDefinition function = (JavaStaticMethodDefinition) bindingFactory.retrieveFunction(getType(), getParsed(),
+		if (getBindingFactory() != null) {
+			JavaStaticMethodDefinition function = (JavaStaticMethodDefinition) getBindingFactory().retrieveFunction(getType(), getParsed(),
 					getArguments());
 			setFunction(function);
 			if (function == null) {

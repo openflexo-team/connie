@@ -74,10 +74,12 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 		setBindable(bindable);
 	}
 
+	@Override
 	public Bindable getBindable() {
 		return bindable;
 	}
 
+	@Override
 	public void setBindable(Bindable bindable) {
 		if ((bindable == null && this.bindable != null) || (bindable != null && !bindable.equals(this.bindable))) {
 			Bindable oldValue = this.bindable;

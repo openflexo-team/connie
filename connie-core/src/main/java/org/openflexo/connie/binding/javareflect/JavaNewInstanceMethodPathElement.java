@@ -72,18 +72,21 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 
 	static final Logger logger = Logger.getLogger(JavaNewInstanceMethodPathElement.class.getPackage().getName());
 
-	private JavaBasedBindingFactory bindingFactory;
-
 	public JavaNewInstanceMethodPathElement(Type type, IBindingPathElement parent, String constructorName, List<DataBinding<?>> args,
 			Bindable bindable) {
 		super(type, parent, constructorName, args, bindable);
-		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
 	}
 
 	public JavaNewInstanceMethodPathElement(Type type, IBindingPathElement parent, JavaConstructorDefinition constructor,
 			List<DataBinding<?>> args, Bindable bindable) {
 		super(type, parent, constructor, args, bindable);
-		this.bindingFactory = (JavaBasedBindingFactory) bindable.getBindingFactory();
+	}
+
+	public JavaBasedBindingFactory getBindingFactory() {
+		if (getBindable() != null && getBindable().getBindingFactory() instanceof JavaBasedBindingFactory) {
+			return (JavaBasedBindingFactory) getBindable().getBindingFactory();
+		}
+		return null;
 	}
 
 	@Override
@@ -351,8 +354,8 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 
 	@Override
 	public void resolve() {
-		if (bindingFactory != null) {
-			JavaConstructorDefinition function = (JavaConstructorDefinition) bindingFactory.retrieveConstructor(getType(),
+		if (getBindingFactory() != null) {
+			JavaConstructorDefinition function = (JavaConstructorDefinition) getBindingFactory().retrieveConstructor(getType(),
 					getParent() != null ? getParent().getType() : null, getParsed(), getArguments());
 			setFunction(function);
 			if (function == null) {
