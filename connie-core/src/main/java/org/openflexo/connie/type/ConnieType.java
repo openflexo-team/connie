@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2011-2012, AgileBirds
+ * Copyright (c) 2012-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -39,51 +39,28 @@
 
 package org.openflexo.connie.type;
 
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 
-public class GenericArrayTypeImpl implements GenericArrayType, ConnieType {
+/**
+ * {@link ConnieType} is the common superinterface for all types in the context of Connie. This interface inherits from {@link Type} (Java
+ * programming language type API). These include raw types, parameterized types, array types, type variables, primitive types and custom
+ * types defined whithin Connie.
+ * 
+ * @author sylvain
+ * 
+ */
+public interface ConnieType extends Type {
 
-	private Type componentType;
-
-	public GenericArrayTypeImpl(Type componentType) {
-		this.componentType = componentType;
-	}
-
-	@Override
-	public Type getGenericComponentType() {
-		return componentType;
-	}
-
-	@Override
-	public String toString() {
-		return TypeUtils.simpleRepresentation(getGenericComponentType()) + "[]";
-	}
-
-	public String fullQualifiedRepresentation() {
-		return TypeUtils.fullQualifiedRepresentation(getGenericComponentType()) + "[]";
-	}
-
-	@Override
-	public int hashCode() {
-		return fullQualifiedRepresentation().hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof GenericArrayType) {
-			return getGenericComponentType() == null && ((GenericArrayType) obj).getGenericComponentType() == null
-					|| getGenericComponentType() != null
-							&& getGenericComponentType().equals(((GenericArrayType) obj).getGenericComponentType());
-		}
-		return super.equals(obj);
-	}
-
-	@Override
-	public GenericArrayTypeImpl translateTo(TypingSpace typingSpace) {
-		if (componentType instanceof ConnieType) {
-			return new GenericArrayTypeImpl(((ConnieType) componentType).translateTo(typingSpace));
-		}
+	/**
+	 * Return a new {@link ConnieType} by translating current {@link ConnieType} into the typing context denoted by supplied
+	 * {@link TypingSpace}.<br>
+	 * 
+	 * Default implementation just return the current type
+	 * 
+	 * @param typingSpace
+	 * @return
+	 */
+	default public ConnieType translateTo(TypingSpace typingSpace) {
 		return this;
 	}
 }

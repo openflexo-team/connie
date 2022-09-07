@@ -42,7 +42,7 @@ package org.openflexo.connie.type;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class ParameterizedTypeImpl implements ParameterizedType {
+public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 
 	private Type rawType;
 	private Type ownerType;
@@ -122,5 +122,35 @@ public class ParameterizedTypeImpl implements ParameterizedType {
 			return TypeUtils.fullQualifiedRepresentation(this).equals(TypeUtils.fullQualifiedRepresentation((Type) obj));
 		}
 		return super.equals(obj);
+	}
+
+	private boolean hasConnieTypeArguments() {
+		if (rawType instanceof ConnieType) {
+			return true;
+		}
+		if (ownerType instanceof ConnieType) {
+			return true;
+		}
+		for (Type argument : actualTypeArguments) {
+			if (argument instanceof ConnieType) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public ParameterizedTypeImpl translateTo(TypingSpace typingSpace) {
+		if (hasConnieTypeArguments()) {
+			Type newRawType = (rawType instanceof ConnieType ? ((ConnieType) rawType).translateTo(typingSpace) : rawType);
+			Type newOwnerType = (ownerType instanceof ConnieType ? ((ConnieType) ownerType).translateTo(typingSpace) : ownerType);
+			Type[] newArgs = new Type[actualTypeArguments.length];
+			for (int i = 0; i < actualTypeArguments.length; i++) {
+				Type t = actualTypeArguments[i];
+				newArgs[i] = (t instanceof ConnieType ? ((ConnieType) t).translateTo(typingSpace) : t);
+			}
+			return new ParameterizedTypeImpl(newRawType, newOwnerType, newArgs);
+		}
+		return this;
 	}
 }

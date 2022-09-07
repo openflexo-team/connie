@@ -43,7 +43,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 
-public class WildcardTypeImpl implements WildcardType {
+public class WildcardTypeImpl implements WildcardType, ConnieType {
 
 	private Type[] upperBounds = new Type[0];
 	private Type[] lowerBounds = new Type[0];
@@ -154,6 +154,38 @@ public class WildcardTypeImpl implements WildcardType {
 					&& Arrays.asList(upperBounds).equals(Arrays.asList(that.getUpperBounds()));
 		}
 		return false;
+	}
+
+	private boolean hasConnieTypeArguments() {
+		for (Type argument : upperBounds) {
+			if (argument instanceof ConnieType) {
+				return true;
+			}
+		}
+		for (Type argument : lowerBounds) {
+			if (argument instanceof ConnieType) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public WildcardTypeImpl translateTo(TypingSpace typingSpace) {
+		if (hasConnieTypeArguments()) {
+			Type[] newUpper = new Type[upperBounds.length];
+			for (int i = 0; i < upperBounds.length; i++) {
+				Type t = upperBounds[i];
+				newUpper[i] = (t instanceof ConnieType ? ((ConnieType) t).translateTo(typingSpace) : t);
+			}
+			Type[] newLower = new Type[lowerBounds.length];
+			for (int i = 0; i < lowerBounds.length; i++) {
+				Type t = lowerBounds[i];
+				newLower[i] = (t instanceof ConnieType ? ((ConnieType) t).translateTo(typingSpace) : t);
+			}
+			return new WildcardTypeImpl(newUpper, newLower);
+		}
+		return this;
 	}
 
 }

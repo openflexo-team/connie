@@ -42,7 +42,7 @@ package org.openflexo.connie.type;
 import java.lang.reflect.Type;
 
 /**
- * Represents a typing space
+ * Represents a typing space, as a context where some types are defined
  * 
  * @author sylvain
  *
