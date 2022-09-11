@@ -759,7 +759,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			if (getBindingVariable() instanceof UnresolvedBindingVariable) {
 				BindingVariable resolvedBindingVariable = getOwner().getBindingModel().bindingVariableNamed(getVariableName());
 				if (resolvedBindingVariable != null) {
-					//System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
+					// System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
 					setBindingVariable(resolvedBindingVariable);
 					resolvedBindingVariable.hasBeenResolved(this);
 				}
@@ -786,8 +786,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				return false;
 			}
 			else if (checkedBV != getBindingVariable()) {
-				invalidBindingReason = "inconsistent BindingVariable " + getBindingVariable().getVariableName();
-				return false;
+				// Well, this might happen if the BindingVariable was built in another context
+				// In this case, we just have to translate BindingVariable in new context given by the owner BindingModel
+				// Thus, we consider the checkedBV
+				bindingVariable = checkedBV;
 			}
 		}
 
