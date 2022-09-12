@@ -281,6 +281,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (needsParsing) {
 			return unparsedBinding;
 		}
+		if (!isSet()) {
+			return "";
+		}
 		return "<undefined>";
 	}
 
