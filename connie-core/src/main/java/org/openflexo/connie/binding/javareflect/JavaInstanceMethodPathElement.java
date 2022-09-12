@@ -337,7 +337,7 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 			if (getParent() != null) {
 				JavaInstanceMethodDefinition function = (JavaInstanceMethodDefinition) getBindingFactory()
 						.retrieveFunction(getParent().getType(), getParsed(), getArguments());
-				System.out.println("Je trouve " + function);
+				//System.out.println("Found " + function);
 				setFunction(function);
 				if (function == null) {
 					logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
