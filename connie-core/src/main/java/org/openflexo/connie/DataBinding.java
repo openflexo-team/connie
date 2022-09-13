@@ -1006,7 +1006,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					return returned;
 				} catch (ParseException e) {
 					// parse error
-					e.printStackTrace();
+					// e.printStackTrace();
 					LOGGER.warning(e.getMessage() + " while parsing " + unparsed);
 					return null;
 				}
