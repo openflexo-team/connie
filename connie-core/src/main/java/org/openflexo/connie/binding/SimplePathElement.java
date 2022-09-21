@@ -39,12 +39,7 @@
 
 package org.openflexo.connie.binding;
 
-import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
-
-import org.openflexo.connie.BindingVariable;
-import org.openflexo.connie.DataBinding;
-import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
  * Model a simple path element in a binding path, represented by a simple get/set access through a property
@@ -52,175 +47,19 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  * @author sylvain
  * 
  */
-public abstract class SimplePathElement implements BindingPathElement, SettableBindingPathElement, HasPropertyChangeSupport {
+public interface SimplePathElement<P extends Property> extends BindingPathElement, SettableBindingPathElement {
 
-	private IBindingPathElement parent;
-	private String propertyName;
-	private Type type;
-	private PropertyChangeSupport pcSupport;
-	private boolean activated = false;
+	public String getPropertyName();
 
-	public static final String NAME_PROPERTY = "propertyName";
-	public static final String TYPE_PROPERTY = "type";
-	public static final String DELETED_PROPERTY = "deleted";
+	public void setPropertyName(String propertyName);
 
-	public SimplePathElement(IBindingPathElement parent, String propertyName, Type type) {
-		this.parent = parent;
-		this.propertyName = propertyName;
-		this.type = type;
-		pcSupport = new PropertyChangeSupport(this);
-	}
+	public P getProperty();
 
-	/**
-	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
-	 */
-	@Override
-	public void activate() {
-		this.activated = true;
-	}
-
-	/**
-	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
-	 */
-	@Override
-	public void desactivate() {
-		this.activated = false;
-	}
-
-	/**
-	 * Return boolean indicating if this {@link BindingPathElement} is activated
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isActivated() {
-		return activated;
-	}
+	public void setProperty(P property);
 
 	@Override
-	public IBindingPathElement getParent() {
-		return parent;
-	}
+	public Type getType();
 
-	public String getPropertyName() {
-		return propertyName;
-	}
+	public void setType(Type type);
 
-	public void setPropertyName(String propertyName) {
-		String oldValue = getPropertyName();
-		if (propertyName != null && !propertyName.equals(oldValue)) {
-			this.propertyName = propertyName;
-			getPropertyChangeSupport().firePropertyChange(NAME_PROPERTY, oldValue, propertyName);
-		}
-	}
-
-	@Override
-	public Type getType() {
-		return type;
-	}
-
-	public final void setType(Type type) {
-		Type oldType = getType();
-		if (type != null && !type.equals(oldType)) {
-			this.type = type;
-			getPropertyChangeSupport().firePropertyChange(TYPE_PROPERTY, oldType, type);
-		}
-	}
-
-	@Override
-	public boolean isSettable() {
-		return true;
-	}
-
-	@Override
-	public String getSerializationRepresentation() {
-		return getPropertyName();
-	}
-
-	@Override
-	public PropertyChangeSupport getPropertyChangeSupport() {
-		return pcSupport;
-	}
-
-	@Override
-	public String getDeletedProperty() {
-		return DELETED_PROPERTY;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
-		result = prime * result + ((propertyName == null) ? 0 : propertyName.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		SimplePathElement other = (SimplePathElement) obj;
-		if (parent == null) {
-			if (other.parent != null)
-				return false;
-		}
-		else if (!parent.equals(other.parent))
-			return false;
-		if (propertyName == null) {
-			if (other.propertyName != null)
-				return false;
-		}
-		else if (!propertyName.equals(other.propertyName))
-			return false;
-		return true;
-	}
-
-	/*@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SimplePathElement) {
-			return getParent().equals(((SimplePathElement) obj).getParent())
-					&& getPropertyName().equals(((SimplePathElement) obj).getPropertyName());
-		}
-		return super.equals(obj);
-	}
-	
-	@Override
-	public int hashCode() {
-		return getPropertyName().hashCode();
-	}*/
-
-	@Override
-	public boolean isNotifyingBindingPathChanged() {
-		return false;
-	}
-
-	public String getBindingPath() {
-		if (getParent() instanceof SimplePathElement) {
-			return ((SimplePathElement) getParent()).getBindingPath() + "." + getLabel();
-		}
-		if (getParent() instanceof BindingVariable) {
-			return ((BindingVariable) getParent()).getVariableName() + "." + getLabel();
-		}
-		return getLabel();
-	}
-
-	/**
-	 * Return boolean indicating if this {@link BindingPathElement} is notification-safe (all modifications of data are notified using
-	 * {@link PropertyChangeSupport} scheme)<br>
-	 * 
-	 * When tagged as unsafe, disable caching while evaluating related {@link DataBinding}.
-	 * 
-	 * Otherwise return true
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isNotificationSafe() {
-		return true;
-	}
 }

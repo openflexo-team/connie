@@ -39,14 +39,7 @@
 
 package org.openflexo.connie.expr;
 
-import org.openflexo.connie.expr.Constant.DateSymbolicConstant;
-import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
-import org.openflexo.connie.expr.Constant.ObjectSymbolicConstant;
-
 public interface SymbolicConstant {
-
-	public static final SymbolicConstant[] allKnownSymbolicConstants = { ObjectSymbolicConstant.NULL, ObjectSymbolicConstant.THIS,
-			DateSymbolicConstant.NOW, DateSymbolicConstant.TODAY, FloatSymbolicConstant.PI, FloatSymbolicConstant.E };
 
 	public String getSymbol();
 

@@ -81,6 +81,10 @@ public abstract class BindingValueArrayChangeListener<T> extends BindingValueCha
 			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext() + " because Exception has raised: "
 					+ e.getTargetException());
 			newValue = null;
+		} catch (ReflectiveOperationException e) {
+			LOGGER.warning(
+					"Could not evaluate " + getDataBinding() + " with context " + getContext() + " because Exception has raised: " + e);
+			newValue = null;
 		}
 		if (newValue != lastNotifiedValue) {
 			lastNotifiedValue = newValue;

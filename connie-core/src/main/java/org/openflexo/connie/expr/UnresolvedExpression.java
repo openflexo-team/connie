@@ -51,7 +51,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
  * @author sylvain
  * 
  */
-public class UnresolvedExpression extends Expression {
+public abstract class UnresolvedExpression extends Expression {
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
 	}
@@ -59,6 +59,11 @@ public class UnresolvedExpression extends Expression {
 	@Override
 	public Expression transform(ExpressionTransformer transformer) throws TransformException {
 		return this;
+	}
+
+	@Override
+	public int getPriority() {
+		return -1;
 	}
 
 	@Override

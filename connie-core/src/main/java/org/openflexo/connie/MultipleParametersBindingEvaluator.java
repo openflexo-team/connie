@@ -39,23 +39,18 @@
 
 package org.openflexo.connie;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openflexo.connie.binding.BindingPathElement;
+import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingValue;
-import org.openflexo.connie.expr.BindingValue.AbstractBindingPathElement;
-import org.openflexo.connie.expr.BindingValue.NormalBindingPathElement;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
-import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
-import org.openflexo.connie.java.JavaBindingFactory;
-import org.openflexo.kvc.InvalidKeyValuePropertyException;
+import org.openflexo.connie.expr.UnresolvedBindingVariable;
 
 /**
  * Utility class allowing to compute binding value over an expression and a given set of objects.<br>
@@ -72,28 +67,23 @@ import org.openflexo.kvc.InvalidKeyValuePropertyException;
  * @author sylvain
  * 
  */
-final public class MultipleParametersBindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
+public abstract class MultipleParametersBindingEvaluator extends DefaultBindable implements BindingEvaluationContext {
 
 	private final BindingFactory bindingFactory;
 
 	private Map<String, Object> objects;
 	private BindingModel bindingModel;
 
-	private MultipleParametersBindingEvaluator(Map<String, Object> objects) {
+	protected MultipleParametersBindingEvaluator(Map<String, Object> objects) {
 		this(objects, null);
 	}
 
-	private MultipleParametersBindingEvaluator(Map<String, Object> objects, BindingFactory bindingFactory) {
+	protected MultipleParametersBindingEvaluator(Map<String, Object> objects, BindingFactory bindingFactory) {
 		this.objects = objects;
 
 		bindingModel = new BindingModel();
 
-		if (bindingFactory != null) {
-			this.bindingFactory = bindingFactory;
-		}
-		else {
-			this.bindingFactory = new JavaBindingFactory();
-		}
+		this.bindingFactory = bindingFactory;
 
 		for (String variableName : objects.keySet()) {
 			Object value = objects.get(variableName);
@@ -109,7 +99,7 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		objects = null;
 	}
 
-	private static String extractParameters(String bindingPath, List<String> parameters, Object... args) {
+	protected static String extractParameters(String bindingPath, List<String> parameters, Object... args) {
 		int index = 0;
 		String returned = bindingPath;
 		while (returned.contains("{$")) {
@@ -127,26 +117,32 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		return returned;
 	}
 
-	private static String normalizeBindingPath(String bindingPath, List<String> parameters) {
+	protected String normalizeBindingPath(String bindingPath, List<String> parameters) {
 		Expression expression = null;
 		try {
-			expression = ExpressionParser.parse(bindingPath);
+			expression = bindingFactory.parseExpression(bindingPath, this);
+			// expression = ExpressionParser.parse(bindingPath);
 			if (expression != null) {
 				expression = expression.transform(new ExpressionTransformer() {
 					@Override
 					public Expression performTransformation(Expression e) throws org.openflexo.connie.exception.TransformException {
 						if (e instanceof BindingValue) {
-							BindingValue bv = (BindingValue) e;
-							if (bv.getParsedBindingPath().size() > 0) {
-								AbstractBindingPathElement firstPathElement = bv.getParsedBindingPath().get(0);
-								if (!(firstPathElement instanceof NormalBindingPathElement)
-										|| (!((NormalBindingPathElement) firstPathElement).property.equals("this"))
-												&& !parameters.contains(((NormalBindingPathElement) firstPathElement).property)) {
-									bv.getParsedBindingPath().add(0, new NormalBindingPathElement("this"));
-									bv.markedAsToBeReanalized();
-								}
+							BindingValue bindingPath = (BindingValue) e;
+							if (bindingPath.getBindingVariable() == null) {
+								UnresolvedBindingVariable objectBV = new UnresolvedBindingVariable("this");
+								bindingPath.setBindingVariable(objectBV);
+								return bindingPath;
 							}
-							return bv;
+							else if (!bindingPath.getBindingVariable().getVariableName().equals("this")
+									&& !parameters.contains(bindingPath.getBindingVariable().getVariableName())) {
+								UnresolvedBindingVariable objectBV = new UnresolvedBindingVariable("this");
+								List<BindingPathElement> bp2 = new ArrayList<>(bindingPath.getBindingPath());
+								bp2.add(0, bindingFactory.makeSimplePathElement(objectBV,
+										bindingPath.getBindingVariable().getVariableName(), MultipleParametersBindingEvaluator.this));
+								bindingPath.setBindingVariable(objectBV);
+								bindingPath.setBindingPath(bp2);
+							}
+							return bindingPath;
 						}
 						return e;
 					}
@@ -189,8 +185,8 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 	public void notifiedBindingDecoded(DataBinding<?> dataBinding) {
 	}
 
-	private Object evaluate(String aBindingPath)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
+	protected Object evaluate(String aBindingPath)
+			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		String normalizedBindingPath = aBindingPath;
 		DataBinding<?> binding = new DataBinding<>(normalizedBindingPath, this, Object.class, DataBinding.BindingDefinitionType.GET);
 		// FD redondant : binding.setDeclaredType(Object.class);
@@ -205,51 +201,4 @@ final public class MultipleParametersBindingEvaluator extends DefaultBindable im
 		return binding.getBindingValue(this);
 	}
 
-	public static Object evaluateBinding(String bindingPath, Object receiver, Object... args)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-		return evaluateBinding(bindingPath, null, receiver, args);
-	}
-
-	/**
-	 * Utility method used to instanciate a {@link MultipleParametersBindingEvaluator} to compute a given expression expressed in CONNIE
-	 * language, and a set of arguments given in appearing order in the expression<br>
-	 * 
-	 * @param bindingPath
-	 *            expression to compute
-	 * @param bindingFactory
-	 *            {@link BindingFactory} to use, JavaBindingFactory is used if none supplied
-	 * @param receiver
-	 *            the object which is the default target ('object' path)
-	 * @param args
-	 *            arguments given in appearing order in the expression
-	 * @return computed value
-	 * @throws InvalidKeyValuePropertyException
-	 * @throws TypeMismatchException
-	 * @throws NullReferenceException
-	 * @throws InvocationTargetException
-	 */
-	public static Object evaluateBinding(String bindingPath, BindingFactory bindingFactory, Object receiver, Object... args)
-			throws InvalidKeyValuePropertyException, TypeMismatchException, NullReferenceException, InvocationTargetException {
-
-		Map<String, Object> objects = new HashMap<>();
-
-		List<String> parameters = new ArrayList<>();
-		String extractedBindingPath = extractParameters(bindingPath, parameters, args);
-		// System.out.println("extractedBindingPath=" + extractedBindingPath);
-		String normalizedBindingPath = normalizeBindingPath(extractedBindingPath, parameters);
-		// System.out.println("normalizedBindingPath=" + normalizedBindingPath);
-		if (args.length != parameters.size()) {
-			throw new InvalidKeyValuePropertyException("Wrong number of args");
-		}
-		objects.put("this", receiver);
-		for (int i = 0; i < args.length; i++) {
-			// System.out.println("i=" + i + " " + parameters.get(i) + "=" + args[i]);
-			objects.put(parameters.get(i), args[i]);
-		}
-
-		MultipleParametersBindingEvaluator evaluator = new MultipleParametersBindingEvaluator(objects, bindingFactory);
-		Object returned = evaluator.evaluate(normalizedBindingPath);
-		evaluator.delete();
-		return returned;
-	}
 }

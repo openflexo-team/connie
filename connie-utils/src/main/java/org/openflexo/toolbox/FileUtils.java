@@ -166,7 +166,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * Recursive copy of a resource in a destination file
+	 * Recursive copy of a {@link Resource} in a destination file using a given pattern specifying contents to select
 	 * 
 	 * @param src
 	 * @param dest
@@ -175,17 +175,37 @@ public class FileUtils {
 	 * @throws IOException
 	 */
 	public static File copyResourceToDir(Resource src, File dest, CopyStrategy strategy) throws IOException {
+		return copyResourceToDir(src, dest, null, strategy);
+	}
+
+	/**
+	 * Recursive copy of a {@link Resource} in a destination file
+	 * 
+	 * @param src
+	 * @param dest
+	 * @param strategy
+	 * @return
+	 * @throws IOException
+	 */
+	public static File copyResourceToDir(Resource src, File dest, String pattern, CopyStrategy strategy) throws IOException {
+		// System.out.println("Copy " + src + " to " + dest);
 		if (src instanceof FileResourceImpl && ((FileResourceImpl) src).getFile() != null) {
-			return copyDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
+			copyContentDirToDir(((FileResourceImpl) src).getFile(), dest, strategy);
 		}
 		else if (src instanceof InJarResourceImpl) {
-			for (Resource rsc : src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"), false)) {
+			// src.getContents(Pattern.compile(".*" + src.getRelativePath() + "/.*"), false))
+			List<? extends Resource> contents = (pattern == null ? src.getContents() : src.getContents(Pattern.compile(pattern), false));
+
+			for (Resource rsc : contents) {
 				if (!rsc.isContainer()) {
 					copyInJarResourceToDir((InJarResourceImpl) rsc, dest);
 				}
 				else {
-					File destinationDir = new File(dest, ((InJarResourceImpl) src).getName());
-					copyResourceToDir(rsc, new File(destinationDir, ((InJarResourceImpl) rsc).getName()), strategy);
+					File destinationDir = new File(dest, ((InJarResourceImpl) rsc).getName());
+					if (!destinationDir.exists()) {
+						destinationDir.mkdirs();
+					}
+					copyResourceToDir(rsc, destinationDir, strategy);
 				}
 			}
 		}
@@ -193,9 +213,23 @@ public class FileUtils {
 			LOGGER.severe("Unable to copy resource: " + src.toString());
 			return null;
 		}
-		return null;
+		return dest;
 
 	}
+
+	// A Test to check previous method
+	/*public static void main(String[] args) throws IOException {
+		File jarFile = new File("/Users/sylvainguerin/Temp/flexo-foundation-test-2.0.1-SNAPSHOT.jar");
+		File tempDir = new File("/Users/sylvainguerin/Temp/Prout");
+		tempDir.mkdirs();
+	
+		FileSystemResourceLocatorImpl FS_RESOURCE_LOCATOR = new FileSystemResourceLocatorImpl();
+		JarResourceImpl jarResource = new JarResourceImpl(FS_RESOURCE_LOCATOR, jarFile.getAbsolutePath());
+	
+		System.out.println("jarResource=" + jarResource);
+		System.out.println("rootEntry=" + jarResource.getRootEntry());
+		copyResourceToDir(jarResource.getRootEntry(), tempDir, CopyStrategy.REPLACE);
+	}*/
 
 	public static void copyResourceToDir(Resource locateResource, File file) throws IOException {
 		copyResourceToDir(locateResource, file, CopyStrategy.REPLACE);
@@ -729,6 +763,14 @@ public class FileUtils {
 	}
 	*/
 
+	/**
+	 * Indicates if supplied file is contained in supplied directory
+	 * 
+	 * @param directory
+	 * @param file
+	 * @param recursive
+	 * @return
+	 */
 	public static boolean directoryContainsFile(File directory, File file, boolean recursive) {
 		if (file == null) {
 			return false;

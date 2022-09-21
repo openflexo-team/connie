@@ -39,6 +39,7 @@
 
 package org.openflexo.connie;
 
+import org.openflexo.connie.expr.ExpressionEvaluator;
 
 /**
  * This interface is implemented by all classes defining a run-time context for binding evaluation<br>
@@ -52,8 +53,10 @@ public interface BindingEvaluationContext {
 	/**
 	 * Return the value of symbolic variable {@link BindingVariable} in current run-time context
 	 * 
-	 * @param variable the binding to evaluate.
+	 * @param variable
+	 *            the binding to evaluate.
 	 */
 	Object getValue(BindingVariable variable);
 
+	ExpressionEvaluator getEvaluator();
 }

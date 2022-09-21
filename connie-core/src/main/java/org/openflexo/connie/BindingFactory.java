@@ -45,29 +45,127 @@ package org.openflexo.connie;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import org.openflexo.connie.binding.BindingPathElement;
-import org.openflexo.connie.binding.Function;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
+import org.openflexo.connie.binding.NewInstancePathElement;
+import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
+import org.openflexo.connie.binding.StaticMethodPathElement;
+import org.openflexo.connie.expr.Constant;
+import org.openflexo.connie.expr.Expression;
 
 /**
- * API for a factory which explore related {@link BindingModel} to build {@link BindingPathElement}
+ * A factory associated to a given expression language and allowing to build expressions
  * 
  * @author sylvain
  *
  */
 public interface BindingFactory {
 
-	List<? extends SimplePathElement> getAccessibleSimplePathElements(IBindingPathElement parent);
+	/**
+	 * Parse supplied expressionAsString, build and return an {@link Expression} according to underlying expression language
+	 * 
+	 * @param expressionAsString
+	 * @return
+	 */
+	Expression parseExpression(String expressionAsString, Bindable bindable) throws ParseException;
 
-	List<? extends FunctionPathElement> getAccessibleFunctionPathElements(IBindingPathElement parent);
+	/**
+	 * Return the list of accessible {@link SimplePathElement} which are accessible from supplied parent {@link IBindingPathElement}
+	 * 
+	 * @param parent
+	 *            Parent {@link IBindingPathElement}
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
+	 * @return
+	 */
+	List<? extends SimplePathElement<?>> getAccessibleSimplePathElements(IBindingPathElement parent, Bindable bindable);
 
-	SimplePathElement makeSimplePathElement(IBindingPathElement father, String propertyName);
+	/**
+	 * Return the list of accessible {@link FunctionPathElement} which are accessible from supplied parent {@link IBindingPathElement}
+	 * 
+	 * @param parent
+	 *            Parent {@link IBindingPathElement}
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement are defined
+	 * @return
+	 */
+	List<? extends FunctionPathElement<?>> getAccessibleFunctionPathElements(IBindingPathElement parent, Bindable bindable);
 
-	Function retrieveFunction(Type parentType, String functionName, List<DataBinding<?>> args);
+	/**
+	 * Build a new {@link SimplePathElement} with supplied parent and property name
+	 * 
+	 * @param parent
+	 *            Parent {@link IBindingPathElement}
+	 * @param propertyName
+	 *            The name of property
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
+	 * @return
+	 */
+	SimplePathElement<?> makeSimplePathElement(IBindingPathElement parent, String propertyName, Bindable bindable);
 
-	FunctionPathElement makeFunctionPathElement(IBindingPathElement father, Function function, List<DataBinding<?>> args);
+	/**
+	 * Build a new {@link SimpleMethodPathElement} with supplied parent, function name and arguments
+	 * 
+	 * @param parent
+	 *            Parent {@link IBindingPathElement}
+	 * @param functionName
+	 *            The name of the function to retrieve
+	 * @param args
+	 *            The arguments of the function path element
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
+	 * @return
+	 */
+	SimpleMethodPathElement<?> makeSimpleMethodPathElement(IBindingPathElement parent, String functionName, List<DataBinding<?>> args,
+			Bindable bindable);
 
-	public Type getTypeForObject(Object object);
+	/**
+	 * Build a new static {@link StaticMethodPathElement} with supplied type, function name and arguments
+	 * 
+	 * @param type
+	 *            The type of which static function is defined
+	 * @param functionName
+	 *            The name of the function to retrieve
+	 * @param args
+	 *            The arguments of the function path element
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
+	 * @return
+	 */
+	StaticMethodPathElement<?> makeStaticMethodPathElement(Type type, String functionName, List<DataBinding<?>> args, Bindable bindable);
+
+	/**
+	 * Build a new {@link NewInstancePathElement} (new instance creation) with supplied type, parent, function name and arguments
+	 * 
+	 * @param type
+	 *            The type to instantiate
+	 * @param parent
+	 *            The parent path element: might be null or specifiates a inner access
+	 * @param functionName
+	 *            The name of the function to retrieve, might be null when type is sufficient
+	 * @param args
+	 *            The arguments of the function path element
+	 * @param bindable
+	 *            The {@link Bindable} on which returned BindingPathElement is defined
+	 * @return
+	 */
+	NewInstancePathElement<?> makeNewInstancePathElement(Type type, IBindingPathElement parent, String functionName,
+			List<DataBinding<?>> args, Bindable bindable);
+
+	/**
+	 * Return Type for supplied object
+	 * 
+	 * @param object
+	 * @return
+	 */
+	Type getTypeForObject(Object object);
+
+	/**
+	 * Make null expression (language dependant)
+	 * 
+	 * @return
+	 */
+	Constant<?> getNullExpression();
 }

@@ -42,7 +42,6 @@ package org.openflexo.connie.binding;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -101,7 +100,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 			// logger.warning("Could not evaluate " + dataBinding + " with context " + context +
 			// " because NullReferenceException has raised");
 			initValue = null;
-		} catch (InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			// Don't warn since this may happen
 			// logger.warning("Could not evaluate " + dataBinding + " with context " + context +
 			// " because NullReferenceException has raised");
@@ -337,7 +336,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 		return sb.toString();
 	}
 
-	final public T evaluateValue() throws NullReferenceException, InvocationTargetException {
+	final public T evaluateValue() throws NullReferenceException, ReflectiveOperationException {
 		if (dataBinding == null) {
 			// TODO: we should handle this, we should never arrive here
 			return null;
@@ -414,7 +413,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 				// "Could not evaluate " + dataBinding + " with context " + context + " because NullReferenceException has raised");
 			}
 			newValue = getDefaultValue();
-		} catch (InvocationTargetException e) {
+		} catch (ReflectiveOperationException e) {
 			if (getDefaultValue() == null) {
 				// When computing the new value, a NullReferenceException has raised:
 				// This might be normal, but we warn it to make the developer think of what should be returned here as default value

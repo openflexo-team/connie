@@ -40,7 +40,9 @@
 package org.openflexo.connie.binding;
 
 import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Type;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 
 /**
@@ -52,11 +54,43 @@ import org.openflexo.connie.DataBinding;
 public interface BindingPathElement extends IBindingPathElement {
 
 	/**
-	 * Return parent of this BindingPathElement
+	 * An "owner" of a {@link BindingPathElement}
+	 * 
+	 * @author sylvainguerin
+	 *
+	 */
+	public interface BindingPathElementOwner {
+
+		public void bindingPathElementChanged(BindingPathElement newElement);
+	}
+
+	/**
+	 * Return {@link Bindable} for this {@link IBindingPathElement}
 	 * 
 	 * @return
 	 */
-	IBindingPathElement getParent();
+	public Bindable getBindable();
+
+	/**
+	 * Sets {@link Bindable} for this {@link IBindingPathElement}
+	 * 
+	 * @param bindable
+	 */
+	public void setBindable(Bindable bindable);
+
+	/**
+	 * Return parent of this {@link BindingPathElement}
+	 * 
+	 * @return
+	 */
+	public IBindingPathElement getParent();
+
+	/**
+	 * Sets parent of this {@link BindingPathElement}
+	 * 
+	 * @param parent
+	 */
+	public void setParent(IBindingPathElement parent);
 
 	/**
 	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
@@ -90,11 +124,35 @@ public interface BindingPathElement extends IBindingPathElement {
 	/**
 	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
 	 * 
-	 * Default behaviour return false
-	 * 
 	 * @return
 	 */
-	default boolean supportsNullValues() {
-		return false;
+	public boolean supportsNullValues();
+
+	public BindingPathElementOwner getBindingPathElementOwner();
+
+	public void setBindingPathElementOwner(BindingPathElementOwner owner);
+
+	/**
+	 * Carry the result of acceptability of to type checking of a {@link BindingPathElement} in the context of a parent
+	 *
+	 * @author sylvain
+	 */
+	public static class BindingPathCheck {
+		public Boolean valid = null;
+		public String invalidBindingReason;
+		public Type returnedType;
 	}
+
+	/**
+	 * Evaluate the acceptability relatively to type checking of this {@link BindingPathElement} in the context of a parent
+	 * {@link IBindingPathElement}
+	 * 
+	 * @param parentElement
+	 *            parent element of current {@link IBindingPathElement}
+	 * @param parentType
+	 *            resulting type for the parent {@link IBindingPathElement} in its context
+	 * @return
+	 */
+	public abstract BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType);
+
 }

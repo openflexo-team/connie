@@ -94,7 +94,13 @@ public abstract class BindingValueListChangeListener<T2, T extends Collection<T2
 			LOGGER.warning("Could not evaluate " + getDataBinding() + " with context " + getContext() + " because Exception has raised: "
 					+ e.getTargetException());
 			newValue = null;
-		} catch (ClassCastException e) {
+		} catch (ReflectiveOperationException e) {
+			LOGGER.warning(
+					"Could not evaluate " + getDataBinding() + " with context " + getContext() + " because Exception has raised: " + e);
+			newValue = null;
+		}
+
+		catch (ClassCastException e) {
 			LOGGER.warning("ClassCastException while evaluating " + getDataBinding() + " with context " + getContext());
 			newValue = null;
 		}
