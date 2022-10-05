@@ -9,7 +9,7 @@
 
   The purpose of the connie API is to offer the ability to:
   
-    * Define strong-typed paths (sequence of names and dots as in <group.persons.first.age>) and expressions (as <group.persons.first.age + 1>).
+    * Define strong-typed paths (sequence of names and dots as in *group.persons.first.age*) and expressions (as *group.persons.first.age + 1*).
 
     * Execute (evaluate) strong-typed paths and expressions.
   
@@ -33,18 +33,18 @@ Examples
     The current implementation proposes a [JavaBindingFactory](/connie/javadoc/connie/connie-core/org/openflexo/connie/BindingFactory.html) that allows to navigate among 
     Java objects using a (key, value) coding protocol.
   
-    For instance, in order to define or evaluate <person.age> the JavaBindingFactory assumes that Java objects are instances of classes that offers 
+    For instance, in order to define or evaluate *person.age* the JavaBindingFactory assumes that Java objects are instances of classes that offers 
     getAge() and setAge(int) methods to read and write the property "age".
   
     We could have imagine other binding strategies for Java (using annotation or the java reflect interface).
   
-    For the following examples, we assume that the binding strategy ExcelBindingFactory exists for excel that allows to define expressions like <sheet.row(12).col(4).content>
+    For the following examples, we assume that the binding strategy ExcelBindingFactory exists for excel that allows to define expressions like *sheet.row(12).col(4).content*
     
 1. The programmer
   
-    Imagine a programmer wants to allow the computation of <person.age + sheet.row(12).col(4).content>.
+    Imagine a programmer wants to allow the computation of *person.age + sheet.row(12).col(4).content*.
     
-    Assuming the binding strategies are defined, s/he needs a context to be able to define the ```DataBinding``` "<person.age + sheet.row(12).col(4).content>".
+    Assuming the binding strategies are defined, s/he needs a context to be able to define the ```DataBinding``` "*person.age + sheet.row(12).col(4).content*".
     
     The context is an instance of the interface ```Bindable``` that requires the BindingFactories (here JavaBindingFactory and ExcelBindingFactory) and a ```BindingModel```.
     
