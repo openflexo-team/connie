@@ -650,6 +650,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		invalidBindingReason = "Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
 				+ analyzedType;
+
+		System.out.println("PROUT");
+		System.out.println("declared: " + getDeclaredType() + " of " + getDeclaredType().getClass().getSimpleName());
+		System.out.println("analyzed: " + analyzedType + " of " + analyzedType.getClass().getSimpleName());
+
 		if (LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.fine("Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
 					+ analyzedType);
@@ -1342,4 +1347,26 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	// Used for debug only
 	public boolean debug = false;
 
+	/**
+	 * Implements equality between {@link DataBinding} objects.
+	 * 
+	 * Equality is here considered from its serialization perspective only, and is not safe regarding to current analysis in a given
+	 * context. Consider revalidate {@link DataBinding} when switching to another context
+	 * 
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DataBinding) {
+			return toString().equals(obj.toString());
+		}
+		return super.equals(obj);
+	}
+
+	/**
+	 * Returns a hash code value for the object, according to equality semantics as implemented in {@link #equals(Object)}
+	 */
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
 }
