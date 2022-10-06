@@ -651,10 +651,6 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		invalidBindingReason = "Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
 				+ analyzedType;
 
-		System.out.println("PROUT");
-		System.out.println("declared: " + getDeclaredType() + " of " + getDeclaredType().getClass().getSimpleName());
-		System.out.println("analyzed: " + analyzedType + " of " + analyzedType.getClass().getSimpleName());
-
 		if (LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.fine("Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
 					+ analyzedType);
