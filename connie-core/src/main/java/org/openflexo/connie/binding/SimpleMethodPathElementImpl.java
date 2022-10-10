@@ -71,7 +71,7 @@ public abstract class SimpleMethodPathElementImpl<F extends Function> extends Fu
 	 * @return false in this case
 	 */
 	@Override
-	public final boolean supportsNullValues() {
+	public boolean supportsNullValues() {
 		return false;
 	}
 

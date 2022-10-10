@@ -144,6 +144,15 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 
 	private String serializationRepresentation = null;
 
+	protected String getFunctionNameToDisplay() {
+		if (getFunction() != null) {
+			return getFunction().getName();
+		}
+		else {
+			return getParsed();
+		}
+	}
+
 	// TODO
 	// It's better not to cache serialization representation
 	// See TestBindingEvaluator, test9
@@ -151,12 +160,7 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 	public String getSerializationRepresentation() {
 		// if (serializationRepresentation == null) {
 		StringBuffer returned = new StringBuffer();
-		if (getFunction() != null) {
-			returned.append(getFunction().getName());
-		}
-		else {
-			returned.append(getParsed());
-		}
+		returned.append(getFunctionNameToDisplay());
 		returned.append("(");
 		boolean isFirst = true;
 		for (DataBinding<?> arg : getArguments()) {

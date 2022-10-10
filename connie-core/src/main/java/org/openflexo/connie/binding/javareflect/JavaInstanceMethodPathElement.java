@@ -335,18 +335,23 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 
 		if (getBindingFactory() != null) {
 			if (getParent() != null) {
-				JavaInstanceMethodDefinition function = (JavaInstanceMethodDefinition) getBindingFactory()
-						.retrieveFunction(getParent().getType(), getParsed(), getArguments());
-				//System.out.println("Found " + function);
-				setFunction(function);
-				if (function == null) {
-					logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
+				Function function = getBindingFactory().retrieveFunction(getParent().getType(), getParsed(), getArguments());
+
+				if (function instanceof JavaInstanceMethodDefinition) {
+					// Function was found
+					setFunction((JavaInstanceMethodDefinition) function);
 				}
+				else if (function != null) {
+					// Function was found but invalid kind of function
+					logger.warning("Unexpected " + function + " for parent " + getParent() + " in " + this);
+				}
+				// No need to warn, since it may happen
+				/*if (function == null) {
+					logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
+				}*/
 			}
 			else {
 				logger.warning("cannot find parent for " + this);
-				// Thread.dumpStack();
-				// System.exit(-1);
 			}
 		}
 	}

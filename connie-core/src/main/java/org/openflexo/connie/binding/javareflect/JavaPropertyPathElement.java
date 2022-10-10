@@ -192,9 +192,11 @@ public class JavaPropertyPathElement extends SimplePathElementImpl<KeyValuePrope
 				// warnWhenInconsistentData(getParent(), getParsed());
 				setProperty(keyValueProperty);
 			}
-			else {
-				logger.warning("cannot find property " + getParsed() + " for " + getParent() + " which type is " + getParent().getType());
-			}
+			// No need to warn, since it may happen
+			/*else {
+				logger.warning("cannot find property " + getParsed() + " for " + getParent() + " which type is " + getParent().getType()
+						+ " of " + getParent().getType().getClass());
+			}*/
 		}
 		else {
 			logger.warning("cannot find parent for " + this);
