@@ -136,7 +136,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		this.owner = owner;
 
 		this.prettyPrinter = prettyPrinter;
-		bindingVariable = aBindingVariable;
+		setBindingVariable(aBindingVariable);
 		bindingPath = new ArrayList<>(aBindingPath);
 		validated = false;
 		isValid = false;
@@ -200,7 +200,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.TYPE_PROPERTY, this);
 				bindingVariable.getPropertyChangeSupport().addPropertyChangeListener(BindingVariable.VARIABLE_NAME_PROPERTY, this);
 			}
-			if (getBindingPath().size() > 0) {
+			if (getBindingPath() != null && getBindingPath().size() > 0) {
 				propagateBindingElementChanged(bindingVariable, 0);
 			}
 			invalidate();
@@ -447,7 +447,10 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}*/
 		}
 		else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
-
+			// Called when BindingVariable changes its type
+			if (getBindingPath() != null && getBindingPath().size() > 0 && getOwner() != null && getOwner().getBindingFactory() != null) {
+				propagateBindingElementChanged(bindingVariable, 0);
+			}
 			invalidate();
 
 			/*clearSerializationRepresentation();
