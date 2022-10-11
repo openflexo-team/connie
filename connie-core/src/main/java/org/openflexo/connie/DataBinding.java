@@ -497,6 +497,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					debug();
 				}
 			}
+			if (isValid && getOwner() != null) {
+				// Notify the owner that the DataBinding has successfully been decoded
+				getOwner().notifiedBindingDecoded(this);
+			}
 		}
 
 		/*if (!valid && isSet()) {
@@ -559,7 +563,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		if (isPerformingValidity) {
 			System.err.println("Stackoverflow prevented while performing validity for " + this);
-			Thread.dumpStack();
+			// Thread.dumpStack();
 			return false;
 		}
 
@@ -1024,7 +1028,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	// TODO : is this still usefull ? guess no
-	private Expression analyseExpressionAfterParsing() {
+	/*private Expression analyseExpressionAfterParsing() {
 		if (getOwner() != null && expression != null) {
 			// System.out.println("Analysing " + this + " unparsedBinding=" +
 			// unparsedBinding);
@@ -1034,7 +1038,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) {
 						if (e instanceof BindingValue) {
 							// System.out.println("> Analyse " + e);
-							// ((BindingValue) e).buildBindingPathFromParsedBindingPath(/*DataBinding.this*/);
+							// ((BindingValue) e).buildBindingPathFromParsedBindingPath();
 						}
 					}
 				});
@@ -1042,22 +1046,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				LOGGER.warning("Unexpected " + e);
 			}
 		}
-
+	
 		notifyBindingDecoded();
 		return expression;
-	}
+	}*/
 
 	public void notifyBindingChanged(Expression oldValue, Expression newValue) {
 		if (getOwner() != null) {
 			getOwner().notifiedBindingChanged(this);
 			// logger.info("notifyBindingChanged from " + oldValue + " to " +
 			// newValue + " of " + newValue.getClass());
-		}
-	}
-
-	public void notifyBindingDecoded() {
-		if (getOwner() != null) {
-			getOwner().notifiedBindingDecoded(this);
 		}
 	}
 
