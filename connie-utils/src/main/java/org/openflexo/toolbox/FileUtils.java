@@ -231,6 +231,19 @@ public class FileUtils {
 		copyResourceToDir(jarResource.getRootEntry(), tempDir, CopyStrategy.REPLACE);
 	}*/
 
+
+	public static void copyResourceToFile(Resource src, File dest) throws IOException {
+		if (src instanceof FileResourceImpl && ((FileResourceImpl) src).getFile() != null) {
+			copyFileToFile(((FileResourceImpl) src).getFile(), dest);
+		}
+		else if (src instanceof InJarResourceImpl) {
+			copyInJarResourceToFile((InJarResourceImpl) src, dest);
+		}
+		else {
+			LOGGER.severe("Unable to copy resource: " + src.toString());
+		}
+	}
+
 	public static void copyResourceToDir(Resource locateResource, File file) throws IOException {
 		copyResourceToDir(locateResource, file, CopyStrategy.REPLACE);
 	}
@@ -261,6 +274,27 @@ public class FileUtils {
 			throw e;
 		} catch (Exception e) {
 			LOGGER.warning("Cannot copy file " + f.getAbsolutePath());
+			throw e;
+		}
+	}
+
+	private static void copyInJarResourceToFile(InJarResourceImpl rsc, File dest) throws IOException {
+		dest.getParentFile().mkdirs();
+		try {
+			dest.createNewFile();
+			if (dest.exists()) {
+				try (InputStream in = rsc.openInputStream(); OutputStream out = new FileOutputStream(dest)) {
+					IOUtils.copy(in, out);
+				}
+			}
+			else {
+				LOGGER.severe("Unable to copy InJarResource: " + rsc);
+			}
+		} catch (IOException e) {
+			LOGGER.warning("Cannot create file " + dest.getAbsolutePath());
+			throw e;
+		} catch (Exception e) {
+			LOGGER.warning("Cannot copy file " + dest.getAbsolutePath());
 			throw e;
 		}
 	}

@@ -605,7 +605,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
 		if (containsMethodCallWithArguments()) {
-			for (BindingPathElement bpe : getBindingPath()) {
+			for (BindingPathElement bpe : new ArrayList<BindingPathElement>(getBindingPath())) {
 				if (bpe instanceof FunctionPathElement) {
 					for (DataBinding<?> arg : ((FunctionPathElement<?>) bpe).getArguments()) {
 						if (arg != null && arg.getExpression() != null) {
