@@ -42,7 +42,7 @@ package org.openflexo.connie.type;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 
-public class GenericArrayTypeImpl implements GenericArrayType {
+public class GenericArrayTypeImpl implements GenericArrayType, ConnieType {
 
 	private Type componentType;
 
@@ -77,5 +77,13 @@ public class GenericArrayTypeImpl implements GenericArrayType {
 							&& getGenericComponentType().equals(((GenericArrayType) obj).getGenericComponentType());
 		}
 		return super.equals(obj);
+	}
+
+	@Override
+	public GenericArrayTypeImpl translateTo(TypingSpace typingSpace) {
+		if (componentType instanceof ConnieType) {
+			return new GenericArrayTypeImpl(((ConnieType) componentType).translateTo(typingSpace));
+		}
+		return this;
 	}
 }

@@ -40,179 +40,51 @@
 package org.openflexo.connie.binding;
 
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Observable;
-import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.expr.ExpressionTransformer;
+import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * Modelize a compound path element in a binding path, which is the symbolic representation of a call to a function and with a given amount
- * of arguments
+ * Modelize a parameterized path element in a binding path, which is the symbolic representation of a call to a function and with some
+ * arguments
  * 
  * @author sylvain
  * 
  */
-public abstract class FunctionPathElement extends Observable implements BindingPathElement {
+public interface FunctionPathElement<F extends Function> extends BindingPathElement, HasPropertyChangeSupport {
 
-	private static final Logger LOGGER = Logger.getLogger(FunctionPathElement.class.getPackage().getName());
+	public F getFunction();
 
-	private final IBindingPathElement parent;
-	private final Function function;
-	private Type type;
-	private final HashMap<Function.FunctionArgument, DataBinding<?>> parameters;
-	private boolean activated = false;
+	public void setFunction(F function);
 
-	public FunctionPathElement(IBindingPathElement parent, Function function, List<DataBinding<?>> paramValues) {
-		this.parent = parent;
-		this.function = function;
-		parameters = new HashMap<>();
-		if (function == null) {
-			LOGGER.warning("FunctionPathElement called with null function");
-		}
-		else {
-			this.type = function.getReturnType();
-			if (paramValues != null) {
-				int i = 0;
-				for (Function.FunctionArgument arg : function.getArguments()) {
-					if (i < paramValues.size()) {
-						DataBinding<?> paramValue = paramValues.get(i);
-						setParameter(arg, paramValue);
-					}
-					i++;
-				}
-			}
-		}
-	}
+	public String getMethodName();
 
-	/**
-	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
-	 */
-	@Override
-	public void activate() {
-		this.activated = true;
-	}
-
-	/**
-	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
-	 */
-	@Override
-	public void desactivate() {
-		this.activated = false;
-	}
-
-	/**
-	 * Return boolean indicating if this {@link BindingPathElement} is activated
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isActivated() {
-		return activated;
-	}
-
-	public void instanciateParameters(Bindable bindable) {
-		for (Function.FunctionArgument arg : function.getArguments()) {
-			DataBinding<?> parameter = getParameter(arg);
-			if (parameter == null) {
-				parameter = new DataBinding<>(bindable, arg.getArgumentType(), DataBinding.BindingDefinitionType.GET);
-				parameter.setBindingName(arg.getArgumentName());
-				parameter.setUnparsedBinding("");
-				setParameter(arg, parameter);
-			}
-			else {
-				parameter.setOwner(bindable);
-				parameter.setDeclaredType(arg.getArgumentType());
-				parameter.setBindingDefinitionType(DataBinding.BindingDefinitionType.GET);
-			}
-		}
-	}
+	public void setMethodName(String methodName);
 
 	@Override
-	public IBindingPathElement getParent() {
-		return parent;
-	}
+	public Type getType();
 
-	public Function getFunction() {
-		return function;
-	}
+	public void setType(Type type);
 
-	@Override
-	public Type getType() {
-		return type;
-	}
+	public List<? extends FunctionArgument> getFunctionArguments();
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+	public List<DataBinding<?>> getArguments();
 
-	protected String serializationRepresentation = null;
+	public void setArguments(List<DataBinding<?>> arguments);
 
-	@Override
-	public String getSerializationRepresentation() {
-		if (serializationRepresentation == null) {
-			StringBuffer returned = new StringBuffer();
-			if (getFunction() != null) {
-				returned.append(getFunction().getName());
-				returned.append("(");
-				boolean isFirst = true;
-				for (Function.FunctionArgument a : getFunction().getArguments()) {
-					returned.append((isFirst ? "" : ",") + getParameter(a));
-					isFirst = false;
-				}
-				returned.append(")");
-			}
-			else {
-				returned.append("unknown_function()");
-			}
-			serializationRepresentation = returned.toString();
-		}
-		return serializationRepresentation;
-	}
+	public DataBinding<?> getArgumentValue(String argumentName);
 
-	@Override
-	public boolean isSettable() {
-		return false;
-	}
+	public DataBinding<?> getArgumentValue(Function.FunctionArgument argument);
 
-	public List<? extends FunctionArgument> getArguments() {
-		return function.getArguments();
-	}
+	public void setArgumentValue(Function.FunctionArgument argument, DataBinding<?> value);
 
-	public DataBinding<?> getParameter(String argumentName) {
-		for (FunctionArgument arg : getArguments()) {
-			if (arg.getArgumentName().equals(argumentName)) {
-				return parameters.get(arg);
-			}
-		}
-		return null;
-	}
+	public void instanciateParameters(Bindable bindable);
 
-	public DataBinding<?> getParameter(Function.FunctionArgument argument) {
-		return parameters.get(argument);
-	}
-
-	public void setParameter(Function.FunctionArgument argument, DataBinding<?> value) {
-		serializationRepresentation = null;
-		// System.out.println("setParameter " + argument + " for " + this + " with " + value);
-		parameters.put(argument, value);
-	}
-
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + "/" + getSerializationRepresentation();
-	}
-
-	@Override
-	public boolean isNotifyingBindingPathChanged() {
-		return false;
-	}
-
-	public abstract FunctionPathElement transform(ExpressionTransformer transformer) throws TransformException;
+	public abstract FunctionPathElement<F> transform(ExpressionTransformer transformer) throws TransformException;
 
 }

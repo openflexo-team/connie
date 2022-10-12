@@ -5,7 +5,7 @@ A ```Bindable``` basically references :
   
 * a ```BindingFactory``` (which defines how bindings are defined) and 
     
-* a ```BindingModel``` (which defines the evaluation context, also called environment). The {{{./apidocs/org/openflexo/connie/BindingModel.html}BindingModel}}
+* a ```BindingModel``` (which defines the evaluation context, also called environment). The [BindingModel](/connie/javadoc/connie/connie-core/org/openflexo/connie/BindingModel.html)
      is the environment beeing considered at run-time. It defines :
      
 * a list of  [BindingVariable](/connie/javadoc/connie/connie-core/org/openflexo/connie/BindingVariable.html). A ```BindingVariable``` basically has a name and a type.

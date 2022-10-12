@@ -59,6 +59,10 @@ public class NotSettableContextException extends TransformException {
 		message = "NotSettableContextException: variable " + bindingVariable + " context=" + context;
 	}
 
+	public NotSettableContextException(String message) {
+		super(message);
+	}
+
 	@Override
 	public String getMessage() {
 		return message;

@@ -42,16 +42,16 @@ package org.openflexo.connie.expr;
 import java.lang.reflect.Type;
 import java.util.Vector;
 
-import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.type.TypeUtils;
 
-public class CastExpression extends Expression {
+public abstract class CastExpression extends Expression {
 
-	private final TypeReference castType;
+	// private final TypeReference castType;
+	private Type castType;
 	private Expression argument;
 
-	public CastExpression(TypeReference castType, Expression argument) {
+	public CastExpression(Type castType, Expression argument) {
 		super();
 		this.castType = castType;
 		this.argument = argument;
@@ -62,8 +62,12 @@ public class CastExpression extends Expression {
 		return argument.getDepth() + 1;
 	}
 
-	public TypeReference getCastType() {
+	public Type getCastType() {
 		return castType;
+	}
+
+	public void setCastType(Type castType) {
+		this.castType = castType;
 	}
 
 	public Expression getArgument() {
@@ -75,19 +79,6 @@ public class CastExpression extends Expression {
 	}
 
 	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-
-		Expression expression = this;
-		Expression transformedArgument = argument.transform(transformer);
-
-		if (!transformedArgument.equals(argument)) {
-			expression = new CastExpression(castType, transformedArgument);
-		}
-
-		return transformer.performTransformation(expression);
-	}
-
-	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
 		argument.visit(visitor);
 		visitor.visit(this);
@@ -95,7 +86,7 @@ public class CastExpression extends Expression {
 
 	@Override
 	public EvaluationType getEvaluationType() throws TypeMismatchException {
-		return TypeUtils.kindOfType(castType.getType());
+		return TypeUtils.kindOfType(castType);
 	}
 
 	@Override
@@ -126,7 +117,7 @@ public class CastExpression extends Expression {
 
 	@Override
 	public Type getAccessedType() {
-		return getCastType().getType();
+		return getCastType();
 	}
 
 }

@@ -1,1 +1,2 @@
-include 'testutils', 'connie-utils', 'connie-parser', 'connie-core'
+rootProject.name = 'connie'
+include 'testutils', 'connie-utils','connie-core', 'default-parser', 'default-expression-language', 'java-parser', 'java-expression-language' 

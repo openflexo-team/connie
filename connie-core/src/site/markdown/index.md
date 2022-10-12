@@ -182,4 +182,3 @@ Reference documentation
   (user) [Defining DataBinding objects](DefineDataBinding.md)
 
   (user) [Executing DataBinding objects](ExecuteDataBinding.md)
-

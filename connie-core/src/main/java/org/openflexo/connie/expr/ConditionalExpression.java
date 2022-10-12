@@ -42,12 +42,10 @@ package org.openflexo.connie.expr;
 import java.lang.reflect.Type;
 import java.util.Vector;
 
-import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.Constant.BooleanConstant;
 import org.openflexo.connie.type.TypeUtils;
 
-public class ConditionalExpression extends Expression {
+public abstract class ConditionalExpression extends Expression {
 
 	private Expression condition;
 	private Expression thenExpression;
@@ -68,34 +66,6 @@ public class ConditionalExpression extends Expression {
 	@Override
 	public boolean isSettable() {
 		return false;
-	}
-
-	@Override
-	public Expression transform(ExpressionTransformer transformer) throws TransformException {
-
-		Expression expression = this;
-		Expression transformedCondition = condition.transform(transformer);
-
-		// Lazy evaluation
-		// special case if condition has been evaluated
-		if (transformedCondition == BooleanConstant.TRUE) {
-			// No need to analyze further
-			return thenExpression.transform(transformer);
-		}
-		else if (transformedCondition == BooleanConstant.FALSE) {
-			// No need to analyze further
-			return elseExpression.transform(transformer);
-		}
-
-		Expression transformedThenExpression = thenExpression.transform(transformer);
-		Expression transformedElseExpression = elseExpression.transform(transformer);
-
-		if (!transformedCondition.equals(condition) || !transformedThenExpression.equals(thenExpression)
-				|| !transformedElseExpression.equals(elseExpression)) {
-			expression = new ConditionalExpression(transformedCondition, transformedThenExpression, transformedElseExpression);
-		}
-
-		return transformer.performTransformation(expression);
 	}
 
 	@Override

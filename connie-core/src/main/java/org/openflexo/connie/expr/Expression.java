@@ -55,7 +55,7 @@ import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 
 /**
- * Represents a symbolic expression
+ * Represents a expression
  * 
  * @author sylvain
  * 
@@ -69,9 +69,9 @@ public abstract class Expression {
 	public abstract Expression transform(ExpressionTransformer transformer) throws TransformException;
 
 	public final Expression evaluate(BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		try {
-			return transform(new ExpressionEvaluator(context));
+			return transform(context.getEvaluator());
 		} catch (TypeMismatchException e) {
 			String expressionAsString;
 			try {
@@ -102,14 +102,14 @@ public abstract class Expression {
 		}
 	}
 
+	public abstract int getPriority();
+
 	public abstract int getDepth();
 
 	@Override
 	public String toString() {
-		return debugPP.getStringRepresentation(this);
+		return getPrettyPrinter().getStringRepresentation(this, null);
 	}
-
-	private static final DefaultExpressionPrettyPrinter debugPP = new DefaultExpressionPrettyPrinter();
 
 	@Override
 	public boolean equals(Object obj) {
@@ -226,4 +226,6 @@ public abstract class Expression {
 	public abstract boolean isSettable();
 
 	public abstract Type getAccessedType();
+
+	public abstract ExpressionPrettyPrinter getPrettyPrinter();
 }

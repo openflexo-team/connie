@@ -65,13 +65,11 @@ import org.openflexo.connie.expr.BindingValue;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
-import org.openflexo.connie.expr.Constant.StringConstant;
 import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionVisitor;
+import org.openflexo.connie.expr.UnresolvedBindingVariable;
 import org.openflexo.connie.expr.VisitorException;
-import org.openflexo.connie.expr.parser.ExpressionParser;
-import org.openflexo.connie.expr.parser.ParseException;
 import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.UndefinedType;
@@ -132,21 +130,24 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	private Bindable owner;
-	private String unparsedBinding;
 	private Expression expression;
 
 	private Type declaredType = null;
 	private DataBinding.BindingDefinitionType bdType = null;
 	private boolean mandatory = false;
-	private boolean valid = false;
 	private boolean isCacheable = true;
 	private Type analyzedType;
 	private String invalidBindingReason;
-	private boolean needReanalysing = true;
+	private boolean isPerformingValidity = false;
+
+	private String unparsedBinding;
+	private boolean needsParsing = false;
+
+	private boolean isValid = false;
+	private boolean validated = false;
 
 	private boolean trackBindingModelChanges = true;
 
-	private boolean needsParsing = false;
 	private String bindingName;
 
 	private CachingStrategy cachingStrategy = null;
@@ -179,23 +180,24 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		setOwner(owner);
 	}
 
+	public DataBinding(String unparsed) {
+		this(unparsed, null);
+	}
+
+	public DataBinding(String unparsed, Bindable owner) {
+		this(owner, Object.class, BindingDefinitionType.GET);
+		setExpression(parseExpression(unparsed));
+		// setUnparsedBinding(unparsed);
+	}
+
 	public DataBinding(String unparsed, Bindable owner, Type declaredType, DataBinding.BindingDefinitionType bdType) {
 		this(owner, declaredType, bdType);
-		setUnparsedBinding(unparsed);
+		setExpression(parseExpression(unparsed));
+		// setUnparsedBinding(unparsed);
 	}
 
 	public DataBinding(String unparsed, Bindable owner, DataBinding<?> db) {
 		this(unparsed, owner, db != null ? db.declaredType : Object.class, db != null ? db.bdType : BindingDefinitionType.GET);
-	}
-
-	public DataBinding(String unparsed) {
-		this();
-		setUnparsedBinding(unparsed);
-	}
-
-	public DataBinding(String unparsed, Type declaredType, DataBinding.BindingDefinitionType bdType) {
-		this(declaredType, bdType);
-		setUnparsedBinding(unparsed);
 	}
 
 	@Override
@@ -212,14 +214,18 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void debug() {
 		System.out.println("DEBUG DataBinding ");
-		System.out.println("valid=" + valid);
-		System.out.println("reason=" + invalidBindingReason);
-		System.out.println("expression=" + expression);
-		System.out.println("unparsedBinding=" + unparsedBinding);
-		System.out.println("needReanalysing=" + needReanalysing);
-		System.out.println("needsParsing=" + needsParsing);
-		System.out.println("analyzedType=" + analyzedType);
-		System.out.println("owner=" + owner);
+		System.out.println("> validated=" + validated);
+		System.out.println("> valid=" + isValid);
+		System.out.println("> reason=" + invalidBindingReason);
+		System.out.println("> expression=" + expression);
+		System.out.println("> unparsedBinding=" + unparsedBinding);
+		System.out.println("> needsParsing=" + needsParsing);
+		// System.out.println("> isParsingExpression=" + isParsingExpression);
+		System.out.println("> isPerformingValidity=" + isPerformingValidity);
+		System.out.println("> analyzedType=" + analyzedType);
+		System.out.println("> owner=" + owner);
+		System.out.println("> bindingFactory=" + (owner != null ? owner.getBindingFactory() : null));
+		System.out.println("> listenedBindingModel=" + listenedBindingModel);
 	}
 
 	private void deleteContainedBindingValues() {
@@ -272,21 +278,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (expression != null) {
 			return expression.toString();
 		}
-		// Beware some code relies on the fact that toString contains exactly the binding
-		if (StringUtils.isEmpty(unparsedBinding)) {
+		if (needsParsing) {
+			return unparsedBinding;
+		}
+		if (!isSet()) {
 			return "";
 		}
-		return "" + unparsedBinding + "";
-	}
-
-	public void decode() {
-		if (needsParsing) {
-			parseExpression();
-		}
+		return "<undefined>";
 	}
 
 	public Expression getExpression() {
-		decode();
 		return expression;
 	}
 
@@ -296,16 +297,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void setExpression(Expression value, boolean notify) {
 		// logger.info("setExpression() with " + value);
-		needsParsing = false;
-		valid = false;
+		validated = false;
 		if ((this.expression == null && value != null) || (this.expression != null && !this.expression.equals(value))) {
 			// there is a change
 			deleteContainedBindingValues();
 			Expression oldValue = this.expression;
 			this.expression = value;
-			unparsedBinding = value != null ? value.toString() : null;
-			// LOGGER.info("Binding takes now value " + value);
-			// analyseExpressionAfterParsing();
 			if (notify) {
 				notifyBindingChanged(oldValue, value);
 			}
@@ -347,9 +344,13 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return declaredType;
 	}
 
-	public void setDeclaredType(Type aDeclaredType) {
-		declaredType = aDeclaredType;
-		markedAsToBeReanalized();
+	public void setDeclaredType(Type declaredType) {
+		if ((declaredType == null && this.declaredType != null) || (declaredType != null && !declaredType.equals(this.declaredType))) {
+			Type oldValue = this.declaredType;
+			this.declaredType = declaredType;
+			getPropertyChangeSupport().firePropertyChange("declaredType", oldValue, declaredType);
+			invalidate();
+		}
 	}
 
 	public boolean isExecutable() {
@@ -370,7 +371,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	public void setBindingDefinitionType(BindingDefinitionType aBDType) {
 		bdType = aBDType;
-		markedAsToBeReanalized();
+		invalidate();
 	}
 
 	private Type performComputeAnalyzedType() {
@@ -386,7 +387,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				return ((BindingValue) getExpression()).getAccessedType();
 			}
 			else if (getExpression() instanceof CastExpression) {
-				return ((CastExpression) getExpression()).getCastType().getType();
+				return ((CastExpression) getExpression()).getCastType();
 			}
 			else if (getExpression() instanceof Constant) {
 				return ((Constant<?>) getExpression()).getType();
@@ -423,23 +424,23 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * changed<br>
 	 * Calling this method will force the next call of isValid() to force recompute the {@link DataBinding} validity status and message
 	 */
-	public void markedAsToBeReanalized() {
+	public void invalidate() {
 
 		if (debug) {
-			System.out.println("DEBUG -- Connie -- markedAsToBeReanalized for " + this);
+			System.out.println("DEBUG -- Connie -- invalidate() for " + this);
 		}
 
-		needReanalysing = true;
+		validated = false;
 
-		valid = false;
+		isValid = false;
 		if (expression != null) {
 			try {
 				expression.visit(new ExpressionVisitor() {
 					@Override
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
-							// System.out.println("A reanalyser: " + e);
-							((BindingValue) e).markedAsToBeReanalized();
+							BindingValue bv = (BindingValue) e;
+							bv.invalidate();
 						}
 					}
 				});
@@ -454,8 +455,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * Calling this method forces validity status recomputation<br>
 	 * {@link #performComputeValididy()} will be force called
 	 */
-	public boolean forceRevalidate() {
-		markedAsToBeReanalized();
+	public boolean revalidate() {
+		invalidate();
 		return isValid();
 	}
 
@@ -471,13 +472,35 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @return
 	 */
 	public boolean isValid() {
-		if (needReanalysing) {
-			valid = performComputeValididy();
+
+		if (needsParsing) {
+			if (!isParsing) {
+				setExpression(parseExpression(unparsedBinding));
+			}
+			else {
+				invalidBindingReason = "Cannot analyze due to infinite-loop";
+				isValid = false;
+				return isValid;
+			}
+		}
+
+		if (!validated) {
+			isValid = performComputeValididy();
 			if (debug) {
 				System.out.println("DEBUG -- Connie -- DONE performComputeValididy for " + this);
-				debug();
 			}
-			needReanalysing = false;
+			// We mark the DataBinding as validated if and only if both owner and BindingFactory are not null
+			if (getOwner() != null && getOwner().getBindingFactory() != null) {
+				validated = true;
+				if (debug) {
+					System.out.println("DEBUG -- Connie -- mark as validated for " + this);
+					debug();
+				}
+			}
+			if (isValid && getOwner() != null) {
+				// Notify the owner that the DataBinding has successfully been decoded
+				getOwner().notifiedBindingDecoded(this);
+			}
 		}
 
 		/*if (!valid && isSet()) {
@@ -486,17 +509,15 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			System.out.println("reason: " + invalidBindingReason());
 		}*/
 
-		return valid;
+		return isValid;
 	}
-
-	private boolean isPerformingValidity = false;
 
 	/**
 	 * Internally compute validity<br>
 	 * 
 	 * This method updates
 	 * <ul>
-	 * <li>{@link #valid} flag</li>
+	 * <li>{@link #isValid} flag</li>
 	 * <li>{@link #isCacheable} flag</li>
 	 * <li>{@link #analyzedType} value</li>
 	 * </ul>
@@ -511,19 +532,25 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		if (getOwner() == null) {
 			invalidBindingReason = "null owner";
-			valid = false;
-			return valid;
+			isValid = false;
+			return isValid;
+		}
+
+		if (getOwner().getBindingFactory() == null) {
+			invalidBindingReason = "owner has null BindingFactory";
+			isValid = false;
+			return false;
 		}
 
 		if (getOwner().getBindingModel() == null) {
 			invalidBindingReason = "owner has null BindingModel";
-			valid = false;
+			isValid = false;
 			return false;
 		}
 
 		if (getExpression() == null) {
 			invalidBindingReason = "null expression";
-			valid = false;
+			isValid = false;
 			return false;
 		}
 
@@ -536,6 +563,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		if (isPerformingValidity) {
 			System.err.println("Stackoverflow prevented while performing validity for " + this);
+			// Thread.dumpStack();
 			return false;
 		}
 
@@ -549,11 +577,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					@Override
 					public void visit(Expression e) throws InvalidBindingValue {
 						if (e instanceof BindingValue) {
-							if (!((BindingValue) e).isValid(DataBinding.this)) {
-								((BindingValue) e).markedAsToBeReanalized();
+							if (!((BindingValue) e).isValid()) {
+								((BindingValue) e).revalidate();
 							}
 							// TODO is it intentional to recompute isValid?
-							if (!((BindingValue) e).isValid(DataBinding.this)) {
+							if (!((BindingValue) e).isValid()) {
 								// System.out.println("Invalid binding " + e);
 								throw new InvalidBindingValue((BindingValue) e);
 							}
@@ -566,12 +594,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			} catch (InvalidBindingValue e) {
 				invalidBindingReason = "Invalid binding value: " + e.getBindingValue() + " reason: "
 						+ e.getBindingValue().invalidBindingReason();
-				valid = false;
+				isValid = false;
 				return false;
 			} catch (VisitorException e) {
 				invalidBindingReason = "Unexpected visitor exception: " + e.getMessage();
 				LOGGER.warning("TransformException while transforming " + expression);
-				valid = false;
+				isValid = false;
 				return false;
 			} finally {
 				isPerformingValidity = false;
@@ -585,7 +613,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					LOGGER.fine(
 							"Invalid binding because binding definition declared as settable and definition cannot satisfy it (binding variable not settable)");
 				}
-				valid = false;
+				isValid = false;
 				return false;
 			}
 		}
@@ -593,7 +621,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		if (isNull()) {
 			// A null expression is valid (otherwise return Object.class as
 			// analyzed type, and type checking will fail in next test
-			valid = true;
+			isValid = true;
 			analyzedType = ExplicitNullType.INSTANCE;
 			return true;
 		}
@@ -605,14 +633,14 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (LOGGER.isLoggable(Level.FINE)) {
 				LOGGER.fine("Invalid binding because accessed type is null");
 			}
-			valid = false;
+			isValid = false;
 			return false;
 		}
 
 		// NO need to check target type for EXECUTE bindings (we don't need
 		// return type nor value)
 		if (isExecutable()) {
-			valid = true;
+			isValid = true;
 			return true;
 		}
 
@@ -620,17 +648,18 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			// System.out.println("getBindingDefinition().getType()="+getBindingDefinition().getType());
 			// System.out.println("getAccessedType()="+getAccessedType());
 			invalidBindingReason = "valid binding";
-			valid = true;
+			isValid = true;
 			return true;
 		}
 
 		invalidBindingReason = "Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
 				+ analyzedType;
+
 		if (LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.fine("Invalid binding " + this + " because types are not matching searched " + getDeclaredType() + " having "
 					+ analyzedType);
 		}
-		valid = false;
+		isValid = false;
 		return false;
 	}
 
@@ -670,22 +699,24 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		// Make sure that validity has been computed
 		// Computes it and cache it during isValid() computation
-		isValid();
-
-		return analyzedType;
+		if (isValid()) {
+			return analyzedType;
+		}
+		else {
+			return UndefinedType.INSTANCE;
+		}
 	}
 
 	public boolean isSet() {
-		return StringUtils.isNotEmpty(unparsedBinding) || getExpression() != null;
+		return getExpression() != null || needsParsing;
 	}
 
 	public boolean isUnset() {
-		return StringUtils.isEmpty(unparsedBinding) && getExpression() == null;
+		return !isSet();
 	}
 
 	public void reset() {
 		deleteContainedBindingValues();
-		unparsedBinding = null;
 		expression = null;
 		checkBindingModelListening();
 	}
@@ -698,20 +729,37 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		return getExpression() != null && getExpression() instanceof BindingValue;
 	}
 
+	public boolean isSimpleVariable() {
+		if (isBindingValue()) {
+			BindingValue bindingPath = (BindingValue) getExpression();
+			return bindingPath.getBindingVariable() != null && bindingPath.getBindingPath().size() == 0;
+		}
+		return false;
+	}
+
+	public boolean isNewVariableDeclaration() {
+		if (isBindingValue()) {
+			BindingValue bindingPath = (BindingValue) getExpression();
+			return bindingPath.getBindingVariable() instanceof UnresolvedBindingVariable && bindingPath.getBindingPath().size() == 0;
+		}
+		return false;
+	}
+
 	public boolean isConstant() {
 		return getExpression() != null && getExpression() instanceof Constant;
 	}
 
 	public boolean isNull() {
-		return getExpression() != null && getExpression() == Constant.ObjectSymbolicConstant.NULL;
+		return getExpression() != null && getOwner() != null && getOwner().getBindingFactory() != null
+				&& getExpression() == getOwner().getBindingFactory().getNullExpression();
 	}
 
-	public boolean isStringConstant() {
+	/*public boolean isStringConstant() {
 		return getExpression() != null && getExpression() instanceof StringConstant;
-	}
+	}*/
 
 	public boolean isCompoundBinding() {
-		return isBindingValue() && ((BindingValue) getExpression()).isCompoundBinding();
+		return isBindingValue() && ((BindingValue) getExpression()).containsAMethodCall();
 	}
 
 	public String getUnparsedBinding() {
@@ -719,20 +767,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void setUnparsedBinding(String unparsedBinding) {
-		if (StringUtils.isEmpty(unparsedBinding)) {
-			this.unparsedBinding = null;
-			expression = null;
-			needsParsing = false;
-		}
-		else {
-			this.unparsedBinding = unparsedBinding;
-			expression = null;
-			needsParsing = true;
-		}
-
-		checkBindingModelListening();
-
-		markedAsToBeReanalized();
+		setExpression(parseExpression(unparsedBinding));
 	}
 
 	public Bindable getOwner() {
@@ -740,6 +775,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void setOwner(Bindable owner) {
+
 		if (this.owner != owner) {
 
 			// If owner change, we have to listen both owner and owner's binding
@@ -752,13 +788,31 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				stopListenToBindingModel();
 			}
 			this.owner = owner;
+
+			if (expression != null) {
+				try {
+					expression.visit(new ExpressionVisitor() {
+						@Override
+						public void visit(Expression e) throws InvalidBindingValue {
+							if (e instanceof BindingValue) {
+								BindingValue bv = (BindingValue) e;
+								bv.setOwner(owner);
+							}
+						}
+					});
+				} catch (VisitorException e) {
+					e.printStackTrace();
+				}
+			}
+
 			if (owner != null && owner.getPropertyChangeSupport() != null) {
 				owner.getPropertyChangeSupport().addPropertyChangeListener(this);
 			}
 
 			checkBindingModelListening();
 
-			markedAsToBeReanalized();
+			invalidate();
+
 		}
 	}
 
@@ -835,20 +889,26 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		listenedBindingVariables.clear();
 		if (listenedBindingModel != null) {
 			listenedBindingModel.getPropertyChangeSupport().removePropertyChangeListener(this);
+			listenedBindingModel = null;
 		}
+	}
+
+	public BindingModel getListenedBindingModel() {
+		return listenedBindingModel;
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		// if (debug) {
-		// System.out.println("> Received propertyName=" + evt.getPropertyName() + " source=" + evt.getSource() + " evt=" + evt);
+		// System.out.println(">>>>>>>>>>> For " + this + " Received propertyName=" + evt.getPropertyName() + " source=" + evt.getSource()
+		// + " evt=" + evt);
 		// }
 
 		// Track BindingFactory changes
 		// We detect here that the owner of this DataBinding has changed its BindingFactory
 		if (evt.getSource() == owner && evt.getPropertyName() != null && evt.getPropertyName().equals(Bindable.BINDING_FACTORY_PROPERTY)) {
-			markedAsToBeReanalized();
+			invalidate();
 		}
 
 		// Track BindingModel changes
@@ -867,11 +927,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					((BindingModel) evt.getNewValue()).getPropertyChangeSupport().addPropertyChangeListener(this);
 				}
 			}
-			markedAsToBeReanalized();
+			invalidate();
 		}
 
 		// Track structural changes inside a BindingModel
 		if (getOwner() != null && evt.getSource() == owner.getBindingModel()) {
+
 			if (evt.getPropertyName().equals(BindingModel.BINDING_VARIABLE_PROPERTY)) {
 				// We detect here that a BindingVariable was added or removed
 				// from BindingModel
@@ -883,23 +944,23 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					// A new BindingVariable was removed
 					((BindingVariable) evt.getOldValue()).getPropertyChangeSupport().removePropertyChangeListener(this);
 				}
-				markedAsToBeReanalized();
+				invalidate();
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_NAME_CHANGED)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				invalidate();
 
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BINDING_PATH_ELEMENT_TYPE_CHANGED)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
-				notifiedBindingModelStructurallyModified();
+				invalidate();
 			}
 			else if (evt.getPropertyName().equals(BindingModel.BASE_BINDING_MODEL_PROPERTY)) {
 				// We detect here that base BindingModel has changed
 				updateListenedBindingVariables();
-				markedAsToBeReanalized();
+				invalidate();
 			}
 		}
 
@@ -909,16 +970,12 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (evt.getPropertyName().equals(BindingVariable.VARIABLE_NAME_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its name,
 				// we should reanalyze the binding
-				if (!isParsingExpression) {
-					notifiedBindingModelStructurallyModified();
-				}
+				invalidate();
 			}
 			else if (evt.getPropertyName().equals(BindingVariable.TYPE_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
 				// we should reanalyze the binding
-				if (!isParsingExpression) {
-					notifiedBindingModelStructurallyModified();
-				}
+				invalidate();
 			}
 			/*else if (evt.getPropertyName().equals(BindingVariable.DELETED_PROPERTY)) {
 				// We detect here that a BindingVariable has changed its type,
@@ -929,52 +986,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 	}
 
-	/**
-	 * Called when a modification has been performed on a BindingModel (variable changed name or type, or path element changed name or type,
-	 * or something else...)
-	 * 
-	 * @return
-	 */
-	private void notifiedBindingModelStructurallyModified() {
-
-		if (!isSet()) {
-			return;
-		}
-
-		// System.out.println(">>>> START notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
-
-		// Thread.dumpStack();
-
-		if (getExpression() != null && isValid()) {
-			try {
-				getExpression().visit(new ExpressionVisitor() {
-					@Override
-					public void visit(Expression e) throws VisitorException {
-						if (e instanceof BindingValue) {
-							BindingValue bv = (BindingValue) e;
-							/*if (!bv.needsAnalysing()) {
-								bv.updateParsedBindingPathFromBindingPath();
-							}*/
-							if (bv.isValid()) {
-								bv.updateParsedBindingPathFromBindingPath();
-							}
-						}
-					}
-				});
-			} catch (VisitorException e) {
-				e.printStackTrace();
-			}
-		}
-
-		markedAsToBeReanalized();
-
-		// Perform isValid() now to be sure that parsed and analyzed are in sync
-		isValid();
-
-		// System.out.println(">>>> STOP notifiedBindingModelStructurallyModified for " + this + " " + Integer.toHexString(hashCode()));
-	}
-
-	private boolean isParsingExpression = false;
+	private boolean isParsing = false;
 
 	/**
 	 * This method is called whenever we need to parse the binding using string encoded in unparsedBinding field.<br>
@@ -983,42 +995,40 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * 
 	 * @return
 	 */
-	private Expression parseExpression() {
-		if (getUnparsedBinding() == null) {
-			return expression = null;
+	private Expression parseExpression(String unparsed) {
+
+		if (StringUtils.isEmpty(unparsed)) {
+			return null;
 		}
 
-		if (getOwner() != null) {
-			try {
-				isParsingExpression = true;
-				expression = ExpressionParser.parse(getUnparsedBinding());
-			} catch (ParseException e) {
-				// parse error
-				expression = null;
-				// logger.warning(e.getMessage());
+		try {
+			isParsing = true;
+			if (getOwner() != null && getOwner().getBindingFactory() != null) {
+				try {
+					Expression returned = getOwner().getBindingFactory().parseExpression(unparsed, getOwner());
+					needsParsing = false;
+					this.unparsedBinding = null;
+					return returned;
+				} catch (ParseException e) {
+					// parse error
+					// e.printStackTrace();
+					LOGGER.warning(e.getMessage() + " while parsing " + unparsed);
+					return null;
+				}
+			}
+			else {
+				this.unparsedBinding = unparsed;
+				needsParsing = true;
 				return null;
 			}
-			needsParsing = false;
-			analyseExpressionAfterParsing();
+		} finally {
+			isParsing = false;
 		}
-		checkBindingModelListening();
-		isParsingExpression = false;
-		needsParsing = false;
 
-		/*if (!isValid()) {
-			LOGGER.warning("Invalid binding " + getUnparsedBinding() + " reason: " + invalidBindingReason() + " " + (getOwner() != null
-					? "BindingModel=" + getOwner().getBindingModel() + " BindingFactory=" + getOwner().getBindingFactory() : ""));
-			//
-			// Bindable owner = getOwner(); BindingModel bm =
-			// getOwner().getBindingModel(); BindingFactory bf =
-			// getOwner().getBindingFactory(); logger.info("Breakpoint");
-			//
-		}*/
-
-		return expression;
 	}
 
-	private Expression analyseExpressionAfterParsing() {
+	// TODO : is this still usefull ? guess no
+	/*private Expression analyseExpressionAfterParsing() {
 		if (getOwner() != null && expression != null) {
 			// System.out.println("Analysing " + this + " unparsedBinding=" +
 			// unparsedBinding);
@@ -1028,7 +1038,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					public void visit(Expression e) {
 						if (e instanceof BindingValue) {
 							// System.out.println("> Analyse " + e);
-							((BindingValue) e).buildBindingPathFromParsedBindingPath(DataBinding.this);
+							// ((BindingValue) e).buildBindingPathFromParsedBindingPath();
 						}
 					}
 				});
@@ -1036,22 +1046,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				LOGGER.warning("Unexpected " + e);
 			}
 		}
-
+	
 		notifyBindingDecoded();
 		return expression;
-	}
+	}*/
 
 	public void notifyBindingChanged(Expression oldValue, Expression newValue) {
 		if (getOwner() != null) {
 			getOwner().notifiedBindingChanged(this);
 			// logger.info("notifyBindingChanged from " + oldValue + " to " +
 			// newValue + " of " + newValue.getClass());
-		}
-	}
-
-	public void notifyBindingDecoded() {
-		if (getOwner() != null) {
-			getOwner().notifiedBindingDecoded(this);
 		}
 	}
 
@@ -1067,7 +1071,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 */
 	@SuppressWarnings("unchecked")
 	public T getBindingValue(final BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
 		if (isGET() && ((getCachingStrategy() == CachingStrategy.OPTIMIST_CACHE)
 				|| (getCachingStrategy() == CachingStrategy.PRAGMATIC_CACHE && isCacheable()))) {
@@ -1186,7 +1190,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				throw e1;
 			} catch (TypeMismatchException e1) {
 				throw e1;
-			} catch (InvocationTargetException e) {
+			} catch (ReflectiveOperationException e) {
 				throw e;
 			}
 		}
@@ -1204,7 +1208,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @throws NotSettableContextException
 	 */
 	public void setBindingValue(Object value, BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetException, NotSettableContextException {
+			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException, NotSettableContextException {
 		if (isValid() && isSettable()) {
 			if (isBindingValue()) {
 				// BindingValue is settable
@@ -1229,7 +1233,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 		else {
 			if (!isValid()) {
-				LOGGER.warning("Trying to set value: invalid binding " + getUnparsedBinding() + " reason=" + invalidBindingReason());
+				LOGGER.warning("Trying to set value: invalid binding " + this + " reason=" + invalidBindingReason());
 			}
 			else {
 				LOGGER.warning("Trying to set value: not settable binding " + this);
@@ -1246,7 +1250,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @throws InvocationTargetException
 	 */
 	public void execute(final BindingEvaluationContext context)
-			throws TypeMismatchException, NullReferenceException, InvocationTargetException {
+			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 		getBindingValue(context);
 	}
 
@@ -1319,11 +1323,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	@Override
 	public DataBinding<T> clone() {
 		DataBinding<T> returned = new DataBinding<>(getOwner(), getDeclaredType(), this.bdType);
-		if (isSet()) {
-			returned.setUnparsedBinding(toString());
+		if (getExpression() != null) {
+			returned.setExpression(parseExpression(getExpression().toString()));
 		}
-		if (getOwner() != null) {
-			returned.decode();
+		else if (getUnparsedBinding() != null) {
+			returned.setUnparsedBinding(getUnparsedBinding());
 		}
 		return returned;
 	}
@@ -1337,4 +1341,26 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	// Used for debug only
 	public boolean debug = false;
 
+	/**
+	 * Implements equality between {@link DataBinding} objects.
+	 * 
+	 * Equality is here considered from its serialization perspective only, and is not safe regarding to current analysis in a given
+	 * context. Consider revalidate {@link DataBinding} when switching to another context
+	 * 
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DataBinding) {
+			return toString().equals(obj.toString());
+		}
+		return super.equals(obj);
+	}
+
+	/**
+	 * Returns a hash code value for the object, according to equality semantics as implemented in {@link #equals(Object)}
+	 */
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
 }

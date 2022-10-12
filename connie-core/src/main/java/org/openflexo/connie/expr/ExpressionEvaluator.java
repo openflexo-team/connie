@@ -41,22 +41,23 @@ package org.openflexo.connie.expr;
 
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.expr.Constant.BooleanConstant;
-import org.openflexo.connie.expr.Constant.FloatConstant;
-import org.openflexo.connie.expr.Constant.FloatSymbolicConstant;
 
 /**
- * This ExpressionTransformer is used to evaluate expressions
+ * This {@link ExpressionEvaluator} is used to evaluate expressions
  * 
  * @author sylvain
  * 
  */
-public class ExpressionEvaluator implements ExpressionTransformer {
+public abstract class ExpressionEvaluator implements ExpressionTransformer {
 
 	private BindingEvaluationContext context;
 
 	public ExpressionEvaluator(BindingEvaluationContext context) {
 		this.context = context;
+	}
+
+	public BindingEvaluationContext getContext() {
+		return context;
 	}
 
 	/**
@@ -65,24 +66,11 @@ public class ExpressionEvaluator implements ExpressionTransformer {
 	 */
 	@Override
 	public Expression performTransformation(Expression e) throws TransformException {
-		if (e instanceof BindingValue) {
-			if (((BindingValue) e).isValid()) {
-				Object o = ((BindingValue) e).getBindingValue(context);
-				return Constant.makeConstant(o);
-			}
-			return e;
-		}
 		if (e instanceof BinaryOperatorExpression) {
 			return transformBinaryOperatorExpression((BinaryOperatorExpression) e);
 		}
 		else if (e instanceof UnaryOperatorExpression) {
 			return transformUnaryOperatorExpression((UnaryOperatorExpression) e);
-		}
-		else if (e instanceof ConditionalExpression) {
-			return transformConditionalExpression((ConditionalExpression) e);
-		}
-		else if (e instanceof FloatSymbolicConstant) {
-			return transformFloatSymbolicConstant((FloatSymbolicConstant) e);
 		}
 		return e;
 	}
@@ -109,20 +97,6 @@ public class ExpressionEvaluator implements ExpressionTransformer {
 			return e.getOperator().evaluate((Constant<?>) e.getArgument());
 		}
 		return e;
-	}
-
-	private static Expression transformConditionalExpression(ConditionalExpression e) {
-		if (e.getCondition() == BooleanConstant.TRUE) {
-			return e.getThenExpression();
-		}
-		else if (e.getCondition() == BooleanConstant.FALSE) {
-			return e.getElseExpression();
-		}
-		return e;
-	}
-
-	private static FloatConstant transformFloatSymbolicConstant(FloatSymbolicConstant e) {
-		return new FloatConstant(e.getValue());
 	}
 
 }

@@ -50,17 +50,23 @@ import java.lang.reflect.InvocationTargetException;
 @SuppressWarnings("serial")
 public class InvocationTargetTransformException extends TransformException {
 
-	private InvocationTargetException exception;
+	private ReflectiveOperationException exception;
 
 	private String message;
 
 	public InvocationTargetTransformException(InvocationTargetException e) {
 		super();
 		exception = e;
-		message = "InvocationTargetTransformException: " + e.getTargetException().getMessage();
+		message = "InvocationTargetException: " + e.getTargetException().getMessage();
 	}
 
-	public InvocationTargetException getException() {
+	public InvocationTargetTransformException(ReflectiveOperationException e) {
+		super();
+		exception = e;
+		message = e.getClass().getSimpleName() + " : " + e.getMessage();
+	}
+
+	public ReflectiveOperationException getException() {
 		return exception;
 	}
 

@@ -1,9 +1,3 @@
- -----
- Flexo Utilities
- -----
- The Openflexo team
- -----
-
 Flexo Utilities
 
   This projects contains some utilities widely used in the whole Openflexo infrastructure.

@@ -41,7 +41,18 @@ package org.openflexo.connie.type;
 
 import java.lang.reflect.Type;
 
+/**
+ * Implemented by all classes that are typed (access to a type)
+ * 
+ * @author sylvainguerin
+ *
+ */
 public interface Typed {
 
+	/**
+	 * Return type of this {@link Typed}
+	 * 
+	 * @return
+	 */
 	Type getType();
 }

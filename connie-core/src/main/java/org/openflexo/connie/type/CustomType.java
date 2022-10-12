@@ -44,10 +44,12 @@ import java.lang.reflect.Type;
 /**
  * API for a custom type
  * 
+ * {@link CustomType} supports dynamic type resolution
+ * 
  * @author sylvain
  * 
  */
-public interface CustomType extends Type {
+public interface CustomType extends ConnieType {
 
 	/**
 	 * Determines if the class or interface represented by this {@code CustomType} object is either the same as, or is a superclass or
@@ -114,4 +116,5 @@ public interface CustomType extends Type {
 	 * @param factory
 	 */
 	public void resolve(/*CustomTypeFactory<?> factory*/);
+
 }

@@ -436,7 +436,10 @@ public class TypeUtils {
 			return true;
 		}
 		if (anOtherType instanceof UnresolvedType) {
-			return true;
+			return false;
+		}
+		if (aType instanceof UnresolvedType) {
+			return false;
 		}
 
 		// Everything could be assigned to Object
@@ -557,14 +560,14 @@ public class TypeUtils {
 						&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
 					// Fixed assignability issue with wildcards as natural bounds of generic type
 					TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
-					st1 = new WilcardTypeImpl(TV1.getBounds(), new Type[0]);
+					st1 = new WildcardTypeImpl(TV1.getBounds(), new Type[0]);
 				}
 				Type st2 = t2.getActualTypeArguments()[i];
 				if (isPureWildCard(st2) && t2.getRawType() instanceof Class
 						&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
 					// Fixed assignability issue with wildcards as natural bounds of generic type
 					TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
-					st2 = new WilcardTypeImpl(TV2.getBounds(), new Type[0]);
+					st2 = new WildcardTypeImpl(TV2.getBounds(), new Type[0]);
 				}
 				if (!isTypeAssignableFrom(st1, st2, true)) {
 					return false;
@@ -688,6 +691,9 @@ public class TypeUtils {
 			return ((CustomType) aType).simpleRepresentation();
 		}
 		if (aType instanceof Class) {
+			if (((Class<?>) aType).isAnonymousClass()) {
+				return ((Class<?>) aType).getSuperclass().getSimpleName();
+			}
 			return ((Class<?>) aType).getSimpleName();
 		}
 		else if (aType instanceof ParameterizedType) {
@@ -833,7 +839,7 @@ public class TypeUtils {
 			if (params.length > 0) {
 				Type[] args = new Type[params.length];
 				for (int i = 0; i < params.length; i++) {
-					args[i] = new WilcardTypeImpl(params[i].getBounds(), new Type[0]);
+					args[i] = new WildcardTypeImpl(params[i].getBounds(), new Type[0]);
 				}
 				return new ParameterizedTypeImpl(aClass, args);
 			}
@@ -881,14 +887,14 @@ public class TypeUtils {
 						// Those conditions are required to generate a more contextualized type
 						contextualizeType = true;
 					}
-					actualTypeArguments[i] = new WilcardTypeImpl(bounds, new Type[0]);
+					actualTypeArguments[i] = new WildcardTypeImpl(bounds, new Type[0]);
 				}
 				else {
 					actualTypeArguments[i] = currentTypeArgument;
 				}
 			}
 			if (contextualizeType) {
-				ParameterizedType fullyContextualizedType = new ParameterizedTypeImpl((Class<?>) contextParameterizedType.getRawType(),
+				ParameterizedType fullyContextualizedType = new ParameterizedTypeImpl(contextParameterizedType.getRawType(),
 						actualTypeArguments);
 				// In this case, we use the bounds defined by the TypeVariable, and we recall the method with this most contextualized type
 				return makeInstantiatedType(type, fullyContextualizedType);
@@ -908,7 +914,7 @@ public class TypeUtils {
 			for (int i = 0; i < ((ParameterizedType) type).getActualTypeArguments().length; i++) {
 				actualTypeArguments[i] = makeInstantiatedType(((ParameterizedType) type).getActualTypeArguments()[i], context);
 			}
-			return new ParameterizedTypeImpl((Class<?>) ((ParameterizedType) type).getRawType(), actualTypeArguments);
+			return new ParameterizedTypeImpl(((ParameterizedType) type).getRawType(), actualTypeArguments);
 		}
 
 		if (type instanceof GenericArrayType) {
@@ -995,7 +1001,7 @@ public class TypeUtils {
 					lowerBounds[i] = makeInstantiatedType(wt.getLowerBounds()[i], context);
 				}
 			}
-			return new WilcardTypeImpl(upperBounds, lowerBounds);
+			return new WildcardTypeImpl(upperBounds, lowerBounds);
 		}
 
 		LOGGER.warning("Unexpected " + type);
