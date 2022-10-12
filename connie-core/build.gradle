@@ -3,5 +3,5 @@ dependencies {
   compile project(':connie-parser')
   compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
-  compile project(':testutils')
+  testCompile project(':testutils')
 }

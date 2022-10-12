@@ -563,7 +563,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	@Override
 	public void visit(ExpressionVisitor visitor) throws VisitorException {
 		if (containsMethodCallWithParameters()) {
-			for (BindingPathElement bpe : getBindingPath()) {
+			for (BindingPathElement bpe : new ArrayList<BindingPathElement>(getBindingPath())) {
 				if (bpe instanceof FunctionPathElement) {
 					for (FunctionArgument arg : ((FunctionPathElement) bpe).getArguments()) {
 						DataBinding<?> parameter = ((FunctionPathElement) bpe).getParameter(arg);
@@ -1002,7 +1002,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					previous = e;
 				}
 			} catch (ConcurrentModificationException e) {
-				System.err.println("ConcurrentModificationException while executing BindingValue "+this);
+				System.err.println("ConcurrentModificationException while executing BindingValue " + this);
 				return null;
 			}
 			// System.out.println(" > return "+current);
