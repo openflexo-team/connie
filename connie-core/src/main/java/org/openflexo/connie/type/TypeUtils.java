@@ -210,6 +210,9 @@ public class TypeUtils {
 		if (isChar(aClass)) {
 			return Character.TYPE;
 		}
+		if (isVoid(aClass)) {
+			return Void.TYPE;
+		}
 		return aClass;
 	}
 
@@ -237,6 +240,9 @@ public class TypeUtils {
 		}
 		if (isChar(aClass)) {
 			return Character.class;
+		}
+		if (isVoid(aClass)) {
+			return Void.class;
 		}
 		return aClass;
 	}
