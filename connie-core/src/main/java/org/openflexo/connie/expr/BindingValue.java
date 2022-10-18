@@ -105,6 +105,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	private Type analyzedType;
 
+	// Kept for future debugging (see constructor)
+	private boolean debug2 = false;
+
 	/**
 	 * Build a new BindingValue asserting supplied String represent a {@link BindingValue} (might be an Expression)
 	 * 
@@ -140,6 +143,12 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		bindingPath = new ArrayList<>(aBindingPath);
 		validated = false;
 		isValid = false;
+		
+		/*if (toString().equals("the.binding.value.to.observe")) {
+			System.out.println("Instrumenting BindingValue "+toString());
+			debug=true;
+		}*/
+		
 	}
 
 	@Override
