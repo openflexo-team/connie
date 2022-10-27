@@ -139,7 +139,7 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 					args[i] = TypeUtils.castTo(valueBinding.getBindingValue(context),
 							getConstructorDefinition().getConstructor().getGenericParameterTypes()[i]);
 					/*System.out.println("Argument " + a.getArgumentName() + " / " + a.getArgumentType() + " values: " + valueBinding);
-					System.out.println("BindingValue: " + valueBinding + " = " + valueBinding.getBindingValue(context));
+					System.out.println("BindingPath: " + valueBinding + " = " + valueBinding.getBindingValue(context));
 					System.out.println("Valid: " + valueBinding);
 					System.out.println("Reason: " + valueBinding.invalidBindingReason());*/
 				}

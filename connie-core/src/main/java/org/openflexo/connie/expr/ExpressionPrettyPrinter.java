@@ -81,8 +81,8 @@ public abstract class ExpressionPrettyPrinter {
 		if (expression == null) {
 			return "null";
 		}
-		if (expression instanceof BindingValue) {
-			return makeStringRepresentation((BindingValue) expression, context);
+		if (expression instanceof BindingPath) {
+			return makeStringRepresentation((BindingPath) expression, context);
 		}
 		if (expression instanceof Constant) {
 			return makeStringRepresentation((Constant<?>) expression, context);
@@ -111,7 +111,7 @@ public abstract class ExpressionPrettyPrinter {
 
 	protected abstract String makeStringRepresentation(Type type, Bindable context);
 
-	protected abstract String makeStringRepresentation(BindingValue bv, Bindable context);
+	protected abstract String makeStringRepresentation(BindingPath bv, Bindable context);
 
 	protected abstract String makeStringRepresentation(UnaryOperatorExpression expression, Bindable context);
 

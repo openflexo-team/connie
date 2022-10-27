@@ -53,13 +53,13 @@ import org.openflexo.logging.FlexoLogger;
  * @author sylvain
  * 
  */
-public abstract class BindingValueArrayChangeListener<T> extends BindingValueChangeListener<T[]> {
+public abstract class BindingPathArrayChangeListener<T> extends BindingPathChangeListener<T[]> {
 
-	private static final Logger LOGGER = FlexoLogger.getLogger(BindingValueArrayChangeListener.class.getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(BindingPathArrayChangeListener.class.getName());
 
 	private T[] lastKnownValues = null;
 
-	public BindingValueArrayChangeListener(DataBinding<T[]> dataBinding, BindingEvaluationContext context) {
+	public BindingPathArrayChangeListener(DataBinding<T[]> dataBinding, BindingEvaluationContext context) {
 		super(dataBinding, context);
 	}
 

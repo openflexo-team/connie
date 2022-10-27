@@ -51,7 +51,7 @@ import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.StringUtils;
@@ -297,7 +297,7 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 	}
 
 	/**
-	 * Compute and return a list of String which are possible starting string values for a BindingValue accessing to supplied type
+	 * Compute and return a list of String which are possible starting string values for a BindingPath accessing to supplied type
 	 * 
 	 * @param string
 	 * @param ob
@@ -321,9 +321,9 @@ public class BindingModel implements HasPropertyChangeSupport, PropertyChangeLis
 			String toBeCompleted = startingString.substring(startingString.lastIndexOf(".") + 1);
 
 			DataBinding<?> db = new DataBinding<Object>(startBindingValue, bindable, Object.class, BindingDefinitionType.GET);
-			if (db.isValid() && db.isBindingValue()) {
+			if (db.isValid() && db.isBindingPath()) {
 				BindingFactory factory = bindable.getBindingFactory();
-				BindingValue bv = (BindingValue) db.getExpression();
+				BindingPath bv = (BindingPath) db.getExpression();
 				IBindingPathElement lastElement = bv.getLastBindingPathElement();
 				if (StringUtils.isEmpty(toBeCompleted.trim())) {
 					for (SimplePathElement<?> simplePathElement : factory.getAccessibleSimplePathElements(lastElement, bindable)) {

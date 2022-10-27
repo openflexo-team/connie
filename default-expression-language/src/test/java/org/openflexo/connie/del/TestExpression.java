@@ -48,7 +48,7 @@ import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DefaultBindable;
 import org.openflexo.connie.ParseException;
 import org.openflexo.connie.del.parser.ExpressionParser;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 
 import junit.framework.TestCase;
 
@@ -85,13 +85,13 @@ public class TestExpression extends TestCase {
 
 	public void testVariable1() {
 		try {
-			List<BindingValue> vars = ExpressionParser.parse("this+is+a+test", BINDABLE).getAllBindingValues();
+			List<BindingPath> vars = ExpressionParser.parse("this+is+a+test", BINDABLE).getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(BindingValue.parse("this", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("is", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("a", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("test", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("this", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("is", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("a", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("test", BINDABLE)));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -100,13 +100,13 @@ public class TestExpression extends TestCase {
 
 	public void testVariable2() {
 		try {
-			List<BindingValue> vars = ExpressionParser.parse("i+(am-a/test)+2", BINDABLE).getAllBindingValues();
+			List<BindingPath> vars = ExpressionParser.parse("i+(am-a/test)+2", BINDABLE).getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(BindingValue.parse("i", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("am", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("a", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("test", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("i", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("am", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("a", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("test", BINDABLE)));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -115,13 +115,13 @@ public class TestExpression extends TestCase {
 
 	public void testVariable3() {
 		try {
-			List<BindingValue> vars = ExpressionParser.parse("this.is.a.little.test+and+this+is.not()", BINDABLE).getAllBindingValues();
+			List<BindingPath> vars = ExpressionParser.parse("this.is.a.little.test+and+this+is.not()", BINDABLE).getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(BindingValue.parse("this.is.a.little.test", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("and", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("this", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("is.not()", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("this.is.a.little.test", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("and", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("this", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("is.not()", BINDABLE)));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -130,13 +130,13 @@ public class TestExpression extends TestCase {
 
 	public void testPrimitive1() {
 		try {
-			List<BindingValue> vars = ExpressionParser.parse("i+am+a+test", BINDABLE).getAllBindingValues();
+			List<BindingPath> vars = ExpressionParser.parse("i+am+a+test", BINDABLE).getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(BindingValue.parse("i", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("am", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("a", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("test", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("i", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("am", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("a", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("test", BINDABLE)));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -145,13 +145,13 @@ public class TestExpression extends TestCase {
 
 	public void testPrimitive2() {
 		try {
-			List<BindingValue> vars = ExpressionParser.parse("i+(am-a/test)+2", BINDABLE).getAllBindingValues();
+			List<BindingPath> vars = ExpressionParser.parse("i+(am-a/test)+2", BINDABLE).getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(BindingValue.parse("i", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("am", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("a", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("test", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("i", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("am", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("a", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("test", BINDABLE)));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();
@@ -160,13 +160,13 @@ public class TestExpression extends TestCase {
 
 	public void testPrimitive3() {
 		try {
-			List<BindingValue> vars = ExpressionParser.parse("i.am.a.little.test+and+following+is.not()", BINDABLE).getAllBindingValues();
+			List<BindingPath> vars = ExpressionParser.parse("i.am.a.little.test+and+following+is.not()", BINDABLE).getAllBindingValues();
 			System.out.println("Variables:" + vars);
 			assertEquals(4, vars.size());
-			assertTrue(vars.contains(BindingValue.parse("i.am.a.little.test", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("and", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("following", BINDABLE)));
-			assertTrue(vars.contains(BindingValue.parse("is.not()", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("i.am.a.little.test", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("and", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("following", BINDABLE)));
+			assertTrue(vars.contains(BindingPath.parse("is.not()", BINDABLE)));
 		} catch (ParseException e) {
 			e.printStackTrace();
 			fail();

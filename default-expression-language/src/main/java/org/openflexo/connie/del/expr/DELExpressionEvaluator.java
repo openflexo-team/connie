@@ -44,7 +44,7 @@ import org.openflexo.connie.del.expr.DELConstant.BooleanConstant;
 import org.openflexo.connie.del.expr.DELConstant.FloatConstant;
 import org.openflexo.connie.del.expr.DELConstant.FloatSymbolicConstant;
 import org.openflexo.connie.exception.TransformException;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionEvaluator;
@@ -67,9 +67,9 @@ public class DELExpressionEvaluator extends ExpressionEvaluator {
 	 */
 	@Override
 	public Expression performTransformation(Expression e) throws TransformException {
-		if (e instanceof BindingValue) {
-			if (((BindingValue) e).isValid()) {
-				Object o = ((BindingValue) e).getBindingValue(getContext());
+		if (e instanceof BindingPath) {
+			if (((BindingPath) e).isValid()) {
+				Object o = ((BindingPath) e).getBindingValue(getContext());
 				return DELConstant.makeConstant(o);
 			}
 			return e;

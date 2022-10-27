@@ -47,7 +47,7 @@ import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.ToolBox;
@@ -56,7 +56,7 @@ import org.openflexo.toolbox.ToolBox;
  * A {@link BindingVariable} is the declaration of a value accessible through a {@link BindingModel} (and is defined in a
  * {@link BindingModel}).<br>
  * 
- * This is the entry point of a {@link BindingValue} (a comma-separated path)
+ * This is the entry point of a {@link BindingPath} (a comma-separated path)
  * 
  * A {@link BindingVariable} has:
  * <ul>
@@ -253,6 +253,6 @@ public class BindingVariable implements SettableBindingPathElement, HasPropertyC
 
 	@Deprecated
 	// Caused by parameters management: change this !!!
-	public void hasBeenResolved(BindingValue bindingValue) {
+	public void hasBeenResolved(BindingPath bindingPath) {
 	}
 }

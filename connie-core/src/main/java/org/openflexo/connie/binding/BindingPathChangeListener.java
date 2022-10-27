@@ -64,9 +64,9 @@ import org.openflexo.toolbox.HasPropertyChangeSupport;
  * @author sylvain
  * 
  */
-public abstract class BindingValueChangeListener<T> implements PropertyChangeListener, Observer {
+public abstract class BindingPathChangeListener<T> implements PropertyChangeListener, Observer {
 
-	private static final Logger LOGGER = FlexoLogger.getLogger(BindingValueChangeListener.class.getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(BindingPathChangeListener.class.getName());
 
 	private DataBinding<T> dataBinding;
 	private BindingEvaluationContext context;
@@ -80,7 +80,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	private T initValue;
 
 	/**
-	 * Build a new {@link BindingValueChangeListener} listening to a {@link DataBinding} in a given {@link BindingEvaluationContext}
+	 * Build a new {@link BindingPathChangeListener} listening to a {@link DataBinding} in a given {@link BindingEvaluationContext}
 	 * 
 	 * @param dataBinding
 	 * @param context
@@ -88,7 +88,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	 *            when set to true, call {@link #bindingValueChanged(Object, Object)} at the end of constructor using init value as computed
 	 *            using supplied context
 	 */
-	public BindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context, boolean initAsChange) {
+	public BindingPathChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context, boolean initAsChange) {
 		super();
 		this.dataBinding = dataBinding;
 		this.context = context;
@@ -113,13 +113,13 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	}
 
 	/**
-	 * Build a new {@link BindingValueChangeListener} listening to a {@link DataBinding} in a given {@link BindingEvaluationContext}<br>
+	 * Build a new {@link BindingPathChangeListener} listening to a {@link DataBinding} in a given {@link BindingEvaluationContext}<br>
 	 * Do not call {@link #bindingValueChanged(Object, Object)} at the end of constructor using init value
 	 * 
 	 * @param dataBinding
 	 * @param context
 	 */
-	public BindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
+	public BindingPathChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		this(dataBinding, context, false);
 	}
 
@@ -329,7 +329,7 @@ public abstract class BindingValueChangeListener<T> implements PropertyChangeLis
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("BindingValueChangeListener for " + dataBinding + " context=" + context + "\n");
+		sb.append("BindingPathChangeListener for " + dataBinding + " context=" + context + "\n");
 		for (TargetObject o : dependingObjects) {
 			sb.append("> " + o + "\n");
 		}

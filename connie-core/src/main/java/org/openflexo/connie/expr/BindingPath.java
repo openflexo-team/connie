@@ -80,14 +80,14 @@ import org.openflexo.connie.type.UndefinedType;
 
 /**
  * Represents a binding path, as formed by an access to a binding variable and a path of BindingPathElement<br>
- * A BindingValue may be settable is the last BindingPathElement is itself settable
+ * A BindingPath may be settable is the last BindingPathElement is itself settable
  * 
  * @author sylvain
  * 
  */
-public class BindingValue extends Expression implements PropertyChangeListener, Cloneable {
+public class BindingPath extends Expression implements PropertyChangeListener, Cloneable {
 
-	private static final Logger LOGGER = Logger.getLogger(BindingValue.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(BindingPath.class.getPackage().getName());
 
 	public static final boolean DEBUG = true;
 
@@ -109,30 +109,30 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	private boolean debug2 = false;
 
 	/**
-	 * Build a new BindingValue asserting supplied String represent a {@link BindingValue} (might be an Expression)
+	 * Build a new BindingPath asserting supplied String represent a {@link BindingPath} (might be an Expression)
 	 * 
 	 * @param stringToParse
 	 * @param bindable
 	 * @return
 	 * @throws ParseException
 	 */
-	public static BindingValue parse(String stringToParse, Bindable bindable) throws ParseException {
+	public static BindingPath parse(String stringToParse, Bindable bindable) throws ParseException {
 		Expression e = bindable.getBindingFactory().parseExpression(stringToParse, bindable);
-		if (e instanceof BindingValue) {
-			return (BindingValue) e;
+		if (e instanceof BindingPath) {
+			return (BindingPath) e;
 		}
-		throw new ParseException("Not parseable as a BindingValue: " + stringToParse);
+		throw new ParseException("Not parseable as a BindingPath: " + stringToParse);
 	}
 
-	public BindingValue(Bindable owner, ExpressionPrettyPrinter prettyPrinter) {
+	public BindingPath(Bindable owner, ExpressionPrettyPrinter prettyPrinter) {
 		this(new ArrayList<BindingPathElement>(), owner, prettyPrinter);
 	}
 
-	public BindingValue(List<BindingPathElement> aBindingPath, Bindable owner, ExpressionPrettyPrinter prettyPrinter) {
+	public BindingPath(List<BindingPathElement> aBindingPath, Bindable owner, ExpressionPrettyPrinter prettyPrinter) {
 		this(null, aBindingPath, owner, prettyPrinter);
 	}
 
-	public BindingValue(BindingVariable aBindingVariable, List<BindingPathElement> aBindingPath, Bindable owner,
+	public BindingPath(BindingVariable aBindingVariable, List<BindingPathElement> aBindingPath, Bindable owner,
 			ExpressionPrettyPrinter prettyPrinter) {
 		super();
 
@@ -145,7 +145,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 		isValid = false;
 		
 		/*if (toString().equals("the.binding.value.to.observe")) {
-			System.out.println("Instrumenting BindingValue "+toString());
+			System.out.println("Instrumenting BindingPath "+toString());
 			debug=true;
 		}*/
 		
@@ -166,9 +166,9 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	@Override
-	public BindingValue clone() {
+	public BindingPath clone() {
 		try {
-			return (BindingValue) super.clone();
+			return (BindingPath) super.clone();
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;
@@ -506,11 +506,11 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	/**
-	 * Return boolean indicating if the computation of this {@link BindingValue} should be cached<br>
-	 * A {@link BindingValue} is cacheable if
+	 * Return boolean indicating if the computation of this {@link BindingPath} should be cached<br>
+	 * A {@link BindingPath} is cacheable if
 	 * <ul>
 	 * <li>related {@link BindingVariable} is cacheable</li>
-	 * <li>this {@link BindingValue} is notification-safe (all path elements are notification-safe)</li>
+	 * <li>this {@link BindingPath} is notification-safe (all path elements are notification-safe)</li>
 	 * </ul>
 	 * 
 	 * @return
@@ -520,7 +520,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	/**
-	 * Indicates if this {@link BindingValue} only rely on {@link BindingVariable} identified as cacheable
+	 * Indicates if this {@link BindingPath} only rely on {@link BindingVariable} identified as cacheable
 	 * 
 	 * @return
 	 */
@@ -543,7 +543,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	/**
-	 * Return boolean indicating if this {@link BindingValue} is notification-safe (all modifications of data are notified using
+	 * Return boolean indicating if this {@link BindingPath} is notification-safe (all modifications of data are notified using
 	 * {@link PropertyChangeSupport} scheme)<br>
 	 * 
 	 * @return
@@ -581,7 +581,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			}
 		}
 
-		BindingValue bv;
+		BindingPath bv;
 
 		if (containsMethodCallWithArguments()) {
 			bv = makeTransformationForArguments(transformer);
@@ -595,8 +595,8 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	}
 
-	private BindingValue makeTransformationForArguments(ExpressionTransformer transformer) throws TransformException {
-		BindingValue bv = new BindingValue(getOwner(), prettyPrinter);
+	private BindingPath makeTransformationForArguments(ExpressionTransformer transformer) throws TransformException {
+		BindingPath bv = new BindingPath(getOwner(), prettyPrinter);
 		bv.setBindingVariable(getBindingVariable());
 		for (BindingPathElement bpe : getBindingPath()) {
 			if (bpe instanceof SimplePathElement) {
@@ -646,7 +646,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	/**
-	 * Mark this {@link BindingValue} as invalidated: this means that the validity status should be cleared
+	 * Mark this {@link BindingPath} as invalidated: this means that the validity status should be cleared
 	 */
 	public void invalidate() {
 		validated = false;
@@ -655,7 +655,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	}
 
 	/**
-	 * Revalidate this {@link BindingValue} by invalidate and recompute validity
+	 * Revalidate this {@link BindingPath} by invalidate and recompute validity
 	 */
 	public void revalidate() {
 
@@ -855,16 +855,16 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BindingValue other = (BindingValue) obj;
+		BindingPath other = (BindingPath) obj;
 		return Objects.equals(getBindingPath(), other.getBindingPath()) && Objects.equals(getOwner(), other.getOwner());
 	}
 
 	/**
-	 * Build a {@link DataBinding} representing a sub {@link BindingValue} extracted from this {@link BindingValue} with binding path
+	 * Build a {@link DataBinding} representing a sub {@link BindingPath} extracted from this {@link BindingPath} with binding path
 	 * trucated at supplied index
 	 * <ul>
-	 * <li>If bindingPathIndex values 1, build a {@link BindingValue} with BindingVariable and the first binding path element</li>
-	 * <li>If bindingPathIndex values 0, build a {@link BindingValue} with BindingVariable</li>
+	 * <li>If bindingPathIndex values 1, build a {@link BindingPath} with BindingVariable and the first binding path element</li>
+	 * <li>If bindingPathIndex values 0, build a {@link BindingPath} with BindingVariable</li>
 	 * </ul>
 	 * 
 	 * @param bindingPathIndex
@@ -888,7 +888,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 	public Object getBindingValue(BindingEvaluationContext context)
 			throws TypeMismatchException, NullReferenceException, InvocationTargetTransformException {
 
-		// System.out.println(" > evaluate BindingValue " + this +
+		// System.out.println(" > evaluate BindingPath " + this +
 		// " in context " + context);
 		if (isValid() && context != null) {
 			Object current = null;
@@ -902,7 +902,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 				for (BindingPathElement e : getBindingPath()) {
 					if (current == null) {
 						if (!e.supportsNullValues()) {
-							throw new NullReferenceException("NullReferenceException while evaluating BindingValue " + toString()
+							throw new NullReferenceException("NullReferenceException while evaluating BindingPath " + toString()
 									+ ": null occured when evaluating " + previous);
 						}
 					}
@@ -914,7 +914,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 					previous = e;
 				}
 			} catch (ConcurrentModificationException e) {
-				System.err.println("ConcurrentModificationException while executing BindingValue " + this);
+				System.err.println("ConcurrentModificationException while executing BindingPath " + this);
 				return null;
 			}
 			return current;
@@ -1108,7 +1108,7 @@ public class BindingValue extends Expression implements PropertyChangeListener, 
 
 	/* Unused
 	private void debug() {
-		System.out.println("DEBUG BindingValue");
+		System.out.println("DEBUG BindingPath");
 		System.out.println("bvar=" + bindingVariable);
 		System.out.println("bpath=" + bindingPath);
 		System.out.println("validated=" + validated);

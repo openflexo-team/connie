@@ -48,7 +48,7 @@ import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.expr.UnresolvedBindingVariable;
@@ -100,8 +100,8 @@ public abstract class BindingEvaluator extends AbstractBindingEvaluator {
 				expression = expression.transform(new ExpressionTransformer() {
 					@Override
 					public Expression performTransformation(Expression e) throws TransformException {
-						if (e instanceof BindingValue) {
-							BindingValue bindingPath = (BindingValue) e;
+						if (e instanceof BindingPath) {
+							BindingPath bindingPath = (BindingPath) e;
 							if (bindingPath.getBindingVariable() == null) {
 								UnresolvedBindingVariable objectBV = new UnresolvedBindingVariable(OBJECT);
 								bindingPath.setBindingVariable(objectBV);
