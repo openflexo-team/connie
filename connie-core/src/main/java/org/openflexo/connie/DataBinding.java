@@ -1006,9 +1006,17 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			if (getOwner() != null && getOwner().getBindingFactory() != null) {
 				try {
 					Expression returned = getOwner().getBindingFactory().parseExpression(unparsed, getOwner());
-					needsParsing = false;
-					this.unparsedBinding = null;
-					return returned;
+					if (returned != null) {
+						needsParsing = false;
+						this.unparsedBinding = null;
+						return returned;
+					}
+					else {
+						// May be it is too early to parse expression, delay it
+						this.unparsedBinding = unparsed;
+						needsParsing = true;
+						return null;
+					}
 				} catch (ParseException e) {
 					// parse error
 					// e.printStackTrace();
