@@ -767,6 +767,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void setUnparsedBinding(String unparsedBinding) {
+		invalidate();
 		setExpression(parseExpression(unparsedBinding));
 	}
 
