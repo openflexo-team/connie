@@ -64,6 +64,7 @@ import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.StaticMethodPathElement;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.UnresolvedType;
 
 /**
  * This is base implementation for {@link BindingFactory} supporting java key-value conding for variables<br>
@@ -273,6 +274,10 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	// Note: in java, we don't care about functionName (which is the name of the declaring type)
 	public AbstractConstructor retrieveConstructor(Type declaringType, Type innerAccessType, String constructorName,
 			List<DataBinding<?>> arguments) {
+
+		if (declaringType instanceof UnresolvedType) {
+			return null;
+		}
 
 		Map<String, JavaConstructorDefinition> mapForType = storedConstructors.get(declaringType);
 		if (mapForType == null) {
