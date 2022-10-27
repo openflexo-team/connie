@@ -42,7 +42,6 @@ package org.openflexo.connie.binding;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
@@ -270,7 +269,7 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 		return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + "/" + getSerializationRepresentation();
 	}*/
 
-	@Override
+	/*@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
@@ -282,7 +281,7 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 		}
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -304,7 +303,7 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 		else {
 			return Objects.equals(getParsed(), other.getParsed());
 		}
-	}
+	}*/
 
 	@Override
 	public boolean isNotifyingBindingPathChanged() {
