@@ -88,6 +88,11 @@ public abstract class BindingEvaluator extends AbstractBindingEvaluator {
 	}
 
 	String normalizeBindingPath(String bindingPath) {
+
+		if (bindingPath.contains("this")) {
+			bindingPath = bindingPath.replaceAll("this", "object");
+		}
+
 		Expression expression = null;
 		try {
 			expression = getBindingFactory().parseExpression(bindingPath, this);
