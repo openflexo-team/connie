@@ -143,12 +143,12 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		bindingPath = new ArrayList<>(aBindingPath);
 		validated = false;
 		isValid = false;
-		
+
 		/*if (toString().equals("the.binding.value.to.observe")) {
 			System.out.println("Instrumenting BindingPath "+toString());
 			debug=true;
 		}*/
-		
+
 	}
 
 	@Override
@@ -254,6 +254,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		}
 		if (i < bindingPath.size()) {
 			bindingPath.set(i, element);
+			bindParent(element, i);
 			int size = bindingPath.size();
 			for (int j = i + 1; j < size; j++) {
 				BindingPathElement removed = bindingPath.remove(i + 1);
@@ -264,6 +265,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		}
 		else if (i == bindingPath.size()) {
 			bindingPath.add(element);
+			bindParent(element, i);
 			if (!element.isActivated()) {
 				element.activate();
 			}
@@ -274,6 +276,15 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 			}
 		}
 		invalidate();
+	}
+
+	private void bindParent(BindingPathElement element, int i) {
+		if (i > 0) {
+			element.setParent(bindingPath.get(i - 1));
+		}
+		else if (i == 0 && getBindingVariable() != null) {
+			element.setParent(getBindingVariable());
+		}
 	}
 
 	/**
@@ -302,6 +313,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		}
 		bindingPath.remove(i);
 		bindingPath.add(i, element);
+		bindParent(element, i);
 
 		if (!element.isActivated()) {
 			element.activate();
@@ -336,7 +348,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 
 		if (element instanceof SimplePathElement) {
 			SimplePathElement<?> simplePathElement = (SimplePathElement<?>) element;
-			SimplePathElement<?> newSimplePathElement = (SimplePathElement<?>) getOwner().getBindingFactory().makeSimplePathElement(parent,
+			SimplePathElement<?> newSimplePathElement = getOwner().getBindingFactory().makeSimplePathElement(parent,
 					simplePathElement.getLabel(), getOwner());
 			if (simplePathElement.getClass() != newSimplePathElement.getClass()) {
 				replaceBindingPathElementAtIndex(newSimplePathElement, index);
@@ -348,8 +360,8 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 
 		if (element instanceof SimpleMethodPathElement) {
 			SimpleMethodPathElement<?> methodPathElement = (SimpleMethodPathElement<?>) element;
-			SimpleMethodPathElement<?> newMethodPathElement = (SimpleMethodPathElement<?>) getOwner().getBindingFactory()
-					.makeSimpleMethodPathElement(parent, methodPathElement.getMethodName(), methodPathElement.getArguments(), getOwner());
+			SimpleMethodPathElement<?> newMethodPathElement = getOwner().getBindingFactory().makeSimpleMethodPathElement(parent,
+					methodPathElement.getMethodName(), methodPathElement.getArguments(), getOwner());
 			if (methodPathElement.getClass() != newMethodPathElement.getClass()) {
 				replaceBindingPathElementAtIndex(newMethodPathElement, index);
 				if (methodPathElement.getBindingPathElementOwner() != null) {
@@ -860,8 +872,8 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 	}
 
 	/**
-	 * Build a {@link DataBinding} representing a sub {@link BindingPath} extracted from this {@link BindingPath} with binding path
-	 * trucated at supplied index
+	 * Build a {@link DataBinding} representing a sub {@link BindingPath} extracted from this {@link BindingPath} with binding path trucated
+	 * at supplied index
 	 * <ul>
 	 * <li>If bindingPathIndex values 1, build a {@link BindingPath} with BindingVariable and the first binding path element</li>
 	 * <li>If bindingPathIndex values 0, build a {@link BindingPath} with BindingVariable</li>
