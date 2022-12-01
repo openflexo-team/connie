@@ -247,8 +247,28 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 				}
 			}
 		}
+
 		if (possiblyMatchingMethods.size() > 1) {
-			logger.warning("Please implement disambiguity here");
+			// Still more than one method possible, try to look for args types
+			// Find best one
+			List<Method> possiblyMatchingMethods2 = new ArrayList<>();
+			for (Method method : possiblyMatchingMethods) {
+				boolean allArgsMatch = true;
+				for (int i = 0; i < method.getGenericParameterTypes().length; i++) {
+					Type expectedType = method.getGenericParameterTypes()[i];
+					if (!TypeUtils.isTypeAssignableFrom(expectedType, args.get(i).getAnalyzedType())) {
+						allArgsMatch = false;
+					}
+				}
+				if (allArgsMatch) {
+					possiblyMatchingMethods2.add(method);
+				}
+			}
+			possiblyMatchingMethods = possiblyMatchingMethods2;
+		}
+
+		if (possiblyMatchingMethods.size() > 1) {
+			logger.warning("Don't know how to disambiguate " + possiblyMatchingMethods);
 			/*for (DataBinding<?> arg : args) {
 				System.out.println("arg " + arg + " of " + arg.getDeclaredType() + " / " + arg.getAnalyzedType());
 			}*/
