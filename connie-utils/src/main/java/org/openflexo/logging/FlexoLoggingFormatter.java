@@ -61,8 +61,13 @@ public class FlexoLoggingFormatter extends Formatter {
 	@Override
 	public String format(LogRecord log) {
 		StringBuffer sb = new StringBuffer();
-		sb.append(formatString(logDate ? 30 : 10,
-				log.getLevel().toString() + (logDate ? " " + dateFormat.format(new Date(log.getMillis())) : "")));
+		sb.append(formatString(20, Thread.currentThread().toString()));
+		sb.append(formatString(8, log.getLevel().toString()));
+		if (logDate) {
+			sb.append(formatString(30, dateFormat.format(new Date(log.getMillis()))));
+		}
+		// sb.append(formatString(logDate ? 30 : 10,
+		// log.getLevel().toString() + (logDate ? " " + dateFormat.format(new Date(log.getMillis())) : "")));
 		sb.append(formatString(100, log.getMessage()));
 		sb.append(formatString(50, "[" + log.getSourceClassName() + "." + log.getSourceMethodName() + "]"));
 		sb.append("\n");
