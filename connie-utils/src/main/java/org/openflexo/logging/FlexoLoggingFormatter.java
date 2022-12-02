@@ -64,7 +64,7 @@ public class FlexoLoggingFormatter extends Formatter {
 		sb.append(formatString(20, Thread.currentThread().toString()));
 		sb.append(formatString(8, log.getLevel().toString()));
 		if (logDate) {
-			sb.append(formatString(30, dateFormat.format(new Date(log.getMillis()))));
+			sb.append(formatString(23, dateFormat.format(new Date(log.getMillis()))));
 		}
 		// sb.append(formatString(logDate ? 30 : 10,
 		// log.getLevel().toString() + (logDate ? " " + dateFormat.format(new Date(log.getMillis())) : "")));
