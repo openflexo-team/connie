@@ -238,7 +238,7 @@ public class SourceCodeResourceLocatorImpl extends FileSystemResourceLocatorImpl
 		}
 
 		if (LOGGER.isLoggable(Level.WARNING)) {
-			LOGGER.warning("Could not locate resource " + relativePathName);
+			LOGGER.warning("Could not locate resource " + relativePathName + " filtered with " + regexFilter);
 		}
 		return null;
 	}
