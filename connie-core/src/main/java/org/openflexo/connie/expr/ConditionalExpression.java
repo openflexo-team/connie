@@ -45,6 +45,7 @@ import java.util.Vector;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Constant.BooleanConstant;
+import org.openflexo.connie.expr.Constant.ObjectSymbolicConstant;
 import org.openflexo.connie.type.TypeUtils;
 
 public class ConditionalExpression extends Expression {
@@ -116,6 +117,14 @@ public class ConditionalExpression extends Expression {
 	public Type getAccessedType() {
 		Type thenType = thenExpression.getAccessedType();
 		Type elseType = elseExpression.getAccessedType();
+
+		// Fixed issue with wrong resulting type when null expressions are present
+		if (thenExpression == ObjectSymbolicConstant.NULL) {
+			return elseType;
+		}
+		if (elseExpression == ObjectSymbolicConstant.NULL) {
+			return thenType;
+		}
 
 		if (TypeUtils.isTypeAssignableFrom(thenType, elseType)) {
 			return thenType;
