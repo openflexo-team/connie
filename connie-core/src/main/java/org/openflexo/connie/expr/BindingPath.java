@@ -69,6 +69,7 @@ import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.TargetObject;
+import org.openflexo.connie.binding.UnresolvedSimplePathElement;
 import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NotSettableContextException;
@@ -106,7 +107,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 	private Type analyzedType;
 
 	// Kept for future debugging (see constructor)
-	private boolean debug2 = false;
+	private final boolean debug = false;
 
 	/**
 	 * Build a new BindingPath asserting supplied String represent a {@link BindingPath} (might be an Expression)
@@ -145,8 +146,13 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		isValid = false;
 
 		/*if (toString().equals("the.binding.value.to.observe")) {
-			System.out.println("Instrumenting BindingPath "+toString());
-			debug=true;
+			System.out.println("Instrumenting BindingPath " + toString());
+			System.out.println("BV: " + getBindingVariable());
+			for (BindingPathElement bindingPathElement : bindingPath) {
+				System.out.println(" > " + bindingPathElement + " resolved=" + bindingPathElement.isResolved() + " of "
+						+ bindingPathElement.getClass());
+			}
+			debug = true;
 		}*/
 
 	}
@@ -819,6 +825,16 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 
 		for (int i = 0; i < bindingPath.size(); i++) {
 			BindingPathElement element = bindingPath.get(i);
+
+			if (element instanceof UnresolvedSimplePathElement) {
+				// Maybe i can resolve the element now
+				SimplePathElement<?> resolvedElement = ((UnresolvedSimplePathElement) element).attemptResolvingFromParent();
+				if (!(resolvedElement instanceof UnresolvedSimplePathElement)) {
+					// This element has been resolved from parent
+					replaceBindingPathElementAtIndex(resolvedElement, i);
+					element = resolvedElement;
+				}
+			}
 
 			if (!element.isResolved()) {
 				// Try to resolve now

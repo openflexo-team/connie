@@ -63,6 +63,7 @@ import org.openflexo.connie.binding.NewInstancePathElement;
 import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.StaticMethodPathElement;
+import org.openflexo.connie.binding.UnresolvedSimplePathElement;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.UnresolvedType;
 
@@ -166,7 +167,8 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		}
 		else {
 			// Unresolved
-			return new JavaPropertyPathElement(father, propertyName, bindable);
+			// return new JavaPropertyPathElement(father, propertyName, bindable);
+			return new UnresolvedSimplePathElement(father, propertyName, bindable);
 		}
 	}
 
