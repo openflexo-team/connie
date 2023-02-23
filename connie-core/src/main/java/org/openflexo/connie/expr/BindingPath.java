@@ -829,7 +829,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 			if (element instanceof UnresolvedSimplePathElement) {
 				// Maybe i can resolve the element now
 				SimplePathElement<?> resolvedElement = ((UnresolvedSimplePathElement) element).attemptResolvingFromParent();
-				if (!(resolvedElement instanceof UnresolvedSimplePathElement)) {
+				if (resolvedElement != null && !(resolvedElement instanceof UnresolvedSimplePathElement)) {
 					// This element has been resolved from parent
 					replaceBindingPathElementAtIndex(resolvedElement, i);
 					element = resolvedElement;

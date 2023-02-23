@@ -46,7 +46,6 @@ import java.util.logging.Logger;
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.binding.BindingPathElement.BindingPathCheck;
 import org.openflexo.connie.type.UnresolvedType;
 
 /**
@@ -112,7 +111,10 @@ public class UnresolvedSimplePathElement extends SimplePathElementImpl {
 	}
 
 	public SimplePathElement<?> attemptResolvingFromParent() {
-		return getBindable().getBindingFactory().makeSimplePathElement(getParent(), getParsed(), getBindable());
+		if (getBindable() != null && getBindable().getBindingFactory() != null) {
+			return getBindable().getBindingFactory().makeSimplePathElement(getParent(), getParsed(), getBindable());
+		}
+		return null;
 	}
 
 	@Override
