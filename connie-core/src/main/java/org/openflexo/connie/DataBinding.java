@@ -276,7 +276,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	@Override
 	public String toString() {
 		if (expression != null) {
-			return expression.toString();
+			return expression.toString(getOwner());
 		}
 		if (needsParsing) {
 			return unparsedBinding;

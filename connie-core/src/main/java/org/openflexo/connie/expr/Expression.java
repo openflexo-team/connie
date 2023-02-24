@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
@@ -109,6 +110,10 @@ public abstract class Expression {
 	@Override
 	public String toString() {
 		return getPrettyPrinter().getStringRepresentation(this, null);
+	}
+
+	public String toString(Bindable context) {
+		return getPrettyPrinter().getStringRepresentation(this, context);
 	}
 
 	@Override
