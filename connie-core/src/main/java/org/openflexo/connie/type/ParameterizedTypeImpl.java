@@ -124,6 +124,15 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 		return super.equals(obj);
 	}
 
+	protected boolean hasUnresolvedArguments() {
+		for (Type argument : actualTypeArguments) {
+			if (argument instanceof UnresolvedType) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private boolean hasConnieTypeArguments() {
 		if (rawType instanceof ConnieType) {
 			return true;
@@ -156,6 +165,9 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 
 	@Override
 	public boolean isResolved() {
+		if (hasUnresolvedArguments()) {
+			return false;
+		}
 		if (hasConnieTypeArguments()) {
 			if (rawType instanceof ConnieType && !((ConnieType) rawType).isResolved()) {
 				return false;
