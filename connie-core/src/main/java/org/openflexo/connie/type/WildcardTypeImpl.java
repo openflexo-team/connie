@@ -170,6 +170,20 @@ public class WildcardTypeImpl implements WildcardType, ConnieType {
 		return false;
 	}
 
+	private boolean hasUnresolvedArguments() {
+		for (Type argument : upperBounds) {
+			if (argument instanceof UnresolvedType) {
+				return true;
+			}
+		}
+		for (Type argument : lowerBounds) {
+			if (argument instanceof UnresolvedType) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public WildcardTypeImpl translateTo(TypingSpace typingSpace) {
 		if (hasConnieTypeArguments()) {
@@ -186,6 +200,47 @@ public class WildcardTypeImpl implements WildcardType, ConnieType {
 			return new WildcardTypeImpl(newUpper, newLower);
 		}
 		return this;
+	}
+
+	@Override
+	public boolean isResolved() {
+		if (hasUnresolvedArguments()) {
+			return false;
+		}
+		if (hasConnieTypeArguments()) {
+			for (int i = 0; i < upperBounds.length; i++) {
+				Type t = upperBounds[i];
+				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
+					return false;
+				}
+			}
+			for (int i = 0; i < lowerBounds.length; i++) {
+				Type t = lowerBounds[i];
+				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return true;
+	}
+
+	@Override
+	public void resolve() {
+		if (hasConnieTypeArguments()) {
+			for (int i = 0; i < upperBounds.length; i++) {
+				Type t = upperBounds[i];
+				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
+					((ConnieType) t).resolve();
+				}
+			}
+			for (int i = 0; i < lowerBounds.length; i++) {
+				Type t = lowerBounds[i];
+				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
+					((ConnieType) t).resolve();
+				}
+			}
+		}
 	}
 
 }

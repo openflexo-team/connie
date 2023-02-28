@@ -153,4 +153,43 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 		}
 		return this;
 	}
+
+	@Override
+	public boolean isResolved() {
+		if (hasConnieTypeArguments()) {
+			if (rawType instanceof ConnieType && !((ConnieType) rawType).isResolved()) {
+				return false;
+			}
+			if (ownerType instanceof ConnieType && !((ConnieType) ownerType).isResolved()) {
+				return false;
+			}
+			for (int i = 0; i < actualTypeArguments.length; i++) {
+				Type t = actualTypeArguments[i];
+				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return true;
+	}
+
+	@Override
+	public void resolve() {
+		if (hasConnieTypeArguments()) {
+			if (rawType instanceof ConnieType && !((ConnieType) rawType).isResolved()) {
+				((ConnieType) rawType).resolve();
+			}
+			if (ownerType instanceof ConnieType && !((ConnieType) ownerType).isResolved()) {
+				((ConnieType) ownerType).resolve();
+			}
+			for (int i = 0; i < actualTypeArguments.length; i++) {
+				Type t = actualTypeArguments[i];
+				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
+					((ConnieType) t).resolve();
+				}
+			}
+		}
+	}
+
 }
