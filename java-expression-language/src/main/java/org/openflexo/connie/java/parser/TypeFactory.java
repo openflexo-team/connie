@@ -81,7 +81,7 @@ import org.openflexo.connie.java.parser.node.PTypeArgumentListHead;
 import org.openflexo.connie.java.parser.node.PTypeArguments;
 import org.openflexo.connie.type.ParameterizedTypeImpl;
 import org.openflexo.connie.type.UnresolvedType;
-import org.openflexo.connie.type.WildcardTypeImpl;
+import org.openflexo.connie.type.WildcardTypeImpl.DefaultWildcardType;
 
 /**
  * This class implements the semantics analyzer for a parsed {@link Type}<br>
@@ -254,14 +254,14 @@ class TypeFactory extends DepthFirstAdapter {
 	public void outAExtendsWildcardBounds(AExtendsWildcardBounds node) {
 		super.outAExtendsWildcardBounds(node);
 		Type upperBound = getType(node.getReferenceType());
-		registerTypeNode(node, WildcardTypeImpl.makeUpperBoundWilcard(upperBound));
+		registerTypeNode(node, DefaultWildcardType.makeUpperBoundWilcard(upperBound));
 	}
 
 	@Override
 	public void outASuperWildcardBounds(ASuperWildcardBounds node) {
 		super.outASuperWildcardBounds(node);
 		Type lowerBound = getType(node.getReferenceType());
-		registerTypeNode(node, WildcardTypeImpl.makeLowerBoundWilcard(lowerBound));
+		registerTypeNode(node, DefaultWildcardType.makeLowerBoundWilcard(lowerBound));
 	}
 
 	private Type makeType(String typeName) {

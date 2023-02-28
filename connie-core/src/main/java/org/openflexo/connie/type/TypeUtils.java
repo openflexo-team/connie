@@ -57,6 +57,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.expr.EvaluationType;
+import org.openflexo.connie.type.WildcardTypeImpl.DefaultWildcardType;
 
 import com.google.common.primitives.Primitives;
 
@@ -106,6 +107,9 @@ public class TypeUtils {
 				Type rawType = ((ParameterizedType) aType).getRawType();
 				if (rawType instanceof Class) {
 					return (Class<?>) rawType;
+				}
+				if (rawType instanceof UnresolvedType) {
+					return Object.class;
 				}
 				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
@@ -566,14 +570,14 @@ public class TypeUtils {
 						&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
 					// Fixed assignability issue with wildcards as natural bounds of generic type
 					TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
-					st1 = new WildcardTypeImpl(TV1.getBounds(), new Type[0]);
+					st1 = new DefaultWildcardType(TV1.getBounds(), new Type[0]);
 				}
 				Type st2 = t2.getActualTypeArguments()[i];
 				if (isPureWildCard(st2) && t2.getRawType() instanceof Class
 						&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
 					// Fixed assignability issue with wildcards as natural bounds of generic type
 					TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
-					st2 = new WildcardTypeImpl(TV2.getBounds(), new Type[0]);
+					st2 = new DefaultWildcardType(TV2.getBounds(), new Type[0]);
 				}
 				if (!isTypeAssignableFrom(st1, st2, true)) {
 					return false;
@@ -845,7 +849,7 @@ public class TypeUtils {
 			if (params.length > 0) {
 				Type[] args = new Type[params.length];
 				for (int i = 0; i < params.length; i++) {
-					args[i] = new WildcardTypeImpl(params[i].getBounds(), new Type[0]);
+					args[i] = new DefaultWildcardType(params[i].getBounds(), new Type[0]);
 				}
 				return new ParameterizedTypeImpl(aClass, args);
 			}
@@ -893,7 +897,7 @@ public class TypeUtils {
 						// Those conditions are required to generate a more contextualized type
 						contextualizeType = true;
 					}
-					actualTypeArguments[i] = new WildcardTypeImpl(bounds, new Type[0]);
+					actualTypeArguments[i] = new DefaultWildcardType(bounds, new Type[0]);
 				}
 				else {
 					actualTypeArguments[i] = currentTypeArgument;
@@ -1007,7 +1011,7 @@ public class TypeUtils {
 					lowerBounds[i] = makeInstantiatedType(wt.getLowerBounds()[i], context);
 				}
 			}
-			return new WildcardTypeImpl(upperBounds, lowerBounds);
+			return new DefaultWildcardType(upperBounds, lowerBounds);
 		}
 
 		LOGGER.warning("Unexpected " + type);

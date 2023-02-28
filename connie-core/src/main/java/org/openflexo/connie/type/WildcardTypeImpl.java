@@ -39,51 +39,108 @@
 
 package org.openflexo.connie.type;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
-public class WildcardTypeImpl implements WildcardType, ConnieType {
+public abstract class WildcardTypeImpl<T extends Type> implements WildcardType, ConnieType {
 
-	private Type[] upperBounds = new Type[0];
-	private Type[] lowerBounds = new Type[0];
+	private T[] upperBoundsArray = null;
+	private T[] lowerBoundsArray = null;
+	private List<T> upperBounds = new ArrayList<>();
+	private List<T> lowerBounds = new ArrayList<>();
 
-	public static WildcardTypeImpl makeUpperBoundWilcard(Type upperBound) {
-		WildcardTypeImpl returned = new WildcardTypeImpl();
-		returned.upperBounds = new Type[1];
-		returned.upperBounds[0] = upperBound;
-		return returned;
+	public static class DefaultWildcardType extends WildcardTypeImpl<Type> {
+
+		public static DefaultWildcardType makeUpperBoundWilcard(Type upperBound) {
+			DefaultWildcardType returned = new DefaultWildcardType();
+			returned.addUpperBound(upperBound);
+			return returned;
+		}
+
+		public static DefaultWildcardType makeLowerBoundWilcard(Type lowerBound) {
+			DefaultWildcardType returned = new DefaultWildcardType();
+			returned.addLowerBound(lowerBound);
+			return returned;
+		}
+
+		public DefaultWildcardType() {
+			super();
+		}
+
+		public DefaultWildcardType(List<Type> upperBounds, List<Type> lowerBounds) {
+			super(upperBounds, lowerBounds);
+		}
+
+		public DefaultWildcardType(Type[] upperBounds, Type[] lowerBounds) {
+			super(upperBounds, lowerBounds);
+		}
+
+		@Override
+		public Class<Type> getTypeClass() {
+			return Type.class;
+		}
+
+		@Override
+		public DefaultWildcardType translateTo(TypingSpace typingSpace) {
+			if (hasConnieTypeArguments()) {
+				List<Type> newUpper = new ArrayList<>();
+				for (Type t : getUpperBounds()) {
+					newUpper.add(t instanceof ConnieType ? (Type) ((ConnieType) t).translateTo(typingSpace) : t);
+				}
+				List<Type> newLower = new ArrayList<>();
+				for (Type t : getLowerBounds()) {
+					newLower.add(t instanceof ConnieType ? (Type) ((ConnieType) t).translateTo(typingSpace) : t);
+				}
+				return new DefaultWildcardType(newUpper, newLower);
+			}
+			return this;
+		}
+
 	}
 
-	public static WildcardTypeImpl makeLowerBoundWilcard(Type lowerBound) {
-		WildcardTypeImpl returned = new WildcardTypeImpl();
-		returned.lowerBounds = new Type[1];
-		returned.lowerBounds[0] = lowerBound;
-		return returned;
+	protected WildcardTypeImpl() {
 	}
 
-	public WildcardTypeImpl() {
+	public WildcardTypeImpl(List<T> upperBounds, List<T> lowerBounds) {
+		this.upperBounds.addAll(upperBounds);
+		this.lowerBounds.addAll(lowerBounds);
 	}
 
-	public WildcardTypeImpl(Type[] upperBounds, Type[] lowerBounds) {
-		this.upperBounds = upperBounds;
-		this.lowerBounds = lowerBounds;
+	public WildcardTypeImpl(T[] upperBounds, T[] lowerBounds) {
+		this(Arrays.asList(upperBounds), Arrays.asList(lowerBounds));
 	}
 
-	/*public WilcardTypeImpl(Type upperBound) {
-		upperBounds = new Type[1];
-		upperBounds[0] = upperBound;
-		lowerBounds = new Type[0];
-	}*/
+	public abstract Class<T> getTypeClass();
 
 	@Override
-	public Type[] getLowerBounds() {
-		return lowerBounds;
+	public T[] getLowerBounds() {
+		if (lowerBoundsArray == null) {
+			lowerBoundsArray = lowerBounds.toArray((T[]) Array.newInstance(getTypeClass(), lowerBounds.size()));
+		}
+		return lowerBoundsArray;
 	}
 
 	@Override
-	public Type[] getUpperBounds() {
-		return upperBounds;
+	public T[] getUpperBounds() {
+		if (upperBoundsArray == null) {
+			upperBoundsArray = upperBounds.toArray((T[]) Array.newInstance(getTypeClass(), upperBounds.size()));
+		}
+		return upperBoundsArray;
+	}
+
+	protected void addUpperBound(T t) {
+		upperBounds.add(t);
+		upperBoundsArray = null;
+	}
+
+	protected void addLowerBound(T t) {
+		lowerBounds.add(t);
+		lowerBoundsArray = null;
 	}
 
 	@Override
@@ -139,24 +196,22 @@ public class WildcardTypeImpl implements WildcardType, ConnieType {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Arrays.hashCode(lowerBounds);
-		result = prime * result + Arrays.hashCode(upperBounds);
-		return result;
+		return Objects.hash(lowerBounds, upperBounds);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof WildcardType) {
-			WildcardType that = (WildcardType) obj;
-			return Arrays.asList(lowerBounds).equals(Arrays.asList(that.getLowerBounds()))
-					&& Arrays.asList(upperBounds).equals(Arrays.asList(that.getUpperBounds()));
-		}
-		return false;
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		WildcardTypeImpl other = (WildcardTypeImpl) obj;
+		return Objects.equals(lowerBounds, other.lowerBounds) && Objects.equals(upperBounds, other.upperBounds);
 	}
 
-	private boolean hasConnieTypeArguments() {
+	protected boolean hasConnieTypeArguments() {
 		for (Type argument : upperBounds) {
 			if (argument instanceof ConnieType) {
 				return true;
@@ -170,7 +225,7 @@ public class WildcardTypeImpl implements WildcardType, ConnieType {
 		return false;
 	}
 
-	private boolean hasUnresolvedArguments() {
+	protected boolean hasUnresolvedArguments() {
 		for (Type argument : upperBounds) {
 			if (argument instanceof UnresolvedType) {
 				return true;
@@ -184,23 +239,24 @@ public class WildcardTypeImpl implements WildcardType, ConnieType {
 		return false;
 	}
 
-	@Override
-	public WildcardTypeImpl translateTo(TypingSpace typingSpace) {
+	/*@Override
+	public WildcardTypeImpl<T> translateTo(TypingSpace typingSpace) {
 		if (hasConnieTypeArguments()) {
-			Type[] newUpper = new Type[upperBounds.length];
-			for (int i = 0; i < upperBounds.length; i++) {
-				Type t = upperBounds[i];
-				newUpper[i] = (t instanceof ConnieType ? ((ConnieType) t).translateTo(typingSpace) : t);
+			List<T> newUpper = new ArrayList<>();
+			for (T t : upperBounds) {
+				newUpper.add(t instanceof ConnieType ? (T) ((ConnieType) t).translateTo(typingSpace) : t);
 			}
-			Type[] newLower = new Type[lowerBounds.length];
-			for (int i = 0; i < lowerBounds.length; i++) {
-				Type t = lowerBounds[i];
-				newLower[i] = (t instanceof ConnieType ? ((ConnieType) t).translateTo(typingSpace) : t);
+			List<T> newLower = new ArrayList<>();
+			for (T t : lowerBounds) {
+				newLower.add(t instanceof ConnieType ? (T) ((ConnieType) t).translateTo(typingSpace) : t);
 			}
-			return new WildcardTypeImpl(newUpper, newLower);
+			return new WildcardTypeImpl<T>(newUpper, newLower);
 		}
 		return this;
-	}
+	}*/
+
+	@Override
+	public abstract WildcardTypeImpl<T> translateTo(TypingSpace typingSpace);
 
 	@Override
 	public boolean isResolved() {
@@ -208,14 +264,12 @@ public class WildcardTypeImpl implements WildcardType, ConnieType {
 			return false;
 		}
 		if (hasConnieTypeArguments()) {
-			for (int i = 0; i < upperBounds.length; i++) {
-				Type t = upperBounds[i];
+			for (T t : upperBounds) {
 				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
 					return false;
 				}
 			}
-			for (int i = 0; i < lowerBounds.length; i++) {
-				Type t = lowerBounds[i];
+			for (T t : lowerBounds) {
 				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
 					return false;
 				}
@@ -228,14 +282,12 @@ public class WildcardTypeImpl implements WildcardType, ConnieType {
 	@Override
 	public void resolve() {
 		if (hasConnieTypeArguments()) {
-			for (int i = 0; i < upperBounds.length; i++) {
-				Type t = upperBounds[i];
+			for (T t : upperBounds) {
 				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
 					((ConnieType) t).resolve();
 				}
 			}
-			for (int i = 0; i < lowerBounds.length; i++) {
-				Type t = lowerBounds[i];
+			for (T t : lowerBounds) {
 				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
 					((ConnieType) t).resolve();
 				}
