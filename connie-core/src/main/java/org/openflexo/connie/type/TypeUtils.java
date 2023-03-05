@@ -518,6 +518,10 @@ public class TypeUtils {
 			return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], anOtherType, permissive);
 		}
 
+		if (anOtherType instanceof WildcardType && ((WildcardType) anOtherType).getUpperBounds().length == 1) {
+			return isTypeAssignableFrom(aType, ((WildcardType) anOtherType).getUpperBounds()[0], permissive);
+		}
+
 		if (aType instanceof GenericArrayType) {
 			// logger.info("Called "+aType+" isAssignableFrom("+anOtherType+")");
 			// logger.info("anOtherType is a "+anOtherType.getClass());
