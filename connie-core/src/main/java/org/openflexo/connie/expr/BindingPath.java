@@ -840,7 +840,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 				// Try to resolve now
 				element.resolve();
 				if (!element.isResolved()) {
-					invalidBindingReason = "unresolved path element " + element;
+					invalidBindingReason = "unresolved path element " + element.getSerializationRepresentation();
 					return false;
 				}
 			}
