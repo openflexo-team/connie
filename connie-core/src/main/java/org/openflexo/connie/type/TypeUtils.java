@@ -514,6 +514,12 @@ public class TypeUtils {
 				return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], ((WildcardType) anOtherType).getUpperBounds()[0],
 						permissive);
 			}
+			if (permissive) {
+				// We will compare base class only
+				Class<?> c1 = getBaseClass(((WildcardType) aType).getUpperBounds()[0]);
+				Class<?> c2 = getBaseClass(anOtherType);
+				return isTypeAssignableFrom(c1, c2);
+			}
 			// Perform check on first upper bound only
 			return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], anOtherType, permissive);
 		}
