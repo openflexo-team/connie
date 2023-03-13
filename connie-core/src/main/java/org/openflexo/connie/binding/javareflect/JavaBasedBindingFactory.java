@@ -195,9 +195,13 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		sb.append(functionName);
 		sb.append("(");
 		boolean isFirst = true;
-		for (DataBinding<?> arg : args) {
-			sb.append((isFirst ? "" : ",") + TypeUtils.simpleRepresentation(arg.getDeclaredType()));
-			isFirst = false;
+		if (args != null) {
+			for (DataBinding<?> arg : args) {
+				if (arg != null) {
+					sb.append((isFirst ? "" : ",") + TypeUtils.simpleRepresentation(arg.getDeclaredType()));
+				}
+				isFirst = false;
+			}
 		}
 		sb.append(")");
 		return sb.toString();
