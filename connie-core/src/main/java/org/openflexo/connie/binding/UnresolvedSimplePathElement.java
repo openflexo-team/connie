@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.type.TypingSpace;
 import org.openflexo.connie.type.UnresolvedType;
 
 /**
@@ -137,6 +138,11 @@ public class UnresolvedSimplePathElement extends SimplePathElementImpl {
 		if (!Objects.equals(getParsed(), other.getParsed())) {
 		}
 		return Objects.equals(getParsed(), other.getParsed());
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		// Nothing to do
 	}
 
 }

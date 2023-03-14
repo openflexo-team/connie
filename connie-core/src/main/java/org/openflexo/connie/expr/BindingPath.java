@@ -77,6 +77,7 @@ import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.TypingSpace;
 import org.openflexo.connie.type.UndefinedType;
 
 /**
@@ -549,10 +550,12 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		for (BindingPathElement pathElement : new ArrayList<>(getBindingPath())) {
 			if (pathElement instanceof FunctionPathElement) {
 				FunctionPathElement<?> functionPathElement = (FunctionPathElement<?>) pathElement;
-				for (FunctionArgument functionArgument : functionPathElement.getFunctionArguments()) {
-					if (functionPathElement.getArgumentValue(functionArgument) != null
-							&& !functionPathElement.getArgumentValue(functionArgument).isCacheable()) {
-						return false;
+				if (functionPathElement.getFunctionArguments() != null) {
+					for (FunctionArgument functionArgument : functionPathElement.getFunctionArguments()) {
+						if (functionPathElement.getArgumentValue(functionArgument) != null
+								&& !functionPathElement.getArgumentValue(functionArgument).isCacheable()) {
+							return false;
+						}
 					}
 				}
 			}
@@ -664,11 +667,31 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 	}
 
 	/**
-	 * Mark this {@link BindingPath} as invalidated: this means that the validity status should be cleared
+	 * Invalidate this {@link BindingPath}
+	 * 
+	 * Mark this {@link BindingPath} as invalidated: this means that the validity status should be cleared. All {@link BindingPathElement}
+	 * are also invalidated
 	 */
 	public void invalidate() {
+		invalidate(null);
+	}
+
+	/**
+	 * Invalidate this {@link BindingPath} and translate all required types in the supplied {@link TypingSpace}
+	 * 
+	 * Mark this {@link BindingPath} as invalidated: this means that the validity status should be cleared. All {@link BindingPathElement}
+	 * are also invalidated
+	 */
+	public void invalidate(TypingSpace typingSpace) {
 		validated = false;
 		isValid = false;
+		analyzedType = UndefinedType.INSTANCE;
+		requiresBindingVariableResolving = true;
+		if (bindingPath != null) {
+			for (BindingPathElement bindingPathElement : bindingPath) {
+				bindingPathElement.invalidate(typingSpace);
+			}
+		}
 		clearSerializationRepresentation();
 	}
 
@@ -773,6 +796,8 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		return invalidBindingReason;
 	}
 
+	private boolean requiresBindingVariableResolving = true;
+
 	private boolean performSemanticsAnalysis() {
 
 		analyzedType = UndefinedType.INSTANCE;
@@ -786,12 +811,13 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		IBindingPathElement currentElement = null;
 
 		if (getBindingVariable() != null) {
-			if (getBindingVariable() instanceof UnresolvedBindingVariable) {
+			if (getBindingVariable() instanceof UnresolvedBindingVariable || requiresBindingVariableResolving) {
 				BindingVariable resolvedBindingVariable = getOwner().getBindingModel().bindingVariableNamed(getVariableName());
 				if (resolvedBindingVariable != null) {
 					// System.out.println("Resolving: " + this + " as " + resolvedBindingVariable);
 					setBindingVariable(resolvedBindingVariable);
 					resolvedBindingVariable.hasBeenResolved(this);
+					requiresBindingVariableResolving = false;
 				}
 				else {
 					invalidBindingReason = "BindingVariable " + getBindingVariable().getVariableName() + " does not exist";

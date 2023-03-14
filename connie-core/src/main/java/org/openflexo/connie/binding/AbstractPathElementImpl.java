@@ -231,4 +231,9 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 		return getClass().getSimpleName() + ":" + getSerializationRepresentation();
 	}
 
+	@Override
+	public final void invalidate() {
+		invalidate(null);
+	}
+
 }

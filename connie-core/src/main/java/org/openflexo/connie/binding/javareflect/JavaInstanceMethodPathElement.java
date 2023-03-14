@@ -65,6 +65,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Model a java call which is a call to a method and with some arguments
@@ -146,6 +147,9 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 	@Override
 	public boolean isNotificationSafe() {
 
+		if (getMethodDefinition() == null) {
+			return false;
+		}
 		Method m = getMethodDefinition().getMethod();
 		if (m == null || m.getAnnotation(NotificationUnsafe.class) != null) {
 			return false;
@@ -354,6 +358,13 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 				logger.warning("cannot find parent for " + this);
 			}
 		}
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		super.invalidate(typingSpace);
+		// No need to invalidate since Java is immutable in current JVM
+		// setFunction(null);
 	}
 
 	/*@Override

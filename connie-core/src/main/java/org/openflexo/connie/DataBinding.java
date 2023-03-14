@@ -72,6 +72,7 @@ import org.openflexo.connie.expr.UnresolvedBindingVariable;
 import org.openflexo.connie.expr.VisitorException;
 import org.openflexo.connie.type.ExplicitNullType;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.TypingSpace;
 import org.openflexo.connie.type.UndefinedType;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.StringUtils;
@@ -420,11 +421,26 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
-	 * Explicitly called when a structural modification of data occurs, and when the validity status of the {@link DataBinding} might have
-	 * changed<br>
+	 * Invalidate this DataBinding
+	 * 
+	 * This method may be explicitly called when a structural modification of data occurs, and when the validity status of the
+	 * {@link DataBinding} might have changed<br>
 	 * Calling this method will force the next call of isValid() to force recompute the {@link DataBinding} validity status and message
 	 */
 	public void invalidate() {
+		invalidate(null);
+	}
+
+	/**
+	 * Invalidate this DataBinding and translate all required types in the supplied {@link TypingSpace}
+	 * 
+	 * This method may be explicitly called when a structural modification of data occurs, and when the validity status of the
+	 * {@link DataBinding} might have changed<br>
+	 * Calling this method will force the next call of isValid() to force recompute the {@link DataBinding} validity status and message
+	 *
+	 * @param typingSpace
+	 */
+	public void invalidate(TypingSpace typingSpace) {
 
 		if (debug) {
 			System.out.println("DEBUG -- Connie -- invalidate() for " + this);
@@ -439,8 +455,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					@Override
 					public void visit(Expression e) throws InvalidBindingPath {
 						if (e instanceof BindingPath) {
-							BindingPath bv = (BindingPath) e;
-							bv.invalidate();
+							BindingPath bindingPath = (BindingPath) e;
+							bindingPath.invalidate(typingSpace);
 						}
 					}
 				});

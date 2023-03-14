@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Default implementation for a {@link SimpleMethodPathElement}
@@ -73,6 +74,11 @@ public abstract class SimpleMethodPathElementImpl<F extends Function> extends Fu
 	@Override
 	public boolean supportsNullValues() {
 		return false;
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		super.invalidate(typingSpace);
 	}
 
 }

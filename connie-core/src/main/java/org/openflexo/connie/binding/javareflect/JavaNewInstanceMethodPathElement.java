@@ -61,6 +61,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Model a java call which is a call to a method and with some arguments
@@ -362,6 +363,18 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 				logger.warning("cannot find constructor " + getParsed() + " for type " + getType() + " with arguments " + getArguments());
 			}
 		}
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		super.invalidate(typingSpace);
+		// No need to invalidate since Java is immutable in current JVM
+		/*if (getType() != null && typingSpace != null && getType() instanceof CustomType) {
+			Type translatedType = ((CustomType) getType()).translateTo(typingSpace);
+			setFunction(null);
+			setType(translatedType);
+		}
+		setFunction(null);*/
 	}
 
 }

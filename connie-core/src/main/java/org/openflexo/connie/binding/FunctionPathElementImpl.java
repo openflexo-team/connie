@@ -51,6 +51,7 @@ import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.expr.ExpressionTransformer;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Default implementation for a {@link FunctionPathElement}
@@ -354,6 +355,13 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 		}
 
 		return check;
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		for (DataBinding<?> arg : getArguments()) {
+			arg.invalidate(typingSpace);
+		}
 	}
 
 }
