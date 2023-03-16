@@ -329,7 +329,9 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			argTypes.add(innerAccessType);
 		}
 		for (DataBinding<?> arg : arguments) {
-			argTypes.add(arg.getAnalyzedType());
+			if (arg != null) {
+				argTypes.add(arg.getAnalyzedType());
+			}
 		}
 
 		// System.out.println("Looking-up constructor for " + type + " with " + args);
