@@ -362,8 +362,12 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 
 	@Override
 	public void invalidate(TypingSpace typingSpace) {
-		for (DataBinding<?> arg : getArguments()) {
-			arg.invalidate(typingSpace);
+		if (getArguments() != null) {
+			for (DataBinding<?> arg : getArguments()) {
+				if (arg != null) {
+					arg.invalidate(typingSpace);
+				}
+			}
 		}
 	}
 
