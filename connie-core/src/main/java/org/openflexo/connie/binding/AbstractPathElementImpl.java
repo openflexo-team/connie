@@ -43,6 +43,7 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 
 import org.openflexo.connie.Bindable;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
@@ -58,6 +59,7 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 	private PropertyChangeSupport pcSupport;
 	private boolean activated = false;
 	private Bindable bindable;
+	private BindingPath bindingPath;
 
 	private String parsed;
 
@@ -123,8 +125,9 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
 	 */
 	@Override
-	public void activate() {
+	public void activate(BindingPath bindingPath) {
 		this.activated = true;
+		this.bindingPath = bindingPath;
 	}
 
 	/**
@@ -133,6 +136,7 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 	@Override
 	public void desactivate() {
 		this.activated = false;
+		this.bindingPath = null;
 	}
 
 	/**
@@ -167,6 +171,16 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 			this.parent = parent;
 			getPropertyChangeSupport().firePropertyChange("parent", oldValue, parent);
 		}
+	}
+
+	@Override
+	public BindingPath getBindingPath() {
+		return bindingPath;
+	}
+
+	@Override
+	public void setBindingPath(BindingPath bindingPath) {
+		this.bindingPath = bindingPath;
 	}
 
 	@Override

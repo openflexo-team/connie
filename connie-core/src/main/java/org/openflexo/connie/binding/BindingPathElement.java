@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.type.TypingSpace;
 
 /**
@@ -95,8 +96,11 @@ public interface BindingPathElement extends IBindingPathElement {
 
 	/**
 	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
+	 * 
+	 * @param bindingPath
+	 *            the BindingPath this {@link BindingPathElement} belongs to
 	 */
-	public void activate();
+	public void activate(BindingPath bindingPath);
 
 	/**
 	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
@@ -140,6 +144,10 @@ public interface BindingPathElement extends IBindingPathElement {
 	 * @param typingSpace
 	 */
 	public void invalidate(TypingSpace typingSpace);
+
+	public BindingPath getBindingPath();
+
+	public void setBindingPath(BindingPath bindingPath);
 
 	public BindingPathElementOwner getBindingPathElementOwner();
 

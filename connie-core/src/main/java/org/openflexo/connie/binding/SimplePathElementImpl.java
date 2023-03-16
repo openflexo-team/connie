@@ -179,9 +179,9 @@ public abstract class SimplePathElementImpl<P extends Property> extends Abstract
 		return false;
 	}
 
-	public String getBindingPath() {
+	public String getBindingPathAsString() {
 		if (getParent() instanceof SimplePathElementImpl) {
-			return ((SimplePathElementImpl) getParent()).getBindingPath() + "." + getLabel();
+			return ((SimplePathElementImpl) getParent()).getBindingPathAsString() + "." + getLabel();
 		}
 		if (getParent() instanceof BindingVariable) {
 			return ((BindingVariable) getParent()).getVariableName() + "." + getLabel();

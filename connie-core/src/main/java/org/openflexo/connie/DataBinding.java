@@ -207,6 +207,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	public void delete() {
+		invalidate();
 		deleteContainedBindingValues();
 		stopListenToBindingModel();
 		getPropertyChangeSupport().firePropertyChange(getDeletedProperty(), false, true);

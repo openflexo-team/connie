@@ -187,6 +187,9 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 	}
 
 	public void clearSerializationRepresentation() {
+		if (getBindingPath() != null) {
+			getBindingPath().clearSerializationRepresentation();
+		}
 		serializationRepresentation = null;
 	}
 

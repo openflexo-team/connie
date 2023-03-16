@@ -241,7 +241,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		int index = bindingPath.size();
 		setBindingPathElementAtIndex(element, index);
 		if (!element.isActivated()) {
-			element.activate();
+			element.activate(this);
 		}
 		invalidate();
 		return element.getType();
@@ -274,7 +274,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 			bindingPath.add(element);
 			bindParent(element, i);
 			if (!element.isActivated()) {
-				element.activate();
+				element.activate(this);
 			}
 		}
 		else {
@@ -323,7 +323,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		bindParent(element, i);
 
 		if (!element.isActivated()) {
-			element.activate();
+			element.activate(this);
 		}
 		/*if (i < bindingPath.size() - 1) {
 			BindingPathElement successor = bindingPath.get(i + 1);
@@ -872,7 +872,7 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 			}
 
 			if (!element.isActivated()) {
-				element.activate();
+				element.activate(this);
 			}
 
 			BindingPathCheck check = element.checkBindingPathIsValid(currentElement, currentType);
