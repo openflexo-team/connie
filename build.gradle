@@ -4,12 +4,12 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.openflexo', name: 'buildplugin', version: '0.2'
-        classpath group: 'org.openflexo', name: 'buildconfig', version: '2.0.1'
+        classpath group: 'org.openflexo', name: 'buildconfig', version: '2.0.2'
         classpath 'org.openflexo:gradle-sablecc-plugin:[1.2.0,)'
     }
 }
 
 // The version must be initialized before the buildconfig plugin
 // The plugin will add '-SNAPSHOT' at the end by default or the content of the kind property
-version = "1.5.0.1"
+version = "1.5.0.2"
 apply plugin: 'org.openflexo.buildconfig'
