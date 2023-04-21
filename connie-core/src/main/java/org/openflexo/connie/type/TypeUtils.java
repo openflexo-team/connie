@@ -837,7 +837,7 @@ public class TypeUtils {
 			}
 			return false;
 		}
-		LOGGER.warning("Unexpected " + type);
+		LOGGER.warning("Unexpected " + type + (type != null ? " of " + type.getClass() : ""));
 		return false;
 	}
 
@@ -1032,17 +1032,23 @@ public class TypeUtils {
 	public static Type getSuperType(Type type) {
 		if (type instanceof ParameterizedType) {
 			ParameterizedType myType = (ParameterizedType) type;
-			Type superType = ((Class<?>) myType.getRawType()).getGenericSuperclass();
-			if (superType instanceof ParameterizedType) {
-				Type[] actualTypeArguments = new Type[((ParameterizedType) superType).getActualTypeArguments().length];
-				for (int i = 0; i < ((ParameterizedType) superType).getActualTypeArguments().length; i++) {
-					Type tv2 = ((ParameterizedType) superType).getActualTypeArguments()[i];
-					actualTypeArguments[i] = makeInstantiatedType(tv2, type);
+			if (myType.getRawType() instanceof Class) {
+				Type superType = ((Class<?>) myType.getRawType()).getGenericSuperclass();
+				if (superType instanceof ParameterizedType) {
+					Type[] actualTypeArguments = new Type[((ParameterizedType) superType).getActualTypeArguments().length];
+					for (int i = 0; i < ((ParameterizedType) superType).getActualTypeArguments().length; i++) {
+						Type tv2 = ((ParameterizedType) superType).getActualTypeArguments()[i];
+						actualTypeArguments[i] = makeInstantiatedType(tv2, type);
+					}
+					return new ParameterizedTypeImpl(((Class<?>) ((ParameterizedType) type).getRawType()).getSuperclass(),
+							actualTypeArguments);
 				}
-				return new ParameterizedTypeImpl(((Class<?>) ((ParameterizedType) type).getRawType()).getSuperclass(), actualTypeArguments);
+				// System.out.println("super type of " + simpleRepresentation(type) + " is " + simpleRepresentation(superType));
+				return superType;
 			}
-			// System.out.println("super type of " + simpleRepresentation(type) + " is " + simpleRepresentation(superType));
-			return superType;
+			else {
+				return Object.class;
+			}
 		}
 		else if (type instanceof Class) {
 			return ((Class<?>) type).getGenericSuperclass();
@@ -1071,7 +1077,12 @@ public class TypeUtils {
 	public static Type[] getSuperInterfaceTypes(Type type) {
 		if (type instanceof ParameterizedType) {
 			ParameterizedType myType = (ParameterizedType) type;
-			return ((Class<?>) myType.getRawType()).getGenericInterfaces();
+			if (myType.getRawType() instanceof Class) {
+				return ((Class<?>) myType.getRawType()).getGenericInterfaces();
+			}
+			else {
+				return new Type[0];
+			}
 		}
 		else if (type instanceof Class) {
 			return ((Class<?>) type).getGenericInterfaces();
