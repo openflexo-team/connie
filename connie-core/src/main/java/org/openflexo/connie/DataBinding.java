@@ -422,6 +422,15 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	}
 
 	/**
+	 * Fully rebuild the {@link DataBinding} from its textual representation<br>
+	 * It allows to translate a {@link DataBinding} to its actual context
+	 * 
+	 */
+	public void rebuild() {
+		setExpression(parseExpression(toString()));
+	}
+
+	/**
 	 * Invalidate this DataBinding
 	 * 
 	 * This method may be explicitly called when a structural modification of data occurs, and when the validity status of the
