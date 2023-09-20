@@ -106,4 +106,8 @@ public class ProxyType implements CustomType {
 		getReferencedType().resolve();
 	}
 
+	@Override
+	public String toString() {
+		return fullQualifiedRepresentation();
+	}
 }
