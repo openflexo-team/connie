@@ -728,6 +728,30 @@ public class TypeUtils {
 			sb.append(">");
 			return sb.toString();
 		}
+		else if (aType instanceof WildcardType) {
+			WildcardType t = (WildcardType) aType;
+			StringBuffer sb = new StringBuffer();
+			sb.append("?");
+
+			if (t.getUpperBounds() != null && t.getUpperBounds().length > 0) {
+				sb.append(" extends ");
+				boolean isFirst = true;
+				for (Type u : t.getUpperBounds()) {
+					sb.append((isFirst ? "" : ",") + simpleRepresentation(u));
+					isFirst = false;
+				}
+			}
+
+			if (t.getLowerBounds() != null && t.getLowerBounds().length > 0) {
+				sb.append(" super ");
+				boolean isFirst = true;
+				for (Type l : t.getLowerBounds()) {
+					sb.append((isFirst ? "" : ",") + simpleRepresentation(l));
+					isFirst = false;
+				}
+			}
+			return sb.toString();
+		}
 		return aType.toString();
 	}
 
