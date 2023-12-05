@@ -119,7 +119,10 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 
 	@Override
 	public String getLabel() {
-		return getMethodDefinition().getLabel();
+		if (getMethodDefinition() != null) {
+			return getMethodDefinition().getLabel();
+		}
+		return getParsed();
 	}
 
 	@Override
@@ -311,11 +314,16 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 	@Override
 	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement currentElement, Type currentType) {
 
-		BindingPathCheck check = new BindingPathCheck();
+		BindingPathCheck check = super.checkBindingPathIsValid(currentElement, currentType);
 
-		check.invalidBindingReason = "J'aime pas les static methods";
-		check.valid = false;
+		if (check.valid == false) {
+			return check;
+		}
+
+		check.returnedType = getMethodDefinition().getReturnType();
+		check.valid = true;
 		return check;
+
 	}
 
 	@Override

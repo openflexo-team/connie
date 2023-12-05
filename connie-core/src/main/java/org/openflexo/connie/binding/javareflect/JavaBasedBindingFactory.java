@@ -44,6 +44,7 @@ package org.openflexo.connie.binding.javareflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
@@ -280,12 +281,12 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			}*/
 			// Return the first one
 			// TODO: try to find the best one
-			returned = JavaInstanceMethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			returned = retrieveMethodDefinition(parentType, possiblyMatchingMethods.get(0));
 			mapForType.put(signature, returned);
 			return returned;
 		}
 		else if (possiblyMatchingMethods.size() == 1) {
-			returned = JavaInstanceMethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			returned = retrieveMethodDefinition(parentType, possiblyMatchingMethods.get(0));
 			mapForType.put(signature, returned);
 			return returned;
 		}
@@ -295,6 +296,17 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			// "Cannot find method named " + functionName + " with args=" + args + "(" + args.size() + ") for type " + parentType);
 			return null;
 		}
+	}
+
+	private AbstractJavaMethodDefinition retrieveMethodDefinition(Type parentType, Method method) {
+		AbstractJavaMethodDefinition returned;
+		if (Modifier.isStatic(method.getModifiers())) {
+			returned = JavaStaticMethodDefinition.getMethodDefinition(parentType, method);
+		}
+		else {
+			returned = JavaInstanceMethodDefinition.getMethodDefinition(parentType, method);
+		}
+		return returned;
 	}
 
 	// Note: in java, we don't care about functionName (which is the name of the declaring type)

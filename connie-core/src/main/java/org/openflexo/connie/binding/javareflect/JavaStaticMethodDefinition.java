@@ -69,6 +69,6 @@ public final class JavaStaticMethodDefinition extends AbstractJavaMethodDefiniti
 
 	@Override
 	public String toString() {
-		return "InstanceMethodDefinition[" + getSimplifiedSignature() + "]";
+		return "StaticMethodDefinition[" + getSimplifiedSignature() + "]";
 	}
 }
