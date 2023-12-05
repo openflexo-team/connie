@@ -333,6 +333,10 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
+		if (check.valid == false) {
+			return check;
+		}
+
 		if (getFunction() == null) {
 			check.invalidBindingReason = "invalid null function";
 			check.valid = false;

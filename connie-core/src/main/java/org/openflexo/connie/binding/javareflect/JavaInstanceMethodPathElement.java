@@ -319,6 +319,10 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
+		if (check.valid == false) {
+			return check;
+		}
+
 		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
 		check.valid = true;
 		return check;

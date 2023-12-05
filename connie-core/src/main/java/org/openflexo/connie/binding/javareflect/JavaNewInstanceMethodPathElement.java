@@ -330,6 +330,10 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
+		if (check.valid == false) {
+			return check;
+		}
+
 		// TODO: some other checks ???
 		check.returnedType = getType();
 		if (!TypeUtils.isResolved(getType())) {
