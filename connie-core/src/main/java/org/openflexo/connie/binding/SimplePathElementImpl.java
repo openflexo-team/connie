@@ -45,6 +45,7 @@ import java.lang.reflect.Type;
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.type.ProxyType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.TypingSpace;
 
@@ -100,6 +101,20 @@ public abstract class SimplePathElementImpl<P extends Property> extends Abstract
 				setType(Object.class);
 			}
 		}
+	}
+
+	/**
+	 * Return accessed type for this {@link IBindingPathElement}<br>
+	 * If this is a {@link ProxyType} return referenced type
+	 * 
+	 * @return
+	 */
+	@Override
+	public Type getActualType() {
+		if (getType() instanceof ProxyType) {
+			return ((ProxyType) getType()).getReferencedType();
+		}
+		return getType();
 	}
 
 	@Override

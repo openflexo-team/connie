@@ -47,6 +47,7 @@ import org.openflexo.connie.BindingFactory;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.type.ProxyType;
 import org.openflexo.connie.type.Typed;
 
 /**
@@ -95,6 +96,14 @@ public interface IBindingPathElement extends Typed {
 	 */
 	@Override
 	Type getType();
+
+	/**
+	 * Return accessed type for this {@link IBindingPathElement}<br>
+	 * If this is a {@link ProxyType} return referenced type
+	 * 
+	 * @return
+	 */
+	public Type getActualType();
 
 	/**
 	 * Return serialized representation for this {@link IBindingPathElement}

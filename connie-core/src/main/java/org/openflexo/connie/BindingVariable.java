@@ -43,11 +43,13 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BindingPath;
+import org.openflexo.connie.type.ProxyType;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.ToolBox;
@@ -92,6 +94,20 @@ public class BindingVariable implements SettableBindingPathElement, HasPropertyC
 	public BindingVariable(String variableName, Type type, boolean settable) {
 		this(variableName, type);
 		setSettable(settable);
+	}
+
+	/**
+	 * Return accessed type for this {@link IBindingPathElement}<br>
+	 * If this is a {@link ProxyType} return referenced type
+	 * 
+	 * @return
+	 */
+	@Override
+	public Type getActualType() {
+		if (getType() instanceof ProxyType) {
+			return ((ProxyType) getType()).getReferencedType();
+		}
+		return getType();
 	}
 
 	@Override

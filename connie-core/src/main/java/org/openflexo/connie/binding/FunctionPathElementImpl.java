@@ -51,6 +51,7 @@ import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.expr.ExpressionTransformer;
+import org.openflexo.connie.type.ProxyType;
 import org.openflexo.connie.type.TypingSpace;
 
 /**
@@ -129,6 +130,20 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 	@Override
 	public void setMethodName(String methodName) {
 		setParsed(methodName);
+	}
+
+	/**
+	 * Return accessed type for this {@link IBindingPathElement}<br>
+	 * If this is a {@link ProxyType} return referenced type
+	 * 
+	 * @return
+	 */
+	@Override
+	public Type getActualType() {
+		if (getType() instanceof ProxyType) {
+			return ((ProxyType) getType()).getReferencedType();
+		}
+		return getType();
 	}
 
 	@Override
