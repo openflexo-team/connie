@@ -439,6 +439,12 @@ public class TypeUtils {
 			return true;
 		}
 
+		if (aType instanceof ProxyType) {
+			return isTypeAssignableFrom(((ProxyType) aType).getReferencedType(), anOtherType, permissive);
+		}
+		if (anOtherType instanceof ProxyType) {
+			return isTypeAssignableFrom(aType, ((ProxyType) anOtherType).getReferencedType(), permissive);
+		}
 		if (anOtherType == ExplicitNullType.INSTANCE) {
 			return true;
 		}
