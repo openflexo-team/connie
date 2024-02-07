@@ -52,13 +52,18 @@ public class JavaConstructorDefinition extends AbstractJavaExecutableDefinition<
 	private String _signatureNFQ;
 	private String _signatureFQ;
 
-	private static Map<Constructor<?>, JavaConstructorDefinition> cache = new HashMap<>();
+	private static Map<Constructor<?>, Map<Type, JavaConstructorDefinition>> cache = new HashMap<>();
 
 	public static JavaConstructorDefinition getConstructorDefinition(Type aDeclaringType, Constructor<?> constructor) {
-		JavaConstructorDefinition returned = cache.get(constructor);
+		Map<Type, JavaConstructorDefinition> map = cache.get(constructor);
+		if (map == null) {
+			map = new HashMap<>();
+			cache.put(constructor, map);
+		}
+		JavaConstructorDefinition returned = map.get(aDeclaringType);
 		if (returned == null) {
 			returned = new JavaConstructorDefinition(aDeclaringType, constructor);
-			cache.put(constructor, returned);
+			map.put(aDeclaringType, returned);
 		}
 		return returned;
 	}
