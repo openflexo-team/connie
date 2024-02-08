@@ -451,6 +451,9 @@ public class TypeUtils {
 		if (anOtherType == UndefinedType.INSTANCE) {
 			return true;
 		}
+		if (anOtherType == DiamondType.INSTANCE) {
+			return true;
+		}
 		if (anOtherType instanceof UnresolvedType) {
 			return false;
 		}
@@ -757,6 +760,9 @@ public class TypeUtils {
 				}
 			}
 			return sb.toString();
+		}
+		else if (aType instanceof DiamondType) {
+			return "";
 		}
 		return aType.toString();
 	}
