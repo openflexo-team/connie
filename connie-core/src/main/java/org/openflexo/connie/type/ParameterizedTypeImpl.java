@@ -41,6 +41,8 @@ package org.openflexo.connie.type;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 
@@ -111,17 +113,39 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 		return sb.toString();
 	}
 
-	@Override
+	/*@Override
 	public int hashCode() {
 		return fullQualifiedRepresentation().hashCode();
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Type) {
 			return TypeUtils.fullQualifiedRepresentation(this).equals(TypeUtils.fullQualifiedRepresentation((Type) obj));
 		}
 		return super.equals(obj);
+	}*/
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(actualTypeArguments);
+		result = prime * result + Objects.hash(ownerType, rawType);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ParameterizedTypeImpl other = (ParameterizedTypeImpl) obj;
+		return Arrays.equals(actualTypeArguments, other.actualTypeArguments) && Objects.equals(ownerType, other.ownerType)
+				&& Objects.equals(rawType, other.rawType);
 	}
 
 	protected boolean hasUnresolvedArguments() {
