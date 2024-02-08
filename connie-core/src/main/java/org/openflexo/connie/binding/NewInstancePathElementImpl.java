@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.type.TypeUtils;
 
 /**
  * Default implementation for {@link NewInstancePathElement}
@@ -122,4 +123,15 @@ public abstract class NewInstancePathElementImpl<C extends AbstractConstructor> 
 		return true;
 	}
 
+	@Override
+	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement parentElement, Type parentType) {
+		BindingPathCheck returned = super.checkBindingPathIsValid(parentElement, parentType);
+		if (!TypeUtils.isResolved(getType())) {
+			returned.invalidBindingReason = "Unresolved type : " + getType();
+			returned.valid = false;
+			return returned;
+		}
+
+		return returned;
+	}
 }
