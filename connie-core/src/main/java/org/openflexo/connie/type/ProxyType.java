@@ -53,6 +53,19 @@ public class ProxyType implements CustomType {
 
 	private final CustomType referencedType;
 
+	/**
+	 * Utility method to retrieve effective type of any type
+	 * 
+	 * @param aType
+	 * @return
+	 */
+	public static Type getEffectiveType(Type aType) {
+		if (aType instanceof ProxyType) {
+			return getEffectiveType(((ProxyType) aType).getReferencedType());
+		}
+		return aType;
+	}
+
 	public ProxyType(String localName, CustomType referencedType) {
 		this.localName = localName;
 		this.referencedType = referencedType;
