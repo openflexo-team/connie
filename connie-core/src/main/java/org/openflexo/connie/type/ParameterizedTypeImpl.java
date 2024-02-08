@@ -189,6 +189,10 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 
 	@Override
 	public boolean isResolved() {
+		// System.out.println("rawType=" + rawType + " of " + rawType.getClass());
+		if (rawType instanceof UnresolvedType) {
+			return false;
+		}
 		if (hasUnresolvedArguments()) {
 			return false;
 		}
