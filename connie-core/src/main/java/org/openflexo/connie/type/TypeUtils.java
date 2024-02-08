@@ -817,8 +817,14 @@ public class TypeUtils {
 	}
 
 	public static boolean isResolved(Type type) {
-		return type instanceof Class || type instanceof GenericArrayType && isResolved(((GenericArrayType) type).getGenericComponentType())
-				|| type instanceof ParameterizedType || type instanceof CustomType;
+		if (!(type instanceof Class || type instanceof GenericArrayType && isResolved(((GenericArrayType) type).getGenericComponentType())
+				|| type instanceof ParameterizedType || type instanceof CustomType)) {
+			return false;
+		}
+		if (type instanceof ConnieType) {
+			return ((ConnieType) type).isResolved();
+		}
+		return true;
 	}
 
 	public static boolean isPureWildCard(Type type) {
