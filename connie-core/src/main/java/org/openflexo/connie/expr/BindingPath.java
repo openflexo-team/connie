@@ -800,6 +800,8 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 
 	private boolean performSemanticsAnalysis() {
 
+		boolean doItAgain = false;
+
 		analyzedType = UndefinedType.INSTANCE;
 
 		if (getRootPathElement() == null) {
@@ -858,6 +860,9 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 				if (resolvedElement != null && !(resolvedElement instanceof UnresolvedSimplePathElement)) {
 					// This element has been resolved from parent
 					replaceBindingPathElementAtIndex(resolvedElement, i);
+					// HACK: Because everything was invalidated, do it again !
+					// TODO: can we do something better ????
+					doItAgain = true;
 					element = resolvedElement;
 				}
 			}
@@ -889,6 +894,10 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		analyzedType = currentType;
 
 		clearSerializationRepresentation();
+
+		if (doItAgain) {
+			return performSemanticsAnalysis();
+		}
 
 		return true;
 	}
