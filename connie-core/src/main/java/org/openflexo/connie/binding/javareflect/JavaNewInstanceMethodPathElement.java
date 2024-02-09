@@ -363,6 +363,16 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 			JavaConstructorDefinition function = (JavaConstructorDefinition) getBindingFactory().retrieveConstructor(getType(),
 					getParent() != null ? getParent().getType() : null, getParsed(), getArguments());
 			setFunction(function);
+
+			if (getParent() != null && function.getArguments().size() > 0) {
+				FunctionArgument arg = function.getArguments().get(0);
+				// We build innerAccess from parent path element
+				DataBinding<?> innerAccess = new DataBinding<>(getParent().getRelativePath(), getBindable(), getParent().getType(),
+						DataBinding.BindingDefinitionType.GET);
+				innerAccess.setBindingName(arg.getArgumentName());
+				setArgumentValue(arg, innerAccess);
+			}
+
 			if (function == null) {
 				logger.warning("cannot find constructor " + getParsed() + " for type " + getType() + " with arguments " + getArguments());
 			}
@@ -380,5 +390,14 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 		}
 		setFunction(null);*/
 	}
+
+	/*@Override
+	public DataBinding<?> getArgumentValue(FunctionArgument argument) {
+		DataBinding<?> returned = super.getArgumentValue(argument);
+		if (returned == null) {
+			System.out.println("Tiens on me demande " + argument.getArgumentName() + " of " + argument.getArgumentType());
+		}
+		return returned;
+	}*/
 
 }

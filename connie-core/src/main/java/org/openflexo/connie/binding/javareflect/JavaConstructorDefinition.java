@@ -68,6 +68,22 @@ public class JavaConstructorDefinition extends AbstractJavaExecutableDefinition<
 		return returned;
 	}
 
+	@Override
+	protected void buildArguments(Type aDeclaringType) {
+		if (getConstructor().getDeclaringClass().getDeclaringClass() != null) {
+			int i = 0;
+			for (Type t : getConstructor().getGenericParameterTypes()) {
+				String argName = "arg" + i;
+				Type argType = TypeUtils.makeInstantiatedType(t, aDeclaringType);
+				arguments.add((i == 0) ? new InnerAccessArgument(this, argType) : new DefaultFunctionArgument(this, argName, argType));
+				i++;
+			}
+		}
+		else {
+			super.buildArguments(aDeclaringType);
+		}
+	}
+
 	private JavaConstructorDefinition(Type aDeclaringType, Constructor<?> constructor) {
 		super(aDeclaringType, constructor);
 	}
@@ -123,4 +139,10 @@ public class JavaConstructorDefinition extends AbstractJavaExecutableDefinition<
 		return getDeclaringType();
 	}
 
+	public static class InnerAccessArgument extends DefaultFunctionArgument {
+
+		public InnerAccessArgument(JavaConstructorDefinition function, Type argumentType) {
+			super(function, "innerAccess", argumentType);
+		}
+	}
 }
