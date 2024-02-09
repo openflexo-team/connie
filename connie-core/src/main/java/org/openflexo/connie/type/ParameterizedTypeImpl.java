@@ -44,6 +44,15 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Connie-specific implementation of {@link ParameterizedType}
+ * 
+ * Semantics of hashCode() and equals() follows base API (equals might return true for alternative {@link ParameterizedType}
+ * implementations)
+ * 
+ * @author sylvain
+ *
+ */
 public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 
 	private Type rawType;
