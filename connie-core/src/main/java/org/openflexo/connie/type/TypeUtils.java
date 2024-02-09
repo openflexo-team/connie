@@ -123,6 +123,9 @@ public class TypeUtils {
 				return null;
 			}
 		}
+		if (aType instanceof ParameterizedType) {
+			return getBaseClass(((ParameterizedType) aType).getRawType());
+		}
 		if (aType instanceof WildcardType) {
 			// System.out.println("WildcardType: " + aType);
 			Type[] upperBounds = ((WildcardType) aType).getUpperBounds();
