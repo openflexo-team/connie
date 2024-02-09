@@ -271,4 +271,10 @@ public class BindingVariable implements SettableBindingPathElement, HasPropertyC
 	// Caused by parameters management: change this !!!
 	public void hasBeenResolved(BindingPath bindingPath) {
 	}
+
+	@Override
+	public String getRelativePath() {
+		return getSerializationRepresentation();
+	}
+
 }

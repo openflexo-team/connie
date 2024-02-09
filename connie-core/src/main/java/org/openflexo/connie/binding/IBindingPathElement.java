@@ -153,4 +153,11 @@ public interface IBindingPathElement extends Typed {
 	 * @return
 	 */
 	public boolean isNotifyingBindingPathChanged();
+
+	/**
+	 * Return relative path recursively computed while following parent relations
+	 * 
+	 * @return
+	 */
+	public String getRelativePath();
 }

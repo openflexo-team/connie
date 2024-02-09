@@ -250,4 +250,12 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 		invalidate(null);
 	}
 
+	@Override
+	public String getRelativePath() {
+		if (getParent() != null) {
+			return getParent().getRelativePath() + "." + getSerializationRepresentation();
+		}
+		return getSerializationRepresentation();
+	}
+
 }
