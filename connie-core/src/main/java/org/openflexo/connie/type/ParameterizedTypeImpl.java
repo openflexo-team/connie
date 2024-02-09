@@ -51,11 +51,11 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 	private Type[] actualTypeArguments;
 
 	public ParameterizedTypeImpl(Type rawType, Type... actualTypeArguments) {
-		this(rawType, null, actualTypeArguments);
+		this(rawType, rawType instanceof Class ? ((Class<?>) rawType).getDeclaringClass() : null, actualTypeArguments);
 	}
 
 	public ParameterizedTypeImpl(Type rawType, Type actualTypeArgument) {
-		this(rawType, null, makeTypeArray(actualTypeArgument));
+		this(rawType, rawType instanceof Class ? ((Class<?>) rawType).getDeclaringClass() : null, makeTypeArray(actualTypeArgument));
 	}
 
 	private static Type[] makeTypeArray(Type t) {
@@ -141,11 +141,12 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ParameterizedTypeImpl other = (ParameterizedTypeImpl) obj;
-		return Arrays.equals(actualTypeArguments, other.actualTypeArguments) && Objects.equals(ownerType, other.ownerType)
-				&& Objects.equals(rawType, other.rawType);
+		if (TypeUtils.isTypeAssignableFrom(ParameterizedType.class, obj.getClass())) {
+			ParameterizedType other = (ParameterizedType) obj;
+			return Arrays.equals(actualTypeArguments, other.getActualTypeArguments()) && Objects.equals(ownerType, other.getOwnerType())
+					&& Objects.equals(rawType, other.getRawType());
+		}
+		return false;
 	}
 
 	protected boolean hasUnresolvedArguments() {
