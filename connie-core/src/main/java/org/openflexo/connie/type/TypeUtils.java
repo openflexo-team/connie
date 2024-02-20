@@ -682,6 +682,9 @@ public class TypeUtils {
 	}
 
 	public static boolean isOfType(Object object, Type aType) {
+		if (aType instanceof ProxyType) {
+			return isOfType(object, ((ProxyType) aType).getReferencedType());
+		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).isOfType(object, true);
 		}
