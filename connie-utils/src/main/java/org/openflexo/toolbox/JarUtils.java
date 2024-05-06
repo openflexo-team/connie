@@ -64,7 +64,15 @@ public class JarUtils {
 	 */
 	public static String makePathRelativeTo(InJarResourceImpl inJarResource, InJarResourceImpl relativeToDir) {
 		String canonicalFile = inJarResource.getEntry().getName();
-		String canonicalRelTo = relativeToDir.getEntry().getName();
+		String canonicalRelTo;
+		if (relativeToDir.getEntry() == null) {
+			// In this case, we are the root
+			canonicalRelTo = "/";
+		}
+		else {
+			canonicalRelTo = relativeToDir.getEntry().getName();
+		}
+
 		String[] filePathComponents = FileUtils.getPathComponents(canonicalFile);
 		String[] relToPathComponents = FileUtils.getPathComponents(canonicalRelTo);
 		int i = 0;
