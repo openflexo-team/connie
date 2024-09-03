@@ -1,6 +1,11 @@
 buildscript {
     repositories {
-        maven { url uri('https://maven.openflexo.org/artifactory/openflexo-deps/') }
+        maven { url uri('https://maven.openflexo.org/artifactory/openflexo-deps/')
+                credentials {
+                	username = "$System.env.ARTIFACTORY_USER" // The publisher user name
+                	password = "$System.env.ARTIFACTORY_PASSWORD" // The publisher password
+                }
+         }
     }
     dependencies {
         classpath group: 'org.openflexo', name: 'buildplugin', version: '0.3'
