@@ -580,32 +580,33 @@ public class TypeUtils {
 			ParameterizedType t1 = (ParameterizedType) aType;
 			ParameterizedType t2 = (ParameterizedType) anOtherType;
 
-			// Now check that parameters size are the same
-			if (t1.getActualTypeArguments().length != t2.getActualTypeArguments().length) {
-				return false;
+			// Raw types must be assignable first
+			if (TypeUtils.isTypeAssignableFrom(t1.getRawType(), t2.getRawType())) {
+				// Then arguments must also be, relatively to the first type
+				for (int i = 0; i < t1.getActualTypeArguments().length; i++) {
+					Type st1 = t1.getActualTypeArguments()[i];
+					if (isPureWildCard(st1) && t1.getRawType() instanceof Class
+							&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
+						// Fixed assignability issue with wildcards as natural bounds of generic type
+						TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
+						st1 = new DefaultWildcardType(TV1.getBounds(), new Type[0]);
+					}
+					// Type st2 = t2.getActualTypeArguments()[i];
+					Type st2 = TypeUtils.getTypeArgument(t2, (Class) t1.getRawType(), i);
+					if (isPureWildCard(st2) && t2.getRawType() instanceof Class
+							&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
+						// Fixed assignability issue with wildcards as natural bounds of generic type
+						TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
+						st2 = new DefaultWildcardType(TV2.getBounds(), new Type[0]);
+					}
+					if (!isTypeAssignableFrom(st1, st2, true)) {
+						return false;
+					}
+				}
+				return true;
 			}
 
-			// Now, we have to compare parameter per parameter
-			for (int i = 0; i < t1.getActualTypeArguments().length; i++) {
-				Type st1 = t1.getActualTypeArguments()[i];
-				if (isPureWildCard(st1) && t1.getRawType() instanceof Class
-						&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
-					// Fixed assignability issue with wildcards as natural bounds of generic type
-					TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
-					st1 = new DefaultWildcardType(TV1.getBounds(), new Type[0]);
-				}
-				Type st2 = t2.getActualTypeArguments()[i];
-				if (isPureWildCard(st2) && t2.getRawType() instanceof Class
-						&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
-					// Fixed assignability issue with wildcards as natural bounds of generic type
-					TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
-					st2 = new DefaultWildcardType(TV2.getBounds(), new Type[0]);
-				}
-				if (!isTypeAssignableFrom(st1, st2, true)) {
-					return false;
-				}
-			}
-			return true;
+			return false;
 		}
 
 		// In this case, the type is not fully resolved, we only consider the first upper bound
