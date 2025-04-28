@@ -51,7 +51,7 @@ public class ProxyType implements CustomType {
 
 	private final String localName;
 
-	private final CustomType referencedType;
+	private final Type referencedType;
 
 	/**
 	 * Utility method to retrieve effective type of any type
@@ -66,7 +66,7 @@ public class ProxyType implements CustomType {
 		return aType;
 	}
 
-	public ProxyType(String localName, CustomType referencedType) {
+	public ProxyType(String localName, Type referencedType) {
 		this.localName = localName;
 		this.referencedType = referencedType;
 	}
@@ -75,18 +75,24 @@ public class ProxyType implements CustomType {
 		return localName;
 	}
 
-	public CustomType getReferencedType() {
+	public Type getReferencedType() {
 		return referencedType;
 	}
 
 	@Override
 	public boolean isTypeAssignableFrom(Type aType, boolean permissive) {
-		return getReferencedType().isTypeAssignableFrom(aType, permissive);
+		if (getReferencedType() instanceof CustomType) {
+			return ((CustomType) getReferencedType()).isTypeAssignableFrom(aType, permissive);
+		}
+		return TypeUtils.isTypeAssignableFrom(getReferencedType(), aType, permissive);
 	}
 
 	@Override
 	public boolean isOfType(Object object, boolean permissive) {
-		return getReferencedType().isOfType(object, permissive);
+		if (getReferencedType() instanceof CustomType) {
+			return ((CustomType) getReferencedType()).isOfType(object, permissive);
+		}
+		return TypeUtils.isOfType(object, getReferencedType());
 	}
 
 	@Override
@@ -96,12 +102,12 @@ public class ProxyType implements CustomType {
 
 	@Override
 	public String fullQualifiedRepresentation() {
-		return getLocalName() + "->" + getReferencedType().fullQualifiedRepresentation();
+		return getLocalName() + "->" + TypeUtils.fullQualifiedRepresentation(getReferencedType());
 	}
 
 	@Override
 	public Class<?> getBaseClass() {
-		return getReferencedType().getBaseClass();
+		return TypeUtils.getBaseClass(getReferencedType());
 	}
 
 	@Override
@@ -111,12 +117,17 @@ public class ProxyType implements CustomType {
 
 	@Override
 	public boolean isResolved() {
-		return getReferencedType().isResolved();
+		return TypeUtils.isResolved(getReferencedType());
 	}
 
 	@Override
 	public void resolve() {
-		getReferencedType().resolve();
+		if (getReferencedType() instanceof CustomType) {
+			((CustomType) getReferencedType()).resolve();
+		}
+		else if (!isResolved()) {
+			System.err.println("Cannot resolve : " + getReferencedType());
+		}
 	}
 
 	@Override
