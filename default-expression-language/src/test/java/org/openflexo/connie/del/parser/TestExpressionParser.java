@@ -63,7 +63,7 @@ import org.openflexo.connie.del.expr.DELUnaryOperatorExpression;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.Constant;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionEvaluator;
@@ -207,27 +207,27 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testBindingValue() {
-		tryToParse("foo", "foo", BindingValue.class, null, false);
+		tryToParse("foo", "foo", BindingPath.class, null, false);
 	}
 
 	public void testBindingValue2() {
-		tryToParse("foo_foo2", "foo_foo2", BindingValue.class, null, false);
+		tryToParse("foo_foo2", "foo_foo2", BindingPath.class, null, false);
 	}
 
 	public void testBindingValue3() {
-		tryToParse("foo.foo2.foo3", "foo.foo2.foo3", BindingValue.class, null, false);
+		tryToParse("foo.foo2.foo3", "foo.foo2.foo3", BindingPath.class, null, false);
 	}
 
 	public void testBindingValue4() {
-		tryToParse("method(1)", "method(1)", BindingValue.class, null, false);
+		tryToParse("method(1)", "method(1)", BindingPath.class, null, false);
 	}
 
 	public void testBindingValue5() {
-		tryToParse("a.b.c.method(1)", "a.b.c.method(1)", BindingValue.class, null, false);
+		tryToParse("a.b.c.method(1)", "a.b.c.method(1)", BindingPath.class, null, false);
 	}
 
 	public void testBindingValue6() {
-		tryToParse("i.am.a(1,2+3,7.8,'foo').little.test(1)", "i.am.a(1,5,7.8,\"foo\").little.test(1)", BindingValue.class, null, false);
+		tryToParse("i.am.a(1,2+3,7.8,'foo').little.test(1)", "i.am.a(1,5,7.8,\"foo\").little.test(1)", BindingPath.class, null, false);
 	}
 
 	public void testNumericValue1() {
@@ -370,15 +370,15 @@ public class TestExpressionParser extends TestCase {
 
 	public void testComplexCall() {
 		tryToParse("testFunction(-pi/2,7.8,1-9*7/9,aVariable,foo1+foo2,e)",
-				"testFunction(-1.5707963267948966,7.8,-6.0,aVariable,(foo1 + foo2),e)", BindingValue.class, null, false);
+				"testFunction(-1.5707963267948966,7.8,-6.0,aVariable,(foo1 + foo2),e)", BindingPath.class, null, false);
 	}
 
 	public void testImbricatedCall() {
-		tryToParse("function1(function2(8+1,9,10-1))", "function1(function2(9,9,9))", BindingValue.class, null, false);
+		tryToParse("function1(function2(8+1,9,10-1))", "function1(function2(9,9,9))", BindingPath.class, null, false);
 	}
 
 	public void testEmptyCall() {
-		tryToParse("function1()", "function1()", BindingValue.class, null, false);
+		tryToParse("function1()", "function1()", BindingPath.class, null, false);
 	}
 
 	public void testComplexBooleanExpression() {
@@ -422,7 +422,7 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testIgnoredChars() {
-		tryToParse(" test  \n\n", "test", BindingValue.class, null, false);
+		tryToParse(" test  \n\n", "test", BindingPath.class, null, false);
 	}
 
 	public void testConditional1() {
@@ -493,7 +493,7 @@ public class TestExpressionParser extends TestCase {
 	}
 
 	public void testAccentCharacter() {
-		tryToParse("flexoConcept.unité", "flexoConcept.unité", BindingValue.class, null, false);
+		tryToParse("flexoConcept.unité", "flexoConcept.unité", BindingPath.class, null, false);
 	}
 
 }

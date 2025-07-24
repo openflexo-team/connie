@@ -191,6 +191,17 @@ final public class ResourceLocator {
 	}
 
 	/**
+	 * Return already registered delegate with supplied class
+	 * 
+	 * @param <R>
+	 * @param delegateClass
+	 * @return
+	 */
+	public static <R extends ResourceLocatorDelegate> R getDelegate(Class<R> delegateClass) {
+		return (R) _delegatesListMap.get(delegateClass);
+	}
+
+	/**
 	 * 
 	 * Adds a new delegate at the end of the list, if a delegate of the given class is already present in delegates list. If a delegate of
 	 * that class already exists, moves it to the end of the list if its the same reference as the one already in the delegates list else,
@@ -200,6 +211,7 @@ final public class ResourceLocator {
 	 */
 	static public void appendDelegate(ResourceLocatorDelegate newdelegate) {
 		if (newdelegate != null) {
+
 			ResourceLocatorDelegate dl = _delegatesListMap.get(newdelegate.getClass());
 			if (dl != null) {
 				LOGGER.warning("A delegate for that class (" + newdelegate.getClass().getName() + " already exists");

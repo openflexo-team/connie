@@ -60,7 +60,7 @@ import org.openflexo.connie.del.expr.DELConstant.ObjectSymbolicConstant;
 import org.openflexo.connie.del.expr.DELConstant.StringConstant;
 import org.openflexo.connie.del.expr.DELUnaryOperatorExpression;
 import org.openflexo.connie.del.expr.TypeReference;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.parser.analysis.DepthFirstAdapter;
 import org.openflexo.connie.expr.parser.node.AAcosFuncFunction;
@@ -175,8 +175,8 @@ class ExpressionFactory extends DepthFirstAdapter {
 		return null;
 	}
 
-	private BindingValue makeBinding(PBinding node) {
-		BindingValue returned = BindingPathFactory.makeBindingPath(node, this);
+	private BindingPath makeBinding(PBinding node) {
+		BindingPath returned = BindingPathFactory.makeBindingPath(node, this);
 		registerExpressionNode(node, returned);
 		return returned;
 	}

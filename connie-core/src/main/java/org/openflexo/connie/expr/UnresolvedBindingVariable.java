@@ -49,9 +49,9 @@ import org.openflexo.connie.BindingVariable;
  */
 public class UnresolvedBindingVariable extends BindingVariable {
 
-	// private BindingValue bindingValue;
+	// private BindingPath bindingValue;
 
-	public UnresolvedBindingVariable(String variableName/*, BindingValue bindingValue*/) {
+	public UnresolvedBindingVariable(String variableName/*, BindingPath bindingValue*/) {
 		super(variableName, Object.class, false);
 		// this.bindingValue = bindingValue;
 	}

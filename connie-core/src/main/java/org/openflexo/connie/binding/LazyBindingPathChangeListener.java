@@ -44,13 +44,13 @@ import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.DataBinding;
 
 /**
- * Lazy implementation of a {@link BindingValueChangeListener}. New value is not automatically recomputed after each notification
+ * Lazy implementation of a {@link BindingPathChangeListener}. New value is not automatically recomputed after each notification
  * 
  * @author sylvain
  * 
  */
-public abstract class LazyBindingValueChangeListener<T> extends BindingValueChangeListener<T> {
-	public LazyBindingValueChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
+public abstract class LazyBindingPathChangeListener<T> extends BindingPathChangeListener<T> {
+	public LazyBindingPathChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		super(dataBinding, context);
 	}
 

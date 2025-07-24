@@ -3,7 +3,7 @@ package org.openflexo.connie.java.parser;
 import java.util.List;
 
 import org.openflexo.connie.expr.BinaryOperatorExpression;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.java.expr.JavaCastExpression;
 import org.openflexo.connie.java.expr.JavaInstanceOfExpression;
@@ -28,19 +28,19 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 	// Test new instance
 
 	public void testNewInstance() {
-		tryToParse("new ArrayList()", "new ArrayList()", BindingValue.class, null, false);
+		tryToParse("new ArrayList()", "new ArrayList()", BindingPath.class, null, false);
 	}
 
 	public void testNewInstance2() {
-		tryToParse("new a.A()", "new a.A()", BindingValue.class, null, false);
+		tryToParse("new a.A()", "new a.A()", BindingPath.class, null, false);
 	}
 
 	public void testNewInstance3() {
-		tryToParse("new a.A(new a.B(),new a.C())", "new a.A(new a.B(),new a.C())", BindingValue.class, null, false);
+		tryToParse("new a.A(new a.B(),new a.C())", "new a.A(new a.B(),new a.C())", BindingPath.class, null, false);
 	}
 
 	public void testNewInstance4() {
-		tryToParse("new java.util.Hashtable<String,java.util.List<String>>()", "new Hashtable<String,List<String>>()", BindingValue.class,
+		tryToParse("new java.util.Hashtable<String,java.util.List<String>>()", "new Hashtable<String,List<String>>()", BindingPath.class,
 				null, false);
 	}
 
@@ -49,11 +49,11 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 	}
 
 	public void testCombo() {
-		tryToParse("new Object().toString()", "new Object().toString()", BindingValue.class, null, false);
+		tryToParse("new Object().toString()", "new Object().toString()", BindingPath.class, null, false);
 	}
 
 	public void testInnerNewInstance() {
-		tryToParse("a.b.new c.d.E()", "a.b.new c.d.E()", BindingValue.class, null, false);
+		tryToParse("a.b.new c.d.E()", "a.b.new c.d.E()", BindingPath.class, null, false);
 	}
 
 	// Test cast
@@ -160,11 +160,11 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 	// Test class methods
 
 	public void testClassMethod1() {
-		tryToParse("Class.forName(\"Foo\")", "Class.forName(\"Foo\")", BindingValue.class, null, false);
+		tryToParse("Class.forName(\"Foo\")", "Class.forName(\"Foo\")", BindingPath.class, null, false);
 	}
 
 	public void testClassMethod2() {
-		tryToParse("java.lang.Class.forName(\"Foo\")", "Class.forName(\"Foo\")", BindingValue.class, null, false);
+		tryToParse("java.lang.Class.forName(\"Foo\")", "Class.forName(\"Foo\")", BindingPath.class, null, false);
 	}
 
 }

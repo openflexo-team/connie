@@ -45,7 +45,9 @@ import java.lang.reflect.Type;
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.type.ProxyType;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Default implementation for a simple path element in a binding path, represented by a simple get/set access through a property
@@ -99,6 +101,20 @@ public abstract class SimplePathElementImpl<P extends Property> extends Abstract
 				setType(Object.class);
 			}
 		}
+	}
+
+	/**
+	 * Return accessed type for this {@link IBindingPathElement}<br>
+	 * If this is a {@link ProxyType} return referenced type
+	 * 
+	 * @return
+	 */
+	@Override
+	public Type getActualType() {
+		if (getType() instanceof ProxyType) {
+			return ((ProxyType) getType()).getReferencedType();
+		}
+		return getType();
 	}
 
 	@Override
@@ -178,9 +194,9 @@ public abstract class SimplePathElementImpl<P extends Property> extends Abstract
 		return false;
 	}
 
-	public String getBindingPath() {
+	public String getBindingPathAsString() {
 		if (getParent() instanceof SimplePathElementImpl) {
-			return ((SimplePathElementImpl) getParent()).getBindingPath() + "." + getLabel();
+			return ((SimplePathElementImpl) getParent()).getBindingPathAsString() + "." + getLabel();
 		}
 		if (getParent() instanceof BindingVariable) {
 			return ((BindingVariable) getParent()).getVariableName() + "." + getLabel();
@@ -216,5 +232,9 @@ public abstract class SimplePathElementImpl<P extends Property> extends Abstract
 	@Override
 	public boolean requiresContext() {
 		return true;
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
 	}
 }

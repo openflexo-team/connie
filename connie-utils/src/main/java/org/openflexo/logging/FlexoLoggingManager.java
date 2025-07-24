@@ -103,7 +103,7 @@ public class FlexoLoggingManager {
 		if (configurationFile != null) {
 			_instance._configurationFile = configurationFile;
 			// TODO : Log files location should be parameterizable
-			File f = new File(System.getProperty("user.home"), "Library/Logs/Flexo/");
+			File f = new File(System.getProperty("user.home"), "Library/Logs/Openflexo/");
 			if (!f.exists()) {
 				f.mkdirs();
 			}

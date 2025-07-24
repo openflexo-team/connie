@@ -58,20 +58,20 @@ import org.openflexo.logging.FlexoLogger;
  * @author sylvain
  * 
  */
-public abstract class BindingValueListChangeListener<T2, T extends Collection<T2>> extends BindingValueChangeListener<T> {
+public abstract class BindingPathListChangeListener<T2, T extends Collection<T2>> extends BindingPathChangeListener<T> {
 
-	private static final Logger LOGGER = FlexoLogger.getLogger(BindingValueListChangeListener.class.getName());
+	private static final Logger LOGGER = FlexoLogger.getLogger(BindingPathListChangeListener.class.getName());
 
 	private Collection<T2> lastKnownValues = null;
 
 	// Boolean used to indicate that lastKnownValues has never been notified
 	private boolean neverNotified = true;
 
-	public BindingValueListChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
+	public BindingPathListChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context) {
 		super(dataBinding, context);
 	}
 
-	public BindingValueListChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context, boolean initAsChange) {
+	public BindingPathListChangeListener(DataBinding<T> dataBinding, BindingEvaluationContext context, boolean initAsChange) {
 		super(dataBinding, context, initAsChange);
 	}
 

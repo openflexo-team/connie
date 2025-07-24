@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.Bindable;
 import org.openflexo.connie.BindingEvaluationContext;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
@@ -111,6 +112,10 @@ public abstract class Expression {
 		return getPrettyPrinter().getStringRepresentation(this, null);
 	}
 
+	public String toString(Bindable context) {
+		return getPrettyPrinter().getStringRepresentation(this, context);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -138,18 +143,18 @@ public abstract class Expression {
 	}
 
 	/**
-	 * Return a list containing all {@link BindingValue} used in this expression
+	 * Return a list containing all {@link BindingPath} used in this expression
 	 * 
 	 * @return
 	 */
-	public List<BindingValue> getAllBindingValues() {
-		final List<BindingValue> returned = new ArrayList<>();
+	public List<BindingPath> getAllBindingValues() {
+		final List<BindingPath> returned = new ArrayList<>();
 		try {
 			visit(new ExpressionVisitor() {
 				@Override
 				public void visit(Expression e) {
-					if (e instanceof BindingValue) {
-						returned.add((BindingValue) e);
+					if (e instanceof BindingPath) {
+						returned.add((BindingPath) e);
 					}
 				}
 			});
@@ -170,8 +175,8 @@ public abstract class Expression {
 			visit(new ExpressionVisitor() {
 				@Override
 				public void visit(Expression e) {
-					if (e instanceof BindingValue) {
-						returned.add(((BindingValue) e).getBindingVariable());
+					if (e instanceof BindingPath) {
+						returned.add(((BindingPath) e).getBindingVariable());
 					}
 				}
 			});

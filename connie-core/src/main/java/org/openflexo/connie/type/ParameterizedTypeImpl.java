@@ -41,7 +41,18 @@ package org.openflexo.connie.type;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Objects;
 
+/**
+ * Connie-specific implementation of {@link ParameterizedType}
+ * 
+ * Semantics of hashCode() and equals() follows base API (equals might return true for alternative {@link ParameterizedType}
+ * implementations)
+ * 
+ * @author sylvain
+ *
+ */
 public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 
 	private Type rawType;
@@ -49,11 +60,11 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 	private Type[] actualTypeArguments;
 
 	public ParameterizedTypeImpl(Type rawType, Type... actualTypeArguments) {
-		this(rawType, null, actualTypeArguments);
+		this(rawType, rawType instanceof Class ? ((Class<?>) rawType).getDeclaringClass() : null, actualTypeArguments);
 	}
 
 	public ParameterizedTypeImpl(Type rawType, Type actualTypeArgument) {
-		this(rawType, null, makeTypeArray(actualTypeArgument));
+		this(rawType, rawType instanceof Class ? ((Class<?>) rawType).getDeclaringClass() : null, makeTypeArray(actualTypeArgument));
 	}
 
 	private static Type[] makeTypeArray(Type t) {
@@ -111,17 +122,49 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 		return sb.toString();
 	}
 
-	@Override
+	/*@Override
 	public int hashCode() {
 		return fullQualifiedRepresentation().hashCode();
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Type) {
 			return TypeUtils.fullQualifiedRepresentation(this).equals(TypeUtils.fullQualifiedRepresentation((Type) obj));
 		}
 		return super.equals(obj);
+	}*/
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(actualTypeArguments);
+		result = prime * result + Objects.hash(ownerType, rawType);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (TypeUtils.isTypeAssignableFrom(ParameterizedType.class, obj.getClass())) {
+			ParameterizedType other = (ParameterizedType) obj;
+			return Arrays.equals(actualTypeArguments, other.getActualTypeArguments()) && Objects.equals(ownerType, other.getOwnerType())
+					&& Objects.equals(rawType, other.getRawType());
+		}
+		return false;
+	}
+
+	protected boolean hasUnresolvedArguments() {
+		for (Type argument : actualTypeArguments) {
+			if (argument instanceof UnresolvedType) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean hasConnieTypeArguments() {
@@ -153,4 +196,50 @@ public class ParameterizedTypeImpl implements ParameterizedType, ConnieType {
 		}
 		return this;
 	}
+
+	@Override
+	public boolean isResolved() {
+		// System.out.println("rawType=" + rawType + " of " + rawType.getClass());
+		if (rawType instanceof UnresolvedType) {
+			return false;
+		}
+		if (hasUnresolvedArguments()) {
+			return false;
+		}
+		if (hasConnieTypeArguments()) {
+			if (rawType instanceof ConnieType && !((ConnieType) rawType).isResolved()) {
+				return false;
+			}
+			if (ownerType instanceof ConnieType && !((ConnieType) ownerType).isResolved()) {
+				return false;
+			}
+			for (int i = 0; i < actualTypeArguments.length; i++) {
+				Type t = actualTypeArguments[i];
+				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return true;
+	}
+
+	@Override
+	public void resolve() {
+		if (hasConnieTypeArguments()) {
+			if (rawType instanceof ConnieType && !((ConnieType) rawType).isResolved()) {
+				((ConnieType) rawType).resolve();
+			}
+			if (ownerType instanceof ConnieType && !((ConnieType) ownerType).isResolved()) {
+				((ConnieType) ownerType).resolve();
+			}
+			for (int i = 0; i < actualTypeArguments.length; i++) {
+				Type t = actualTypeArguments[i];
+				if (t instanceof ConnieType && !((ConnieType) t).isResolved()) {
+					((ConnieType) t).resolve();
+				}
+			}
+		}
+	}
+
 }

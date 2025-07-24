@@ -37,48 +37,44 @@
  * 
  */
 
-package org.openflexo.connie.binding;
+package org.openflexo.connie;
 
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.function.Function;
 
-import org.openflexo.connie.Bindable;
-import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.type.TypingSpace;
+import org.openflexo.connie.expr.ExpressionEvaluator;
 
 /**
- * Default implementation for a {@link SimpleMethodPathElement}
+ * A {@link BindingEvaluationContext} based on a delegate {@link BindingEvaluationContext}
  * 
  * @author sylvain
  * 
  */
-public abstract class SimpleMethodPathElementImpl<F extends Function> extends FunctionPathElementImpl<F>
-		implements SimpleMethodPathElement<F> {
+public class DerivedBindingEvaluationContext {
 
-	static final Logger logger = Logger.getLogger(SimpleMethodPathElementImpl.class.getPackage().getName());
+	private final BindingEvaluationContext baseBindingEvaluationContext;
+	private final Function<BindingVariable, Object> localVariableResolver;
 
-	public SimpleMethodPathElementImpl(IBindingPathElement parent, String methodName, List<DataBinding<?>> args, Bindable bindable) {
-		super(parent, methodName, null, args, bindable);
-	}
-
-	public SimpleMethodPathElementImpl(IBindingPathElement parent, F method, List<DataBinding<?>> args, Bindable bindable) {
-		super(parent, method.getName(), method, args, bindable);
-		setFunction(method);
+	public DerivedBindingEvaluationContext(BindingEvaluationContext baseBindingEvaluationContext,
+			Function<BindingVariable, Object> localVariableResolver) {
+		this.baseBindingEvaluationContext = baseBindingEvaluationContext;
+		this.localVariableResolver = localVariableResolver;
 	}
 
 	/**
-	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
+	 * Return the value of symbolic variable {@link BindingVariable} in current run-time context
 	 * 
-	 * @return false in this case
+	 * @param variable
+	 *            the binding to evaluate.
 	 */
-	@Override
-	public boolean supportsNullValues() {
-		return false;
+	public Object getValue(BindingVariable variable) {
+		Object returned = localVariableResolver.apply(variable);
+		if (returned != null) {
+			return returned;
+		}
+		return baseBindingEvaluationContext.getValue(variable);
 	}
 
-	@Override
-	public void invalidate(TypingSpace typingSpace) {
-		super.invalidate(typingSpace);
+	public ExpressionEvaluator getEvaluator() {
+		return baseBindingEvaluationContext.getEvaluator();
 	}
-
 }

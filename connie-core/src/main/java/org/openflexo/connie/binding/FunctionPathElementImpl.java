@@ -47,9 +47,12 @@ import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.DataBinding.BindingDefinitionType;
 import org.openflexo.connie.binding.Function.FunctionArgument;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.expr.ExpressionTransformer;
+import org.openflexo.connie.type.ProxyType;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Default implementation for a {@link FunctionPathElement}
@@ -129,6 +132,20 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 		setParsed(methodName);
 	}
 
+	/**
+	 * Return accessed type for this {@link IBindingPathElement}<br>
+	 * If this is a {@link ProxyType} return referenced type
+	 * 
+	 * @return
+	 */
+	@Override
+	public Type getActualType() {
+		if (getType() instanceof ProxyType) {
+			return ((ProxyType) getType()).getReferencedType();
+		}
+		return getType();
+	}
+
 	@Override
 	public Type getType() {
 		if (getFunction() != null) {
@@ -144,6 +161,15 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 
 	private String serializationRepresentation = null;
 
+	protected String getFunctionNameToDisplay() {
+		if (getFunction() != null) {
+			return getFunction().getName();
+		}
+		else {
+			return getParsed();
+		}
+	}
+
 	// TODO
 	// It's better not to cache serialization representation
 	// See TestBindingEvaluator, test9
@@ -151,12 +177,7 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 	public String getSerializationRepresentation() {
 		// if (serializationRepresentation == null) {
 		StringBuffer returned = new StringBuffer();
-		if (getFunction() != null) {
-			returned.append(getFunction().getName());
-		}
-		else {
-			returned.append(getParsed());
-		}
+		returned.append(getFunctionNameToDisplay());
 		returned.append("(");
 		boolean isFirst = true;
 		for (DataBinding<?> arg : getArguments()) {
@@ -181,6 +202,9 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 	}
 
 	public void clearSerializationRepresentation() {
+		if (getBindingPath() != null) {
+			getBindingPath().clearSerializationRepresentation();
+		}
 		serializationRepresentation = null;
 	}
 
@@ -206,7 +230,16 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 	public void setArguments(List<DataBinding<?>> arguments) {
 		this.arguments.clear();
 		if (arguments != null) {
-			this.arguments.addAll(arguments);
+			for (DataBinding<?> arg : arguments) {
+				arg.setOwner(getBindable());
+				if (arg.getBindingDefinitionType() == null) {
+					arg.setBindingDefinitionType(BindingDefinitionType.GET);
+				}
+				if (arg.getDeclaredType() == null) {
+					arg.setDeclaredType(Object.class);
+				}
+				this.arguments.add(arg);
+			}
 		}
 	}
 
@@ -315,6 +348,10 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
+		if (check.valid == false) {
+			return check;
+		}
+
 		if (getFunction() == null) {
 			check.invalidBindingReason = "invalid null function";
 			check.valid = false;
@@ -340,6 +377,17 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 		}
 
 		return check;
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		if (getArguments() != null) {
+			for (DataBinding<?> arg : getArguments()) {
+				if (arg != null) {
+					arg.invalidate(typingSpace);
+				}
+			}
+		}
 	}
 
 }

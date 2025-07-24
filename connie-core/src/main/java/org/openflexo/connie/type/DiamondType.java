@@ -1,7 +1,7 @@
 /**
  * 
  * Copyright (c) 2013-2014, Openflexo
- * Copyright (c) 2012-2012, AgileBirds
+ * Copyright (c) 2011-2012, AgileBirds
  * 
  * This file is part of Connie-core, a component of the software infrastructure 
  * developed at Openflexo.
@@ -37,48 +37,16 @@
  * 
  */
 
-package org.openflexo.connie.binding;
-
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.openflexo.connie.Bindable;
-import org.openflexo.connie.DataBinding;
-import org.openflexo.connie.type.TypingSpace;
+package org.openflexo.connie.type;
 
 /**
- * Default implementation for a {@link SimpleMethodPathElement}
+ * Represents the diamond type, which implies type inference
  * 
- * @author sylvain
- * 
+ * @author sylvainguerin
+ *
  */
-public abstract class SimpleMethodPathElementImpl<F extends Function> extends FunctionPathElementImpl<F>
-		implements SimpleMethodPathElement<F> {
+public class DiamondType implements ConnieType {
 
-	static final Logger logger = Logger.getLogger(SimpleMethodPathElementImpl.class.getPackage().getName());
-
-	public SimpleMethodPathElementImpl(IBindingPathElement parent, String methodName, List<DataBinding<?>> args, Bindable bindable) {
-		super(parent, methodName, null, args, bindable);
-	}
-
-	public SimpleMethodPathElementImpl(IBindingPathElement parent, F method, List<DataBinding<?>> args, Bindable bindable) {
-		super(parent, method.getName(), method, args, bindable);
-		setFunction(method);
-	}
-
-	/**
-	 * Return a flag indicating if this BindingPathElement supports computation with 'null' value as entry (target)<br>
-	 * 
-	 * @return false in this case
-	 */
-	@Override
-	public boolean supportsNullValues() {
-		return false;
-	}
-
-	@Override
-	public void invalidate(TypingSpace typingSpace) {
-		super.invalidate(typingSpace);
-	}
+	public static DiamondType INSTANCE = new DiamondType();
 
 }

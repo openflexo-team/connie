@@ -63,4 +63,12 @@ public interface ConnieType extends Type {
 	default public ConnieType translateTo(TypingSpace typingSpace) {
 		return this;
 	}
+
+	default boolean isResolved() {
+		return true;
+	}
+
+	default public void resolve() {
+	}
+
 }

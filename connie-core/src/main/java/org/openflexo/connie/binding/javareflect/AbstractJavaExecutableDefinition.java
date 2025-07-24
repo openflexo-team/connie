@@ -51,12 +51,16 @@ import org.openflexo.toolbox.ToolBox;
 public abstract class AbstractJavaExecutableDefinition<E extends Executable> implements Function {
 	private final Type declaringType;
 	private final E executable;
-	private final ArrayList<Function.FunctionArgument> arguments;
+	protected final ArrayList<Function.FunctionArgument> arguments;
 
 	protected AbstractJavaExecutableDefinition(Type aDeclaringType, E executable) {
 		this.executable = executable;
 		this.declaringType = aDeclaringType;
 		arguments = new ArrayList<>();
+		buildArguments(aDeclaringType);
+	}
+
+	protected void buildArguments(Type aDeclaringType) {
 		int i = 0;
 		for (Type t : executable.getGenericParameterTypes()) {
 			String argName = "arg" + i;

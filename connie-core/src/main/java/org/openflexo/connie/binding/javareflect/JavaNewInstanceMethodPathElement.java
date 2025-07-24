@@ -61,6 +61,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Model a java call which is a call to a method and with some arguments
@@ -139,7 +140,7 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 					args[i] = TypeUtils.castTo(valueBinding.getBindingValue(context),
 							getConstructorDefinition().getConstructor().getGenericParameterTypes()[i]);
 					/*System.out.println("Argument " + a.getArgumentName() + " / " + a.getArgumentType() + " values: " + valueBinding);
-					System.out.println("BindingValue: " + valueBinding + " = " + valueBinding.getBindingValue(context));
+					System.out.println("BindingPath: " + valueBinding + " = " + valueBinding.getBindingValue(context));
 					System.out.println("Valid: " + valueBinding);
 					System.out.println("Reason: " + valueBinding.invalidBindingReason());*/
 				}
@@ -329,6 +330,10 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
+		if (check.valid == false) {
+			return check;
+		}
+
 		// TODO: some other checks ???
 		check.returnedType = getType();
 		if (!TypeUtils.isResolved(getType())) {
@@ -358,10 +363,41 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 			JavaConstructorDefinition function = (JavaConstructorDefinition) getBindingFactory().retrieveConstructor(getType(),
 					getParent() != null ? getParent().getType() : null, getParsed(), getArguments());
 			setFunction(function);
+
+			if (getParent() != null && function != null && function.getArguments().size() > 0) {
+				FunctionArgument arg = function.getArguments().get(0);
+				// We build innerAccess from parent path element
+				DataBinding<?> innerAccess = new DataBinding<>(getParent().getRelativePath(), getBindable(), getParent().getType(),
+						DataBinding.BindingDefinitionType.GET);
+				innerAccess.setBindingName(arg.getArgumentName());
+				setArgumentValue(arg, innerAccess);
+			}
+
 			if (function == null) {
 				logger.warning("cannot find constructor " + getParsed() + " for type " + getType() + " with arguments " + getArguments());
 			}
 		}
 	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		super.invalidate(typingSpace);
+		// No need to invalidate since Java is immutable in current JVM
+		/*if (getType() != null && typingSpace != null && getType() instanceof CustomType) {
+			Type translatedType = ((CustomType) getType()).translateTo(typingSpace);
+			setFunction(null);
+			setType(translatedType);
+		}
+		setFunction(null);*/
+	}
+
+	/*@Override
+	public DataBinding<?> getArgumentValue(FunctionArgument argument) {
+		DataBinding<?> returned = super.getArgumentValue(argument);
+		if (returned == null) {
+			System.out.println("Tiens on me demande " + argument.getArgumentName() + " of " + argument.getArgumentType());
+		}
+		return returned;
+	}*/
 
 }

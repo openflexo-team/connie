@@ -440,7 +440,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 				if (absoluteFile.getCanonicalFile().getName().equals(absoluteFile.getName()) || lenient) {
 					found.add(absoluteFile);
 				}
-			} catch (IOException e1) {}
+			} catch (IOException e1) {
+			}
 		}
 		for (File f : getDirectoriesSearchOrder()) {
 			File nextTry = new File(f, relativePathName);
@@ -452,7 +453,8 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 					if (nextTry.getCanonicalFile().getName().equals(nextTry.getName()) || lenient) {
 						found.add(nextTry);
 					}
-				} catch (IOException e1) {}
+				} catch (IOException e1) {
+				}
 			}
 		}
 
@@ -557,7 +559,7 @@ public class FileSystemResourceLocatorImpl implements ResourceLocatorDelegate {
 		if (directoriesSearchOrder == null) {
 			getDirectoriesSearchOrder();
 		}
-		if (d.exists() && d.isDirectory()) {
+		if (d.exists() && d.isDirectory() && !directoriesSearchOrder.contains(d)) {
 			directoriesSearchOrder.add(d);
 		}
 

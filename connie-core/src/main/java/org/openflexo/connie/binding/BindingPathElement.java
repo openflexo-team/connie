@@ -44,6 +44,8 @@ import java.lang.reflect.Type;
 
 import org.openflexo.connie.Bindable;
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.expr.BindingPath;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * General API for an non-root element of a formal binding path, which has at least one parent
@@ -94,8 +96,11 @@ public interface BindingPathElement extends IBindingPathElement {
 
 	/**
 	 * Activate this {@link BindingPathElement} by starting observing relevant objects when required
+	 * 
+	 * @param bindingPath
+	 *            the BindingPath this {@link BindingPathElement} belongs to
 	 */
-	public void activate();
+	public void activate(BindingPath bindingPath);
 
 	/**
 	 * Desactivate this {@link BindingPathElement} by stopping observing relevant objects when required
@@ -127,6 +132,22 @@ public interface BindingPathElement extends IBindingPathElement {
 	 * @return
 	 */
 	public boolean supportsNullValues();
+
+	/**
+	 * Invalidate this {@link BindingPathElement}
+	 */
+	public void invalidate();
+
+	/**
+	 * Invalidate this {@link BindingPathElement} and translate all required types in the supplied {@link TypingSpace}
+	 * 
+	 * @param typingSpace
+	 */
+	public void invalidate(TypingSpace typingSpace);
+
+	public BindingPath getBindingPath();
+
+	public void setBindingPath(BindingPath bindingPath);
 
 	public BindingPathElementOwner getBindingPathElementOwner();
 

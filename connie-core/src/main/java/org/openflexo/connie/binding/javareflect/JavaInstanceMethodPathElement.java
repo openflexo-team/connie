@@ -65,6 +65,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Model a java call which is a call to a method and with some arguments
@@ -146,6 +147,9 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 	@Override
 	public boolean isNotificationSafe() {
 
+		if (getMethodDefinition() == null) {
+			return false;
+		}
 		Method m = getMethodDefinition().getMethod();
 		if (m == null || m.getAnnotation(NotificationUnsafe.class) != null) {
 			return false;
@@ -315,6 +319,10 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 
 		BindingPathCheck check = super.checkBindingPathIsValid(parentElement, parentType);
 
+		if (check.valid == false) {
+			return check;
+		}
+
 		check.returnedType = TypeUtils.makeInstantiatedType(getType(), parentType);
 		check.valid = true;
 		return check;
@@ -335,20 +343,32 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 
 		if (getBindingFactory() != null) {
 			if (getParent() != null) {
-				JavaInstanceMethodDefinition function = (JavaInstanceMethodDefinition) getBindingFactory()
-						.retrieveFunction(getParent().getType(), getParsed(), getArguments());
-				//System.out.println("Found " + function);
-				setFunction(function);
-				if (function == null) {
-					logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
+				Function function = getBindingFactory().retrieveFunction(getParent().getType(), getParsed(), getArguments());
+
+				if (function instanceof JavaInstanceMethodDefinition) {
+					// Function was found
+					setFunction((JavaInstanceMethodDefinition) function);
 				}
+				else if (function != null) {
+					// Function was found but invalid kind of function
+					logger.warning("Unexpected " + function + " for parent " + getParent() + " in " + this);
+				}
+				// No need to warn, since it may happen
+				/*if (function == null) {
+					logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
+				}*/
 			}
 			else {
 				logger.warning("cannot find parent for " + this);
-				// Thread.dumpStack();
-				// System.exit(-1);
 			}
 		}
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		super.invalidate(typingSpace);
+		// No need to invalidate since Java is immutable in current JVM
+		// setFunction(null);
 	}
 
 	/*@Override

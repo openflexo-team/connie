@@ -53,7 +53,7 @@ import org.openflexo.connie.binding.NewInstancePathElement;
 import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.StaticMethodPathElement;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.UnresolvedBindingVariable;
 import org.openflexo.connie.java.expr.JavaPrettyPrinter;
 import org.openflexo.connie.java.parser.node.ABasicJavaInstanceCreationInvokation;
@@ -90,7 +90,7 @@ import org.openflexo.connie.java.parser.node.TKwSuper;
 import org.openflexo.connie.java.parser.node.TLidentifier;
 
 /**
- * This class implements the semantics analyzer for a parsed {@link BindingValue}<br>
+ * This class implements the semantics analyzer for a parsed {@link BindingPath}<br>
  * Its main purpose is to structurally build a binding from a parsed AST<br>
  * 
  * The goal is here to linearize the AST to obtain a chain of {@link BindingPathElement}
@@ -107,12 +107,12 @@ public class BindingPathFactory {
 
 	private final Node rootNode;
 
-	public static BindingValue makeBindingPath(Node node, ExpressionFactory expressionFactory) {
+	public static BindingPath makeBindingPath(Node node, ExpressionFactory expressionFactory) {
 
 		// ASTDebugger.debug(node);
 		BindingPathFactory bindingPathFactory = new BindingPathFactory(node, expressionFactory);
 		bindingPathFactory.explore();
-		return new BindingValue(bindingPathFactory.bindingVariable, bindingPathFactory.bindingPathElements,
+		return new BindingPath(bindingPathFactory.bindingVariable, bindingPathFactory.bindingPathElements,
 				bindingPathFactory.getBindable(), JavaPrettyPrinter.getInstance());
 	}
 

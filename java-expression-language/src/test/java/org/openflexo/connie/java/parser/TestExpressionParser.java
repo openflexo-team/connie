@@ -1,7 +1,7 @@
 package org.openflexo.connie.java.parser;
 
 import org.openflexo.connie.expr.BinaryOperatorExpression;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.java.expr.JavaBinaryOperatorExpression;
@@ -302,11 +302,11 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testImbricatedCall() {
-		tryToParse("function1(function2(8+1,9,10-1))", "function1(function2(9,9,9))", BindingValue.class, null, false);
+		tryToParse("function1(function2(8+1,9,10-1))", "function1(function2(9,9,9))", BindingPath.class, null, false);
 	}
 
 	public void testEmptyCall() {
-		tryToParse("function1()", "function1()", BindingValue.class, null, false);
+		tryToParse("function1()", "function1()", BindingPath.class, null, false);
 	}
 
 	public void testComplexBooleanExpression() {
@@ -350,7 +350,7 @@ public class TestExpressionParser extends ParserTestCase {
 	}
 
 	public void testIgnoredChars() {
-		tryToParse(" test  \n\n", "test", BindingValue.class, null, false);
+		tryToParse(" test  \n\n", "test", BindingPath.class, null, false);
 	}
 
 	// Test conditionals

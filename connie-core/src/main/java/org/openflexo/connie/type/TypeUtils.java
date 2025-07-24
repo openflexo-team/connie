@@ -57,6 +57,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.expr.EvaluationType;
+import org.openflexo.connie.type.WildcardTypeImpl.DefaultWildcardType;
 
 import com.google.common.primitives.Primitives;
 
@@ -107,6 +108,9 @@ public class TypeUtils {
 				if (rawType instanceof Class) {
 					return (Class<?>) rawType;
 				}
+				if (rawType instanceof UnresolvedType) {
+					return Object.class;
+				}
 				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
 			}
@@ -118,6 +122,9 @@ public class TypeUtils {
 				LOGGER.warning("Not handled: " + aType + " of " + aType.getClass().getName());
 				return null;
 			}
+		}
+		if (aType instanceof ParameterizedType) {
+			return getBaseClass(((ParameterizedType) aType).getRawType());
 		}
 		if (aType instanceof WildcardType) {
 			// System.out.println("WildcardType: " + aType);
@@ -210,6 +217,9 @@ public class TypeUtils {
 		if (isChar(aClass)) {
 			return Character.TYPE;
 		}
+		if (isVoid(aClass)) {
+			return Void.TYPE;
+		}
 		return aClass;
 	}
 
@@ -237,6 +247,9 @@ public class TypeUtils {
 		}
 		if (isChar(aClass)) {
 			return Character.class;
+		}
+		if (isVoid(aClass)) {
+			return Void.class;
 		}
 		return aClass;
 	}
@@ -429,10 +442,19 @@ public class TypeUtils {
 			return true;
 		}
 
+		if (aType instanceof ProxyType) {
+			return isTypeAssignableFrom(((ProxyType) aType).getReferencedType(), anOtherType, permissive);
+		}
+		if (anOtherType instanceof ProxyType) {
+			return isTypeAssignableFrom(aType, ((ProxyType) anOtherType).getReferencedType(), permissive);
+		}
 		if (anOtherType == ExplicitNullType.INSTANCE) {
 			return true;
 		}
 		if (anOtherType == UndefinedType.INSTANCE) {
+			return true;
+		}
+		if (anOtherType == DiamondType.INSTANCE) {
 			return true;
 		}
 		if (anOtherType instanceof UnresolvedType) {
@@ -504,8 +526,18 @@ public class TypeUtils {
 				return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], ((WildcardType) anOtherType).getUpperBounds()[0],
 						permissive);
 			}
+			if (permissive) {
+				// We will compare base class only
+				Class<?> c1 = getBaseClass(((WildcardType) aType).getUpperBounds()[0]);
+				Class<?> c2 = getBaseClass(anOtherType);
+				return isTypeAssignableFrom(c1, c2);
+			}
 			// Perform check on first upper bound only
 			return isTypeAssignableFrom(((WildcardType) aType).getUpperBounds()[0], anOtherType, permissive);
+		}
+
+		if (anOtherType instanceof WildcardType && ((WildcardType) anOtherType).getUpperBounds().length == 1) {
+			return isTypeAssignableFrom(aType, ((WildcardType) anOtherType).getUpperBounds()[0], permissive);
 		}
 
 		if (aType instanceof GenericArrayType) {
@@ -548,32 +580,33 @@ public class TypeUtils {
 			ParameterizedType t1 = (ParameterizedType) aType;
 			ParameterizedType t2 = (ParameterizedType) anOtherType;
 
-			// Now check that parameters size are the same
-			if (t1.getActualTypeArguments().length != t2.getActualTypeArguments().length) {
-				return false;
+			// Raw types must be assignable first
+			if (TypeUtils.isTypeAssignableFrom(t1.getRawType(), t2.getRawType())) {
+				// Then arguments must also be, relatively to the first type
+				for (int i = 0; i < t1.getActualTypeArguments().length; i++) {
+					Type st1 = t1.getActualTypeArguments()[i];
+					if (isPureWildCard(st1) && t1.getRawType() instanceof Class
+							&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
+						// Fixed assignability issue with wildcards as natural bounds of generic type
+						TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
+						st1 = new DefaultWildcardType(TV1.getBounds(), new Type[0]);
+					}
+					// Type st2 = t2.getActualTypeArguments()[i];
+					Type st2 = TypeUtils.getTypeArgument(t2, (Class) t1.getRawType(), i);
+					if (isPureWildCard(st2) && t2.getRawType() instanceof Class
+							&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
+						// Fixed assignability issue with wildcards as natural bounds of generic type
+						TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
+						st2 = new DefaultWildcardType(TV2.getBounds(), new Type[0]);
+					}
+					if (!isTypeAssignableFrom(st1, st2, true)) {
+						return false;
+					}
+				}
+				return true;
 			}
 
-			// Now, we have to compare parameter per parameter
-			for (int i = 0; i < t1.getActualTypeArguments().length; i++) {
-				Type st1 = t1.getActualTypeArguments()[i];
-				if (isPureWildCard(st1) && t1.getRawType() instanceof Class
-						&& ((Class<?>) t1.getRawType()).getTypeParameters().length > i) {
-					// Fixed assignability issue with wildcards as natural bounds of generic type
-					TypeVariable<?> TV1 = ((Class<?>) t1.getRawType()).getTypeParameters()[i];
-					st1 = new WildcardTypeImpl(TV1.getBounds(), new Type[0]);
-				}
-				Type st2 = t2.getActualTypeArguments()[i];
-				if (isPureWildCard(st2) && t2.getRawType() instanceof Class
-						&& ((Class<?>) t2.getRawType()).getTypeParameters().length > i) {
-					// Fixed assignability issue with wildcards as natural bounds of generic type
-					TypeVariable<?> TV2 = ((Class<?>) t2.getRawType()).getTypeParameters()[i];
-					st2 = new WildcardTypeImpl(TV2.getBounds(), new Type[0]);
-				}
-				if (!isTypeAssignableFrom(st1, st2, true)) {
-					return false;
-				}
-			}
-			return true;
+			return false;
 		}
 
 		// In this case, the type is not fully resolved, we only consider the first upper bound
@@ -650,6 +683,9 @@ public class TypeUtils {
 	}
 
 	public static boolean isOfType(Object object, Type aType) {
+		if (aType instanceof ProxyType) {
+			return isOfType(object, ((ProxyType) aType).getReferencedType());
+		}
 		if (aType instanceof CustomType) {
 			return ((CustomType) aType).isOfType(object, true);
 		}
@@ -708,6 +744,33 @@ public class TypeUtils {
 			sb.append(">");
 			return sb.toString();
 		}
+		else if (aType instanceof WildcardType) {
+			WildcardType t = (WildcardType) aType;
+			StringBuffer sb = new StringBuffer();
+			sb.append("?");
+
+			if (t.getUpperBounds() != null && t.getUpperBounds().length > 0) {
+				sb.append(" extends ");
+				boolean isFirst = true;
+				for (Type u : t.getUpperBounds()) {
+					sb.append((isFirst ? "" : ",") + simpleRepresentation(u));
+					isFirst = false;
+				}
+			}
+
+			if (t.getLowerBounds() != null && t.getLowerBounds().length > 0) {
+				sb.append(" super ");
+				boolean isFirst = true;
+				for (Type l : t.getLowerBounds()) {
+					sb.append((isFirst ? "" : ",") + simpleRepresentation(l));
+					isFirst = false;
+				}
+			}
+			return sb.toString();
+		}
+		else if (aType instanceof DiamondType) {
+			return "";
+		}
 		return aType.toString();
 	}
 
@@ -761,8 +824,14 @@ public class TypeUtils {
 	}
 
 	public static boolean isResolved(Type type) {
-		return type instanceof Class || type instanceof GenericArrayType && isResolved(((GenericArrayType) type).getGenericComponentType())
-				|| type instanceof ParameterizedType || type instanceof CustomType;
+		if (!(type instanceof Class || type instanceof GenericArrayType && isResolved(((GenericArrayType) type).getGenericComponentType())
+				|| type instanceof ParameterizedType || type instanceof CustomType)) {
+			return false;
+		}
+		if (type instanceof ConnieType) {
+			return ((ConnieType) type).isResolved();
+		}
+		return true;
 	}
 
 	public static boolean isPureWildCard(Type type) {
@@ -817,7 +886,7 @@ public class TypeUtils {
 			}
 			return false;
 		}
-		LOGGER.warning("Unexpected " + type);
+		LOGGER.warning("Unexpected " + type + (type != null ? " of " + type.getClass() : ""));
 		return false;
 	}
 
@@ -839,7 +908,7 @@ public class TypeUtils {
 			if (params.length > 0) {
 				Type[] args = new Type[params.length];
 				for (int i = 0; i < params.length; i++) {
-					args[i] = new WildcardTypeImpl(params[i].getBounds(), new Type[0]);
+					args[i] = new DefaultWildcardType(params[i].getBounds(), new Type[0]);
 				}
 				return new ParameterizedTypeImpl(aClass, args);
 			}
@@ -887,7 +956,7 @@ public class TypeUtils {
 						// Those conditions are required to generate a more contextualized type
 						contextualizeType = true;
 					}
-					actualTypeArguments[i] = new WildcardTypeImpl(bounds, new Type[0]);
+					actualTypeArguments[i] = new DefaultWildcardType(bounds, new Type[0]);
 				}
 				else {
 					actualTypeArguments[i] = currentTypeArgument;
@@ -1001,7 +1070,7 @@ public class TypeUtils {
 					lowerBounds[i] = makeInstantiatedType(wt.getLowerBounds()[i], context);
 				}
 			}
-			return new WildcardTypeImpl(upperBounds, lowerBounds);
+			return new DefaultWildcardType(upperBounds, lowerBounds);
 		}
 
 		LOGGER.warning("Unexpected " + type);
@@ -1012,17 +1081,23 @@ public class TypeUtils {
 	public static Type getSuperType(Type type) {
 		if (type instanceof ParameterizedType) {
 			ParameterizedType myType = (ParameterizedType) type;
-			Type superType = ((Class<?>) myType.getRawType()).getGenericSuperclass();
-			if (superType instanceof ParameterizedType) {
-				Type[] actualTypeArguments = new Type[((ParameterizedType) superType).getActualTypeArguments().length];
-				for (int i = 0; i < ((ParameterizedType) superType).getActualTypeArguments().length; i++) {
-					Type tv2 = ((ParameterizedType) superType).getActualTypeArguments()[i];
-					actualTypeArguments[i] = makeInstantiatedType(tv2, type);
+			if (myType.getRawType() instanceof Class) {
+				Type superType = ((Class<?>) myType.getRawType()).getGenericSuperclass();
+				if (superType instanceof ParameterizedType) {
+					Type[] actualTypeArguments = new Type[((ParameterizedType) superType).getActualTypeArguments().length];
+					for (int i = 0; i < ((ParameterizedType) superType).getActualTypeArguments().length; i++) {
+						Type tv2 = ((ParameterizedType) superType).getActualTypeArguments()[i];
+						actualTypeArguments[i] = makeInstantiatedType(tv2, type);
+					}
+					return new ParameterizedTypeImpl(((Class<?>) ((ParameterizedType) type).getRawType()).getSuperclass(),
+							actualTypeArguments);
 				}
-				return new ParameterizedTypeImpl(((Class<?>) ((ParameterizedType) type).getRawType()).getSuperclass(), actualTypeArguments);
+				// System.out.println("super type of " + simpleRepresentation(type) + " is " + simpleRepresentation(superType));
+				return superType;
 			}
-			// System.out.println("super type of " + simpleRepresentation(type) + " is " + simpleRepresentation(superType));
-			return superType;
+			else {
+				return Object.class;
+			}
 		}
 		else if (type instanceof Class) {
 			return ((Class<?>) type).getGenericSuperclass();
@@ -1051,7 +1126,12 @@ public class TypeUtils {
 	public static Type[] getSuperInterfaceTypes(Type type) {
 		if (type instanceof ParameterizedType) {
 			ParameterizedType myType = (ParameterizedType) type;
-			return ((Class<?>) myType.getRawType()).getGenericInterfaces();
+			if (myType.getRawType() instanceof Class) {
+				return ((Class<?>) myType.getRawType()).getGenericInterfaces();
+			}
+			else {
+				return new Type[0];
+			}
 		}
 		else if (type instanceof Class) {
 			return ((Class<?>) type).getGenericInterfaces();

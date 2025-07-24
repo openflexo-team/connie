@@ -65,6 +65,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.TypingSpace;
 
 /**
  * Model a java call which is a call to a method and with some arguments
@@ -118,7 +119,10 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 
 	@Override
 	public String getLabel() {
-		return getMethodDefinition().getLabel();
+		if (getMethodDefinition() != null) {
+			return getMethodDefinition().getLabel();
+		}
+		return getParsed();
 	}
 
 	@Override
@@ -310,11 +314,16 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 	@Override
 	public BindingPathCheck checkBindingPathIsValid(IBindingPathElement currentElement, Type currentType) {
 
-		BindingPathCheck check = new BindingPathCheck();
+		BindingPathCheck check = super.checkBindingPathIsValid(currentElement, currentType);
 
-		check.invalidBindingReason = "J'aime pas les static methods";
-		check.valid = false;
+		if (check.valid == false) {
+			return check;
+		}
+
+		check.returnedType = getMethodDefinition().getReturnType();
+		check.valid = true;
 		return check;
+
 	}
 
 	@Override
@@ -337,6 +346,18 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 				logger.warning("cannot find method " + getParsed() + " for " + getParent() + " with arguments " + getArguments());
 			}
 		}
+	}
+
+	@Override
+	public void invalidate(TypingSpace typingSpace) {
+		super.invalidate(typingSpace);
+		// No need to invalidate since Java is immutable in current JVM
+		/*if (getType() != null && typingSpace != null && getType() instanceof CustomType) {
+			Type translatedType = ((CustomType) getType()).translateTo(typingSpace);
+			setFunction(null);
+			setType(translatedType);
+		}
+		setFunction(null);*/
 	}
 
 }

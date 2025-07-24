@@ -50,7 +50,7 @@ import org.openflexo.connie.binding.FunctionPathElement;
 import org.openflexo.connie.binding.IBindingPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.del.expr.DELPrettyPrinter;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.UnresolvedBindingVariable;
 import org.openflexo.connie.expr.parser.node.AAdditionalArg;
@@ -68,7 +68,7 @@ import org.openflexo.connie.expr.parser.node.TIdentifier;
 
 /**
  * This class implements the semantics analyzer for a parsed binding path<br>
- * Its main purpose is to structurally build a {@link BindingValue} from a parsed AST.<br>
+ * Its main purpose is to structurally build a {@link BindingPath} from a parsed AST.<br>
  * No semantics nor type checking is performed at this stage
  * 
  * @author sylvain
@@ -81,11 +81,11 @@ class BindingPathFactory extends ExpressionFactory {
 
 	private final ExpressionFactory expressionFactory;
 
-	public static BindingValue makeBindingPath(PBinding node, ExpressionFactory expressionFactory) {
+	public static BindingPath makeBindingPath(PBinding node, ExpressionFactory expressionFactory) {
 
 		// ASTDebugger.debug(node);
 		BindingPathFactory bindingPathFactory = new BindingPathFactory(node, expressionFactory);
-		return new BindingValue(bindingPathFactory.bindingVariable, bindingPathFactory.bindingPathElements,
+		return new BindingPath(bindingPathFactory.bindingVariable, bindingPathFactory.bindingPathElements,
 				bindingPathFactory.getBindable(), DELPrettyPrinter.getInstance());
 	}
 

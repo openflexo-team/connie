@@ -44,6 +44,7 @@ package org.openflexo.connie.binding.javareflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
@@ -63,7 +64,9 @@ import org.openflexo.connie.binding.NewInstancePathElement;
 import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.StaticMethodPathElement;
+import org.openflexo.connie.binding.UnresolvedSimplePathElement;
 import org.openflexo.connie.type.TypeUtils;
+import org.openflexo.connie.type.UnresolvedType;
 
 /**
  * This is base implementation for {@link BindingFactory} supporting java key-value conding for variables<br>
@@ -165,7 +168,8 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		}
 		else {
 			// Unresolved
-			return new JavaPropertyPathElement(father, propertyName, bindable);
+			// return new JavaPropertyPathElement(father, propertyName, bindable);
+			return new UnresolvedSimplePathElement(father, propertyName, bindable);
 		}
 	}
 
@@ -192,9 +196,13 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		sb.append(functionName);
 		sb.append("(");
 		boolean isFirst = true;
-		for (DataBinding<?> arg : args) {
-			sb.append((isFirst ? "" : ",") + TypeUtils.simpleRepresentation(arg.getDeclaredType()));
-			isFirst = false;
+		if (args != null) {
+			for (DataBinding<?> arg : args) {
+				if (arg != null) {
+					sb.append((isFirst ? "" : ",") + TypeUtils.simpleRepresentation(arg.getDeclaredType()));
+				}
+				isFirst = false;
+			}
 		}
 		sb.append(")");
 		return sb.toString();
@@ -246,19 +254,39 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 				}
 			}
 		}
+
 		if (possiblyMatchingMethods.size() > 1) {
-			logger.warning("Please implement disambiguity here");
+			// Still more than one method possible, try to look for args types
+			// Find best one
+			List<Method> possiblyMatchingMethods2 = new ArrayList<>();
+			for (Method method : possiblyMatchingMethods) {
+				boolean allArgsMatch = true;
+				for (int i = 0; i < method.getGenericParameterTypes().length; i++) {
+					Type expectedType = method.getGenericParameterTypes()[i];
+					if (!TypeUtils.isTypeAssignableFrom(expectedType, args.get(i).getAnalyzedType())) {
+						allArgsMatch = false;
+					}
+				}
+				if (allArgsMatch) {
+					possiblyMatchingMethods2.add(method);
+				}
+			}
+			possiblyMatchingMethods = possiblyMatchingMethods2;
+		}
+
+		if (possiblyMatchingMethods.size() > 1) {
+			logger.warning("Don't know how to disambiguate " + possiblyMatchingMethods);
 			/*for (DataBinding<?> arg : args) {
 				System.out.println("arg " + arg + " of " + arg.getDeclaredType() + " / " + arg.getAnalyzedType());
 			}*/
 			// Return the first one
 			// TODO: try to find the best one
-			returned = JavaInstanceMethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			returned = retrieveMethodDefinition(parentType, possiblyMatchingMethods.get(0));
 			mapForType.put(signature, returned);
 			return returned;
 		}
 		else if (possiblyMatchingMethods.size() == 1) {
-			returned = JavaInstanceMethodDefinition.getMethodDefinition(parentType, possiblyMatchingMethods.get(0));
+			returned = retrieveMethodDefinition(parentType, possiblyMatchingMethods.get(0));
 			mapForType.put(signature, returned);
 			return returned;
 		}
@@ -270,9 +298,24 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		}
 	}
 
+	private AbstractJavaMethodDefinition retrieveMethodDefinition(Type parentType, Method method) {
+		AbstractJavaMethodDefinition returned;
+		if (Modifier.isStatic(method.getModifiers())) {
+			returned = JavaStaticMethodDefinition.getMethodDefinition(parentType, method);
+		}
+		else {
+			returned = JavaInstanceMethodDefinition.getMethodDefinition(parentType, method);
+		}
+		return returned;
+	}
+
 	// Note: in java, we don't care about functionName (which is the name of the declaring type)
 	public AbstractConstructor retrieveConstructor(Type declaringType, Type innerAccessType, String constructorName,
 			List<DataBinding<?>> arguments) {
+
+		if (declaringType instanceof UnresolvedType) {
+			return null;
+		}
 
 		Map<String, JavaConstructorDefinition> mapForType = storedConstructors.get(declaringType);
 		if (mapForType == null) {
@@ -298,7 +341,9 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 			argTypes.add(innerAccessType);
 		}
 		for (DataBinding<?> arg : arguments) {
-			argTypes.add(arg.getAnalyzedType());
+			if (arg != null) {
+				argTypes.add(arg.getAnalyzedType());
+			}
 		}
 
 		// System.out.println("Looking-up constructor for " + type + " with " + args);

@@ -52,7 +52,7 @@ import org.openflexo.connie.del.expr.DELConstant.IntegerConstant;
 import org.openflexo.connie.del.expr.DELConstant.ObjectConstant;
 import org.openflexo.connie.del.expr.DELConstant.StringConstant;
 import org.openflexo.connie.expr.BinaryOperatorExpression;
-import org.openflexo.connie.expr.BindingValue;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.connie.expr.CastExpression;
 import org.openflexo.connie.expr.ConditionalExpression;
 import org.openflexo.connie.expr.Constant;
@@ -185,7 +185,7 @@ public class DELPrettyPrinter extends ExpressionPrettyPrinter {
 	}
 
 	@Override
-	protected String makeStringRepresentation(BindingValue bv, Bindable context) {
+	protected String makeStringRepresentation(BindingPath bv, Bindable context) {
 		return bv.toString();
 	}
 
