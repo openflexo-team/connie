@@ -777,7 +777,10 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 			isFirst = false;
 		}
 		for (BindingPathElement e : getBindingPath()) {
-			sb.append((isFirst ? "" : ".") + e.getSerializationRepresentation());
+			if (e != null) {
+				sb.append((isFirst ? "" : ".") + e.getSerializationRepresentation());
+			}
+			// TODO investigate on which conditions an element might be null (does not seem sound to me)
 			isFirst = false;
 		}
 		return sb.toString();
