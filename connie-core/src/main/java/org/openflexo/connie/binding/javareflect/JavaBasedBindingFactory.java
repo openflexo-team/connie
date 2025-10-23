@@ -169,8 +169,13 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 		else {
 			// Unresolved
 			// return new JavaPropertyPathElement(father, propertyName, bindable);
-			return new UnresolvedSimplePathElement(father, propertyName, bindable);
+			return makeUnresolvedSimplePathElement(father, propertyName, bindable);
+			// return new UnresolvedSimplePathElement(father, propertyName, bindable);
 		}
+	}
+
+	public UnresolvedSimplePathElement makeUnresolvedSimplePathElement(IBindingPathElement father, String propertyName, Bindable bindable) {
+		return new UnresolvedSimplePathElement(father, propertyName, bindable);
 	}
 
 	@Override
