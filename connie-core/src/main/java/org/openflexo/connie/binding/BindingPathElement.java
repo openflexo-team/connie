@@ -154,6 +154,15 @@ public interface BindingPathElement extends IBindingPathElement {
 	public void setBindingPathElementOwner(BindingPathElementOwner owner);
 
 	/**
+	 * Returns a boolean indicating if this element has been obtained (parsed) through an escape sequence
+	 * 
+	 * @return
+	 */
+	public boolean getEscapedSerialization();
+
+	public void setEscapedSerialization(boolean escapedSerialization);
+
+	/**
 	 * Carry the result of acceptability of to type checking of a {@link BindingPathElement} in the context of a parent
 	 *
 	 * @author sylvain

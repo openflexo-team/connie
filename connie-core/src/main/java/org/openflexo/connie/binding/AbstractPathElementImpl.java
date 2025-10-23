@@ -48,7 +48,7 @@ import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
- * Abstract base implementation for a path element
+ * Abstract base implementation for a {@link BindingPathElement}
  * 
  * @author sylvain
  * 
@@ -64,6 +64,8 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 	private String parsed;
 
 	private BindingPathElementOwner bindingPathElementOwner;
+
+	private boolean escapedSerialization = false;
 
 	public static final String NAME_PROPERTY = "propertyName";
 	public static final String TYPE_PROPERTY = "type";
@@ -256,6 +258,16 @@ public abstract class AbstractPathElementImpl implements BindingPathElement, Has
 			return getParent().getRelativePath() + "." + getSerializationRepresentation();
 		}
 		return getSerializationRepresentation();
+	}
+
+	@Override
+	public boolean getEscapedSerialization() {
+		return escapedSerialization;
+	}
+
+	@Override
+	public void setEscapedSerialization(boolean escapedSerialization) {
+		this.escapedSerialization = escapedSerialization;
 	}
 
 }
