@@ -167,4 +167,11 @@ public class TestExpressionWithTypesParser extends ParserTestCase {
 		tryToParse("java.lang.Class.forName(\"Foo\")", "Class.forName(\"Foo\")", BindingPath.class, null, false);
 	}
 
+	// Regression: a static call whose return type differs from its declaring type must serialize with
+	// the DECLARING type as receiver. Double.parseDouble returns the primitive double, so the previous
+	// code (which used the element return type) produced the unparsable "double.parseDouble(...)".
+	public void testClassMethod3() {
+		tryToParse("java.lang.Double.parseDouble(\"3.14\")", "Double.parseDouble(\"3.14\")", BindingPath.class, null, false);
+	}
+
 }
