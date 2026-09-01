@@ -64,6 +64,7 @@ import org.openflexo.connie.binding.NewInstancePathElement;
 import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.StaticMethodPathElement;
+import org.openflexo.connie.binding.UnresolvedFunctionPathElement;
 import org.openflexo.connie.binding.UnresolvedSimplePathElement;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.UnresolvedType;
@@ -181,7 +182,23 @@ public abstract class JavaBasedBindingFactory implements BindingFactory {
 	@Override
 	public SimpleMethodPathElement<?> makeSimpleMethodPathElement(IBindingPathElement father, String functionName,
 			List<DataBinding<?>> args, Bindable bindable) {
+		// Symmetrical to makeSimplePathElement: when the kind of element cannot be decided yet, say so explicitly
+		// instead of defaulting to a Java method element. The kind is decided from the father's type, and that type is
+		// unknown whenever the father is itself a call - a FunctionPathElement only knows its return type once
+		// resolved. Committing to a concrete implementation there is unrecoverable: a JavaInstanceMethodPathElement
+		// can never become a behaviour element afterwards. BindingPath substitutes the returned placeholder through
+		// UnresolvedFunctionPathElement.attemptResolvingFromParent() once the father has been resolved.
+		// A null father is a ROOT call, not an undecidable one - leave it alone.
+		Type fatherType = (father != null ? father.getType() : null);
+		if (father != null && (fatherType == null || fatherType instanceof UnresolvedType)) {
+			return makeUnresolvedFunctionPathElement(father, functionName, args, bindable);
+		}
 		return new JavaInstanceMethodPathElement(father, functionName, args, bindable);
+	}
+
+	public UnresolvedFunctionPathElement makeUnresolvedFunctionPathElement(IBindingPathElement father, String functionName,
+			List<DataBinding<?>> args, Bindable bindable) {
+		return new UnresolvedFunctionPathElement(father, functionName, args, bindable);
 	}
 
 	@Override

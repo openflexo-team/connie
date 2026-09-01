@@ -69,6 +69,7 @@ import org.openflexo.connie.binding.SettableBindingPathElement;
 import org.openflexo.connie.binding.SimpleMethodPathElement;
 import org.openflexo.connie.binding.SimplePathElement;
 import org.openflexo.connie.binding.TargetObject;
+import org.openflexo.connie.binding.UnresolvedFunctionPathElement;
 import org.openflexo.connie.binding.UnresolvedSimplePathElement;
 import org.openflexo.connie.binding.javareflect.InvalidKeyValuePropertyException;
 import org.openflexo.connie.exception.InvocationTargetTransformException;
@@ -865,6 +866,17 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 					replaceBindingPathElementAtIndex(resolvedElement, i);
 					// HACK: Because everything was invalidated, do it again !
 					// TODO: can we do something better ????
+					doItAgain = true;
+					element = resolvedElement;
+				}
+			}
+
+			if (element instanceof UnresolvedFunctionPathElement) {
+				// Same for a call whose kind could not be decided when it was built, because its parent was itself a
+				// call and had no type yet. The preceding elements are resolved by now, so ask the factory again.
+				SimpleMethodPathElement<?> resolvedElement = ((UnresolvedFunctionPathElement) element).attemptResolvingFromParent();
+				if (resolvedElement != null && !(resolvedElement instanceof UnresolvedFunctionPathElement)) {
+					replaceBindingPathElementAtIndex(resolvedElement, i);
 					doItAgain = true;
 					element = resolvedElement;
 				}
