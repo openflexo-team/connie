@@ -148,6 +148,9 @@ public abstract class SimplePathElementImpl<P extends Property> extends Abstract
 
 	@Override
 	public String getSerializationRepresentation() {
+		if (getEscapedSerialization()) {
+			return "{" + '"' + getPropertyName() + '"' + "}";
+		}
 		return getPropertyName();
 	}
 

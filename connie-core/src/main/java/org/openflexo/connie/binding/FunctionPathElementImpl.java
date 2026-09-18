@@ -177,7 +177,7 @@ public abstract class FunctionPathElementImpl<F extends Function> extends Abstra
 	public String getSerializationRepresentation() {
 		// if (serializationRepresentation == null) {
 		StringBuffer returned = new StringBuffer();
-		returned.append(getFunctionNameToDisplay());
+		returned.append(getEscapedSerialization() ? "{" + '"' + getFunctionNameToDisplay() + '"' + "}" : getFunctionNameToDisplay());
 		returned.append("(");
 		boolean isFirst = true;
 		for (DataBinding<?> arg : getArguments()) {

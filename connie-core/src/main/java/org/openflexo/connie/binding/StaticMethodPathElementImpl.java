@@ -78,6 +78,17 @@ public abstract class StaticMethodPathElementImpl<F extends Function> extends Fu
 		return type;
 	}
 
+	/**
+	 * Return the type <i>declaring</i> the static method (the receiver of the call, e.g.
+	 * {@code java.lang.Double} for {@code java.lang.Double.parseDouble(...)}). This is distinct from
+	 * {@link #getType()}, which returns the method <i>return</i> type once the function is resolved.
+	 * Serialization must use this, not {@link #getType()}, otherwise a call is rendered with its
+	 * return type as receiver (e.g. {@code double.parseDouble(...)}), which is not parsable.
+	 */
+	public Type getDeclaringType() {
+		return type;
+	}
+
 	@Override
 	public boolean supportsNullValues() {
 		return true;

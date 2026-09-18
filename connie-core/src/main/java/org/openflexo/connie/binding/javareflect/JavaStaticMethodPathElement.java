@@ -216,7 +216,10 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 	public String getSerializationRepresentation() {
 		// if (serializationRepresentation == null) {
 		StringBuffer returned = new StringBuffer();
-		returned.append(TypeUtils.simpleRepresentation(getType()) + ".");
+		// Prefix with the DECLARING type (call receiver), not getType() which is the method return
+		// type: e.g. java.lang.Double.parseDouble(...) must not serialize as double.parseDouble(...).
+		// simpleRepresentation matches the canonical form (java.lang.Class.forName -> Class.forName).
+		returned.append(TypeUtils.simpleRepresentation(getDeclaringType()) + ".");
 		if (getFunction() != null) {
 			returned.append(getFunction().getName());
 		}
@@ -273,11 +276,13 @@ public class JavaStaticMethodPathElement extends StaticMethodPathElementImpl<Jav
 		// TODO : getParsed() might be transformed, too
 		// return new JavaStaticMethodPathElement(getParent(), getParsed(), getMethodDefinition(), transformedArgs);
 
+		// Pass the DECLARING type (call receiver), not getType() (the method return type), otherwise
+		// the transformed element loses its receiver type and serializes wrongly (e.g. double.parseDouble).
 		if (getMethodDefinition() != null) {
-			return new JavaStaticMethodPathElement(getType(), getMethodDefinition(), transformedArgs, getBindable());
+			return new JavaStaticMethodPathElement(getDeclaringType(), getMethodDefinition(), transformedArgs, getBindable());
 		}
 		else {
-			return new JavaStaticMethodPathElement(getType(), getParsed(), transformedArgs, getBindable());
+			return new JavaStaticMethodPathElement(getDeclaringType(), getParsed(), transformedArgs, getBindable());
 		}
 	}
 
