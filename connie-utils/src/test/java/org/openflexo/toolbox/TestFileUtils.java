@@ -109,4 +109,24 @@ public class TestFileUtils {
 		assertEquals(3, FileUtils.distance(d, f));
 		assertEquals(3, FileUtils.distance(f, d));
 	}
+
+	/**
+	 * Two files deep in distinct branches: the distance is computed in linear time (it used to be exponential in their depths)
+	 */
+	@Test(timeout = 2000)
+	public void testDeepFiles() {
+		File branch1 = a;
+		File branch2 = a;
+		for (int i = 0; i < 15; i++) {
+			branch1 = new File(branch1, "x" + i);
+			branch2 = new File(branch2, "y" + i);
+		}
+		assertEquals(30, FileUtils.distance(branch1, branch2));
+		assertEquals(30, FileUtils.distance(branch2, branch1));
+	}
+
+	@Test
+	public void testNoCommonAncestor() {
+		assertEquals(1000, FileUtils.distance(new File("x"), new File("y")));
+	}
 }
