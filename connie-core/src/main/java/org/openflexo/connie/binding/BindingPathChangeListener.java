@@ -123,7 +123,11 @@ public abstract class BindingPathChangeListener<T> implements PropertyChangeList
 		this(dataBinding, context, false);
 	}
 
+	/**
+	 * Stop observing, then dereference the binding and its context. A deleted listener is no longer registered on any object of the path.
+	 */
 	public void delete() {
+		stopObserving();
 		dataBinding = null;
 		context = null;
 		if (dependingObjects != null) {

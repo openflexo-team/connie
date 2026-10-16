@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -821,27 +822,25 @@ public class FileUtils {
 		return false;
 	}
 
+	/**
+	 * Return the distance between two files in the file tree: the number of steps up from each of them to their closest common ancestor,
+	 * or 1000 when they have none
+	 */
 	public static int distance(File f1, File f2) {
-		return Math.min(distance(f1, f2, false), distance(f2, f1, false));
-	}
-
-	private static int distance(File f1, File f2, boolean computeInverse) {
-		if (f2.equals(f1)) {
-			return 0;
+		// Linear: a recursion walking up both files explores every combination of their ancestors, exponentially (seconds for two
+		// files ten levels deep), and RelativePathResourceConverter computes such distances whenever it converts a resource
+		Map<File, Integer> stepsFromF1 = new HashMap<>();
+		int steps = 0;
+		for (File f = f1; f != null; f = f.getParentFile()) {
+			stepsFromF1.putIfAbsent(f, steps++);
 		}
-		if (f2.getParentFile() != null) {
-			int d1 = distance(f1, f2.getParentFile());
-			if (d1 < 1000) {
-				return d1 + 1;
+		steps = 0;
+		for (File f = f2; f != null; f = f.getParentFile()) {
+			Integer stepsUpFromF1 = stepsFromF1.get(f);
+			if (stepsUpFromF1 != null) {
+				return Math.min(stepsUpFromF1 + steps, 1000);
 			}
-		}
-		if (computeInverse) {
-			if (f1.getParentFile() != null) {
-				int d2 = distance(f2, f1.getParentFile());
-				if (d2 < 1000) {
-					return d2 + 1;
-				}
-			}
+			steps++;
 		}
 		return 1000;
 	}
