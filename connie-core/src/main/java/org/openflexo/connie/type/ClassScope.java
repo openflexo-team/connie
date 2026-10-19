@@ -40,27 +40,41 @@
 package org.openflexo.connie.type;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
- * A simple static API for listing classes loaded in a JVM. Based on {@link #getClassLocation(Class)} from
+ * A simple static API for listing classes loaded in a JVM, or available to it. Based on {@link #getClassLocation(Class)} from
  * http://www.javaworld.com/javaworld/javaqa/2003-07/01-qa-0711-classsrc.html
  * 
  * @author (C) <a href="http://www.javaworld.com/columns/jw-qna-index.shtml">Vlad Roubtsov</a>, 2003
- * 
- *         TODO: use https://code.google.com/archive/p/reflections/ for example instead
  */
 public class ClassScope {
+	private static final Logger LOGGER = Logger.getLogger(ClassScope.class.getPackage().getName());
+
 	private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
 	private static final Throwable CVF_FAILURE, CR_FAILURE; // set in <clinit>
 
@@ -101,12 +115,13 @@ public class ClassScope {
 	/**
 	 * Given a class loader instance, returns all classes currently loaded by that class loader.
 	 * 
+	 * This relies on the private field <code>ClassLoader.classes</code>, which does not exist anymore in recent JREs (Java 9+): the result
+	 * is then empty. Use {@link #getAvailableClassNames(ClassLoader[])} to list the classes that can be loaded.
+	 * 
 	 * @param defining
 	 *            class loader to inspect [may not be null]
-	 * @return Class array such that every Class has 'loader' as its defining class loader [never null, may be empty]
-	 * 
-	 * @throws RuntimeException
-	 *             if the "classes" field hack is not possible in this JRE
+	 * @return Class array such that every Class has 'loader' as its defining class loader [never null, may be empty, always empty if the
+	 *         "classes" field hack is not possible in this JRE]
 	 */
 	@SuppressWarnings("unchecked")
 	public static Class<?>[] getLoadedClasses(final ClassLoader loader) {
@@ -114,7 +129,8 @@ public class ClassScope {
 			throw new IllegalArgumentException("null input: loader");
 		}
 		if (CLASSES_VECTOR_FIELD == null) {
-			throw new RuntimeException("ClassScope::getLoadedClasses() cannot be used in this JRE", CVF_FAILURE);
+			LOGGER.fine("ClassScope::getLoadedClasses() cannot be used in this JRE: " + CVF_FAILURE);
+			return EMPTY_CLASS_ARRAY;
 		}
 
 		try {
@@ -148,10 +164,7 @@ public class ClassScope {
 	 * 
 	 * @param an
 	 *            array of defining class loaders to inspect [may not be null]
-	 * @return Class<?> array [never null, may be empty]
-	 * 
-	 * @throws RuntimeException
-	 *             if the "classes" field hack is not possible in this JRE
+	 * @return Class<?> array [never null, may be empty, always empty if the "classes" field hack is not possible in this JRE]
 	 */
 	public static Class<?>[] getLoadedClasses(final ClassLoader[] loaders) {
 		if (loaders == null) {
@@ -173,6 +186,116 @@ public class ClassScope {
 		resultList.toArray(result);
 
 		return result;
+	}
+
+	/**
+	 * Lists the names of the classes that can be loaded, whether they are already loaded or not, by scanning the classpath
+	 * (<code>java.class.path</code>), the URLs of the {@link URLClassLoader}s found in the given loaders (and their parents), and the public
+	 * API of the JRE (<code>java.*</code> and <code>javax.*</code> classes of the runtime image, Java 9+).<br>
+	 * 
+	 * Nothing is loaded: only names are read. An entry that cannot be read is skipped. Anonymous and local classes are ignored.
+	 * 
+	 * @param loaders
+	 *            class loaders whose URLs are scanned in addition to the classpath [may not be null, may contain null]
+	 * @return the class names, as returned by {@link Class#getName()} [never null, may be empty]
+	 */
+	public static Set<String> getAvailableClassNames(final ClassLoader[] loaders) {
+		if (loaders == null) {
+			throw new IllegalArgumentException("null input: loaders");
+		}
+
+		final Set<File> roots = new LinkedHashSet<>();
+		for (String entry : System.getProperty("java.class.path", "").split(File.pathSeparator)) {
+			if (!entry.isEmpty()) {
+				roots.add(new File(entry));
+			}
+		}
+		for (ClassLoader loader : loaders) {
+			for (; loader != null; loader = loader.getParent()) {
+				if (loader instanceof URLClassLoader) {
+					for (URL url : ((URLClassLoader) loader).getURLs()) {
+						if ("file".equals(url.getProtocol())) {
+							try {
+								roots.add(new File(url.toURI()));
+							} catch (URISyntaxException | IllegalArgumentException e) {
+								LOGGER.fine("Ignored classpath URL " + url + ": " + e);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		final Set<String> result = new LinkedHashSet<>();
+		for (File root : roots) {
+			try {
+				if (root.isDirectory()) {
+					scanDirectory(root.toPath(), result);
+				}
+				else if (root.isFile()) {
+					scanJar(root, result);
+				}
+			} catch (IOException | RuntimeException e) {
+				LOGGER.fine("Ignored classpath entry " + root + ": " + e);
+			}
+		}
+		scanRuntimeImage(result);
+		return result;
+	}
+
+	private static void scanJar(final File jar, final Set<String> result) throws IOException {
+		try (JarFile jarFile = new JarFile(jar)) {
+			final Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				addClassEntry(entries.nextElement().getName(), result);
+			}
+		}
+	}
+
+	private static void scanDirectory(final Path root, final Set<String> result) throws IOException {
+		try (Stream<Path> files = Files.walk(root)) {
+			files.filter(Files::isRegularFile).forEach(f -> addClassEntry(root.relativize(f).toString().replace(File.separatorChar, '/'), result));
+		}
+	}
+
+	/**
+	 * Adds the public API of the JRE (Java 9+ runtime image, <code>jrt:/</code>). Does nothing if the runtime image is not readable.
+	 */
+	private static void scanRuntimeImage(final Set<String> result) {
+		try {
+			final FileSystem jrt = FileSystems.getFileSystem(URI.create("jrt:/"));
+			try (Stream<Path> modules = Files.list(jrt.getPath("/modules"))) {
+				modules.forEach(module -> {
+					try (Stream<Path> files = Files.walk(module)) {
+						files.filter(Files::isRegularFile).forEach(f -> {
+							final String name = module.relativize(f).toString();
+							if (name.startsWith("java/") || name.startsWith("javax/")) {
+								addClassEntry(name, result);
+							}
+						});
+					} catch (IOException | RuntimeException e) {
+						LOGGER.fine("Ignored module " + module + ": " + e);
+					}
+				});
+			}
+		} catch (IOException | RuntimeException e) {
+			// No runtime image (Java 8, or restricted): the JRE classes are simply not listed
+			LOGGER.fine("Runtime image not scanned: " + e);
+		}
+	}
+
+	private static void addClassEntry(final String entryName, final Set<String> result) {
+		if (!entryName.endsWith(".class") || entryName.endsWith("module-info.class") || entryName.endsWith("package-info.class")) {
+			return;
+		}
+		final String name = entryName.substring(0, entryName.length() - ".class".length()).replace('/', '.');
+		// Anonymous and local classes (Foo$1, Foo$1Bar) are not meaningful for a user
+		for (int i = name.indexOf('$'); i >= 0; i = name.indexOf('$', i + 1)) {
+			if (i + 1 < name.length() && Character.isDigit(name.charAt(i + 1))) {
+				return;
+			}
+		}
+		result.add(name);
 	}
 
 	/**

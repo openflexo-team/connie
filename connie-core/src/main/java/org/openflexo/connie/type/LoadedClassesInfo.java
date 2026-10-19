@@ -47,6 +47,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,7 +83,7 @@ public class LoadedClassesInfo implements HasPropertyChangeSupport {
 	private List<PackageInfo> packageList;
 	private boolean needsReordering = true;
 	private Hashtable<String, List<ClassInfo>> registeredClassesForName;
-	private Hashtable<String, Class<?>> loadedClassesForName;
+	private Set<String> availableClassNames;
 	private List<LoadedClassesInfo> instances;
 
 	private List<IgnoredPattern> ignoredPatterns;
@@ -162,22 +163,6 @@ public class LoadedClassesInfo implements HasPropertyChangeSupport {
 			registerPackage(p);
 		}
 
-		loadedClassesForName = new Hashtable<>();
-
-		final Class<?>[] classes = ClassScope.getLoadedClasses(loaders);
-		// int classesBeeingRegistered = 0;
-		for (Class<?> cls : classes) {
-			if (!isFiltered(cls)) {
-				loadedClassesForName.put(cls.getName(), cls);
-
-				// classesBeeingRegistered++;
-				// registerClass(cls);
-				// String className = cls.getName();
-				// URL classLocation = ClassScope.getClassLocation(cls);
-				// System.out.println("" + classesBeeingRegistered + " - " + "Registered class: " + className + " from " + classLocation);
-			}
-		}
-
 		registerClass(String.class);
 		registerClass(Date.class);
 
@@ -203,10 +188,11 @@ public class LoadedClassesInfo implements HasPropertyChangeSupport {
 			} catch (ClassNotFoundException e) {
 			}
 		}
-		for (String s : loadedClassesForName.keySet()) {
-			if (s.contains(partialClassName)) {
-				if (!foundClasses.contains(loadedClassesForName.get(s))) {
-					foundClasses.add(loadedClassesForName.get(s));
+		for (String s : getAvailableClassNames()) {
+			if (s.contains(partialClassName) && !isFiltered(s)) {
+				Class<?> foundClass = loadClass(s);
+				if (foundClass != null && !foundClasses.contains(foundClass)) {
+					foundClasses.add(foundClass);
 				}
 			}
 		}
@@ -214,9 +200,39 @@ public class LoadedClassesInfo implements HasPropertyChangeSupport {
 		return foundClasses;
 	}
 
+	/**
+	 * Names of all the classes that can be loaded (not only the ones already loaded), scanned on first use
+	 */
+	private synchronized Set<String> getAvailableClassNames() {
+		if (availableClassNames == null) {
+			LOGGER.info("Starting scanning available classes in LoadedClassesInfo");
+			availableClassNames = ClassScope.getAvailableClassNames(loaders);
+			LOGGER.info("Finished scanning " + availableClassNames.size() + " available classes in LoadedClassesInfo");
+		}
+		return availableClassNames;
+	}
+
+	/**
+	 * Load (without initializing it) the class named as supplied, using the known class loaders. Return null when not loadable.
+	 */
+	private Class<?> loadClass(String className) {
+		for (ClassLoader loader : loaders) {
+			try {
+				return Class.forName(className, false, loader);
+			} catch (ClassNotFoundException | LinkageError e) {
+				// Try next loader
+			}
+		}
+		return null;
+	}
+
 	private boolean isFiltered(Class<?> aClass) {
+		return isFiltered(aClass.getName());
+	}
+
+	private boolean isFiltered(String className) {
 		for (IgnoredPattern ignoredPattern : ignoredPatterns) {
-			if (ignoredPattern.match(aClass.getName())) {
+			if (ignoredPattern.match(className)) {
 				return true;
 			}
 		}
