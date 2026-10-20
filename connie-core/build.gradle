@@ -2,5 +2,5 @@ dependencies {
   api project(':connie-utils')
  // implementation project(':connie-parser')
   api guava()
-  api group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
+  api commonsLang3()
 }
