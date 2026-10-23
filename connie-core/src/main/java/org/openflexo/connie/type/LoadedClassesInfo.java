@@ -294,6 +294,16 @@ public class LoadedClassesInfo implements HasPropertyChangeSupport {
 	}
 
 	public ClassInfo registerClass(Class<?> c) {
+		try {
+			return doRegisterClass(c);
+		} catch (LinkageError e) {
+			// A class whose dependencies are not on the classpath (optional libraries) cannot be introspected: ignore it
+			LOGGER.fine("Ignored class " + c + ": " + e);
+			return null;
+		}
+	}
+
+	private ClassInfo doRegisterClass(Class<?> c) {
 		if (c == null) {
 			// LOGGER.warning("Null class " + c);
 			return null;
@@ -330,7 +340,7 @@ public class LoadedClassesInfo implements HasPropertyChangeSupport {
 		}
 		else if (c.isMemberClass()) {
 			// System.out.println("Member class: "+c+" of "+c.getDeclaringClass());
-			ClassInfo parentClass = registerClass(c.getEnclosingClass());
+			ClassInfo parentClass = doRegisterClass(c.getEnclosingClass());
 			if (parentClass != null) {
 				ClassInfo returned = parentClass.declareMember(c);
 				return returned;
