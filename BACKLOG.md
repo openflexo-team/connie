@@ -6,9 +6,9 @@ Identifiers are stable and never reused: `CONNIE-F-<n>`. Status legend: `TODO` �
 
 ---
 
-### CONNIE-F-1 — One implementation of `ClassScope` / `LoadedClassesInfo`, in connie  ·  `IN PROGRESS`
+### CONNIE-F-1 — One implementation of `ClassScope` / `LoadedClassesInfo`, in connie  ·  `DONE`
 
-**Progress (2026-10-23).** `ClassScope` is now single (gina's copy deleted, `gina-swing` and the `gina-swing-editor-test` copy of `LoadedClassesInfo` import connie's); it also lost its `SecurityManager` (now `StackWalker`). `LoadedClassesInfo` is still duplicated (icons, `.fib` bindings).
+**Done (2026-10-23).** `ClassScope` and `LoadedClassesInfo` are single, in connie (option 2): `ClassEditor` supplies the icons (`getClassIcon(ClassInfo)`, `getPackageIcon()`), `ClassEditor.fib` / `ClassSelector.fib` bind to them and name connie's classes. `ClassScope` also lost its `SecurityManager` (now `StackWalker`). The stale copy in `gina-swing-editor-test` (with its `TestClassSelector.fib`) is left as is. Not checked visually: the icons of the class browser.
 
 **Problem.** `ClassScope` and `LoadedClassesInfo` exist twice: in `connie-core` (`org.openflexo.connie.type`, used by `TypeMustBeResolved`) and in `gina-swing` (`org.openflexo.gina.swing.utils`, used by `ClassEditor`, `TypeSelector`, `ClassEditor.fib`, `ClassSelector.fib`). The copy was made in January 2025 so that `flexo-foundation` does not depend on gina-swing, and the GINA one was marked `@Deprecated` with "use connie's, remove the Icon dependencies". The migration stopped there; both copies had to be fixed separately (`GINA-D-1`, `CONNIE-D-2`).
 
