@@ -1,6 +1,6 @@
 # connie — Known defects
 
-Bugs of connie (connie-utils, the expression language and its parsers) that are known and not fixed yet. Each entry says what is verified, how to reproduce it, and how to work around it. Features and evolutions go to `BACKLOG.md`, not here.
+Bugs of connie (the expression language and its parsers) that are known and not fixed yet. Each entry says what is verified, how to reproduce it, and how to work around it. Features and evolutions go to `BACKLOG.md`, not here.
 
 Identifiers are stable and never reused: `CONNIE-D-<n>`. Reference them from commits and from other entries.
 
@@ -18,7 +18,7 @@ Status legend: `TODO` · `IN PROGRESS` · `BLOCKED` · `DONE` · `DEFERRED`.
 
 **Measured (2026-10-13/14).** In the test reports of `openflexo-core-2.99` #149 to #160, 98 to 100 suites per build give that line (the others give none), in green and in red builds alike: it was **not** the cause of the intermittent failures investigated then (CORE-D-38, CORE-D-39). Locally the same lookup resolves to `openflexo-core` itself.
 
-**Mechanism, read in the code (`connie-utils`, `org.openflexo.rm`).**
+**Mechanism, read in the code (`openflexo-utils`, `org.openflexo.rm`; it was in `connie-utils` before 2.1.0).**
 1. `SourceCodeResourceLocatorImpl.getDirectoriesSearchOrder()` finds the git root above `user.dir`, then **climbs one level** ("to handle multiple repositories") and adds the `src/{main,test,dev}/resources` directories of every directory there holding a `build.gradle` or a `pom.xml`, recursively. In the `GIT-2.99` workspace that level is the set of repositories, as intended; on a Jenkins agent it is `/home/jenkins/agent/agent/workspace`, which holds the checkout of **every job** run on that agent, on every branch — and the half-deleted `*_ws-cleanup_*` copies of the deferred workspace wipeouts.
 2. `FileSystemResourceLocatorImpl.locateResource(String)` keeps the **first** file found along that list (`locateAllFiles(...).get(0)`), and the order of the list is the order of `File.listFiles()`: sorted on macOS, the order of the directory entries on Linux. On `of-jenkins-runner-1`, `openflexo-core-3.0` comes before `openflexo-core-2.99`.
 

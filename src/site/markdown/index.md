@@ -16,8 +16,6 @@ The purpose of CONNIE is to offer the ability to:
 
 Contents of this package
 
-CONNIE project contains two separate components (defined here as modules):
+CONNIE project contains the following component (defined here as a module):
   
 * [Connie-core component](/connie-core/index.md), which contains the Connie core library itself
-  
-* [Some utilities](/connie-utils/index.md) which are used in whole Openflexo infrastructure

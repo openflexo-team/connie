@@ -1,4 +1,0 @@
-dependencies {
-  testImplementation project(':testutils')
-  api commonsIo()
-}
