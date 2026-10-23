@@ -47,8 +47,7 @@ import org.openflexo.connie.BindingModel;
 import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.DefaultBindable;
-
-import com.google.common.reflect.TypeToken;
+import org.openflexo.connie.type.ParameterizedTypeImpl;
 
 import junit.framework.TestCase;
 
@@ -91,8 +90,7 @@ public class TestBindingAnalysing extends TestCase {
 			addToBindingVariables(aString = new BindingVariable("aString", String.class));
 			addToBindingVariables(new BindingVariable("aBoolean", Boolean.TYPE));
 			addToBindingVariables(new BindingVariable("anInt", Integer.TYPE));
-			addToBindingVariables(new BindingVariable("aList", new TypeToken<List<String>>() {
-			}.getType()));
+			addToBindingVariables(new BindingVariable("aList", new ParameterizedTypeImpl(List.class, String.class)));
 		}
 	}
 

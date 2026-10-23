@@ -1,6 +1,5 @@
 dependencies {
   api flexoUtils()
  // implementation project(':connie-parser')
-  api guava()
   api commonsLang3()
 }

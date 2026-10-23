@@ -53,9 +53,8 @@ import org.openflexo.connie.del.expr.DELExpressionEvaluator;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.expr.ExpressionEvaluator;
+import org.openflexo.connie.type.ParameterizedTypeImpl;
 import org.openflexo.connie.type.TypeUtils;
-
-import com.google.common.reflect.TypeToken;
 
 import junit.framework.TestCase;
 
@@ -145,8 +144,7 @@ public class TestBinding extends TestCase {
 			addToBindingVariables(new BindingVariable("des€", Float.TYPE));
 			addToBindingVariables(new BindingVariable("aBoolean", Boolean.TYPE));
 			addToBindingVariables(new BindingVariable("anInt", Integer.TYPE));
-			addToBindingVariables(new BindingVariable("aList", new TypeToken<List<String>>() {
-			}.getType()));
+			addToBindingVariables(new BindingVariable("aList", new ParameterizedTypeImpl(List.class, String.class)));
 		}
 	}
 

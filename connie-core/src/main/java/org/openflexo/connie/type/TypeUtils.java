@@ -53,13 +53,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.expr.EvaluationType;
 import org.openflexo.connie.type.WildcardTypeImpl.DefaultWildcardType;
-
-import com.google.common.primitives.Primitives;
 
 /**
  * Utility methods focusing on types introspection
@@ -254,12 +253,15 @@ public class TypeUtils {
 		return aClass;
 	}
 
+	private static final Set<Class<?>> WRAPPER_CLASSES = Set.of(Boolean.class, Byte.class, Character.class, Double.class, Float.class,
+			Integer.class, Long.class, Short.class, Void.class);
+
 	public static boolean isPrimitive(Type type) {
-		return type != null && Primitives.allPrimitiveTypes().contains(type);
+		return type instanceof Class && ((Class<?>) type).isPrimitive();
 	}
 
 	public static boolean isWrapperClass(Class<?> klass) {
-		return klass != null && Primitives.isWrapperType(klass);
+		return klass != null && WRAPPER_CLASSES.contains(klass);
 	}
 
 	public static boolean isNumber(Type type) {
