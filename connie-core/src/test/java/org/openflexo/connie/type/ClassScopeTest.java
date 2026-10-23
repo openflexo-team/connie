@@ -77,6 +77,12 @@ public class ClassScopeTest {
 	}
 
 	@Test
+	public void testCallerClassLoaderTreeContainsTheCallerLoader() {
+		List<ClassLoader> tree = java.util.Arrays.asList(ClassScope.getCallerClassLoaderTree());
+		assertTrue(tree.contains(ClassScopeTest.class.getClassLoader()));
+	}
+
+	@Test
 	public void testLoadedClassesInfoCanBeCreated() {
 		assertNotNull(LoadedClassesInfo.getInstance());
 	}

@@ -64,6 +64,7 @@ import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -76,7 +77,7 @@ public class ClassScope {
 	private static final Logger LOGGER = Logger.getLogger(ClassScope.class.getPackage().getName());
 
 	private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
-	private static final Throwable CVF_FAILURE, CR_FAILURE; // set in <clinit>
+	private static final Throwable CVF_FAILURE; // set in <clinit>
 
 	static {
 		Throwable failure = null;
@@ -98,18 +99,6 @@ public class ClassScope {
 		CLASSES_VECTOR_FIELD = tempf;
 		CVF_FAILURE = failure;
 
-		failure = null;
-		CallerResolver tempcr = null;
-		try {
-			// this can fail if the current SecurityManager does not allow
-			// RuntimePermission ("createSecurityManager"):
-
-			tempcr = new CallerResolver();
-		} catch (Throwable t) {
-			failure = t;
-		}
-		CALLER_RESOLVER = tempcr;
-		CR_FAILURE = failure;
 	}
 
 	/**
@@ -303,21 +292,16 @@ public class ClassScope {
 	 * of this method, it collects all class loaders that are loaders for all classes on the call stack and their respective parent loaders.
 	 * 
 	 * @return ClassLoader array [never null]
-	 * 
-	 * @throws RuntimeException
-	 *             if the caller context resolver could not be instantiated
 	 */
 	public static ClassLoader[] getCallerClassLoaderTree() {
-		if (CALLER_RESOLVER == null) {
-			throw new RuntimeException("Class<?>Scope::getCallerClassLoaderTree() cannot be used in this JRE", CR_FAILURE);
-		}
-
-		final Class<?>[] callContext = CALLER_RESOLVER.getClassContext();
+		// The first frame is this method: the call context starts at its caller
+		final List<Class<?>> callContext = STACK_WALKER
+				.walk(frames -> frames.skip(1).map(StackWalker.StackFrame::getDeclaringClass).collect(Collectors.toList()));
 
 		final Set<ClassLoader> resultSet = new HashSet<>();
 
-		for (int c = 2; c < callContext.length; ++c) {
-			getClassLoaderTree(callContext[c], resultSet);
+		for (Class<?> cls : callContext) {
+			getClassLoaderTree(cls, resultSet);
 		}
 
 		final ClassLoader[] result = new ClassLoader[resultSet.size()];
@@ -381,18 +365,6 @@ public class ClassScope {
 		return result;
 	}
 
-	/**
-	 * A helper class to get the call context. It subclasses SecurityManager to make getClassContext() accessible. An instance of
-	 * CallerResolver only needs to be created, not installed as an actual security manager.
-	 */
-	private static final class CallerResolver extends SecurityManager {
-		@Override
-		protected Class<?>[] getClassContext() {
-			return super.getClassContext();
-		}
-
-	} // end of nested class
-
 	private ClassScope() {
 	} // this class is not extendible
 
@@ -406,7 +378,6 @@ public class ClassScope {
 
 	private static final Field CLASSES_VECTOR_FIELD; // set in <clinit> [can be
 														// null]
-	private static final CallerResolver CALLER_RESOLVER; // set in <clinit> [can
-															// be null]
+	private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
 }
