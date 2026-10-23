@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.connie.type;
+package org.openflexo.toolbox;
 
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.TypeVariable;
@@ -52,7 +52,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openflexo.toolbox.HasPropertyChangeSupport;
 
 /**
  * Utility class used to reflect all loaded java classes in {@link ClassLoader}<br>

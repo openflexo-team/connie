@@ -37,7 +37,7 @@
  * 
  */
 
-package org.openflexo.connie.type;
+package org.openflexo.toolbox;
 
 import java.io.File;
 import java.io.IOException;
