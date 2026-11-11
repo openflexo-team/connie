@@ -524,7 +524,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 
 		if (needsParsing) {
 			if (!isParsing) {
-				setExpression(parseExpression(unparsedBinding));
+				// Parsing a text kept for later is not an edit: the owner is not told that the binding changed (CORE-D-45)
+				setExpression(parseExpression(unparsedBinding), false);
 			}
 			else {
 				invalidBindingReason = "Cannot analyze due to infinite-loop";
