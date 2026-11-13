@@ -19,6 +19,11 @@ owner, delegateReceiver)` (a default method that gives none) may give one, which
 not depend on p2pp: FML implements the delegate with its p2pp nodes. Test: `TestDataBindingPrettyPrint` (openflexo-core,
 `flexo-foundation-test`).
 
+**Revised after review (2026-11-13), decided with the user.** `rebuild()` and `clone()` parse the normalized text again (a wrong
+preserved text must not change the meaning; an equal expression keeps its text anyway). An expression set by code, without a delegate,
+drops the former delegate and the node tree it holds. A typed binding keeps, for its life, its AST, raw source, node map and vehicle
+binding (cost accepted).
+
 ### CONNIE-F-2 — Guava out of connie-core  ·  `DONE`
 
 **Done (2026-10-23).** `connie-core` no longer depends on Guava: the three `TypeToken` literals of `DataBindingFactory` and the two tests use the JDK / `ParameterizedTypeImpl`, `TypeUtils.isPrimitive` / `isWrapperClass` no longer use `Primitives` (same semantics, `void` and `Void` included). commons-lang3 stays (`reflect.TypeUtils.isAssignable` and `getTypeArguments` have no equivalent in Guava). The modules that use Guava directly now declare `implementation guava()` themselves: `flexographicutils`, `gina-api`, `gina-core`, `flexo-foundation`, `flexo-ui`, `owl-ta`, `pamela-core`, `opc-ua-ta-test`.

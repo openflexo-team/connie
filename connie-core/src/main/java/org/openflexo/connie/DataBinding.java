@@ -365,10 +365,9 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			deleteContainedBindingValues();
 			Expression oldValue = this.expression;
 			this.expression = value;
-			if (parsedPrettyPrintDelegate != null) {
-				// The expression comes from a text that was just parsed: it is written back as it was typed
-				prettyPrintDelegate = parsedPrettyPrintDelegate;
-			}
+			// The expression comes from a text that was just parsed: it is written back as it was typed. Otherwise (an expression set by
+			// code) the former delegate, which writes the former expression, is dropped with the node tree it holds
+			prettyPrintDelegate = parsedPrettyPrintDelegate;
 			if (notify) {
 				notifyBindingChanged(oldValue, value);
 			}
@@ -492,8 +491,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * 
 	 */
 	public void rebuild() {
-		// From the text as it was written: the binding keeps it (an equal expression is not replaced)
-		setExpression(parseExpression(getPrettyPrint()));
+		// From the normalized text: what the binding means. An equal expression is not replaced, and keeps its text as written
+		setExpression(parseExpression(toString()));
 	}
 
 	/**
@@ -1436,7 +1435,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public DataBinding<T> clone() {
 		DataBinding<T> returned = new DataBinding<>(getOwner(), getDeclaredType(), this.bdType);
 		if (getExpression() != null) {
-			returned.setExpression(parseExpression(getPrettyPrint(), returned));
+			returned.setExpression(parseExpression(getExpression().toString(), returned));
 		}
 		else if (getUnparsedBinding() != null) {
 			returned.setUnparsedBinding(getUnparsedBinding());

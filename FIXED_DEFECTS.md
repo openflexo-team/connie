@@ -33,3 +33,7 @@ elements did not tell their path either: fixed in openflexo-core.)
 
 **Fix.** `BindingPath.toString()` keeps its text only while every element is activated by this path; otherwise it computes it each time.
 Test: `TestRenameInExpressions` in `openflexo-core/flexo-foundation-test`.
+
+**Measured (2026-11-13).** On the 254 paths of the 32 `FMLParsingExamples` units, 60 (24 %) are not cached (their elements are
+shared or activated by another path): `hashCode()` costs about 420 ns on average, 180-230 ns with a forced cache; no visible change in
+the time of the flexo-foundation-test suite. A forced cache gave stale texts in one run.
