@@ -808,13 +808,31 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		return sb.toString();
 	}
 
+	/**
+	 * The text of this path. It is cached only while every element is activated by this path: an element tells the path that activated it
+	 * when its text changes (a renamed function or property, CONNIE-D-3), and the binding variable is listened to. An element that is not
+	 * activated by this path (a path not validated yet, a clone sharing the elements of another path) could change without telling it:
+	 * the text is then computed each time.
+	 */
 	@Override
 	public String toString() {
-		if (serializationRepresentation == null) {
-			serializationRepresentation = makeSerializationRepresentation();
+		if (serializationRepresentation != null) {
+			return serializationRepresentation;
 		}
+		String returned = makeSerializationRepresentation();
+		if (isNotifiedOfSerializationChanges()) {
+			serializationRepresentation = returned;
+		}
+		return returned;
+	}
 
-		return serializationRepresentation;
+	private boolean isNotifiedOfSerializationChanges() {
+		for (BindingPathElement e : getBindingPath()) {
+			if (e == null || e.getBindingPath() != this) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public String invalidBindingReason() {

@@ -298,6 +298,43 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 		}
 	}
 
+	private DataBindingPrettyPrintDelegate prettyPrintDelegate;
+	// The delegate given with the expression just parsed: installed if setExpression() takes that expression
+	private DataBindingPrettyPrintDelegate parsedPrettyPrintDelegate;
+
+	/**
+	 * The delegate that writes this binding as it was parsed, if any (see {@link #getPrettyPrint()})
+	 */
+	public DataBindingPrettyPrintDelegate getPrettyPrintDelegate() {
+		return prettyPrintDelegate;
+	}
+
+	/**
+	 * Install the delegate that writes this binding as it was parsed: the language that parsed it does it
+	 */
+	public void setPrettyPrintDelegate(DataBindingPrettyPrintDelegate prettyPrintDelegate) {
+		this.prettyPrintDelegate = prettyPrintDelegate;
+	}
+
+	/**
+	 * The text of this binding as it was written, the parts that changed since being written again ({@code 1+2} stays {@code 1+2}), given
+	 * by the {@link DataBindingPrettyPrintDelegate} of the language that parsed it. Without delegate, the normalized text of
+	 * {@link #toString()}
+	 */
+	public String getPrettyPrint() {
+		if (prettyPrintDelegate != null) {
+			String returned = prettyPrintDelegate.getPrettyPrint(this);
+			if (returned != null) {
+				return returned;
+			}
+		}
+		return toString();
+	}
+
+	/**
+	 * The normalized text of this binding, written from its expression alone ({@code 1 + 2}): the one {@link #equals(Object)} compares.
+	 * {@link #getPrettyPrint()} gives the text as it was written
+	 */
 	@Override
 	public String toString() {
 		if (expression != null) {
@@ -328,11 +365,16 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			deleteContainedBindingValues();
 			Expression oldValue = this.expression;
 			this.expression = value;
+			if (parsedPrettyPrintDelegate != null) {
+				// The expression comes from a text that was just parsed: it is written back as it was typed
+				prettyPrintDelegate = parsedPrettyPrintDelegate;
+			}
 			if (notify) {
 				notifyBindingChanged(oldValue, value);
 			}
 		}
 
+		parsedPrettyPrintDelegate = null;
 		checkBindingModelListening();
 	}
 
@@ -450,7 +492,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * 
 	 */
 	public void rebuild() {
-		setExpression(parseExpression(toString()));
+		// From the text as it was written: the binding keeps it (an equal expression is not replaced)
+		setExpression(parseExpression(getPrettyPrint()));
 	}
 
 	/**
@@ -1047,6 +1090,15 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	 * @return
 	 */
 	private Expression parseExpression(String unparsed) {
+		return parseExpression(unparsed, this);
+	}
+
+	/**
+	 * Parse a text for the supplied binding (this one, or a clone being built): the factory may give the delegate that writes the
+	 * expression back as it was typed, installed by {@link #setExpression(Expression, boolean)} if the binding takes that expression
+	 */
+	private Expression parseExpression(String unparsed, DataBinding<?> parsedBinding) {
+		parsedBinding.parsedPrettyPrintDelegate = null;
 
 		if (StringUtils.isEmpty(unparsed)) {
 			return null;
@@ -1056,7 +1108,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 			isParsing = true;
 			if (getOwner() != null && getOwner().getBindingFactory() != null) {
 				try {
-					Expression returned = getOwner().getBindingFactory().parseExpression(unparsed, getOwner());
+					Expression returned = getOwner().getBindingFactory().parseExpression(unparsed, getOwner(),
+							delegate -> parsedBinding.parsedPrettyPrintDelegate = delegate);
 					if (returned != null) {
 						needsParsing = false;
 						this.unparsedBinding = null;
@@ -1383,7 +1436,7 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 	public DataBinding<T> clone() {
 		DataBinding<T> returned = new DataBinding<>(getOwner(), getDeclaredType(), this.bdType);
 		if (getExpression() != null) {
-			returned.setExpression(parseExpression(getExpression().toString()));
+			returned.setExpression(parseExpression(getPrettyPrint(), returned));
 		}
 		else if (getUnparsedBinding() != null) {
 			returned.setUnparsedBinding(getUnparsedBinding());

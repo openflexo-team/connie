@@ -6,6 +6,19 @@ Identifiers are stable and never reused: `CONNIE-F-<n>`. Status legend: `TODO` �
 
 ---
 
+### CONNIE-F-3 — Write a binding back as it was written  ·  `DONE`
+
+**Problem.** `DataBinding.toString()` is the normalized text of the expression (`1 + 2`): a language that keeps the text the user wrote
+(`1+2`, parentheses, qualified names) had no way to give it for a binding (openflexo-core, CORE-D-33).
+
+**Done (2026-11-13), decided with the user.** `toString()`, `equals` and `hashCode` stay on the normalized text. A binding may carry a
+`DataBindingPrettyPrintDelegate`, and `DataBinding.getPrettyPrint()` gives its text (the normalized text without delegate). The language that
+parses a binding installs it: from the text of a unit (FML installs it itself), or from a typed text: `BindingFactory.parseExpression(text,
+owner, delegateReceiver)` (a default method that gives none) may give one, which the binding installs only if it takes the parsed expression
+(`setExpression` keeps an equal expression, and the delegate of that one). `rebuild()` and `clone()` parse the text as written. connie does
+not depend on p2pp: FML implements the delegate with its p2pp nodes. Test: `TestDataBindingPrettyPrint` (openflexo-core,
+`flexo-foundation-test`).
+
 ### CONNIE-F-2 — Guava out of connie-core  ·  `DONE`
 
 **Done (2026-10-23).** `connie-core` no longer depends on Guava: the three `TypeToken` literals of `DataBindingFactory` and the two tests use the JDK / `ParameterizedTypeImpl`, `TypeUtils.isPrimitive` / `isWrapperClass` no longer use `Primitives` (same semantics, `void` and `Void` included). commons-lang3 stays (`reflect.TypeUtils.isAssignable` and `getTypeArguments` have no equivalent in Guava). The modules that use Guava directly now declare `implementation guava()` themselves: `flexographicutils`, `gina-api`, `gina-core`, `flexo-foundation`, `flexo-ui`, `owl-ta`, `pamela-core`, `opc-ua-ta-test`.

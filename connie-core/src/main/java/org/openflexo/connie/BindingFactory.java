@@ -42,6 +42,7 @@
 
 package org.openflexo.connie;
 
+import java.util.function.Consumer;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -69,6 +70,24 @@ public interface BindingFactory {
 	 * @return
 	 */
 	Expression parseExpression(String expressionAsString, Bindable bindable) throws ParseException;
+
+	/**
+	 * Parse the text of a binding: as {@link #parseExpression(String, Bindable)}, and the factory may also give the
+	 * {@link DataBindingPrettyPrintDelegate} that writes the returned expression back as it was typed. The binding installs it if it takes
+	 * that expression. By default, no delegate is given
+	 * 
+	 * @param expressionAsString
+	 *            the text of the binding
+	 * @param bindable
+	 *            the owner of the binding
+	 * @param delegateReceiver
+	 *            receives the delegate, if the factory builds one
+	 * @return the expression
+	 */
+	default Expression parseExpression(String expressionAsString, Bindable bindable, Consumer<DataBindingPrettyPrintDelegate> delegateReceiver)
+			throws ParseException {
+		return parseExpression(expressionAsString, bindable);
+	}
 
 	/**
 	 * Return the list of accessible {@link SimplePathElement} which are accessible from supplied parent {@link IBindingPathElement}

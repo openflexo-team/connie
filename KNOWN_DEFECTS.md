@@ -48,3 +48,21 @@ Status legend: `TODO` · `IN PROGRESS` · `BLOCKED` · `DONE` · `DEFERRED`.
 **Fix.** Same as `GINA-D-1`: `ClassScope.getAvailableClassNames(loaders)` scans the classpath, the loaders' URLs and the `java.*` / `javax.*` runtime image; `LoadedClassesInfo.search` scans lazily and loads only the matches; `getLoadedClasses` returns an empty array instead of throwing. Test: `ClassScopeTest` in `connie-core` (4 failures before, 5 successes after).
 
 **Still duplicated.** `ClassScope` is byte for byte the one of `gina-swing`, and `LoadedClassesInfo` differs only by the icons. Ending the migration started in 2025 is `CONNIE-F-1`.
+
+---
+
+## Expressions
+
+### CONNIE-D-3 — The text of a binding path stays the old one after a renamed element  ·  `DONE`
+
+**Symptom.** `BindingPath.toString()` (hence `DataBinding.toString()`) kept the name a function or a property had when the text was first
+computed: `new ConceptB::constructor1()` stayed so after the constructor was renamed, in FML (CORE-D-67 of openflexo-core).
+
+**Cause (verified 2026-11-13).** The path caches its text and forgets it when it is invalidated, when its binding variable changes, or when an
+element tells it. An element can only tell the path that activated it (`BindingPathElement.getBindingPath()`), and an element is activated
+when the path is validated: before that, or for a clone that shares the elements of another path, nothing could reach the cache. (The FML
+elements did not tell their path either: fixed in openflexo-core.)
+
+**Fix.** `BindingPath.toString()` keeps its text only while every element is activated by this path; otherwise it computes it each time.
+Test: `TestRenameInExpressions` in `openflexo-core/flexo-foundation-test`.
+
