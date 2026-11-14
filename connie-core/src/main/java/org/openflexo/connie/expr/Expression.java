@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
@@ -54,6 +55,7 @@ import org.openflexo.connie.exception.InvocationTargetTransformException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TransformException;
 import org.openflexo.connie.exception.TypeMismatchException;
+import org.openflexo.connie.exception.BindingEvaluationException;
 
 /**
  * Represents a expression
@@ -89,16 +91,18 @@ public abstract class Expression {
 			if (e.getException() != null) {
 				throw e.getException();
 			}
-			throw new InvocationTargetException(e.getException());
+			throw new InvocationTargetException(e);
 		} catch (TransformException e) {
+			// Gives null, or fails in a strict context (CONNIE-F-4)
+			BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.TRANSFORMATION_FAILURE, this, e.getMessage(), e);
 			String expressionAsString;
 			try {
 				expressionAsString = toString();
 			} catch (Exception e2) {
 				expressionAsString = "<???>";
 			}
-			LOGGER.warning("Unexpected exception occured during evaluation of " + expressionAsString);
-			e.printStackTrace();
+			LOGGER.warning("Unexpected exception occured during evaluation of " + expressionAsString + ": " + e);
+			LOGGER.log(Level.FINE, "Stack of the exception above", e);
 			return null;
 		}
 	}

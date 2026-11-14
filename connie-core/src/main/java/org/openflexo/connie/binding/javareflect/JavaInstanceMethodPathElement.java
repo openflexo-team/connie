@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.Bindable;
@@ -66,6 +67,7 @@ import org.openflexo.connie.expr.Expression;
 import org.openflexo.connie.expr.ExpressionTransformer;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.TypingSpace;
+import org.openflexo.connie.exception.BindingEvaluationException;
 
 /**
  * Model a java call which is a call to a method and with some arguments
@@ -192,6 +194,8 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 		try {
 			return getMethodDefinition().getMethod().invoke(target, args);
 		} catch (IllegalArgumentException e) {
+			// Gives null, or fails in a strict context (CONNIE-F-4)
+			BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.ILLEGAL_ARGUMENT, this, e.getMessage(), e);
 			StringBuffer warningMessage = new StringBuffer(
 					"While evaluating method " + getMethodDefinition().getMethod() + " exception occured: " + e.getMessage());
 			warningMessage.append(", object = " + target);
@@ -201,7 +205,9 @@ public class JavaInstanceMethodPathElement extends SimpleMethodPathElementImpl<J
 			logger.warning(warningMessage.toString());
 			// e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			// Gives null, or fails in a strict context (CONNIE-F-4)
+			BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.ILLEGAL_ACCESS, this, e.getMessage(), e);
+			logger.log(Level.FINE, "Illegal access while evaluating " + this, e);
 		} catch (InvocationTargetException e) {
 			// e.getTargetException().printStackTrace();
 			StringBuffer sb = new StringBuffer();

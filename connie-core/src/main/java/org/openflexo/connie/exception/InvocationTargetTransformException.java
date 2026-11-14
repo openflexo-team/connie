@@ -52,27 +52,20 @@ public class InvocationTargetTransformException extends TransformException {
 
 	private ReflectiveOperationException exception;
 
-	private String message;
 
 	public InvocationTargetTransformException(InvocationTargetException e) {
-		super();
+		super("InvocationTargetException: " + (e.getTargetException() != null ? e.getTargetException().getMessage() : null), e);
 		exception = e;
-		message = "InvocationTargetException: " + e.getTargetException().getMessage();
 	}
 
 	public InvocationTargetTransformException(ReflectiveOperationException e) {
-		super();
+		super(e.getClass().getSimpleName() + " : " + e.getMessage(), e);
 		exception = e;
-		message = e.getClass().getSimpleName() + " : " + e.getMessage();
 	}
 
 	public ReflectiveOperationException getException() {
 		return exception;
 	}
 
-	@Override
-	public String getMessage() {
-		return message;
-	}
 
 }

@@ -6,7 +6,7 @@ Identifiers are stable and never reused: `CONNIE-F-<n>`. Status legend: `TODO` �
 
 ---
 
-### CONNIE-F-4 — A strict evaluation mode, and exceptions that keep their message and cause  ·  `TODO`
+### CONNIE-F-4 — A strict evaluation mode, and exceptions that keep their message and cause  ·  `DONE`
 
 **Problem (audit of `CORE-F-11`, openflexo-core, 2026-11-13).** Connie turns several evaluation failures into `null`, which FML
 cannot tell from a real null value:
@@ -35,6 +35,33 @@ Several exceptions lose what they carry:
 - Tests in connie for each case, in both modes.
 - `CORE-F-11` phase 3 green on top of it.
 - The new version of connie is decided with the user.
+
+**Done (2026-11-14), decided with the user.**
+- The exception is unchecked, as proposed. A checked one would have had to be a `ReflectiveOperationException`, the only channel
+  `getBindingValue` already declares. The 413 calls of the workspace catch that channel in 334 places, mostly to give null, so they would
+  have swallowed it. Only the context that asked for `STRICT` receives the exception, and the code in between lets it through.
+- `BindingEvaluationContext.getEvaluationPolicy()` is a default method returning `LENIENT`, so none of its 18 implementations changes.
+  `EvaluationPolicy.isStrict(context)` reads it.
+- In `STRICT`, `BindingEvaluationException` (kind, text of the binding, cause) is thrown by:
+  - `DataBinding.getBindingValue` for an invalid binding, or one that does not reduce to a value (a binding that is not set gives null in
+    both modes);
+  - `setBindingValue` and `BindingPath.setBindingValue` for an invalid binding, or one that cannot be set;
+  - `Expression.evaluate` for a `TransformException` other than a type mismatch, a null reference or an invocation target;
+  - `BindingPath.getBindingValue` for an invalid path or a `ConcurrentModificationException`;
+  - the three Java method path elements for an `IllegalArgumentException` or an `IllegalAccessException`.
+- In `LENIENT`, the result is unchanged (null), and so are the warnings, those of `Expression.evaluate` and of a method that refuses its
+  arguments included. The stack printed by `Expression.evaluate`, the stack of an `IllegalAccessException` in a method path element and
+  the `System.err` line of `BindingPath` are now FINE logs.
+- Messages and causes are kept:
+  - `TransformException(String)` and the new `(String, Throwable)`, `VisitorException(String)`, `NotSettableContextException(String)`;
+  - `InvocationTargetTransformException` has its exception as cause;
+  - `Expression.evaluate` no longer throws an `InvocationTargetException` wrapping null.
+- FML contexts stay `LENIENT` until `CORE-F-11` phase 3, which switches them to `STRICT` together with the conversion into FML errors.
+- The version stays 2.1.0, not released yet.
+- Test: `TestEvaluationPolicy` (default-expression-language). It covers the default policy, a valid binding, an unset binding, the get and
+  set of an invalid binding, a binding that cannot be set, and the messages and causes. It does not cover these kinds, verified by reading
+  only: `INCOMPLETE_EVALUATION`, `TRANSFORMATION_FAILURE`, `ILLEGAL_ARGUMENT`, `ILLEGAL_ACCESS`, `CONCURRENT_MODIFICATION`. They are
+  hard to provoke from the default expression language; phase 3 of `CORE-F-11` exercises them through FML.
 
 ### CONNIE-F-3 — Write a binding back as it was written  ·  `DONE`
 

@@ -59,4 +59,13 @@ public interface BindingEvaluationContext {
 	Object getValue(BindingVariable variable);
 
 	ExpressionEvaluator getEvaluator();
+
+	/**
+	 * How the failures of an evaluation in this context are signalled: {@link EvaluationPolicy#LENIENT} (null) by default,
+	 * {@link EvaluationPolicy#STRICT} (a {@link org.openflexo.connie.exception.BindingEvaluationException}) for a context that wants to know
+	 * (CONNIE-F-4)
+	 */
+	default EvaluationPolicy getEvaluationPolicy() {
+		return EvaluationPolicy.LENIENT;
+	}
 }

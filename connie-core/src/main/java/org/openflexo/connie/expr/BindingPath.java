@@ -80,6 +80,7 @@ import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.connie.type.TypingSpace;
 import org.openflexo.connie.type.UndefinedType;
+import org.openflexo.connie.exception.BindingEvaluationException;
 
 /**
  * Represents a binding path, as formed by an access to a binding variable and a path of BindingPathElement<br>
@@ -1031,11 +1032,16 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 					previous = e;
 				}
 			} catch (ConcurrentModificationException e) {
-				System.err.println("ConcurrentModificationException while executing BindingPath " + this);
+				// Gives null, or fails in a strict context (CONNIE-F-4)
+				BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.CONCURRENT_MODIFICATION, this, null, e);
+				LOGGER.log(Level.FINE, "ConcurrentModificationException while executing BindingPath " + this, e);
 				return null;
 			}
 			return current;
 		}
+		// An invalid binding path gives null, or fails in a strict context (CONNIE-F-4)
+		BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.INVALID_BINDING, this,
+				context == null ? "no evaluation context" : invalidBindingReason(), null);
 		return null;
 	}
 
@@ -1048,10 +1054,12 @@ public class BindingPath extends Expression implements PropertyChangeListener, C
 		// logger.info("isSettable=" + isSettable());
 
 		if (!isValid()) {
+			BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.INVALID_BINDING, this, invalidBindingReason(), null);
 			return;
 		}
 
 		if (!isSettable()) {
+			BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.NOT_SETTABLE, this, null, null);
 			return;
 		}
 

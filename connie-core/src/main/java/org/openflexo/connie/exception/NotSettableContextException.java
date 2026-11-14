@@ -52,20 +52,14 @@ import org.openflexo.connie.binding.SettableBindingEvaluationContext;
 @SuppressWarnings("serial")
 public class NotSettableContextException extends TransformException {
 
-	private String message;
 
 	public NotSettableContextException(BindingVariable bindingVariable, BindingEvaluationContext context) {
-		super();
-		message = "NotSettableContextException: variable " + bindingVariable + " context=" + context;
+		super("NotSettableContextException: variable " + bindingVariable + " context=" + context);
 	}
 
 	public NotSettableContextException(String message) {
 		super(message);
 	}
 
-	@Override
-	public String getMessage() {
-		return message;
-	}
 
 }

@@ -76,6 +76,7 @@ import org.openflexo.connie.type.TypingSpace;
 import org.openflexo.connie.type.UndefinedType;
 import org.openflexo.toolbox.HasPropertyChangeSupport;
 import org.openflexo.toolbox.StringUtils;
+import org.openflexo.connie.exception.BindingEvaluationException;
 
 /**
  * Representation of a data binding.<br>
@@ -1244,6 +1245,10 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 						}
 						returned = (T) ((Constant<?>) ((CastExpression) evaluatedExpression).getArgument()).getValue();
 					}
+					else {
+						BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.INCOMPLETE_EVALUATION, this,
+								"max reduction is " + evaluatedExpression, null);
+					}
 				}
 
 				else if (evaluatedExpression instanceof Constant) {
@@ -1261,7 +1266,8 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 					// " max reduction is " + evaluatedExpression +
 					// " resolvedExpression="
 					// + resolvedExpression);
-
+					BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.INCOMPLETE_EVALUATION, this,
+							"max reduction is " + evaluatedExpression, null);
 					return null;
 				}
 
@@ -1305,6 +1311,11 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				throw e;
 			}
 		}
+		// An invalid binding gives null, or fails in a strict context; a binding that is not set gives null in both (CONNIE-F-4)
+		if (isSet()) {
+			BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.INVALID_BINDING, this, invalidBindingReason(),
+					null);
+		}
 		return null;
 	}
 
@@ -1339,14 +1350,18 @@ public class DataBinding<T> implements HasPropertyChangeSupport, PropertyChangeL
 				}
 			}
 			else {
+				BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.NOT_SETTABLE, this, "don't know how to set it", null);
 				LOGGER.warning("Don't know how to set binding: " + this);
 			}
 		}
 		else {
+			// Logged, or fails in a strict context (CONNIE-F-4)
 			if (!isValid()) {
+				BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.INVALID_BINDING, this, invalidBindingReason(), null);
 				LOGGER.warning("Trying to set value: invalid binding " + this + " reason=" + invalidBindingReason());
 			}
 			else {
+				BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.NOT_SETTABLE, this, null, null);
 				LOGGER.warning("Trying to set value: not settable binding " + this);
 			}
 		}
