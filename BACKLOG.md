@@ -6,6 +6,36 @@ Identifiers are stable and never reused: `CONNIE-F-<n>`. Status legend: `TODO` �
 
 ---
 
+### CONNIE-F-4 — A strict evaluation mode, and exceptions that keep their message and cause  ·  `TODO`
+
+**Problem (audit of `CORE-F-11`, openflexo-core, 2026-11-13).** Connie turns several evaluation failures into `null`, which FML
+cannot tell from a real null value:
+- `DataBinding.getBindingValue` returns null for an invalid binding, and `setBindingValue` only logs a warning for an invalid or not
+  settable binding.
+- `Expression.evaluate` prints and returns null for any `TransformException` other than a type mismatch, a null reference or an
+  invocation target (an `InvalidCastException` is lost that way), and throws `new InvocationTargetException(null)`, which wraps nothing.
+- `BindingPath.getBindingValue` returns null on a `ConcurrentModificationException`.
+- The method path elements (`JavaInstanceMethodPathElement` and its static / new-instance variants) return null on
+  `IllegalArgumentException` and `IllegalAccessException`.
+
+Several exceptions lose what they carry:
+- `TransformException(String)` drops its message, so `InvalidCastException` and `NotSettableContextException(String)` give a null
+  `getMessage()`.
+- `InvocationTargetTransformException` sets no Java cause (`getCause()` is null).
+- `VisitorException(String)` drops its message.
+
+**Proposed.**
+- An evaluation policy, `STRICT` or `LENIENT`, given by the `BindingEvaluationContext` (a default method returning `LENIENT`, so current users,
+  GINA among them, are unchanged).
+- In `STRICT`, the cases above raise a new unchecked `BindingEvaluationException` that carries the binding, the kind of failure and the cause.
+  FML evaluation contexts return `STRICT`.
+- Messages and causes are kept in every exception of `org.openflexo.connie.exception`.
+
+**Acceptance criteria.**
+- Tests in connie for each case, in both modes.
+- `CORE-F-11` phase 3 green on top of it.
+- The new version of connie is decided with the user.
+
 ### CONNIE-F-3 — Write a binding back as it was written  ·  `DONE`
 
 **Problem.** `DataBinding.toString()` is the normalized text of the expression (`1 + 2`): a language that keeps the text the user wrote
