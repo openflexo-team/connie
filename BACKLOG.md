@@ -62,6 +62,9 @@ Several exceptions lose what they carry:
   set of an invalid binding, a binding that cannot be set, and the messages and causes. It does not cover these kinds, verified by reading
   only: `INCOMPLETE_EVALUATION`, `TRANSFORMATION_FAILURE`, `ILLEGAL_ARGUMENT`, `ILLEGAL_ACCESS`, `CONCURRENT_MODIFICATION`. They are
   hard to provoke from the default expression language; phase 3 of `CORE-F-11` exercises them through FML.
+- Follow-up (2026-11-15, `CORE-F-11` phase 3): the Java method and constructor path elements no longer print the stack of the failure of
+  the invoked code, nor warn about it, before propagating it (`InvocationTargetTransformException`): the caller reports it once. The message is
+  logged at `FINE`.
 
 ### CONNIE-F-3 — Write a binding back as it was written  ·  `DONE`
 

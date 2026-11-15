@@ -174,19 +174,17 @@ public class JavaNewInstanceMethodPathElement extends NewInstancePathElementImpl
 			BindingEvaluationException.failIfStrict(context, BindingEvaluationException.Kind.ILLEGAL_ACCESS, this, e.getMessage(), e);
 			logger.log(Level.FINE, "Illegal access while evaluating " + this, e);
 		} catch (InvocationTargetException e) {
-			// e.getTargetException().printStackTrace();
-			StringBuffer sb = new StringBuffer();
-			sb.append("InvocationTargetException " + e.getTargetException().getClass().getSimpleName() + " : "
-					+ e.getTargetException().getMessage() + " while evaluating constructor " + getConstructorDefinition().getConstructor()
-					+ " with args: ");
-			for (int j = 0; j < args.length; j++) {
-				sb.append("arg " + j + " = " + args[j] + " ");
+			// The failure of the invoked code propagates to the caller, who reports it: it is not printed here (CONNIE-F-4)
+			if (logger.isLoggable(Level.FINE)) {
+				StringBuffer sb = new StringBuffer();
+				sb.append("InvocationTargetException " + e.getTargetException().getClass().getSimpleName() + " : "
+						+ e.getTargetException().getMessage() + " while evaluating constructor " + getConstructorDefinition().getConstructor()
+						+ " with args: ");
+				for (int j = 0; j < args.length; j++) {
+					sb.append("arg " + j + " = " + args[j] + " ");
+				}
+				logger.fine(sb.toString());
 			}
-			logger.warning(sb.toString());
-			/*e.printStackTrace();
-			logger.info("Caused by:");
-			e.getTargetException().printStackTrace();*/
-			e.getTargetException().printStackTrace();
 			throw new InvocationTargetTransformException(e);
 		} catch (InstantiationException e) {
 			// e.getTargetException().printStackTrace();
