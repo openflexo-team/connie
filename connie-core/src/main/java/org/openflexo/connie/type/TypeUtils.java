@@ -584,6 +584,13 @@ public class TypeUtils {
 
 			// Raw types must be assignable first
 			if (TypeUtils.isTypeAssignableFrom(t1.getRawType(), t2.getRawType())) {
+				// A diamond (new HashMap<>()) stands for a single DiamondType argument whatever the number of type parameters of the
+				// raw type: its arguments are inferred from the target type, so only the raw types are to be compared (CORE-D-87)
+				for (Type arg : t2.getActualTypeArguments()) {
+					if (arg == DiamondType.INSTANCE) {
+						return true;
+					}
+				}
 				// Then arguments must also be, relatively to the first type
 				for (int i = 0; i < t1.getActualTypeArguments().length; i++) {
 					Type st1 = t1.getActualTypeArguments()[i];

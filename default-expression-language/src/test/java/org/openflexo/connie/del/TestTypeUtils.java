@@ -423,4 +423,18 @@ public class TestTypeUtils {
 		}
 
 	}
+
+	/**
+	 * CORE-D-87: <code>Map&lt;Object,Object&gt; map = new HashMap&lt;&gt;()</code> gives a HashMap with a single DiamondType argument,
+	 * whereas HashMap has two type parameters.
+	 */
+	@Test
+	public void testDiamondAssignability() {
+		Type diamondHashMap = new org.openflexo.connie.type.ParameterizedTypeImpl(java.util.HashMap.class,
+				org.openflexo.connie.type.DiamondType.INSTANCE);
+		Type mapOfObjects = new org.openflexo.connie.type.ParameterizedTypeImpl(java.util.Map.class, Object.class, Object.class);
+		assertTrue(TypeUtils.isTypeAssignableFrom(mapOfObjects, diamondHashMap));
+		assertFalse(TypeUtils.isTypeAssignableFrom(
+				new org.openflexo.connie.type.ParameterizedTypeImpl(java.util.List.class, Object.class), diamondHashMap));
+	}
 }
