@@ -14,6 +14,8 @@ Fixed defects are moved to [`FIXED_DEFECTS.md`](./FIXED_DEFECTS.md) once their s
 
 ### CONNIE-D-1 — On a Jenkins agent, source-code resources are looked up in the workspaces of other jobs  ·  `TODO`
 
+**GitHub:** [openflexo-team/connie#9](https://github.com/openflexo-team/connie/issues/9)
+
 **Symptom.** The tests of `openflexo-core-2.99` read the localization of `flexo-foundation` from the checkout of **another job**, on the 3.0 branch. Every test suite of `flexo-foundation-test` logs:
 
     Main localization directory: [SourceCodeResourceLocatorImpl]file:/home/jenkins/agent/agent/workspace/openflexo-core-3.0/flexo-foundation/src/main/resources/FlexoLocalization/General/

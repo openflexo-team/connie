@@ -8,6 +8,8 @@ Identifiers are stable and never reused: `CONNIE-F-<n>`. Status legend: `TODO` �
 
 ### CONNIE-F-4 — A strict evaluation mode, and exceptions that keep their message and cause  ·  `DONE`
 
+**GitHub:** [openflexo-team/connie#12](https://github.com/openflexo-team/connie/issues/12)
+
 **Problem (audit of `CORE-F-11`, openflexo-core, 2026-11-13).** Connie turns several evaluation failures into `null`, which FML
 cannot tell from a real null value:
 - `DataBinding.getBindingValue` returns null for an invalid binding, and `setBindingValue` only logs a warning for an invalid or not
@@ -68,6 +70,8 @@ Several exceptions lose what they carry:
 
 ### CONNIE-F-3 — Write a binding back as it was written  ·  `DONE`
 
+**GitHub:** [openflexo-team/connie#13](https://github.com/openflexo-team/connie/issues/13)
+
 **Problem.** `DataBinding.toString()` is the normalized text of the expression (`1 + 2`): a language that keeps the text the user wrote
 (`1+2`, parentheses, qualified names) had no way to give it for a binding (openflexo-core, CORE-D-33).
 
@@ -86,9 +90,13 @@ binding (cost accepted).
 
 ### CONNIE-F-2 — Guava out of connie-core  ·  `DONE`
 
+**GitHub:** [openflexo-team/connie#14](https://github.com/openflexo-team/connie/issues/14)
+
 **Done (2026-10-23).** `connie-core` no longer depends on Guava: the three `TypeToken` literals of `DataBindingFactory` and the two tests use the JDK / `ParameterizedTypeImpl`, `TypeUtils.isPrimitive` / `isWrapperClass` no longer use `Primitives` (same semantics, `void` and `Void` included). commons-lang3 stays (`reflect.TypeUtils.isAssignable` and `getTypeArguments` have no equivalent in Guava). The modules that use Guava directly now declare `implementation guava()` themselves: `flexographicutils`, `gina-api`, `gina-core`, `flexo-foundation`, `flexo-ui`, `owl-ta`, `pamela-core`, `opc-ua-ta-test`.
 
 ### CONNIE-F-1 — One implementation of `ClassScope` / `LoadedClassesInfo`, in connie  ·  `DONE`
+
+**GitHub:** [openflexo-team/connie#15](https://github.com/openflexo-team/connie/issues/15)
 
 **Done (2026-10-23).** `ClassScope` and `LoadedClassesInfo` are single, in connie (option 2): `ClassEditor` supplies the icons (`getClassIcon(ClassInfo)`, `getPackageIcon()`), `ClassEditor.fib` / `ClassSelector.fib` bind to them and name connie's classes. Both classes then moved to `connie-utils` (`org.openflexo.toolbox`), and with the whole of `connie-utils` to `openflexo-utils` 2.0, the bottom layer. `ClassScope` also lost its `SecurityManager` (now `StackWalker`). The stale copy in `gina-swing-editor-test` (with its `TestClassSelector.fib`) is left as is. Not checked visually: the icons of the class browser.
 

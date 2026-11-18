@@ -9,6 +9,8 @@ with what was verified, the cause and the fix. Identifiers are those of `KNOWN_D
 
 ### CONNIE-D-2 — `ClassScope` cannot list classes on Java 9+: `LoadedClassesInfo` throws  ·  `DONE`
 
+**GitHub:** [openflexo-team/connie#10](https://github.com/openflexo-team/connie/issues/10)
+
 **Symptom (Java 17).** `LoadedClassesInfo.getInstance()` throws `RuntimeException: ClassScope::getLoadedClasses() cannot be used in this JRE` (caused by `NoSuchFieldException` in `ClassScope.<clinit>`). It is reached from `TypeMustBeResolved` (`flexo-foundation`), the fix proposal for an unresolved type.
 
 **Cause.** Same as `GINA-D-1`: `ClassScope` read the private field `ClassLoader.classes`, which no longer exists. `connie-core` holds a copy of the GINA classes taken in January 2025 (commit `54bcb5f`), without the Swing icons.
@@ -22,6 +24,8 @@ with what was verified, the cause and the fix. Identifiers are those of `KNOWN_D
 ## Expressions
 
 ### CONNIE-D-3 — The text of a binding path stays the old one after a renamed element  ·  `DONE`
+
+**GitHub:** [openflexo-team/connie#11](https://github.com/openflexo-team/connie/issues/11)
 
 **Symptom.** `BindingPath.toString()` (hence `DataBinding.toString()`) kept the name a function or a property had when the text was first
 computed: `new ConceptB::constructor1()` stayed so after the constructor was renamed, in FML (CORE-D-67 of openflexo-core).
